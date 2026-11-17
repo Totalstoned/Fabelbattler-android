@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fabelbattler</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#171c24; --panel2:#1f2631; --line:#2b3442;
+    --txt:#e6edf5; --dim:#8b97a8; --gold:#f2c14e; --acc:#a78bfa;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0;background:radial-gradient(circle at 50% 0%,#151b24,#0e1116 60%);
+       color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  #app{max-width:1080px;margin:0 auto;padding:10px;}
+  h1{font-size:17px;margin:6px 0 10px;letter-spacing:.5px;font-weight:700;}
+  h1 span{color:var(--acc);}
+  .hud{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+  .hud .pill{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+       padding:6px 10px;font-size:12px;}
+  .hud .pill b{color:var(--gold);}
+  .main{display:grid;grid-template-columns:1fr 270px;gap:10px;}
+  @media(max-width:820px){.main{grid-template-columns:1fr;}}
+  canvas{width:100%;display:block;border-radius:14px;border:1px solid var(--line);
+       background:linear-gradient(180deg,#10151d,#0b0e13);touch-action:none;aspect-ratio:720/460;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;}
+  .panel h2{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin:0 0 8px;}
+  .btn{width:100%;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;
+       cursor:pointer;background:var(--acc);color:#12091f;transition:.15s;font-family:inherit;}
+  .btn:active{transform:scale(.98);}
+  .btn:disabled{opacity:.4;cursor:default;}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt);}
+  .btn.heal{background:#1c3d2a;border:1px solid #2f6b47;color:#9ff0bd;}
+  .btn.nova{background:#2a1d3d;border:1px solid #5b3f8a;color:#d3b8ff;}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0;}
+  .badge{font-size:11px;padding:4px 8px;border-radius:20px;background:var(--panel2);
+         border:1px solid var(--line);}
+  .badge.hot{border-color:var(--acc);box-shadow:0 0 8px rgba(167,139,250,.4);}
+  .mana{height:10px;border-radius:6px;background:#0b0e13;border:1px solid var(--line);overflow:hidden;margin:6px 0 10px;}
+  .mana > i{display:block;height:100%;background:linear-gradient(90deg,#4f7cff,#8fb5ff);width:0%;transition:width .2s;}
+  .team{display:flex;flex-direction:column;gap:5px;}
+  .unitline{display:flex;align-items:center;gap:6px;font-size:12px;background:var(--panel2);
+       border:1px solid var(--line);border-radius:8px;padding:5px 7px;}
+  .unitline .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .unitline .lvl{font-size:10px;color:var(--gold);}
+  .unitline .hpbar{flex:0 0 42px;height:5px;background:#0b0e13;border:1px solid var(--line);
+       border-radius:4px;overflow:hidden;}
+  .unitline .hpbar i{display:block;height:100%;background:#4ade80;}
+  .unitline.dead{opacity:.35;text-decoration:line-through;}
+  .tiny{font-size:11px;color:var(--dim);line-height:1.45;}
+  .draft{display:flex;flex-direction:column;gap:8px;}
+  .cardpick{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;transition:.15s;}
+  .cardpick:hover{border-color:var(--acc);}
+  .cardpick .row1{display:flex;align-items:center;gap:8px;}
+  .cardpick .em{font-size:24px;}
+  .cardpick .nm{font-weight:700;font-size:13px;}
+  .cardpick .rl{font-size:10px;color:var(--dim);}
+  .cardpick .stats{font-size:11px;color:var(--txt);margin-top:6px;}
+  .cardpick .abil{font-size:10px;color:var(--acc);margin-top:2px;}
+  .toasts{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;z-index:99;}
+  .toast{background:rgba(30,38,50,.96);border:1px solid var(--line);padding:8px 14px;border-radius:10px;font-size:12px;animation:pop .3s;}
+  @keyframes pop{from{opacity:0;transform:translateY(8px);}to{opacity:1;}}
+  .overlay{position:fixed;inset:0;background:rgba(8,10,14,.86);display:none;align-items:center;
+    justify-content:center;z-index:50;padding:16px;}
+  .overlay.show{display:flex;}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:430px;width:100%;}
+  .modal h3{margin:0 0 4px;font-size:18px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <h1><span>◆</span> FABELBATTLER</h1>
+  <div class="hud">
+    <div class="pill">Welle <b id="hudWave">1</b></div>
+    <div class="pill">Gold <b id="hudGold">20</b></div>
+    <div class="pill">Team <b id="hudTeam">0/6</b></div>
+    <div class="pill">Wesen-Lvl <b id="hudLvl">1</b></div>
+  </div>
+  <div class="main">
+    <div>
+      <canvas id="cv" width="720" height="460"></canvas>
+      <div class="panel" style="margin-top:10px">
+        <h2>Aktiver Eingriff</h2>
+        <div class="mana"><i id="manaBar"></i></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn heal" id="btnHeal">&#x271A; Heilregen (40)</button>
+          <button class="btn nova" id="btnNova">&#x273A; Fabel-Blitz (70)</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Dein Team</h2>
+      <div class="team" id="teamList"></div>
+      <div class="badges" id="synBadges"></div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn" id="btnBattle">Schlacht starten</button>
+      </div>
+      <button class="btn ghost" id="btnDraft" style="margin-top:8px">Draft öffnen (2 Gold)</button>
+      <button class="btn ghost" id="btnReset" style="margin-top:8px">Neu starten</button>
+      <p class="tiny" id="hint" style="margin-top:10px"></p>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="mdTitle">Wähle eine Einheit</h3>
+    <p class="tiny" id="mdSub" style="margin:0 0 12px"></p>
+    <div class="draft" id="mdDraft"></div>
+    <button class="btn ghost" id="mdSkip" style="margin-top:10px">Überspringen</button>
+  </div>
+</div>
+<div class="toasts" id="toasts"></div>
+<script>
+"use strict";
+const ROSTER = {
+  rumpelstilzchen:{name:"Rumpelstilzchen",emoji:"🧵",role:"DPS",cls:"Chaos",hp:60,atk:11,rng:90,spd:1.1,ability:"fluch"},
+  hotzenplotz:{name:"Räuber Hotzenplotz",emoji:"🔫",role:"DPS",cls:"Chaos",hp:80,atk:13,rng:70,spd:1.0,ability:"raub"},
+  chupacabra:{name:"Chupacabra",emoji:"🦎",role:"DPS",cls:"Dunkel",hp:55,atk:14,rng:60,spd:1.35,ability:"blutdurst"},
+  bigfoot:{name:"Bigfoot",emoji:"🦦",role:"TANK",cls:"Wald",hp:160,atk:9,rng:55,spd:0.7,ability:"protz"},
+  godzilla:{name:"Godzilla",emoji:"🦖",role:"TANK",cls:"Kaiju",hp:210,atk:15,rng:80,spd:0.55,ability:"atom"},
+  mothra:{name:"Mothra",emoji:"🦋",role:"BUFFER",cls:"Kaiju",hp:90,atk:7,rng:120,spd:1.0,ability:"staub"},
+  vampire:{name:"Vampir",emoji:"🧛",role:"DPS",cls:"Dunkel",hp:75,atk:12,rng:65,spd:1.15,ability:"saug"},
+  werewolf:{name:"Werwolf",emoji:"🐺",role:"DPS",cls:"Wald",hp:105,atk:15,rng:60,spd:1.2,ability:"heulen"},
+  hexe:{name:"Böse Hexe",emoji:"🧙‍♀️",role:"BUFFER",cls:"Magie",hp:65,atk:10,rng:110,spd:0.9,ability:"fluch2"},
+  fee:{name:"Gute Fee",emoji:"🧚",role:"HEALER",cls:"Magie",hp:60,atk:5,rng:120,spd:1.0,ability:"segen"},
+  ruebezahl:{name:"Rübezahl",emoji:"⛰️",role:"TANK",cls:"Wald",hp:145,atk:11,rng:55,spd:0.8,ability:"berg"},
+  waldschrat:{name:"Waldschrat",emoji:"🌿",role:"DPS",cls:"Wald",hp:95,atk:10,rng:65,spd:0.95,ability:"wurzeln"},
+  heinzelmaennchen:{name:"Heinzelmännchen",emoji:"🛠️",role:"BUFFER",cls:"Chaos",hp:55,atk:4,rng:100,spd:1.2,ability:"werk"},
+  wichtel:{name:"Wichtel",emoji:"🎩",role:"BUFFER",cls:"Chaos",hp:50,atk:5,rng:100,spd:1.25,ability:"glueck"},
+  sukubus:{name:"Sukubus",emoji:"💋",role:"BUFFER",cls:"Dunkel",hp:70,atk:8,rng:95,spd:1.1,ability:"bezirzen"},
+  lilith:{name:"Lilith",emoji:"👑",role:"DPS",cls:"Magie",hp:85,atk:16,rng:90,spd:1.05,ability:"seelenfeuer"},
+  hydra:{name:"Hydra",emoji:"🐉",role:"TANK",cls:"Mythos",hp:170,atk:12,rng:70,spd:0.75,ability:"koepfe"},
+  medusa:{name:"Medusa",emoji:"🐍",role:"DPS",cls:"Mythos",hp:80,atk:13,rng:105,spd:1.0,ability:"versteinern"},
+  dschinn:{name:"Dschinn",emoji:"🪔",role:"HEALER",cls:"Mythos",hp:70,atk:9,rng:115,spd:1.0,ability:"wunsch"},
+  goblin:{name:"Goblin",emoji:"👺",role:"DPS",cls:"Chaos",hp:50,atk:10,rng:60,spd:1.4,ability:"meuterei"},
+  klabautermann:{name:"Klabautermann",emoji:"⚓",role:"HEALER",cls:"Mythos",hp:75,atk:6,rng:110,spd:1.0,ability:"reparatur"}
+};
+const ALL_KEYS = Object.keys(ROSTER);
+const ROLE_META = {TANK:{col:"#6ea8fe",label:"Tank"},DPS:{col:"#e5484d",label:"DPS"},HEALER:{col:"#4ade80",label:"Heiler"},BUFFER:{col:"#a78bfa",label:"Puffer"}};
+const CLASS_META = {
+  Wald:{col:"#5fd88a",label:"Wald",desc:"+20 % HP"},
+  Magie:{col:"#c084fc",label:"Magie",desc:"+15 % ATK"},
+  Dunkel:{col:"#f472b6",label:"Dunkel",desc:"+10 % Lifesteal"},
+  Chaos:{col:"#fbbf24",label:"Chaos",desc:"+20 % Tempo"},
+  Kaiju:{col:"#fb923c",label:"Kaiju",desc:"+25 % HP"},
+  Mythos:{col:"#38bdf8",label:"Mythos",desc:"+10 % ATK, Startschild"}
+};
+const ABILITY_DESC = {
+  fluch:"Fluch: schwächt Treffer",
+  raub:"Raub: Lifesteal + Gold bei Kill",
+  blutdurst:"Blutdurst: mehr ATK bei niedriger HP",
+  protz:"Protz: Tank, zieht Angriffe an",
+  atom:"Atom: Splash-Schaden",
+  staub:"Staub: verlangsamt Gegner",
+  saug:"Saug: 30 % Lifesteal",
+  heulen:"Heulen: stärkt das Team",
+  fluch2:"Hexenfluch: Senkt Gegner-Tempo",
+  segen:"Segen: heilt das schwächste Wesen",
+  berg:"Berg: starke Schadensreduktion",
+  wurzeln:"Wurzeln: Gegner kann nicht laufen",
+  werk:"Werk: gibt Schilde",
+  glueck:"Glück: kritische Treffer",
+  bezirzen:"Bezirzen: verirrt Gegner",
+  seelenfeuer:"Seelenfeuer: Brennen",
+  koepfe:"Köpfe: einmaliges Wiedererstehen",
+  versteinern:"Versteinern: betäubt Gegner",
+  wunsch:"Wunsch: kräftige Heilung",
+  reparatur:"Reparatur: Schilde fürs Team",
+  meuterei:"Meuterei: steigert ATK bei Kill"
+};
+const INNATE = {
+  fluch:{atk:1.2,curse:0.2},
+  raub:{hp:1.1,lifesteal:0.15,gold:1},
+  blutdurst:{atk:1.15,rage:0.5},
+  protz:{hp:1.25,dr:0.2,taunt:true},
+  atom:{atk:1.15,splash:0.35},
+  staub:{spd:1.2,slow:0.3},
+  saug:{atk:1.1,lifesteal:0.3},
+  heulen:{howl:0.2},
+  fluch2:{spd:1.15,curse:0.15},
+  segen:{heal:0.06},
+  berg:{hp:1.3,dr:0.25},
+  wurzeln:{atk:1.1,root:0.8},
+  werk:{spd:1.15,shieldPct:0.08},
+  glueck:{crit:0.2},
+  bezirzen:{charm:0.25},
+  seelenfeuer:{burn:0.06},
+  koepfe:{hp:1.15,revive:1},
+  versteinern:{atk:1.1,stun:0.35},
+  wunsch:{heal:0.09},
+  reparatur:{shieldPct:0.1},
+  meuterei:{atk:1.2,lifesteal:0.1,killAtk:0.12}
+};
+const DEFAULT_MODS = {hp:1,atk:1,spd:1,dr:0,lifesteal:0,crit:0,splash:0,curse:0,slow:0,root:0,stun:0,charm:0,burn:0,heal:0,howl:0,shieldPct:0,rage:0,gold:0,killAtk:0,taunt:false,revive:0};
+const SYNERGY = {
+  Wald:m=>{m.hp*=1.2;},
+  Magie:m=>{m.atk*=1.15;},
+  Dunkel:m=>{m.lifesteal+=0.1;},
+  Chaos:m=>{m.spd*=1.2;},
+  Kaiju:m=>{m.hp*=1.25;},
+  Mythos:m=>{m.atk*=1.1;m.shieldPct+=0.1;}
+};
+const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"prep",battle:null,uid:0,effects:[]};
+const GRID = {cols:8,rows:6,tileW:66,tileH:33};
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+let DPR = Math.min(window.devicePixelRatio||1, 2);
+let CSS_W = 720, CSS_H = 460;
+let draftTimer = null;
+const VIEW = {w:0,h:0,ox:0,oy:0,scale:1};
+function fitCanvas(){
+  const rect = cv.getBoundingClientRect();
+  const w = rect.width || CSS_W;
+  const h = rect.height || CSS_H;
+  if(rect.width && rect.height){ CSS_W = rect.width; CSS_H = rect.height; }
+  DPR = Math.min(window.devicePixelRatio||1, 2);
+  cv.width = Math.round(w*DPR);
+  cv.height = Math.round(h*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  computeView();
+}
+function computeView(){
+  const w = cv.width/DPR, h = cv.height/DPR;
+  VIEW.w=w; VIEW.h=h;
+  const bw = (GRID.cols+GRID.rows)*GRID.tileW/2;
+  const bh = (GRID.cols+GRID.rows)*GRID.tileH/2;
+  VIEW.scale = Math.min(w/(bw+60), h/(bh+110));
+  VIEW.ox = w/2;
+  VIEW.oy = (h - bh*VIEW.scale)/2 + GRID.tileH*VIEW.scale*1.4;
+}
+function isoToScreen(gx, gy){
+  const s = VIEW.scale, tw = GRID.tileW, th = GRID.tileH;
+  return {
+    x: VIEW.ox + (gx-gy)*(tw/2)*s,
+    y: VIEW.oy + (gx+gy)*(th/2)*s
+  };
+}
+function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+function dist(a,b){ return Math.hypot(a.grid.gx-b.grid.gx, a.grid.gy-b.grid.gy); }
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+function synergyCounts(){
+  const counts = {};
+  G.team.forEach(u => { counts[u.cls] = (counts[u.cls]||0)+1; });
+  return counts;
+}
+function recalcUnit(u){
+  const m = Object.assign({}, DEFAULT_MODS, u.mods, INNATE[u.ability]||{});
+  if(u.side === "player" && (synergyCounts()[u.cls]||0) >= 2 && SYNERGY[u.cls]) SYNERGY[u.cls](m);
+  u.modsEffective = m;
+  u.maxHp = Math.round(u.baseHp*m.hp);
+  u.atk = u.baseAtk*m.atk;
+  u.spd = Math.max(0.25,u.baseSpd*m.spd);
+  u.hp = u.maxHp;
+  u.shield = u.maxHp*m.shieldPct;
+}
+function createUnit(key, lvl=1, side="player"){
+  const base = ROSTER[key];
+  const lvlHp = 1+(lvl-1)*0.3;
+  const lvlAtk = 1+(lvl-1)*0.25;
+  const u = {
+    id:++G.uid, key:key, name:base.name, emoji:base.emoji, role:base.role,
+    cls:base.cls, level:lvl, side:side, ability:base.ability,
+    baseHp:base.hp*lvlHp, baseAtk:base.atk*lvlAtk, baseSpd:base.spd,
+    rng:base.rng, mods:Object.assign({},DEFAULT_MODS), modsEffective:Object.assign({},DEFAULT_MODS),
+    maxHp:0, hp:0, atk:0, spd:1, shield:0,
+    grid:{gx:0,gy:0}, target:null, attackCd:0, hitFlash:0,
+    statuses:{}, statusPower:{}, isDead:false, revived:false
+  };
+  recalcUnit(u);
+  return u;
+}
+function clearStatuses(u){ u.statuses = {}; u.statusPower = {}; }
+function refreshTeamStats(){ G.team.forEach(recalcUnit); }
+function setUnitLevel(u,lvl){
+  const base = ROSTER[u.key];
+  u.level = lvl;
+  u.baseHp = base.hp*(1+(lvl-1)*0.3);
+  u.baseAtk = base.atk*(1+(lvl-1)*0.25);
+  recalcUnit(u);
+}
+function hasStatus(u,key){ return (u.statuses[key]||0) > 0; }
+function addStatus(u,key,dur,power){
+  u.statuses[key] = Math.max(u.statuses[key]||0, dur);
+  if(power !== undefined) u.statusPower[key] = Math.max(u.statusPower[key]||0,power);
+}
+function livingEnemiesOf(u,b){ return (u.side === "player" ? b.enemies : b.player).filter(t => !t.isDead); }
+function livingAlliesOf(u,b){ return (u.side === "player" ? b.player : b.enemies).filter(t => !t.isDead); }
+function pushEffect(u,text,color){
+  G.effects.push({
+    gx:u.grid.gx, gy:u.grid.gy, dx:(Math.random()-0.5)*16, dy:-18,
+    text:text, color:color, life:0.9, max:0.9
+  });
+}
+function healUnit(u,amount){
+  if(u.isDead || amount <= 0) return;
+  const real = Math.min(amount, u.maxHp-u.hp);
+  u.hp += real;
+  if(real > 1) pushEffect(u,"+"+Math.round(real),"#4ade80");
+}
+function shieldUnit(u,amount){
+  if(u.isDead || amount <= 0) return;
+  u.shield += amount;
+  pushEffect(u,"+"+Math.round(amount)+" ⛨","#8fb5ff");
+}
+function lowestAlly(list){
+  return list.slice().sort((a,b) => (a.hp+a.shield)/a.maxHp - (b.hp+b.shield)/b.maxHp)[0] || null;
+}
+function killUnit(u,source){
+  if(u.isDead) return;
+  if(u.modsEffective.revive && !u.revived){
+    u.revived = true;
+    u.hp = u.maxHp*0.4;
+    u.shield = u.maxHp*0.15;
+    clearStatuses(u);
+    pushEffect(u,"WIEDER!", "#f2c14e");
+    showToast("🌀 "+u.name+" ersteht wieder!");
+    return;
+  }
+  u.isDead = true;
+  u.hp = 0;
+  u.target = null;
+  pushEffect(u,"☠", "#e5484d");
+  showToast("☠ "+u.name+" fällt!");
+  if(source && source.side === "player" && source.modsEffective.gold > 0){
+    G.gold += source.modsEffective.gold;
+    updateHud();
+  }
+  if(source && source.modsEffective.killAtk > 0 && !source.isDead){
+    source.atk *= 1+source.modsEffective.killAtk;
+    pushEffect(source,"ATK ↑","#fbbf24");
+  }
+}
+function applyDamage(target,amount,source,opts={}){
+  if(target.isDead || amount <= 0) return 0;
+  let dmg = amount*(1-(target.modsEffective.dr||0));
+  if(target.shield > 0){
+    const absorbed = Math.min(target.shield,dmg);
+    target.shield -= absorbed;
+    dmg -= absorbed;
+    if(absorbed > 1 && opts.number !== false) pushEffect(target,"⛨ "+Math.round(absorbed),"#8fb5ff");
+  }
+  if(dmg > 0){
+    target.hp -= dmg;
+    target.hitFlash = 0.15;
+    if(opts.number !== false) pushEffect(target,(opts.crit?"★ ":"")+"-"+Math.round(dmg), source && source.side === "enemy" ? "#ff8a8a" : "#ffd166");
+    if(source && source.modsEffective.lifesteal > 0) healUnit(source,dmg*source.modsEffective.lifesteal);
+  }
+  if(target.hp <= 0) killUnit(target,source);
+  return dmg;
+}
+function tickUnit(u,dt){
+  u.attackCd = Math.max(0,u.attackCd-dt);
+  u.hitFlash = Math.max(0,u.hitFlash-dt);
+  for(const key in u.statuses){
+    if(u.statuses[key] > 0) u.statuses[key] = Math.max(0,u.statuses[key]-dt);
+  }
+  if(hasStatus(u,"burn")){
+    applyDamage(u,(u.statusPower.burn||0)*u.maxHp*dt,null,{number:false});
+  }
+}
+function chooseTarget(u,b){
+  if(hasStatus(u,"charm")) return lowestAlly(livingAlliesOf(u,b).filter(a => a !== u));
+  if(u.side === "enemy"){
+    const taunt = b.player.find(t => !t.isDead && t.modsEffective.taunt);
+    if(taunt) return taunt;
+  }
+  const targets = livingEnemiesOf(u,b);
+  if(!targets.length) return null;
+  return targets.sort((a,c) => (dist(u,a)+a.hp/a.maxHp*0.4)-(dist(u,c)+c.hp/c.maxHp*0.4))[0];
+}
+function moveToward(u,target,dt){
+  if(hasStatus(u,"root") || hasStatus(u,"stun")) return;
+  const dx = target.grid.gx-u.grid.gx, dy = target.grid.gy-u.grid.gy;
+  const d = Math.hypot(dx,dy);
+  if(d < 0.02) return;
+  const slow = hasStatus(u,"slow") ? (1-(u.statusPower.slow||0.3)) : 1;
+  const speed = (0.55+u.spd*0.35)*slow;
+  const step = Math.min(speed*dt,d);
+  u.grid.gx = clamp(u.grid.gx+dx/d*step,0,GRID.cols-1);
+  u.grid.gy = clamp(u.grid.gy+dy/d*step,0,GRID.rows-1);
+}
+function supportAction(u,b){
+  if(hasStatus(u,"charm") || hasStatus(u,"stun")) return false;
+  const e = u.modsEffective;
+  if(!e.heal && !e.shieldPct) return false;
+  const ally = lowestAlly(livingAlliesOf(u,b));
+  if(!ally) return false;
+  const need = (ally.hp+ally.shield)/ally.maxHp;
+  if(need >= 0.78) return false;
+  if(e.heal) healUnit(ally,u.maxHp*e.heal+u.atk*0.4);
+  if(e.shieldPct) shieldUnit(ally,u.maxHp*e.shieldPct);
+  u.attackCd = 1/u.spd;
+  return true;
+}
+function applyOnHit(u,target,b){
+  const e = u.modsEffective;
+  if(e.splash){
+    livingEnemiesOf(u,b).filter(t => t !== target && dist(t,target) < 1.4).forEach(t => {
+      applyDamage(t,u.atk*e.splash,u,{number:false});
+    });
+  }
+  if(e.curse) addStatus(target,"weaken",2.5,e.curse);
+  if(e.slow && Math.random() < 0.55) addStatus(target,"slow",2,e.slow);
+  if(e.root && Math.random() < e.root) addStatus(target,"root",0.8);
+  if(e.stun && Math.random() < e.stun) addStatus(target,"stun",0.7);
+  if(e.charm && Math.random() < e.charm) addStatus(target,"charm",1.8);
+  if(e.burn) addStatus(target,"burn",3,e.burn);
+  if(e.howl){
+    livingAlliesOf(u,b).forEach(a => { addStatus(a,"atkBuff",3,e.howl); });
+  }
+}
+function tryAttack(u,target,b){
+  if(u.attackCd > 0 || hasStatus(u,"stun")) return;
+  if(dist(u,target) > Math.max(1,u.rng/70)) return;
+  let dmg = u.atk*(0.85+Math.random()*0.3);
+  if(hasStatus(u,"weaken")) dmg *= 1-(u.statusPower.weaken||0);
+  if(hasStatus(u,"atkBuff")) dmg *= 1+(u.statusPower.atkBuff||0);
+  if(u.modsEffective.rage && u.hp < u.maxHp*0.5) dmg *= 1+u.modsEffective.rage;
+  const crit = u.modsEffective.crit > 0 && Math.random() < u.modsEffective.crit;
+  if(crit) dmg *= 2;
+  applyDamage(target,dmg,u,{crit:crit});
+  applyOnHit(u,target,b);
+  u.attackCd = 1/u.spd;
+}
+function separate(units,dt){
+  for(let i=0;i<units.length;i++){
+    for(let j=i+1;j<units.length;j++){
+      const a=units[i], c=units[j];
+      const dx=c.grid.gx-a.grid.gx, dy=c.grid.gy-a.grid.gy;
+      const d=Math.hypot(dx,dy);
+      if(d <= 0.001){
+        a.grid.gx=clamp(a.grid.gx-0.02,0,GRID.cols-1);
+        c.grid.gx=clamp(c.grid.gx+0.02,0,GRID.cols-1);
+      } else if(d < 0.65){
+        const push=(0.65-d)*0.5*Math.min(1,dt*8);
+        a.grid.gx=clamp(a.grid.gx-dx/d*push,0,GRID.cols-1);
+        a.grid.gy=clamp(a.grid.gy-dy/d*push,0,GRID.rows-1);
+        c.grid.gx=clamp(c.grid.gx+dx/d*push,0,GRID.cols-1);
+        c.grid.gy=clamp(c.grid.gy+dy/d*push,0,GRID.rows-1);
+      }
+    }
+  }
+}
+function updateEffects(dt){
+  G.effects.forEach(e => { e.life -= dt; e.dy -= dt*18; });
+  G.effects = G.effects.filter(e => e.life > 0);
+}
+function updateBattle(dt){
+  const b = G.battle;
+  if(!b) return;
+  b.time += dt;
+  [...b.player,...b.enemies].forEach(u => { if(!u.isDead) tickUnit(u,dt); });
+  const alive = [...b.player,...b.enemies].filter(u => !u.isDead);
+  alive.forEach(u => {
+    if(u.isDead) return;
+    if(supportAction(u,b)) return;
+    const target = chooseTarget(u,b);
+    u.target = target;
+    if(!target) return;
+    if(dist(u,target) > Math.max(1,u.rng/70)) moveToward(u,target,dt);
+    else tryAttack(u,target,b);
+  });
+  separate([...b.player,...b.enemies].filter(u => !u.isDead),dt);
+  checkBattleEnd();
+}
+function checkBattleEnd(){
+  const b = G.battle;
+  if(!b || G.phase !== "battle") return;
+  const playersAlive = b.player.some(u => !u.isDead);
+  const enemiesAlive = b.enemies.some(u => !u.isDead);
+  if(!enemiesAlive) winBattle();
+  else if(!playersAlive) loseBattle();
+}
+function reviveTeam(){
+  G.team.forEach(u => {
+    u.isDead = false;
+    u.revived = false;
+    clearStatuses(u);
+    recalcUnit(u);
+  });
+}
+function winBattle(){
+  const cleared = G.wave;
+  G.phase = "prep";
+  G.battle = null;
+  G.effects = [];
+  const reward = 5+cleared*2;
+  G.gold += reward;
+  G.mana = Math.min(G.maxMana,G.mana+25);
+  reviveTeam();
+  if(cleared % 3 === 0){
+    G.team.forEach(u => setUnitLevel(u,u.level+1));
+    const minLvl = Math.min.apply(null,G.team.map(u => u.level));
+    showToast("Team-Level-Up! Mindestlevel: "+minLvl);
+  }
+  G.wave++;
+  showToast("Welle "+cleared+" besiegt! +"+reward+" Gold");
+  updateHud();
+  updateTeamList();
+  updateSynergies();
+  updateButtons();
+  if(draftTimer){ clearTimeout(draftTimer); draftTimer = null; }
+  if(G.team.length < 6) draftTimer = setTimeout(() => { draftTimer = null; if(G.phase === "prep" && G.team.length < 6) openDraft(); }, 550);
+  else showToast("Team vollständig – bereit für Welle "+G.wave);
+}
+function loseBattle(){
+  G.phase = "defeat";
+  G.battle = null;
+  G.effects = [];
+  reviveTeam();
+  showToast("Niederlage in Welle "+G.wave+" – erneut versuchen");
+  updateHud();
+  updateTeamList();
+  updateButtons();
+}
+function startBattle(){
+  if(!G.team.length || G.phase === "battle" || G.phase === "draft") return;
+  G.phase = "battle";
+  G.effects = [];
+  reviveTeam();
+  G.team.forEach((u,i) => {
+    u.grid.gx = (i%2)*0.6;
+    u.grid.gy = 0.6+Math.floor(i/2)*1.7;
+    u.attackCd = Math.random()*0.4;
+  });
+  const enemyCount = Math.min(2+Math.floor(G.wave/2),6);
+  const enemyTeam = [];
+  for(let i=0;i<enemyCount;i++){
+    const key = ALL_KEYS[Math.floor(Math.random()*ALL_KEYS.length)];
+    const lvl = 1+Math.floor((G.wave-1)/4);
+    const u = createUnit(key,lvl,"enemy");
+    u.baseHp *= 1+G.wave*0.04;
+    u.baseAtk *= 1+G.wave*0.03;
+    recalcUnit(u);
+    u.grid.gx = GRID.cols-1-(i%2)*0.6;
+    u.grid.gy = 0.6+Math.floor(i/2)*1.7;
+    u.attackCd = Math.random()*0.4;
+    enemyTeam.push(u);
+  }
+  G.battle = {player:G.team,enemies:enemyTeam,time:0};
+  G.mana = Math.min(G.maxMana,G.mana+10);
+  showToast("Welle "+G.wave+" beginnt!");
+  updateHud();
+  updateTeamList();
+  updateButtons();
+}
+function updateTeamList(){
+  const tl = document.getElementById("teamList");
+  tl.innerHTML = '';
+  if(!G.team.length){
+    tl.innerHTML = '<p class="tiny" style="color:var(--dim)">Ziehe Wesen aus dem Draft.</p>';
+  } else {
+    G.team.forEach(u => {
+      const pct = u.maxHp ? clamp(u.hp/u.maxHp*100,0,100) : 0;
+      const el = document.createElement("div");
+      el.className = 'unitline '+(u.isDead?'dead':'');
+      el.innerHTML = `
+        <span class="nm" title="${u.role} · ${u.cls}">${u.emoji} ${u.name}</span>
+        <span class="hpbar"><i style="width:${pct}%;background:${pct>50?'#4ade80':'#e5484d'}"></i></span>
+        <span class="lvl">L${u.level}</span>
+      `;
+      tl.appendChild(el);
+    });
+  }
+  document.getElementById("hudTeam").textContent = G.team.length+'/6';
+}
+function updateSynergies(){
+  const badges = document.getElementById("synBadges");
+  badges.innerHTML = '';
+  const counts = synergyCounts();
+  for(const cls in counts){
+    if(counts[cls] < 2 || !CLASS_META[cls]) continue;
+    const badge = document.createElement("div");
+    badge.className = 'badge hot';
+    badge.title = CLASS_META[cls].desc;
+    badge.style.borderColor = CLASS_META[cls].col;
+    badge.innerHTML = `<span style="color:${CLASS_META[cls].col}">●</span> ${CLASS_META[cls].label} ${counts[cls]}`;
+    badges.appendChild(badge);
+  }
+}
+function updateHud(){
+  document.getElementById("hudGold").textContent = G.gold;
+  document.getElementById("hudWave").textContent = G.wave;
+  document.getElementById("hudTeam").textContent = G.team.length+'/6';
+  const avg = G.team.length ? G.team.reduce((s,u) => s+u.level,0)/G.team.length : 1;
+  document.getElementById("hudLvl").textContent = avg.toFixed(1).replace(/\.0$/,'');
+}
+function updateManaBar(){
+  document.getElementById("manaBar").style.width = (G.mana/G.maxMana*100)+'%';
+}
+function updateButtons(){
+  const inBattle = G.phase === "battle" && !!G.battle;
+  const drafting = G.phase === "draft";
+  const battleBtn = document.getElementById("btnBattle");
+  battleBtn.disabled = inBattle || drafting || !G.team.length;
+  battleBtn.textContent = G.phase === "defeat" ? "Erneut versuchen" : "Schlacht starten";
+  document.getElementById("btnDraft").disabled = inBattle || drafting || G.team.length >= 6;
+  document.getElementById("btnHeal").disabled = !inBattle || G.mana < 40;
+  document.getElementById("btnNova").disabled = !inBattle || G.mana < 70;
+  let hint = "";
+  if(!G.team.length) hint = "Wähle zuerst Wesen im Draft.";
+  else if(drafting) hint = "Wähle eine Karte oder überspringe den Draft.";
+  else if(inBattle) hint = "Welle "+G.wave+" läuft. Greife mit Mana ein.";
+  else if(G.phase === "defeat") hint = "Dein Team ist besiegt. Starte die Welle erneut.";
+  else hint = "Bereit für Welle "+G.wave+". Synergien ab 2 gleichen Klassen wirken.";
+  document.getElementById("hint").textContent = hint;
+}
+function openDraft(){
+  if(draftTimer){ clearTimeout(draftTimer); draftTimer = null; }
+  if(G.phase === "battle") return;
+  if(G.team.length >= 6){ showToast("Team ist bereits voll"); return; }
+  G.phase = "draft";
+  document.getElementById("mdTitle").textContent = "Wähle eine Einheit";
+  document.getElementById("mdSub").textContent = "2 Gold pro Wesen · Gold: "+G.gold+" · Team: "+G.team.length+"/6"+(G.team.length ? "" : " · Bitte mindestens ein Wesen wählen.");
+  document.getElementById("mdSkip").disabled = G.team.length === 0;
+  const overlay = document.getElementById("overlay");
+  overlay.classList.add("show");
+  const draft = document.getElementById("mdDraft");
+  draft.innerHTML = '';
+  const picks = shuffle(ALL_KEYS).slice(0,3);
+  picks.forEach(key => {
+    const unit = ROSTER[key];
+    const card = document.createElement("div");
+    card.className = "cardpick";
+    card.innerHTML = `
+      <div class="row1">
+        <span class="em">${unit.emoji}</span>
+        <div>
+          <div class="nm">${unit.name}</div>
+          <div class="rl">${ROLE_META[unit.role].label} · ${CLASS_META[unit.cls].label}</div>
+        </div>
+      </div>
+      <div class="stats">HP ${unit.hp} · ATK ${unit.atk} · ${ABILITY_DESC[unit.ability]}</div>
+      <div class="abil" style="color:${CLASS_META[unit.cls].col}">${CLASS_META[unit.cls].label}-Synergie: ${CLASS_META[unit.cls].desc}</div>
+    `;
+    card.onclick = () => {
+      if(G.gold < 2){ showToast("Zu wenig Gold – Draft überspringen"); return; }
+      G.gold -= 2;
+      const pickLevel = G.team.length ? Math.max.apply(null,G.team.map(u => u.level)) : 1;
+      G.team.push(createUnit(key,pickLevel,"player"));
+      refreshTeamStats();
+      closeDraft();
+      updateHud();
+      updateTeamList();
+      updateSynergies();
+      showToast("+1 "+unit.emoji+" "+unit.name);
+    };
+    if(G.gold < 2) card.style.opacity = "0.5";
+    draft.appendChild(card);
+  });
+  updateButtons();
+}
+function closeDraft(){
+  document.getElementById("overlay").classList.remove("show");
+  if(G.phase === "draft") G.phase = "prep";
+  updateButtons();
+}
+function showToast(msg){
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  document.getElementById("toasts").appendChild(t);
+  setTimeout(() => { t.remove(); }, 2000);
+}
+function drawGrid(){
+  const s = VIEW.scale;
+  for(let gx=0; gx<GRID.cols; gx++){
+    for(let gy=0; gy<GRID.rows; gy++){
+      const p = isoToScreen(gx,gy);
+      const p2 = isoToScreen(gx+1,gy);
+      const p3 = isoToScreen(gx+1,gy+1);
+      const p4 = isoToScreen(gx,gy+1);
+      ctx.beginPath();
+      ctx.moveTo(p.x,p.y);
+      ctx.lineTo(p2.x,p2.y);
+      ctx.lineTo(p3.x,p3.y);
+      ctx.lineTo(p4.x,p4.y);
+      ctx.closePath();
+      ctx.fillStyle = (gx+gy)%2 ? "rgba(32,42,55,0.35)" : "rgba(22,30,40,0.35)";
+      ctx.fill();
+      ctx.strokeStyle = "#2b3442";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+  ctx.strokeStyle = "rgba(167,139,250,0.35)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  const mid = isoToScreen(GRID.cols/2,0);
+  ctx.moveTo(mid.x,mid.y-28*s);
+  ctx.lineTo(mid.x,isoToScreen(GRID.cols/2,GRID.rows).y+12*s);
+  ctx.stroke();
+}
+function drawUnit(u){
+  const p = isoToScreen(u.grid.gx,u.grid.gy);
+  ctx.fillStyle = "rgba(0,0,0,0.3)";
+  ctx.beginPath();
+  ctx.ellipse(p.x,p.y+10,12*VIEW.scale,6*VIEW.scale,0,0,Math.PI*2);
+  ctx.fill();
+  if(u.target && !u.target.isDead){
+    const t = isoToScreen(u.target.grid.gx,u.target.grid.gy);
+    ctx.strokeStyle = u.side === "player" ? "rgba(167,139,250,0.25)" : "rgba(229,72,77,0.25)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(p.x,p.y-4);
+    ctx.lineTo(t.x,t.y-4);
+    ctx.stroke();
+  }
+  if(u.hitFlash > 0){
+    ctx.fillStyle = "rgba(255,255,255,0.25)";
+    ctx.beginPath();
+    ctx.arc(p.x,p.y-8,18*VIEW.scale,0,Math.PI*2);
+    ctx.fill();
+  }
+  if(u.shield > 0){
+    ctx.strokeStyle = "rgba(143,181,255,0.75)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(p.x,p.y-6,16*VIEW.scale,22*VIEW.scale,0,0,Math.PI*2);
+    ctx.stroke();
+  }
+  ctx.font = Math.round(22*VIEW.scale)+"px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(u.emoji,p.x,p.y-10*VIEW.scale);
+  ctx.font = Math.round(9*VIEW.scale)+"px system-ui";
+  ctx.fillStyle = ROLE_META[u.role].col;
+  ctx.fillText("L"+u.level,p.x,p.y-24*VIEW.scale);
+  const barW = 32*VIEW.scale, barH = 4*VIEW.scale;
+  const hpRatio = clamp(u.hp/u.maxHp,0,1);
+  const by = p.y+12*VIEW.scale;
+  ctx.fillStyle = "#0b0e13";
+  ctx.fillRect(p.x-barW/2,by,barW,barH);
+  ctx.fillStyle = hpRatio > 0.5 ? "#4ade80" : "#e5484d";
+  ctx.fillRect(p.x-barW/2,by,barW*hpRatio,barH);
+  if(u.shield > 0){
+    const sr = clamp(u.shield/u.maxHp,0,1);
+    ctx.fillStyle = "#8fb5ff";
+    ctx.fillRect(p.x-barW/2,by,barW*sr,1.5*VIEW.scale);
+  }
+  const statuses = Object.keys(u.statuses).filter(k => u.statuses[k] > 0);
+  if(statuses.length){
+    ctx.fillStyle = "#fbbf24";
+    ctx.fillText(statuses[0].slice(0,3).toUpperCase(),p.x,by+11*VIEW.scale);
+  }
+}
+function render(){
+  ctx.clearRect(0,0,VIEW.w,VIEW.h);
+  ctx.fillStyle = "#10151d";
+  ctx.fillRect(0,0,VIEW.w,VIEW.h);
+  drawGrid();
+  if(!G.battle || !G.battle.player.length){
+    ctx.fillStyle = "rgba(230,237,245,0.6)";
+    ctx.font = "14px system-ui";
+    ctx.textAlign = "center";
+    ctx.fillText(G.team.length ? "Team bereit – Schlacht starten" : "Draft öffnen, um Wesen zu wählen",VIEW.w/2,VIEW.h/2);
+    return;
+  }
+  const units = [...G.battle.player,...G.battle.enemies]
+    .filter(u => !u.isDead)
+    .sort((a,b) => (a.grid.gx+a.grid.gy)-(b.grid.gx+b.grid.gy));
+  units.forEach(drawUnit);
+  ctx.font = "bold 12px system-ui";
+  ctx.textAlign = "center";
+  G.effects.forEach(e => {
+    const p = isoToScreen(e.gx,e.gy);
+    ctx.globalAlpha = clamp(e.life/e.max,0,1);
+    ctx.fillStyle = e.color;
+    ctx.fillText(e.text,p.x+e.dx,p.y+e.dy);
+  });
+  ctx.globalAlpha = 1;
+}
+window.addEventListener("load", () => {
+  fitCanvas();
+  updateHud();
+  updateTeamList();
+  updateSynergies();
+  updateManaBar();
+  updateButtons();
+  document.getElementById("btnBattle").onclick = () => {
+    if(G.phase !== "battle" && G.phase !== "draft") startBattle();
+  };
+  document.getElementById("btnDraft").onclick = openDraft;
+  document.getElementById("btnReset").onclick = () => location.reload();
+  document.getElementById("mdSkip").onclick = () => {
+    if(!G.team.length) return;
+    closeDraft();
+    showToast("Draft übersprungen");
+  };
+  document.getElementById("btnHeal").onclick = () => {
+    if(G.mana < 40 || !G.battle || G.phase !== "battle") return;
+    G.mana -= 40;
+    G.battle.player.filter(u => !u.isDead).forEach(u => healUnit(u,u.maxHp*0.25));
+    showToast("Heilregen ☔");
+    updateButtons();
+  };
+  document.getElementById("btnNova").onclick = () => {
+    if(G.mana < 70 || !G.battle || G.phase !== "battle") return;
+    const targets = G.battle.enemies.filter(u => !u.isDead);
+    if(!targets.length) return;
+    G.mana -= 70;
+    const target = targets[Math.floor(Math.random()*targets.length)];
+    applyDamage(target,target.maxHp*0.35,null,{});
+    showToast("Fabel-Blitz ✺");
+    updateButtons();
+  };
+  draftTimer = setTimeout(() => { draftTimer = null; if(G.phase === "prep" && !G.team.length) openDraft(); }, 350);
+  let last = performance.now();
+  let uiTick = 0;
+  function frame(time){
+    const dt = Math.min(0.05,Math.max(0,(time-last)/1000));
+    last = time;
+    G.mana = Math.min(G.maxMana,G.mana+dt*(G.phase === "battle" ? 12 : 7));
+    updateManaBar();
+    if(G.phase === "battle" && G.battle) updateBattle(dt);
+    updateEffects(dt);
+    uiTick += dt;
+    if(uiTick > 0.2){
+      uiTick = 0;
+      updateButtons();
+      if(G.phase === "battle") updateTeamList();
+    }
+    render();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+});
+window.addEventListener("resize", fitCanvas);
+</script>
+</body>
+</html>
