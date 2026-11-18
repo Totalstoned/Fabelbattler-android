@@ -27,6 +27,15 @@ jobs:
           yes | "$SDKMANAGER" --licenses > /dev/null
           "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
 
+      - name: Read app version
+        id: version
+        run: |
+          VERSION_NAME="$(python3 -c "import re; print(re.search(r'^APP_VERSION_NAME=(.*)$', open('gradle.properties', encoding='utf-8').read(), re.M).group(1).strip())")"
+          VERSION_CODE="$(python3 -c "import re; print(re.search(r'^APP_VERSION_CODE=(.*)$', open('gradle.properties', encoding='utf-8').read(), re.M).group(1).strip())")"
+          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "apk=fabelbattler-v${VERSION_NAME}-b${VERSION_CODE}.apk" >> "$GITHUB_OUTPUT"
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
@@ -34,11 +43,11 @@ jobs:
         run: ./gradlew assembleDebug --no-daemon
 
       - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk fb.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk "${{ steps.version.outputs.apk }}"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: fb
-          path: fb.apk
+          name: ${{ steps.version.outputs.apk }}
+          path: ${{ steps.version.outputs.apk }}
           if-no-files-found: error
