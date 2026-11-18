@@ -24,8 +24,41 @@ Ziel: Fabelbattler später als Fullscreen-3D-Spiel in Unreal Engine 5 umsetzen. 
   - Heiler heilen bis zu 3 Felder entfernt und bewegen sich bei größerem Abstand zum Ziel
   - aktive Fernzauber mit Reichweite/Cooldown: Godzilla Atomstrahl, King Kong Ansturm & Spott, Plus Varianten für alle anderen Wesen
   - aktive Eingriffe: Heilregen und Fabel-Blitz
-  - Fähigkeiten mit Statuseffekten und Synergien; Synergien zählen Primär-/Sekundärklassen und Rassen
-  - Fullscreen-Kampf, Auswahl und HUD als Overlay-Fenster
+   - Fähigkeiten mit Statuseffekten und Synergien; Synergien zählen Primär-/Sekundärklassen und Rassen
+   - Fullscreen-Kampf, Auswahl und HUD als Overlay-Fenster
+
+## Aktuelle Grafik-Entscheidung
+
+- Für jetzt bleibt die 3D-Version aus `/root/fabelbattler/index3d.html` die aktive Version; kein Engine-Wechsel vorerst.
+- Grafik-Polish im Three.js-Prototyp: weichere Schatten, Hemisphere-/Fill-Licht, additive Glow-Sprites, Partikel-Bursts bei Treffer/Heal/Shield/Zauber/Tod, weiche Bodenschatten, Team-Ringe und verbesserte HP-/Schildbalken.
+- Kamera: Mausrad oder Zwei-Finger-Zoom, Doppelklick oder `0` setzt die Ansicht zurück.
+- Die exportierten UE5-Daten und das C++-Gerüst bleiben erhalten; ein späterer Wechsel zu UE5 oder Godot muss die Logik nicht neu erfinden.
+- Größen/Ziel: aktuell reicht der leichte WebView-Prototyp; für später beeindruckende Grafik sind echte Meshes/Materials/VFX und ggf. UE5/Godot nötig.
+
+## UE5-Projektgerüst (vorbereitet)
+
+- Projektpfad: `/root/fabelbattler/unreal/Fabelbattler`
+- `Fabelbattler.uproject` mit `EngineAssociation` `5.6` und Modul `Fabelbattler`
+- Wichtige Ordner: `Config`, `Content/Data`, `Content/Maps`, `Content/UI`, `Source/Fabelbattler/Game`, `Source/Fabelbattler/UI`, `Source/Fabelbattler/Units`
+- Exportierte Daten aus `/root/fabelbattler/index3d.html`:
+  - `Content/Data/Roster.json`: 95 Einheiten, `DefaultTeamSize` 4, Rasse, Klasse, Fähigkeit, Zauber, Heilreichweite, Style-Variante
+  - `Content/Data/Spells.json`: 48 Zauber mit Reichweite, Cooldown, Damage, Splash, Heal, Shield, Status und VFX-Farbe
+  - `Content/Data/Classes.json`: 10 Klassen
+  - `Content/Data/Races.json`: 7 Rassen
+  - `Config/DefaultGame.ini` staged `Content/Data` für Packaging
+- C++-Skelett:
+  - `FFabelbattlerModule`, Targets und Build.cs mit Core/Engine/UMG/Json
+  - `FFabelUnitData`, `FFabelSpellData`, `FFabelClassData`, `FFabelRaceData`
+  - `UFabelDataSubsystem` lädt die JSON-Dateien zur Laufzeit
+  - `AFabelUnitActor` als Platzhalter-Einheit mit prozeduralem Cube-Mesh
+  - `UFabelMainMenuWidget`, `UFabelDraftWidget`, `UFabelBattleHudWidget` als UMG-C++-Basen
+  - `AFabelBattleGameMode` zeigt Menü → Draft → Arena, füllt das Gegnerteam rollenkomplementiert und spawnt gleiche Teamgrößen
+- Noch nicht vorhanden:
+  - echte Engine-Installation, generierte Projektdateien, kompilierte Binaries
+  - `L_BattleArena.umap` und Blueprint-/Widget-Assets im Editor
+  - GAS-Abilities, Niagara-Effekte, echte Kreaturen-Meshes/Materials, KI und Kampfregeln
+  - Android-Packaging, Signing und AAB/APK-Build
+- Lokal ist UE5 nicht installiert; dieses Gerüst ist source-only und bisher nicht kompiliert.
 
 ## Game-Flow in Unreal Engine 5
 
