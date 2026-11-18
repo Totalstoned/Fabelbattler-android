@@ -67,6 +67,25 @@
   .overlay.show{display:flex;}
   .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:430px;width:100%;}
   .modal h3{margin:0 0 4px;font-size:18px;}
+  .menu-overlay{background:radial-gradient(circle at 50% 35%,#1d2635,#080a0e 70%);}
+  .menu-overlay .modal,.info-overlay .modal{max-width:360px;text-align:center;}
+  .menu-title{font-size:22px;font-weight:800;letter-spacing:2px;color:var(--acc);margin-bottom:4px;}
+  .menu-sub{font-size:11px;color:var(--dim);margin:0 0 14px;}
+  .menu-actions{display:flex;flex-direction:column;gap:8px;}
+  .battle-bar{display:none;position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:40;
+       gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:96vw;
+       background:rgba(17,22,30,.94);border:1px solid var(--line);border-radius:14px;padding:8px;}
+  .battle-info{font-size:11px;color:var(--gold);padding:0 6px;white-space:nowrap;}
+  .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
+  body.battle-mode #app{max-width:none;margin:0;padding:0;}
+  body.battle-mode h1,body.battle-mode .hud,body.battle-mode .panel,
+  body.battle-mode .main > div:last-child{display:none !important;}
+  body.battle-mode .main{display:block;}
+  body.battle-mode #scene{width:100vw;height:100vh;aspect-ratio:auto;border:none;border-radius:0;}
+  body.battle-mode .overlay{background:rgba(6,8,12,.62);align-items:flex-end;}
+  body.battle-mode .modal{max-width:min(860px,96vw);width:100%;border-radius:18px 18px 0 0;
+       padding:16px 16px 18px;box-shadow:0 -12px 40px rgba(0,0,0,.55);}
+  body.battle-mode .draft{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;}
 </style>
 </head>
 <body>
@@ -103,121 +122,350 @@
     </div>
   </div>
 </div>
+<div class="overlay menu-overlay show" id="menuOverlay">
+  <div class="modal">
+    <div class="menu-title">FABELBATTLER</div>
+    <p class="menu-sub">3D-Taktik · gleiche Teams · Wesen aus Folklore und Kaiju-Filmen</p>
+    <div class="menu-actions">
+      <button class="btn" id="menuStart">Start</button>
+      <button class="btn ghost" id="menuSettings">Einstellungen</button>
+      <button class="btn ghost" id="menuCredits">Credits</button>
+    </div>
+  </div>
+</div>
+<div class="overlay info-overlay" id="infoOverlay">
+  <div class="modal">
+    <h3 id="infoTitle">Information</h3>
+    <p class="tiny" id="infoText" style="margin:0 0 12px;text-align:left"></p>
+    <div id="infoExtra"></div>
+    <button class="btn ghost" id="infoClose" style="margin-top:10px">Zurück</button>
+  </div>
+</div>
 <div class="overlay" id="overlay">
   <div class="modal">
     <h3 id="mdTitle">Wähle eine Einheit</h3>
     <p class="tiny" id="mdSub" style="margin:0 0 12px"></p>
     <div class="draft" id="mdDraft"></div>
-    <button class="btn ghost" id="mdSkip" style="margin-top:10px">Überspringen</button>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn ghost" id="mdBack">Zurück</button>
+      <button class="btn" id="mdSkip">Kampf starten</button>
+    </div>
   </div>
+</div>
+<div class="battle-bar" id="battleBar">
+  <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
+  <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
+  <button class="btn" id="btnBattleNext">Nächste Welle</button>
+  <button class="btn heal" id="btnBattleHeal">Heilregen</button>
+  <button class="btn nova" id="btnBattleNova">Blitz</button>
+  <button class="btn ghost" id="btnBattleExit">Vollbild aus</button>
 </div>
 <div class="toasts" id="toasts"></div>
 <script src="./vendor/three.min.js"></script>
 <script>
 "use strict";
 const ROSTER = {
-  rumpelstilzchen:{name:"Rumpelstilzchen",emoji:"🧵",role:"DPS",cls:"Chaos",hp:60,atk:11,rng:90,spd:1.1,ability:"fluch"},
-  hotzenplotz:{name:"Räuber Hotzenplotz",emoji:"🔫",role:"DPS",cls:"Chaos",hp:80,atk:13,rng:70,spd:1.0,ability:"raub"},
-  chupacabra:{name:"Chupacabra",emoji:"🦎",role:"DPS",cls:"Dunkel",hp:55,atk:14,rng:60,spd:1.35,ability:"blutdurst"},
-  bigfoot:{name:"Bigfoot",emoji:"🦦",role:"TANK",cls:"Wald",hp:160,atk:9,rng:55,spd:0.7,ability:"protz"},
-  godzilla:{name:"Godzilla",emoji:"🦖",role:"TANK",cls:"Kaiju",hp:210,atk:15,rng:80,spd:0.55,ability:"atom"},
-  mothra:{name:"Mothra",emoji:"🦋",role:"BUFFER",cls:"Kaiju",hp:90,atk:7,rng:120,spd:1.0,ability:"staub"},
-  vampire:{name:"Vampir",emoji:"🧛",role:"DPS",cls:"Dunkel",hp:75,atk:12,rng:65,spd:1.15,ability:"saug"},
-  werewolf:{name:"Werwolf",emoji:"🐺",role:"DPS",cls:"Wald",hp:105,atk:15,rng:60,spd:1.2,ability:"heulen"},
-  hexe:{name:"Böse Hexe",emoji:"🧙‍♀️",role:"BUFFER",cls:"Magie",hp:65,atk:10,rng:110,spd:0.9,ability:"fluch2"},
-  fee:{name:"Gute Fee",emoji:"🧚",role:"HEALER",cls:"Magie",hp:60,atk:5,rng:120,spd:1.0,ability:"segen"},
-  ruebezahl:{name:"Rübezahl",emoji:"⛰️",role:"TANK",cls:"Wald",hp:145,atk:11,rng:55,spd:0.8,ability:"berg"},
-  waldschrat:{name:"Waldschrat",emoji:"🌿",role:"DPS",cls:"Wald",hp:95,atk:10,rng:65,spd:0.95,ability:"wurzeln"},
-  heinzelmaennchen:{name:"Heinzelmännchen",emoji:"🛠️",role:"BUFFER",cls:"Chaos",hp:55,atk:4,rng:100,spd:1.2,ability:"werk"},
-  wichtel:{name:"Wichtel",emoji:"🎩",role:"BUFFER",cls:"Chaos",hp:50,atk:5,rng:100,spd:1.25,ability:"glueck"},
-  sukubus:{name:"Sukubus",emoji:"💋",role:"BUFFER",cls:"Dunkel",hp:70,atk:8,rng:95,spd:1.1,ability:"bezirzen"},
-  lilith:{name:"Lilith",emoji:"👑",role:"DPS",cls:"Magie",hp:85,atk:16,rng:90,spd:1.05,ability:"seelenfeuer"},
-  hydra:{name:"Hydra",emoji:"🐉",role:"TANK",cls:"Mythos",hp:170,atk:12,rng:70,spd:0.75,ability:"koepfe"},
-  medusa:{name:"Medusa",emoji:"🐍",role:"DPS",cls:"Mythos",hp:80,atk:13,rng:105,spd:1.0,ability:"versteinern"},
-  dschinn:{name:"Dschinn",emoji:"🪔",role:"HEALER",cls:"Mythos",hp:70,atk:9,rng:115,spd:1.0,ability:"wunsch"},
-  goblin:{name:"Goblin",emoji:"👺",role:"DPS",cls:"Chaos",hp:50,atk:10,rng:60,spd:1.4,ability:"meuterei"},
-  klabautermann:{name:"Klabautermann",emoji:"⚓",role:"HEALER",cls:"Mythos",hp:75,atk:6,rng:110,spd:1.0,ability:"reparatur"},
-  kingkong:{name:"King Kong",emoji:"🦍",role:"TANK",cls:"Kaiju",hp:230,atk:17,rng:60,spd:0.72,ability:"protz"},
-  shingodzilla:{name:"Shin Godzilla",emoji:"☢️",role:"DPS",cls:"Kaiju",hp:195,atk:21,rng:90,spd:0.68,ability:"seelenfeuer"},
-  minilla:{name:"Minilla",emoji:"🦎",role:"BUFFER",cls:"Kaiju",hp:105,atk:8,rng:80,spd:1.05,ability:"heulen"},
-  queenmuto:{name:"Queen M.U.T.O.",emoji:"🕷️",role:"DPS",cls:"Kaiju",hp:120,atk:19,rng:75,spd:1.15,ability:"blutdurst"},
-  scarking:{name:"Scar King",emoji:"🦍",role:"DPS",cls:"Kaiju",hp:175,atk:20,rng:65,spd:1.0,ability:"meuterei"},
-  burninggodzilla:{name:"Burning Godzilla",emoji:"🌋",role:"DPS",cls:"Kaiju",hp:220,atk:24,rng:95,spd:0.6,ability:"seelenfeuer"},
-  methuselah:{name:"Methuselah",emoji:"⛰️",role:"TANK",cls:"Kaiju",hp:260,atk:12,rng:55,spd:0.5,ability:"berg"},
-  mechagodzilla:{name:"MechaGodzilla",emoji:"🤖",role:"DPS",cls:"Kaiju",hp:200,atk:23,rng:110,spd:0.8,ability:"werk"},
-  warbat:{name:"WarBat",emoji:"🦇",role:"DPS",cls:"Kaiju",hp:130,atk:18,rng:85,spd:1.25,ability:"blutdurst"},
-  bagan:{name:"Bagan",emoji:"🐉",role:"TANK",cls:"Kaiju",hp:215,atk:18,rng:70,spd:0.75,ability:"protz"},
-  kingghidorah:{name:"King Ghidorah",emoji:"🐲",role:"DPS",cls:"Kaiju",hp:205,atk:22,rng:120,spd:0.85,ability:"atom"},
-  shimo:{name:"Shimo",emoji:"❄️",role:"TANK",cls:"Kaiju",hp:240,atk:16,rng:80,spd:0.65,ability:"berg"},
-  godzillaearth:{name:"Godzilla Earth",emoji:"🌲",role:"TANK",cls:"Kaiju",hp:300,atk:20,rng:90,spd:0.42,ability:"protz"},
-  rodan:{name:"Rodan",emoji:"🦅",role:"DPS",cls:"Kaiju",hp:135,atk:17,rng:95,spd:1.3,ability:"staub"},
-  alp:{name:"Alp",emoji:"🎩",role:"DPS",cls:"Dunkel",hp:85,atk:16,rng:80,spd:1.2,ability:"bezirzen"},
-  blaubart:{name:"Blaubart",emoji:"🗝️",role:"DPS",cls:"Dunkel",hp:130,atk:18,rng:70,spd:0.85,ability:"raub"},
-  duden:{name:"Duden",emoji:"📕",role:"BUFFER",cls:"Magie",hp:110,atk:9,rng:115,spd:0.9,ability:"werk"},
-  nachtzerrer:{name:"Nachzehrer",emoji:"⚰️",role:"DPS",cls:"Dunkel",hp:125,atk:17,rng:60,spd:0.95,ability:"blutdurst"},
-  moosweiblein:{name:"Moosweiblein",emoji:"🌿",role:"HEALER",cls:"Wald",hp:95,atk:7,rng:110,spd:0.9,ability:"segen"},
-  aufhocker:{name:"Aufhocker",emoji:"🐕",role:"TANK",cls:"Dunkel",hp:165,atk:13,rng:55,spd:0.8,ability:"protz"},
-  fernrisswolf:{name:"Fernrisswolf",emoji:"🐺",role:"DPS",cls:"Wald",hp:140,atk:19,rng:65,spd:1.3,ability:"heulen"},
-  nixen:{name:"Nixen",emoji:"🧜‍♀️",role:"BUFFER",cls:"Magie",hp:100,atk:10,rng:110,spd:1.05,ability:"staub"},
-  kroetenmoench:{name:"Krötenmönch",emoji:"🐸",role:"TANK",cls:"Wald",hp:175,atk:12,rng:65,spd:0.7,ability:"berg"},
-  sensenmann:{name:"Sensenmann",emoji:"💀",role:"DPS",cls:"Dunkel",hp:105,atk:21,rng:95,spd:0.95,ability:"versteinern"}
+  rumpelstilzchen:{name:"Rumpelstilzchen",emoji:"🧵",role:"DPS",cls:"Chaos",cls2:"Magie",hp:60,atk:11,rng:90,spd:1.1,ability:"goldspinnen"},
+  hotzenplotz:{name:"Räuber Hotzenplotz",emoji:"🔫",role:"DPS",cls:"Chaos",cls2:"Stahl",hp:80,atk:13,rng:70,spd:1.0,ability:"pfeffer"},
+  chupacabra:{name:"Chupacabra",emoji:"🦎",role:"DPS",cls:"Dunkel",cls2:"Tier",hp:55,atk:14,rng:60,spd:1.35,ability:"schattenbiss"},
+  bigfoot:{name:"Bigfoot",emoji:"🦦",role:"TANK",cls:"Wald",cls2:"Tier",hp:160,atk:9,rng:55,spd:0.7,ability:"erdbeben"},
+  godzilla:{name:"Godzilla",emoji:"🦖",role:"TANK",cls:"Kaiju",cls2:"Element",hp:210,atk:15,rng:80,spd:0.55,ability:"atomatem"},
+  mothra:{name:"Mothra",emoji:"🦋",role:"BUFFER",cls:"Kaiju",cls2:"Tier",hp:90,atk:7,rng:120,spd:1.0,ability:"silksnare"},
+  vampire:{name:"Vampir",emoji:"🧛",role:"DPS",cls:"Dunkel",cls2:"Geist",hp:75,atk:12,rng:65,spd:1.15,ability:"gestaltwandel"},
+  werewolf:{name:"Werwolf",emoji:"🐺",role:"DPS",cls:"Wald",cls2:"Tier",hp:105,atk:15,rng:60,spd:1.2,ability:"mondraserei"},
+  hexe:{name:"Böse Hexe",emoji:"🧙‍♀️",role:"BUFFER",cls:"Magie",cls2:"Element",hp:65,atk:10,rng:110,spd:0.9,ability:"wetter"},
+  fee:{name:"Gute Fee",emoji:"🧚",role:"HEALER",cls:"Magie",cls2:"Wald",hp:60,atk:5,rng:120,spd:1.0,ability:"feensegen"},
+  ruebezahl:{name:"Rübezahl",emoji:"⛰️",role:"TANK",cls:"Wald",cls2:"Element",hp:145,atk:11,rng:55,spd:0.8,ability:"wetter"},
+  waldschrat:{name:"Waldschrat",emoji:"🌿",role:"DPS",cls:"Wald",cls2:"Geist",hp:95,atk:10,rng:65,spd:0.95,ability:"waldzauber"},
+  heinzelmaennchen:{name:"Heinzelmännchen",emoji:"🛠️",role:"BUFFER",cls:"Chaos",cls2:"Stahl",hp:55,atk:4,rng:100,spd:1.2,ability:"werkzeug"},
+  wichtel:{name:"Wichtel",emoji:"🎩",role:"BUFFER",cls:"Chaos",cls2:"Magie",hp:50,atk:5,rng:100,spd:1.25,ability:"glueck"},
+  sukubus:{name:"Sukubus",emoji:"💋",role:"BUFFER",cls:"Dunkel",cls2:"Geist",hp:70,atk:8,rng:95,spd:1.1,ability:"traumzauber"},
+  lilith:{name:"Lilith",emoji:"👑",role:"DPS",cls:"Dunkel",cls2:"Magie",hp:85,atk:16,rng:90,spd:1.05,ability:"nachtstuerm"},
+  hydra:{name:"Hydra",emoji:"🐉",role:"TANK",cls:"Mythos",cls2:"Tier",hp:170,atk:12,rng:70,spd:0.75,ability:"koepfe"},
+  medusa:{name:"Medusa",emoji:"🐍",role:"DPS",cls:"Mythos",cls2:"Dunkel",hp:80,atk:13,rng:105,spd:1.0,ability:"steinblick"},
+  dschinn:{name:"Dschinn",emoji:"🪔",role:"HEALER",cls:"Mythos",cls2:"Element",hp:70,atk:9,rng:115,spd:1.0,ability:"erscheinung"},
+  goblin:{name:"Goblin",emoji:"👺",role:"DPS",cls:"Chaos",cls2:"Tier",hp:50,atk:10,rng:60,spd:1.4,ability:"horden"},
+  klabautermann:{name:"Klabautermann",emoji:"⚓",role:"HEALER",cls:"Mythos",cls2:"Stahl",hp:75,atk:6,rng:110,spd:1.0,ability:"navigator"},
+  kingkong:{name:"King Kong",emoji:"🦍",role:"TANK",cls:"Kaiju",cls2:"Tier",hp:230,atk:17,rng:60,spd:0.72,ability:"erdbeben"},
+  shingodzilla:{name:"Shin Godzilla",emoji:"☢️",role:"DPS",cls:"Kaiju",cls2:"Element",hp:195,atk:21,rng:90,spd:0.68,ability:"multi_atom"},
+  minilla:{name:"Minilla",emoji:"🦎",role:"BUFFER",cls:"Kaiju",cls2:"Chaos",hp:105,atk:8,rng:80,spd:1.05,ability:"smoke"},
+  queenmuto:{name:"Queen M.U.T.O.",emoji:"🕷️",role:"DPS",cls:"Kaiju",cls2:"Geist",hp:120,atk:19,rng:75,spd:1.15,ability:"emp"},
+  scarking:{name:"Scar King",emoji:"🦍",role:"DPS",cls:"Kaiju",cls2:"Chaos",hp:175,atk:20,rng:65,spd:1.0,ability:"kristallbefehl"},
+  burninggodzilla:{name:"Burning Godzilla",emoji:"🌋",role:"DPS",cls:"Kaiju",cls2:"Element",hp:220,atk:24,rng:95,spd:0.6,ability:"schmelze"},
+  methuselah:{name:"Methuselah",emoji:"⛰️",role:"TANK",cls:"Kaiju",cls2:"Wald",hp:260,atk:12,rng:55,spd:0.5,ability:"tarnung"},
+  mechagodzilla:{name:"MechaGodzilla",emoji:"🤖",role:"DPS",cls:"Kaiju",cls2:"Stahl",hp:200,atk:23,rng:110,spd:0.8,ability:"raketen"},
+  warbat:{name:"WarBat",emoji:"🦇",role:"DPS",cls:"Kaiju",cls2:"Tier",hp:130,atk:18,rng:85,spd:1.25,ability:"venom"},
+  bagan:{name:"Bagan",emoji:"🐉",role:"TANK",cls:"Kaiju",cls2:"Element",hp:215,atk:18,rng:70,spd:0.75,ability:"plasmahorn"},
+  kingghidorah:{name:"King Ghidorah",emoji:"🐲",role:"DPS",cls:"Kaiju",cls2:"Element",hp:205,atk:22,rng:120,spd:0.85,ability:"gewitter"},
+  shimo:{name:"Shimo",emoji:"❄️",role:"TANK",cls:"Kaiju",cls2:"Element",hp:240,atk:16,rng:80,spd:0.65,ability:"frost"},
+  godzillaearth:{name:"Godzilla Earth",emoji:"🌲",role:"TANK",cls:"Kaiju",cls2:"Wald",hp:300,atk:20,rng:90,spd:0.42,ability:"multi_atom"},
+  rodan:{name:"Rodan",emoji:"🦅",role:"DPS",cls:"Kaiju",cls2:"Tier",hp:135,atk:17,rng:95,spd:1.3,ability:"schwingen"},
+  alp:{name:"Alp",emoji:"🎩",role:"DPS",cls:"Dunkel",cls2:"Geist",hp:85,atk:16,rng:80,spd:1.2,ability:"traumzauber"},
+  blaubart:{name:"Blaubart",emoji:"🗝️",role:"DPS",cls:"Dunkel",cls2:"Chaos",hp:130,atk:18,rng:70,spd:0.85,ability:"schatz"},
+  duden:{name:"Duden",emoji:"📕",role:"BUFFER",cls:"Magie",cls2:"Stahl",hp:110,atk:9,rng:115,spd:0.9,ability:"wortbindung"},
+  nachtzerrer:{name:"Nachzehrer",emoji:"⚰️",role:"DPS",cls:"Geist",cls2:"Dunkel",hp:125,atk:17,rng:60,spd:0.95,ability:"zehrfluch"},
+  moosweiblein:{name:"Moosweiblein",emoji:"🌿",role:"HEALER",cls:"Wald",cls2:"Magie",hp:95,atk:7,rng:110,spd:0.9,ability:"moosheilung"},
+  aufhocker:{name:"Aufhocker",emoji:"🐕",role:"TANK",cls:"Dunkel",cls2:"Tier",hp:165,atk:13,rng:55,spd:0.8,ability:"tarnung"},
+  fernrisswolf:{name:"Fernrisswolf",emoji:"🐺",role:"DPS",cls:"Wald",cls2:"Tier",hp:140,atk:19,rng:65,spd:1.3,ability:"rissbiss"},
+  nixen:{name:"Nixen",emoji:"🧜‍♀️",role:"BUFFER",cls:"Magie",cls2:"Element",hp:100,atk:10,rng:110,spd:1.05,ability:"wassersang"},
+  kroetenmoench:{name:"Krötenmönch",emoji:"🐸",role:"TANK",cls:"Wald",cls2:"Geist",hp:175,atk:12,rng:65,spd:0.7,ability:"kroetenfluch"},
+  sensenmann:{name:"Sensenmann",emoji:"💀",role:"DPS",cls:"Geist",cls2:"Dunkel",hp:105,atk:21,rng:95,spd:0.95,ability:"sensenstreich"}
 };
+const RACE_PACKS = {
+  Fee:[
+    ["lichtfee","Lichtfee","✨","HEALER","Magie","Element",70,8,120,1.05,"feensegen","fee"],
+    ["gartenelfe","Gartenelfe","🌸","BUFFER","Wald","Tier",75,7,110,1.15,"waldzauber","fee"],
+    ["mondelfe","Mondelfe","🌙","DPS","Magie","Dunkel",72,14,125,1.1,"traumzauber","fee"],
+    ["frostfee","Frostfee","❄️","DPS","Element","Wald",78,13,120,1,"frost","fee"],
+    ["feenritter","Feenritter","🗡️","TANK","Stahl","Magie",120,11,80,0.95,"werkzeug","fee"],
+    ["blumengeist","Blumengeist","🌼","HEALER","Wald","Magie",68,6,115,0.95,"moosheilung","fee"],
+    ["gluehwisp","Glühwisp","🪰","BUFFER","Chaos","Element",55,9,105,1.4,"glueck","fee"],
+    ["traumfee","Traumfee","💫","BUFFER","Magie","Geist",65,8,130,1.08,"traumzauber","fee"],
+    ["nebelhexe","Nebelhexe","🌫️","DPS","Dunkel","Magie",74,15,118,1.02,"wetter","fee"],
+    ["feenkoenigin","Feenkönigin","👑","BUFFER","Magie","Wald",105,12,125,1,"feensegen","fee"]
+  ],
+  Zwerg:[
+    ["zwergenkrieger","Zwergenkrieger","🪓","TANK","Stahl","Chaos",145,13,65,0.85,"werkzeug","dwarf"],
+    ["zwergenbaumeister","Baumeister","🔨","BUFFER","Stahl","Chaos",110,8,90,0.9,"werkzeug","dwarf"],
+    ["zwergenschmied","Schmied","🔥","BUFFER","Stahl","Element",115,10,95,0.88,"schatz","dwarf"],
+    ["zwergenheiler","Runenheiler","💚","HEALER","Stahl","Wald",90,6,105,0.9,"moosheilung","dwarf"],
+    ["zwergenjaeger","Zwergenjäger","🏹","DPS","Wald","Tier",95,15,125,1.05,"glueck","dwarf"],
+    ["zwergenwaechter","Wächter","🛡️","TANK","Stahl","Wald",160,11,65,0.78,"tarnung","dwarf"],
+    ["zwergenbarde","Zwergenbarde","🎵","BUFFER","Magie","Chaos",100,9,110,0.95,"horden","dwarf"],
+    ["zwergenalchemist","Alchemist","🧪","DPS","Magie","Element",88,14,120,0.92,"wetter","dwarf"],
+    ["zwergenminenhaupt","Minenhaupt","⛏️","TANK","Stahl","Dunkel",155,14,70,0.8,"erdbeben","dwarf"],
+    ["zwergenrunenmeister","Runenmeister","🔮","HEALER","Magie","Stahl",92,8,115,0.86,"navigator","dwarf"]
+  ],
+  Barbar:[
+    ["barbarenhaeuptling","Häuptling","🪓","TANK","Chaos","Tier",180,18,60,0.8,"mondraserei","barbar"],
+    ["barbarenrenner","Sturmrenner","🏃","DPS","Chaos","Tier",110,16,70,1.3,"schwingen","barbar"],
+    ["barbarenwerfer","Speerwerfer","🔱","DPS","Chaos","Stahl",105,17,120,1,"erdbeben","barbar"],
+    ["barbarenschamane","Schamane","🔥","HEALER","Wald","Magie",95,9,115,0.95,"wetter","barbar"],
+    ["barbarenbison","Bisonreiter","🦬","TANK","Wald","Tier",200,15,65,0.7,"erdbeben","barbar"],
+    ["barbarensaenger","Schlachtsänger","🎶","BUFFER","Chaos","Magie",110,10,105,0.95,"horden","barbar"],
+    ["barbarenfrost","Frostbarbar","🧊","DPS","Element","Wald",125,17,90,0.85,"frost","barbar"],
+    ["barbarenpirat","Pirat","⚔️","DPS","Chaos","Dunkel",120,18,75,1.05,"zehrfluch","barbar"],
+    ["barbarenwilde","Wildläuferin","🌪️","DPS","Chaos","Tier",100,19,80,1.25,"mondraserei","barbar"],
+    ["barbarenmoos","Mooskrieger","🌿","TANK","Wald","Stahl",175,13,65,0.78,"waldzauber","barbar"]
+  ],
+  Assassine:[
+    ["assassinenklinge","Klinge","🗡️","DPS","Dunkel","Stahl",85,22,70,1.35,"schattenbiss","assassin"],
+    ["assassinenschatten","Schatten","🌑","DPS","Dunkel","Geist",78,20,80,1.4,"traumzauber","assassin"],
+    ["assassinengift","Giftmischer","☠️","DPS","Wald","Dunkel",80,17,110,1.15,"venom","assassin"],
+    ["assassinenschuetze","Bogenschütze","🏹","DPS","Wald","Stahl",82,19,140,1.2,"glueck","assassin"],
+    ["assassinennebeltanz","Nebeltänzerin","🌫️","BUFFER","Dunkel","Chaos",75,12,105,1.4,"tarnung","assassin"],
+    ["assassinennachtlaeufer","Nachtläufer","🦇","DPS","Dunkel","Tier",88,18,85,1.5,"nachtstuerm","assassin"],
+    ["assassinenfalle","Fallensteller","🪤","BUFFER","Chaos","Stahl",90,11,100,1.1,"werkzeug","assassin"],
+    ["assassinenseide","Seidenmord","🕸️","DPS","Dunkel","Chaos",76,21,75,1.3,"silksnare","assassin"],
+    ["assassinenspiegel","Spiegelklinge","🪞","DPS","Magie","Stahl",84,20,90,1.25,"steinblick","assassin"],
+    ["assassinenmeister","Großmeister","🥷","DPS","Dunkel","Stahl",95,24,80,1.28,"koepfe","assassin"]
+  ],
+  Alien:[
+    ["aliengrau","Grauer","👽","DPS","Magie","Geist",85,16,120,1.1,"emp","grey"],
+    ["alienreptil","Reptiloid","🦖","TANK","Tier","Element",170,17,80,0.9,"plasmahorn","reptilian"],
+    ["alieninsekt","Insektoid","🪲","DPS","Tier","Chaos",100,18,90,1.25,"venom","insectoid"],
+    ["alienkristall","Kristallwesen","💎","TANK","Element","Stahl",190,15,85,0.75,"frost","crystal"],
+    ["alienpflanze","Pflanzenwesen","🌱","HEALER","Wald","Element",105,9,110,0.85,"waldzauber","plant"],
+    ["alienenergie","Energieform","⚡","DPS","Element","Magie",90,21,135,1.15,"gewitter","energy"],
+    ["alienkopffuss","Tentakelwesen","🐙","BUFFER","Magie","Geist",120,14,105,0.95,"wassersang","cephalopod"],
+    ["alienpilz","Sporenwesen","🍄","BUFFER","Wald","Dunkel",110,12,100,0.8,"kroetenfluch","spore"],
+    ["alienroid","Metallroid","🤖","TANK","Stahl","Element",210,16,95,0.7,"raketen","robot"],
+    ["alienleer","Leerwesen","🌌","DPS","Geist","Dunkel",95,23,125,1.05,"zehrfluch","void"]
+  ]
+};
+Object.keys(ROSTER).forEach(k => { ROSTER[k].race = ROSTER[k].cls === "Kaiju" ? "Kaiju" : "Folklore"; });
+Object.entries(RACE_PACKS).forEach(([race,list]) => {
+  list.forEach(e => {
+    ROSTER[e[0]] = {name:e[1],emoji:e[2],role:e[3],cls:e[4],cls2:e[5],hp:e[6],atk:e[7],rng:e[8],spd:e[9],ability:e[10],race:race,variant:e[11]};
+  });
+});
 const ALL_KEYS = Object.keys(ROSTER);
 const ROLE_META = {TANK:{col:"#6ea8fe",label:"Tank"},DPS:{col:"#e5484d",label:"DPS"},HEALER:{col:"#4ade80",label:"Heiler"},BUFFER:{col:"#a78bfa",label:"Puffer"}};
+const ROLES = Object.keys(ROLE_META);
 const CLASS_META = {
   Wald:{col:"#5fd88a",label:"Wald",desc:"+20 % HP"},
   Magie:{col:"#c084fc",label:"Magie",desc:"+15 % ATK"},
   Dunkel:{col:"#f472b6",label:"Dunkel",desc:"+10 % Lifesteal"},
   Chaos:{col:"#fbbf24",label:"Chaos",desc:"+20 % Tempo"},
   Kaiju:{col:"#fb923c",label:"Kaiju",desc:"+25 % HP"},
-  Mythos:{col:"#38bdf8",label:"Mythos",desc:"+10 % ATK, Startschild"}
+  Mythos:{col:"#38bdf8",label:"Mythos",desc:"+10 % ATK, Startschild"},
+  Geist:{col:"#a78bfa",label:"Geist",desc:"+8 % Lifesteal, Fluch"},
+  Tier:{col:"#84cc16",label:"Tier",desc:"+15 % Tempo, Kritik"},
+  Stahl:{col:"#94a3b8",label:"Stahl",desc:"+12 % Schild, Rüstung"},
+  Element:{col:"#38bdf8",label:"Element",desc:"+4 % Brand, Splash"}
+};
+const RACE_META = {
+  Folklore:{col:"#d9a066",label:"Folklore",desc:"+10 % ATK, +Lifesteal"},
+  Kaiju:{col:"#fb923c",label:"Kaiju",desc:"+20 % HP, +Splash"},
+  Fee:{col:"#f9a8d4",label:"Fee",desc:"+Heilung und Schilde"},
+  Zwerg:{col:"#fbbf24",label:"Zwerg",desc:"+Rüstung und Schilde"},
+  Barbar:{col:"#f87171",label:"Barbar",desc:"+HP und Wut"},
+  Assassine:{col:"#c084fc",label:"Assassine",desc:"+Kritik und Tempo"},
+  Alien:{col:"#67e8f9",label:"Alien",desc:"+Splash und Brand"}
+};
+const RACE_SYNERGY = {
+  Folklore:m=>{m.atk*=1.1;m.lifesteal+=0.06;},
+  Kaiju:m=>{m.hp*=1.2;m.splash+=0.1;},
+  Fee:m=>{m.heal+=0.04;m.shieldPct+=0.08;},
+  Zwerg:m=>{m.dr+=0.1;m.shieldPct+=0.08;},
+  Barbar:m=>{m.hp*=1.15;m.rage+=0.2;},
+  Assassine:m=>{m.crit+=0.15;m.spd*=1.12;},
+  Alien:m=>{m.splash+=0.12;m.burn+=0.025;}
 };
 const ABILITY_DESC = {
-  fluch:"Fluch: schwächt Treffer",
-  raub:"Raub: Lifesteal + Gold bei Kill",
-  blutdurst:"Blutdurst: mehr ATK bei niedriger HP",
-  protz:"Protz: Tank, zieht Angriffe an",
-  atom:"Atom: Splash-Schaden",
-  staub:"Staub: verlangsamt Gegner",
-  saug:"Saug: 30 % Lifesteal",
-  heulen:"Heulen: stärkt das Team",
-  fluch2:"Hexenfluch: Senkt Gegner-Tempo",
-  segen:"Segen: heilt das schwächste Wesen",
-  berg:"Berg: starke Schadensreduktion",
-  wurzeln:"Wurzeln: Gegner kann nicht laufen",
-  werk:"Werk: gibt Schilde",
+  goldspinnen:"Stroh zu Gold: Bonus-Gold und kleine Schilde",
+  pfeffer:"Pfefferschuss: schwächt und verlangsamt",
+  schattenbiss:"Schattenbiss: Lifesteal und Schwächung",
+  erdbeben:"Erdbeben: Splash-Schaden und Betäubung",
+  atomatem:"Atomatem: Splash-Schaden und Brand",
+  silksnare:"Seidenschlinge: verlangsamt und schützt",
+  gestaltwandel:"Gestaltwandel: Kritik und Lifesteal",
+  mondraserei:"Mondraserei: Wut und Kritik bei niedriger HP",
+  wetter:"Wetterzauber: verlangsamt und splasht",
+  feensegen:"Feensegen: heilt und schützt das Team",
+  waldzauber:"Waldzauber: Wurzeln und leichte Heilung",
+  werkzeug:"Werkzeug: Schilde und kritische Treffer",
   glueck:"Glück: kritische Treffer",
-  bezirzen:"Bezirzen: verirrt Gegner",
-  seelenfeuer:"Seelenfeuer: Brennen",
-  koepfe:"Köpfe: einmaliges Wiedererstehen",
-  versteinern:"Versteinern: betäubt Gegner",
-  wunsch:"Wunsch: kräftige Heilung",
-  reparatur:"Reparatur: Schilde fürs Team",
-  meuterei:"Meuterei: steigert ATK bei Kill"
+  traumzauber:"Traumzauber: verirrt und schwächt",
+  nachtstuerm:"Nachtsturm: Brand und Verwirrung",
+  koepfe:"Köpfe: wächst nach und überlebt einmal",
+  steinblick:"Steinblick: betäubt und schwächt",
+  erscheinung:"Erscheinung: schnell, verirrt, leichtes Schild",
+  horden:"Horden: Tempo und ATK nach Kill",
+  navigator:"Navigator: heilt und gibt Schilde",
+  multi_atom:"Multi-Atom: starke Splash-Bestrahlung",
+  smoke:"Rauchringe: verlangsamt und schützt",
+  emp:"EMP-Feld: betäubt und splasht",
+  kristallbefehl:"Kristallbefehl: stärkt und verirrt",
+  schmelze:"Schmelze: hoher Brand und Wut",
+  tarnung:"Tarnung: Rüstung und überraschender Krit",
+  raketen:"Raketenschwarm: Splash und Kritik",
+  venom:"Venom: Gift, Lifesteal und Schwächung",
+  plasmahorn:"Plasmahörner: Brand, Splash und Rüstung",
+  gewitter:"Gewittersturm: Betäubung und Splash",
+  frost:"Frost: verlangsamt, wurzelt und panzert",
+  schwingen:"Schwingenstoß: hohes Tempo und Verlangsamung",
+  schatz:"Blutiger Schlüssel: Gold und Kritik",
+  wortbindung:"Wortbindung: betäubt und schwächt",
+  zehrfluch:"Zehrfluch: Lifesteal und Brand",
+  moosheilung:"Moosheilung: starke Heilung und Schilde",
+  rissbiss:"Rissbiss: Wut und Kritik",
+  wassersang:"Wassersang: verirrt und verlangsamt",
+  kroetenfluch:"Krötenfluch: Rüstung und Schwächung",
+  sensenstreich:"Sensenstreich: Kritik und ATK nach Kill"
 };
 const INNATE = {
-  fluch:{atk:1.2,curse:0.2},
-  raub:{hp:1.1,lifesteal:0.15,gold:1},
-  blutdurst:{atk:1.15,rage:0.5},
-  protz:{hp:1.25,dr:0.2,taunt:true},
-  atom:{atk:1.15,splash:0.35},
-  staub:{spd:1.2,slow:0.3},
-  saug:{atk:1.1,lifesteal:0.3},
-  heulen:{howl:0.2},
-  fluch2:{spd:1.15,curse:0.15},
-  segen:{heal:0.06},
-  berg:{hp:1.3,dr:0.25},
-  wurzeln:{atk:1.1,root:0.8},
-  werk:{spd:1.15,shieldPct:0.08},
-  glueck:{crit:0.2},
-  bezirzen:{charm:0.25},
-  seelenfeuer:{burn:0.06},
-  koepfe:{hp:1.15,revive:1},
-  versteinern:{atk:1.1,stun:0.35},
-  wunsch:{heal:0.09},
-  reparatur:{shieldPct:0.1},
-  meuterei:{atk:1.2,lifesteal:0.1,killAtk:0.12}
+  goldspinnen:{atk:1.05,gold:2,shieldPct:0.06},
+  pfeffer:{atk:1.15,curse:0.2,slow:0.25},
+  schattenbiss:{atk:1.12,lifesteal:0.22,curse:0.1},
+  erdbeben:{atk:1.18,splash:0.3,stun:0.15},
+  atomatem:{atk:1.18,splash:0.35,burn:0.025},
+  silksnare:{atk:1.02,spd:1.15,slow:0.35,shieldPct:0.08},
+  gestaltwandel:{atk:1.12,crit:0.22,lifesteal:0.12},
+  mondraserei:{atk:1.22,rage:0.5,crit:0.12},
+  wetter:{atk:1.15,slow:0.25,splash:0.2},
+  feensegen:{heal:0.08,shieldPct:0.08},
+  waldzauber:{atk:1.1,root:0.45,heal:0.03},
+  werkzeug:{spd:1.15,shieldPct:0.12,crit:0.12},
+  glueck:{crit:0.25},
+  traumzauber:{charm:0.35,curse:0.15},
+  nachtstuerm:{atk:1.18,burn:0.04,charm:0.15},
+  koepfe:{hp:1.2,revive:1,lifesteal:0.08},
+  steinblick:{atk:1.12,stun:0.45,curse:0.12},
+  erscheinung:{spd:1.25,charm:0.2,shieldPct:0.06},
+  horden:{atk:1.2,killAtk:0.15,spd:1.15},
+  navigator:{heal:0.07,shieldPct:0.12},
+  multi_atom:{atk:1.22,splash:0.4,burn:0.04},
+  smoke:{spd:1.2,slow:0.3,shieldPct:0.08},
+  emp:{atk:1.15,stun:0.25,splash:0.25},
+  kristallbefehl:{howl:0.25,charm:0.2},
+  schmelze:{atk:1.3,burn:0.06,rage:0.4},
+  tarnung:{hp:1.2,dr:0.18,crit:0.15},
+  raketen:{atk:1.25,splash:0.4,crit:0.15},
+  venom:{atk:1.15,lifesteal:0.15,curse:0.18},
+  plasmahorn:{atk:1.2,splash:0.3,burn:0.04,dr:0.12},
+  gewitter:{atk:1.25,stun:0.3,splash:0.3},
+  frost:{hp:1.25,dr:0.2,slow:0.4,root:0.25},
+  schwingen:{spd:1.35,slow:0.25},
+  schatz:{atk:1.2,gold:2,crit:0.18},
+  wortbindung:{atk:1.1,stun:0.3,curse:0.2},
+  zehrfluch:{atk:1.18,lifesteal:0.25,burn:0.03},
+  moosheilung:{heal:0.09,shieldPct:0.1},
+  rissbiss:{atk:1.25,rage:0.4,crit:0.18},
+  wassersang:{charm:0.3,slow:0.35,shieldPct:0.06},
+  kroetenfluch:{hp:1.2,dr:0.15,curse:0.25},
+  sensenstreich:{atk:1.28,crit:0.3,killAtk:0.15}
 };
+function S(name,range,cd,o){ return Object.assign({name:name,range:range,cd:cd,dmg:0,color:"#e6edf5"},o||{}); }
+const SPELLS = {
+  schlag:S("Schlag",1.5,0.8,{dmg:0.55}),
+  goldspinnen:S("Goldspinnen",4,2.6,{shield:0.12,gold:2,color:"#f2c14e"}),
+  pfeffer:S("Pfefferschuss",4.5,2.1,{dmg:0.8,weaken:0.25,slow:0.3,color:"#fbbf24"}),
+  schattenbiss:S("Schattenbiss",3.2,2,{dmg:1.15,weaken:0.15,color:"#a78bfa"}),
+  erdbeben:S("Erdstoß",3.5,2.4,{dmg:1,splash:0.5,stun:0.25,color:"#d9a066"}),
+  atomatem:S("Atomatem",5.5,2.4,{dmg:1.35,splash:0.45,burn:0.055,color:"#62d9ff"}),
+  silksnare:S("Seidenschlinge",4.2,2.2,{dmg:0.7,slow:0.45,root:0.5,shield:0.08,color:"#f9a8d4"}),
+  gestaltwandel:S("Gestaltwandel",3,2.5,{dmg:1,buff:0.25,color:"#f472b6"}),
+  mondraserei:S("Mondraserei",3.2,2.2,{dmg:1.2,rage:0.4,color:"#c4b5fd"}),
+  wetter:S("Wetterzauber",5,2.6,{dmg:0.9,splash:0.3,slow:0.3,color:"#7dd3fc"}),
+  feensegen:S("Feensegen",3,2.2,{heal:0.12,shield:0.1,color:"#86efac"}),
+  waldzauber:S("Waldzauber",4.5,2.4,{dmg:0.6,root:0.55,heal:0.05,color:"#4ade80"}),
+  werkzeug:S("Werkzeug",3.5,2.2,{shield:0.12,buff:0.2,color:"#fcd34d"}),
+  glueck:S("Glück",4,2,{dmg:0.9,buff:0.3,color:"#fde68a"}),
+  traumzauber:S("Traumzauber",5,2.5,{dmg:0.7,charm:0.4,weaken:0.15,color:"#d8b4fe"}),
+  nachtstuerm:S("Nachtsturm",5,2.3,{dmg:1.1,burn:0.05,charm:0.2,color:"#818cf8"}),
+  koepfe:S("Köpfe",2.5,2.6,{dmg:1.1,revive:true,color:"#a3e635"}),
+  steinblick:S("Steinblick",5.5,2.6,{dmg:0.8,stun:0.5,weaken:0.2,color:"#a7f3d0"}),
+  erscheinung:S("Erscheinung",4.5,2,{dmg:0.8,charm:0.25,shield:0.08,color:"#67e8f9"}),
+  horden:S("Hordenruf",3.5,2.3,{dmg:0.9,buff:0.25,color:"#fca5a5"}),
+  navigator:S("Navigator",3,2.1,{heal:0.1,shield:0.14,color:"#7dd3fc"}),
+  multi_atom:S("Multi-Atom",6,2.8,{dmg:1.45,splash:0.55,burn:0.06,color:"#a78bfa"}),
+  smoke:S("Rauchringe",4.5,2.2,{dmg:0.6,slow:0.35,shield:0.1,color:"#bbf7d0"}),
+  emp:S("EMP-Feld",5.5,2.6,{dmg:1,splash:0.35,stun:0.35,color:"#22d3ee"}),
+  kristallbefehl:S("Kristallbefehl",4.5,2.4,{dmg:0.9,charm:0.3,buff:0.2,color:"#67e8f9"}),
+  schmelze:S("Schmelze",5.5,2.7,{dmg:1.4,splash:0.35,burn:0.07,color:"#fb923c"}),
+  tarnung:S("Tarnung",3,2.3,{dmg:0.9,buff:0.25,shield:0.1,color:"#94a3b8"}),
+  raketen:S("Raketen",6,2.5,{dmg:1.25,splash:0.45,color:"#fca5a5"}),
+  venom:S("Venom",4.5,2.2,{dmg:1,weaken:0.25,burn:0.035,color:"#a3e635"}),
+  plasmahorn:S("Plasmahorn",3.5,2.3,{dmg:1.2,splash:0.35,burn:0.05,color:"#fb7185"}),
+  gewitter:S("Gewittersturm",6,2.8,{dmg:1.25,splash:0.4,stun:0.3,color:"#93c5fd"}),
+  frost:S("Frostatem",5.5,2.6,{dmg:1.05,slow:0.5,root:0.35,color:"#bae6fd"}),
+  schwingen:S("Schwingenstoß",5,2,{dmg:0.9,slow:0.35,color:"#fdba74"}),
+  schatz:S("Blutiger Schlüssel",4,2.4,{dmg:0.9,gold:2,color:"#fcd34d"}),
+  wortbindung:S("Wortbindung",5,2.5,{dmg:0.8,stun:0.35,weaken:0.25,color:"#fda4af"}),
+  zehrfluch:S("Zehrfluch",4.5,2.3,{dmg:1.1,burn:0.05,weaken:0.2,color:"#f87171"}),
+  moosheilung:S("Moosheilung",3,2.1,{heal:0.14,shield:0.1,color:"#86efac"}),
+  rissbiss:S("Rissbiss",3.2,2.1,{dmg:1.3,rage:0.35,color:"#c4b5fd"}),
+  wassersang:S("Wassersang",5,2.6,{dmg:0.7,charm:0.35,slow:0.35,color:"#7dd3fc"}),
+  kroetenfluch:S("Krötenfluch",4.5,2.5,{dmg:0.8,weaken:0.3,shield:0.1,color:"#a3e635"}),
+  sensenstreich:S("Sensenstreich",5,2.3,{dmg:1.4,buff:0.2,color:"#c7d2fe"}),
+  ansturm:S("Ansturm & Spott",3.8,2.2,{dmg:1.25,dash:true,stun:0.3,taunt:true,color:"#fbbf24"}),
+  atomstrahl:S("Atomstrahl",6.5,2.2,{dmg:1.6,splash:0.5,burn:0.06,color:"#62d9ff"}),
+  schmelzstrahl:S("Schmelzstrahl",7,2.6,{dmg:1.75,splash:0.45,burn:0.09,color:"#ff7a2f"}),
+  raketensalve:S("Raketensalve",7,2.5,{dmg:1.45,splash:0.55,color:"#f87171"}),
+  steinbild:S("Steinbild",6,2.5,{dmg:0.9,stun:0.55,weaken:0.25,color:"#a7f3d0"}),
+  schattenstoss:S("Schattenstoß",4,1.9,{dmg:1.35,weaken:0.2,color:"#a78bfa"}),
+  mondbruch:S("Mondbruch",5.5,2.4,{dmg:1.3,rage:0.4,splash:0.25,color:"#ddd6fe"})
+};
+const ABILITY_SPELL = {
+  goldspinnen:"goldspinnen",pfeffer:"pfeffer",schattenbiss:"schattenstoss",erdbeben:"erdbeben",atomatem:"atomatem",silksnare:"silksnare",
+  gestaltwandel:"gestaltwandel",mondraserei:"mondbruch",wetter:"wetter",feensegen:"feensegen",waldzauber:"waldzauber",werkzeug:"werkzeug",
+  glueck:"glueck",traumzauber:"traumzauber",nachtstuerm:"nachtstuerm",koepfe:"koepfe",steinblick:"steinbild",erscheinung:"erscheinung",
+  horden:"horden",navigator:"navigator",multi_atom:"multi_atom",smoke:"smoke",emp:"emp",kristallbefehl:"kristallbefehl",
+  schmelze:"schmelzstrahl",tarnung:"tarnung",raketen:"raketensalve",venom:"venom",plasmahorn:"plasmahorn",gewitter:"gewitter",
+  frost:"frost",schwingen:"schwingen",schatz:"schatz",wortbindung:"wortbindung",zehrfluch:"zehrfluch",moosheilung:"moosheilung",
+  rissbiss:"rissbiss",wassersang:"wassersang",kroetenfluch:"kroetenfluch",sensenstreich:"sensenstreich"
+};
+const SPELL_OVERRIDE = {
+  godzilla:"atomstrahl",burninggodzilla:"schmelzstrahl",shingodzilla:"multi_atom",godzillaearth:"multi_atom",mechagodzilla:"raketensalve",
+  kingkong:"ansturm",scarking:"ansturm",medusa:"steinbild",fee:"feensegen",zwergenheiler:"moosheilung",alienpflanze:"waldzauber",
+  assassinenklinge:"schattenstoss",barbarenhaeuptling:"mondbruch",alienenergie:"gewitter",alienkristall:"frost"
+};
+Object.keys(ROSTER).forEach(k => {
+  const u = ROSTER[k];
+  u.spell = SPELL_OVERRIDE[k] || ABILITY_SPELL[u.ability] || (SPELLS[u.ability] ? u.ability : "schlag");
+  u.healRange = u.role === "HEALER" ? 3 : 2;
+});
 const DEFAULT_MODS = {hp:1,atk:1,spd:1,dr:0,lifesteal:0,crit:0,splash:0,curse:0,slow:0,root:0,stun:0,charm:0,burn:0,heal:0,howl:0,shieldPct:0,rage:0,gold:0,killAtk:0,taunt:false,revive:0};
 const SYNERGY = {
   Wald:m=>{m.hp*=1.2;},
@@ -225,12 +473,17 @@ const SYNERGY = {
   Dunkel:m=>{m.lifesteal+=0.1;},
   Chaos:m=>{m.spd*=1.2;},
   Kaiju:m=>{m.hp*=1.25;},
-  Mythos:m=>{m.atk*=1.1;m.shieldPct+=0.1;}
+  Mythos:m=>{m.atk*=1.1;m.shieldPct+=0.1;},
+  Geist:m=>{m.lifesteal+=0.08;m.curse+=0.1;},
+  Tier:m=>{m.spd*=1.15;m.crit+=0.1;},
+  Stahl:m=>{m.shieldPct+=0.12;m.dr+=0.08;},
+  Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
-const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"prep",battle:null,uid:0,effects:[]};
+const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],teamSize:4};
 const GRID = {cols:8,rows:6};
 const TILE = 1.35;
 let draftTimer = null;
+let draftReturnPhase = "prep";
 const sceneEl = document.getElementById("scene");
 let renderer;
 try{
@@ -290,8 +543,9 @@ function shuffle(arr){
   return a;
 }
 function resize(){
-  const w = sceneEl.clientWidth || 720;
-  const h = sceneEl.clientHeight || 460;
+  const full = document.body.classList.contains("battle-mode");
+  const w = full ? window.innerWidth : (sceneEl.clientWidth || 720);
+  const h = full ? window.innerHeight : (sceneEl.clientHeight || 460);
   renderer.setSize(w,h,false);
   const aspect = w/h;
   const view = 11.6;
@@ -300,6 +554,39 @@ function resize(){
   camera.top = view/2;
   camera.bottom = -view/2;
   camera.updateProjectionMatrix();
+}
+function setBattleMode(on){
+  document.body.classList.toggle("battle-mode",on);
+  requestAnimationFrame(resize);
+}
+function openInfo(title,text,extraHtml){
+  document.getElementById("infoTitle").textContent = title;
+  document.getElementById("infoText").innerHTML = text;
+  document.getElementById("infoExtra").innerHTML = extraHtml || "";
+  const sel = document.getElementById("setTeamSize");
+  if(sel){
+    sel.value = String(G.teamSize);
+    sel.onchange = () => { G.teamSize = Number(sel.value); showToast("Teamgröße: "+G.teamSize+" gegen "+G.teamSize); };
+  }
+  document.getElementById("infoOverlay").classList.add("show");
+}
+function closeInfo(){ document.getElementById("infoOverlay").classList.remove("show"); }
+function beginRun(){
+  document.getElementById("menuOverlay").classList.remove("show");
+  closeInfo();
+  G.team = [];
+  G.wave = 1;
+  G.gold = 20;
+  G.mana = 30;
+  G.battle = null;
+  G.phase = "prep";
+  setBattleMode(true);
+  syncUnits();
+  updateHud();
+  updateTeamList();
+  updateSynergies();
+  updateButtons();
+  openDraft();
 }
 function addGroundRect(x,z,w,d,color,opacity,y){
   const mesh = new THREE.Mesh(
@@ -444,6 +731,22 @@ const MONSTER_STYLE = {
   kroetenmoench:{type:"folk",variant:"kroetenmoench",body:0x4b5a35,trim:0x9caa70,plate:0x33291e,glow:0xd9e86a,glowIntensity:0.45,scale:0.98,hpY:1.48,radius:0.46},
   sensenmann:{type:"reaper",body:0x211f2a,trim:0xd9dbe2,plate:0x0e0d14,glow:0x8fb5ff,glowIntensity:0.8,scale:1.06,hpY:1.6,radius:0.48}
 };
+const RACE_STYLE = {
+  Fee:{type:"folk",body:0x8fd3ff,trim:0xffe4f2,plate:0xffb6e6,glow:0xf9a8d4,glowIntensity:0.85,scale:0.78,hpY:1.22,radius:0.35},
+  Zwerg:{type:"folk",body:0x8b5a34,trim:0xd9b27c,plate:0x5d3b27,glow:0xfbbf24,glowIntensity:0.3,scale:0.82,hpY:1.18,radius:0.38},
+  Barbar:{type:"folk",body:0x8c4a36,trim:0xd9a878,plate:0x5d3025,glow:0xf87171,glowIntensity:0.3,scale:1.18,hpY:1.9,radius:0.56},
+  Assassine:{type:"folk",body:0x2f2638,trim:0x9b8ba8,plate:0x17121e,glow:0xc084fc,glowIntensity:0.65,scale:0.88,hpY:1.3,radius:0.36},
+  Alien:{type:"alien",body:0x397c86,trim:0xb7f3ff,plate:0x1f4f6b,glow:0x67e8f9,glowIntensity:0.95,scale:0.98,hpY:1.5,radius:0.44}
+};
+Object.keys(ROSTER).forEach(k => {
+  if(MONSTER_STYLE[k]) return;
+  const u = ROSTER[k];
+  const p = RACE_STYLE[u.race] || RACE_STYLE.Folklore || RACE_STYLE.Alien;
+  MONSTER_STYLE[k] = {
+    type:p.type,variant:u.variant||u.race.toLowerCase(),body:p.body,trim:p.trim,plate:p.plate,glow:p.glow,
+    glowIntensity:p.glowIntensity,scale:p.scale,hpY:p.hpY,radius:p.radius
+  };
+});
 function monsterMat(color,glow,intensity,metal,rough){
   const opts={color:color,roughness:rough===undefined?0.72:rough,metalness:metal===undefined?0.06:metal};
   if(glow!==undefined && intensity) { opts.emissive=glow; opts.emissiveIntensity=intensity; }
@@ -699,10 +1002,11 @@ function buildFolk(model,s,bodyMat,variant){
   const dark=monsterMat(0x13151b,undefined,0,0.05,0.9);
   const eyeGlow = variant==="vampire"||variant==="sukubus"||variant==="alp"||variant==="nachtzerrer" ? 0xff3659 : s.glow;
   const eye=monsterMat(eyeGlow,s.glow,1.8,0.1,0.32);
-  const small = variant==="rumpel"||variant==="heinzel"||variant==="wichtel"||variant==="alp"||variant==="moosweib";
-  const bodyH = small?0.4:0.6;
-  const bodyY = small?0.55:0.68;
-  const headY = small?1.02:1.18;
+  const small = variant==="rumpel"||variant==="heinzel"||variant==="wichtel"||variant==="alp"||variant==="moosweib"||variant==="dwarf"||variant==="assassin";
+  const big = variant==="barbar";
+  const bodyH = big?0.72:(small?0.4:0.6);
+  const bodyY = big?0.76:(small?0.55:0.68);
+  const headY = big?1.32:(small?1.02:1.18);
   part(model,new THREE.CapsuleGeometry(small?0.22:0.28,bodyH,5,10),bodyMat,0,bodyY,0,0,0,0,1,1,0.86);
   part(model,new THREE.SphereGeometry(small?0.21:0.25,14,10),skin,0,headY,0.04,0,0,0,1,1,0.95);
   addEyes(model,eye,headY+0.02,0.25,small?0.085:0.1,0.035);
@@ -821,6 +1125,29 @@ function buildFolk(model,s,bodyMat,variant){
     });
     part(model,new THREE.CylinderGeometry(0.035,0.045,1.0,8),plate,0.44,0.72,0);
     part(model,new THREE.SphereGeometry(0.08,8,6),trim,0.44,1.24,0);
+  } else if(variant==="dwarf"){
+    part(model,new THREE.ConeGeometry(0.3,0.72,10),trim,0,headY-0.18,0.18,Math.PI,0,0);
+    part(model,new THREE.CylinderGeometry(0.36,0.36,0.05,14),plate,0,headY+0.18,0);
+    part(model,new THREE.ConeGeometry(0.31,0.34,12),plate,0,headY+0.36,0);
+    part(model,new THREE.BoxGeometry(0.16,0.13,0.12),skin,0,headY+0.04,0.26);
+    part(model,new THREE.CylinderGeometry(0.045,0.055,0.82,8),plate,0.42,0.62,0.08,0,0,-0.15);
+    part(model,new THREE.BoxGeometry(0.28,0.14,0.1),trim,0.42,0.86,0.08,0,0,-0.15);
+  } else if(variant==="barbar"){
+    [-1,1].forEach(side => {
+      part(model,new THREE.ConeGeometry(0.13,0.42,7),trim,side*0.2,headY+0.24,0,0,0,side*0.35);
+      part(model,new THREE.SphereGeometry(0.18,10,8),plate,side*0.34,bodyY+0.24,-0.05);
+    });
+    part(model,new THREE.ConeGeometry(0.26,0.66,10),trim,0,headY-0.24,0.2,Math.PI,0,0);
+    part(model,new THREE.CylinderGeometry(0.035,0.045,1.2,8),dark,0.48,0.9,0.06,0,0,-0.12);
+    part(model,new THREE.BoxGeometry(0.36,0.18,0.1),trim,0.46,1.22,0.06,0,0,-0.12);
+  } else if(variant==="assassin"){
+    part(model,new THREE.ConeGeometry(0.34,0.78,10),plate,0,headY-0.06,-0.05);
+    part(model,new THREE.BoxGeometry(0.32,0.1,0.16),dark,0,headY+0.06,0.24);
+    addEyes(model,eye,headY+0.02,0.3,0.09,0.032);
+    [-1,1].forEach(side => {
+      part(model,new THREE.CylinderGeometry(0.022,0.025,0.52,6),trim,side*0.38,0.62,0.08,0,0,side*Math.PI/2);
+      part(model,new THREE.ConeGeometry(0.035,0.16,6),trim,side*0.6,0.62,0.08,0,0,side*Math.PI/2);
+    });
   }
 }
 function buildBeast(model,s,bodyMat,variant){
@@ -918,6 +1245,72 @@ function buildReaper(model,s,bodyMat){
   part(model,new THREE.CylinderGeometry(0.025,0.03,1.75,8),bone,0.46,0.86,0.1,0,0,-0.12);
   part(model,new THREE.TorusGeometry(0.34,0.035,6,18,Math.PI*1.15),bone,0.52,1.5,0.1,0,0,-1.1,1,0.55,1);
 }
+function buildAlien(model,s,bodyMat,variant){
+  const trim=monsterMat(s.trim,s.glow,s.glowIntensity*0.4,0.18,0.5);
+  const plate=monsterMat(s.plate,s.glow,s.glowIntensity*0.35,0.12,0.62);
+  const eye=monsterMat(s.glow,s.glow,2.4,0.1,0.3);
+  const dark=monsterMat(0x0d1018,undefined,0,0.04,0.9);
+  const bigHead = variant==="grey"||variant==="cephalopod";
+  const headY = bigHead?1.3:1.18;
+  part(model,new THREE.CapsuleGeometry(0.26,0.56,6,12),bodyMat,0,0.7,0);
+  part(model,new THREE.SphereGeometry(bigHead?0.36:0.27,16,12),bodyMat,0,headY,0.05,0,0,0,bigHead?1.1:1,bigHead?1.05:1,bigHead?1.15:0.9);
+  addEyes(model,eye,headY,bigHead?0.34:0.27,bigHead?0.15:0.1,bigHead?0.06:0.04);
+  [-1,1].forEach(side => {
+    part(model,new THREE.CapsuleGeometry(0.05,0.34,4,8),bodyMat,side*0.34,0.72,0,0,0,side*0.25);
+    part(model,new THREE.CylinderGeometry(0.06,0.07,0.4,8),plate,side*0.13,0.2,0);
+  });
+  if(variant==="grey"){
+    [-1,1].forEach(side => part(model,new THREE.SphereGeometry(0.11,10,8),dark,side*0.15,headY+0.02,0.33,0,0,0,1.4,0.75,0.5));
+    part(model,new THREE.SphereGeometry(0.045,8,6),eye,0,headY+0.26,0.28);
+    part(model,new THREE.CapsuleGeometry(0.035,0.28,4,8),plate,0,0.5,0.22,Math.PI/2,0,0);
+  } else if(variant==="reptilian"){
+    part(model,new THREE.SphereGeometry(0.2,12,10),bodyMat,0,headY-0.06,0.3,0,0,0,1,0.7,1.4);
+    addTeeth(model,trim,headY-0.16,0.48,6,true);
+    addPlates(model,plate,9,-0.15,-0.9,1.1,0.8,0.16);
+    addTail(model,bodyMat,0.55,1.2,0.16,5,0.14);
+  } else if(variant==="insectoid"){
+    [-1,1].forEach(side => {
+      part(model,new THREE.CylinderGeometry(0.018,0.024,0.52,6),trim,side*0.13,headY+0.32,0.02,0,0,side*0.45);
+      part(model,new THREE.SphereGeometry(0.05,8,6),eye,side*0.27,headY+0.54,0.02);
+      part(model,new THREE.ConeGeometry(0.04,0.2,6),plate,side*0.14,headY-0.08,0.3,Math.PI,0,side*0.35);
+      part(model,new THREE.CapsuleGeometry(0.035,0.3,4,8),bodyMat,side*0.44,0.65,0.05,0,0,side*0.7);
+    });
+  } else if(variant==="crystal"){
+    [-1,0,1].forEach(x => {
+      part(model,new THREE.ConeGeometry(0.14,0.7,5),plate,x*0.22,1.0,-0.14,0,0,x*0.18);
+      part(model,new THREE.ConeGeometry(0.09,0.45,5),trim,x*0.22,headY+0.36,0,0,0,x*0.24);
+    });
+  } else if(variant==="plant"){
+    [-1,1].forEach(side => {
+      part(model,new THREE.SphereGeometry(0.2,12,8),plate,side*0.28,0.9,-0.05,0,0,side*0.5,1.5,0.3,0.7);
+      part(model,new THREE.CylinderGeometry(0.03,0.04,0.6,6),trim,side*0.2,0.4,0.02,0,0,side*0.2);
+    });
+    part(model,new THREE.SphereGeometry(0.16,10,8),plate,0,headY+0.3,0);
+  } else if(variant==="energy"){
+    part(model,new THREE.TorusGeometry(0.5,0.05,8,24),trim,0,0.8,0,Math.PI/2,0,0);
+    part(model,new THREE.TorusGeometry(0.38,0.045,8,24),plate,0,0.8,0,0,0,0);
+    part(model,new THREE.SphereGeometry(0.16,12,10),eye,0,0.8,0);
+  } else if(variant==="cephalopod"){
+    for(let i=0;i<6;i++){
+      const a=i/6*Math.PI*2;
+      part(model,new THREE.CapsuleGeometry(0.045,0.5,4,8),plate,Math.cos(a)*0.28,0.36,Math.sin(a)*0.28,0.4,0,a);
+    }
+    part(model,new THREE.SphereGeometry(0.14,10,8),eye,0,headY+0.3,0.22);
+  } else if(variant==="spore"){
+    part(model,new THREE.SphereGeometry(0.42,16,10,0,Math.PI*2,0,Math.PI/2),plate,0,1.42,0,0,0,0,1,0.8,1);
+    [-1,1].forEach(side => part(model,new THREE.SphereGeometry(0.1,10,8),trim,side*0.17,1.15,0.14));
+  } else if(variant==="robot"){
+    part(model,new THREE.BoxGeometry(0.5,0.42,0.34),plate,0,0.78,0);
+    part(model,new THREE.BoxGeometry(0.36,0.28,0.12),trim,0,headY,0.22);
+    part(model,new THREE.CylinderGeometry(0.025,0.03,0.44,6),trim,0,headY+0.34,0,0,0,0);
+    part(model,new THREE.SphereGeometry(0.06,8,6),eye,0,headY+0.58,0);
+    [-1,1].forEach(side => part(model,new THREE.CylinderGeometry(0.05,0.06,0.42,8),plate,side*0.36,0.72,0,0,0,side*0.2));
+  } else if(variant==="void"){
+    part(model,new THREE.ConeGeometry(0.48,1.3,12),plate,0,0.65,0);
+    part(model,new THREE.SphereGeometry(0.2,12,10),dark,0,headY,0.12);
+    part(model,new THREE.TorusGeometry(0.3,0.035,8,20),trim,0,headY,0.12,Math.PI/2,0,0);
+  }
+}
 function makeMonsterModel(model,u,s,bodyMat){
   if(s.type==="kaiju") buildKaiju(model,s,bodyMat,s.variant||"classic");
   else if(s.type==="moth") buildMoth(model,s,bodyMat);
@@ -935,6 +1328,7 @@ function makeMonsterModel(model,u,s,bodyMat){
   else if(s.type==="mermaid") buildMermaid(model,s,bodyMat);
   else if(s.type==="hydra") buildHydra(model,s,bodyMat);
   else if(s.type==="reaper") buildReaper(model,s,bodyMat);
+  else if(s.type==="alien") buildAlien(model,s,bodyMat,s.variant||"grey");
 }
 function makeCharacter(u){
   const group = new THREE.Group();
@@ -1065,14 +1459,27 @@ function syncUnits(){
     unitGroups.set(u.id,group);
   });
 }
-function synergyCounts(){
+function synergyCounts(list){
   const counts = {};
-  G.team.forEach(u => { counts[u.cls] = (counts[u.cls]||0)+1; });
+  (list || G.team).forEach(u => {
+    [u.cls,u.cls2].filter(Boolean).forEach(c => { counts[c] = (counts[c]||0)+1; });
+  });
+  return counts;
+}
+function raceCounts(list){
+  const counts = {};
+  (list || G.team).forEach(u => { if(u.race) counts[u.race] = (counts[u.race]||0)+1; });
   return counts;
 }
 function recalcUnit(u){
   const m = Object.assign({},DEFAULT_MODS,u.mods,INNATE[u.ability]||{});
-  if(u.side === "player" && (synergyCounts()[u.cls]||0) >= 2 && SYNERGY[u.cls]) SYNERGY[u.cls](m);
+  const list = u.side === "enemy" && G.battle ? G.battle.enemies : G.team;
+  const counts = synergyCounts(list);
+  [u.cls,u.cls2].filter(Boolean).forEach(c => {
+    if(counts[c] >= 2 && SYNERGY[c]) SYNERGY[c](m);
+  });
+  const races = raceCounts(list);
+  if(races[u.race] >= 2 && RACE_SYNERGY[u.race]) RACE_SYNERGY[u.race](m);
   u.modsEffective = m;
   u.maxHp = Math.round(u.baseHp*m.hp);
   u.atk = u.baseAtk*m.atk;
@@ -1083,12 +1490,12 @@ function recalcUnit(u){
 function createUnit(key,lvl=1,side="player"){
   const base = ROSTER[key];
   const u = {
-    id:++G.uid,key:key,name:base.name,emoji:base.emoji,role:base.role,cls:base.cls,
-    level:lvl,side:side,ability:base.ability,
+    id:++G.uid,key:key,name:base.name,emoji:base.emoji,role:base.role,cls:base.cls,cls2:base.cls2,race:base.race,
+    level:lvl,side:side,ability:base.ability,spell:base.spell,
     baseHp:base.hp*(1+(lvl-1)*0.3),baseAtk:base.atk*(1+(lvl-1)*0.25),baseSpd:base.spd,
-    rng:base.rng,mods:Object.assign({},DEFAULT_MODS),modsEffective:Object.assign({},DEFAULT_MODS),
+    rng:base.rng,healRange:base.healRange||3,mods:Object.assign({},DEFAULT_MODS),modsEffective:Object.assign({},DEFAULT_MODS),
     maxHp:0,hp:0,atk:0,spd:1,shield:0,
-    grid:{gx:0,gy:0},target:null,attackCd:0,hitFlash:0,animAttack:0,deathTimer:0,
+    grid:{gx:0,gy:0},target:null,attackCd:0,spellCd:Math.random()*0.8,hitFlash:0,animAttack:0,deathTimer:0,
     statuses:{},statusPower:{},isDead:false,revived:false
   };
   recalcUnit(u);
@@ -1180,6 +1587,7 @@ function applyDamage(target,amount,source,opts={}){
 }
 function tickUnit(u,dt){
   u.attackCd = Math.max(0,u.attackCd-dt);
+  u.spellCd = Math.max(0,u.spellCd-dt);
   u.hitFlash = Math.max(0,u.hitFlash-dt);
   u.animAttack = Math.max(0,u.animAttack-dt);
   for(const key in u.statuses){
@@ -1189,11 +1597,9 @@ function tickUnit(u,dt){
 }
 function chooseTarget(u,b){
   if(hasStatus(u,"charm")) return lowestAlly(livingAlliesOf(u,b).filter(a => a !== u));
-  if(u.side === "enemy"){
-    const taunt = b.player.find(t => !t.isDead && t.modsEffective.taunt);
-    if(taunt) return taunt;
-  }
   const targets = livingEnemiesOf(u,b);
+  const taunt = targets.find(t => hasStatus(t,"taunt") || t.modsEffective.taunt);
+  if(taunt) return taunt;
   if(!targets.length) return null;
   return targets.sort((a,c) => (dist(u,a)+a.hp/a.maxHp*0.4)-(dist(u,c)+c.hp/c.maxHp*0.4))[0];
 }
@@ -1208,7 +1614,7 @@ function moveToward(u,target,dt){
   u.grid.gx = clamp(u.grid.gx+dx/d*step,0,GRID.cols-1);
   u.grid.gy = clamp(u.grid.gy+dy/d*step,0,GRID.rows-1);
 }
-function supportAction(u,b){
+function supportAction(u,b,dt){
   if(hasStatus(u,"charm") || hasStatus(u,"stun")) return false;
   const e = u.modsEffective;
   if(!e.heal && !e.shieldPct) return false;
@@ -1216,6 +1622,10 @@ function supportAction(u,b){
   if(!ally) return false;
   const need = (ally.hp+ally.shield)/ally.maxHp;
   if(need >= 0.78) return false;
+  if(dist(u,ally) > u.healRange){
+    moveToward(u,ally,dt||0);
+    return true;
+  }
   if(e.heal) healUnit(ally,u.maxHp*e.heal+u.atk*0.4);
   if(e.shieldPct) shieldUnit(ally,u.maxHp*e.shieldPct);
   u.attackCd = 1/u.spd;
@@ -1235,6 +1645,58 @@ function applyOnHit(u,target,b){
   if(e.charm && Math.random() < e.charm) addStatus(target,"charm",1.8);
   if(e.burn) addStatus(target,"burn",3,e.burn);
   if(e.howl) livingAlliesOf(u,b).forEach(a => { addStatus(a,"atkBuff",3,e.howl); });
+}
+function castSpell(u,target,b){
+  const sp = SPELLS[u.spell];
+  if(!sp || !sp.cd || u.spellCd > 0 || hasStatus(u,"stun") || hasStatus(u,"charm")) return false;
+  if(!target || (target.isDead && !sp.revive) || dist(u,target) > sp.range) return false;
+  u.spellCd = sp.cd/Math.max(0.7,u.spd);
+  u.animAttack = 0.3;
+  if(target.isDead && sp.revive){
+    target.isDead = false;
+    target.revived = true;
+    target.hp = target.maxHp*0.35;
+    target.shield = target.maxHp*0.1;
+    clearStatuses(target);
+    pushEffect(target,"WIEDER!",sp.color);
+    return true;
+  }
+  if(sp.dash){
+    const d = dist(u,target);
+    if(d > 1.05){
+      const dx = target.grid.gx-u.grid.gx, dy = target.grid.gy-u.grid.gy;
+      const step = Math.min(d-1.05,1.6);
+      u.grid.gx = clamp(u.grid.gx+dx/d*step,0,GRID.cols-1);
+      u.grid.gy = clamp(u.grid.gy+dy/d*step,0,GRID.rows-1);
+    }
+  }
+  if(sp.dmg){
+    let dmg = u.atk*sp.dmg*(0.9+Math.random()*0.2);
+    if(hasStatus(u,"weaken")) dmg *= 1-(u.statusPower.weaken||0);
+    if(hasStatus(u,"atkBuff")) dmg *= 1+(u.statusPower.atkBuff||0);
+    if(u.modsEffective.rage && u.hp < u.maxHp*0.5) dmg *= 1+u.modsEffective.rage;
+    const crit = u.modsEffective.crit > 0 && Math.random() < u.modsEffective.crit;
+    if(crit) dmg *= 2;
+    applyDamage(target,dmg,u,{crit:crit});
+    if(sp.splash) livingEnemiesOf(u,b).filter(t => t !== target && dist(t,target) < 1.6).forEach(t => {
+      applyDamage(t,dmg*sp.splash,u,{number:false});
+    });
+  }
+  ["weaken","slow","root","stun","charm","burn"].forEach(k => {
+    if(sp[k] && !target.isDead) addStatus(target,k,k === "burn" ? 3 : 2,sp[k]);
+  });
+  if(sp.buff) livingAlliesOf(u,b).forEach(a => addStatus(a,"atkBuff",3,sp.buff));
+  if(sp.rage) addStatus(u,"atkBuff",3,sp.rage);
+  if(sp.taunt) addStatus(u,"taunt",2.5,1);
+  const ally = lowestAlly(livingAlliesOf(u,b)) || u;
+  if(sp.heal) healUnit(ally,u.maxHp*sp.heal+u.atk*0.35);
+  if(sp.shield) shieldUnit(ally,u.maxHp*sp.shield);
+  if(sp.gold && u.side === "player"){
+    G.gold += sp.gold;
+    pushEffect(u,"+"+sp.gold+" Gold",sp.color);
+  }
+  pushEffect(target,sp.name,sp.color);
+  return true;
 }
 function tryAttack(u,target,b){
   if(u.attackCd > 0 || hasStatus(u,"stun")) return;
@@ -1293,10 +1755,11 @@ function updateBattle(dt){
   const alive = [...b.player,...b.enemies].filter(u => !u.isDead);
   alive.forEach(u => {
     if(u.isDead) return;
-    if(supportAction(u,b)) return;
+    if(supportAction(u,b,dt)) return;
     const target = chooseTarget(u,b);
     u.target = target;
     if(!target) return;
+    if(castSpell(u,target,b)) return;
     if(dist(u,target) > Math.max(1,u.rng/70)) moveToward(u,target,dt);
     else tryAttack(u,target,b);
   });
@@ -1343,8 +1806,7 @@ function winBattle(){
   updateSynergies();
   updateButtons();
   if(draftTimer){ clearTimeout(draftTimer); draftTimer = null; }
-  if(G.team.length < 6) draftTimer = setTimeout(() => { draftTimer = null; if(G.phase === "prep" && G.team.length < 6) openDraft(); }, 550);
-  else showToast("Team vollständig – bereit für Welle "+G.wave);
+  showToast("Welle "+cleared+" besiegt! "+G.teamSize+" gegen "+G.teamSize+" · nächste Welle bereit");
 }
 function loseBattle(){
   G.phase = "defeat";
@@ -1357,36 +1819,54 @@ function loseBattle(){
   updateTeamList();
   updateButtons();
 }
+function enemyKeyFor(unit,used,preferRole){
+  const wanted = [unit.race,unit.cls,unit.cls2].filter(Boolean);
+  let pool = ALL_KEYS.filter(k => !used[k] && ROSTER[k].race === unit.race && ROSTER[k].role === preferRole);
+  if(!pool.length) pool = ALL_KEYS.filter(k => !used[k] && wanted.some(c => ROSTER[k].race === c || ROSTER[k].cls === c || ROSTER[k].cls2 === c));
+  if(!pool.length) pool = ALL_KEYS.filter(k => !used[k] && ROSTER[k].role === preferRole);
+  if(!pool.length) pool = ALL_KEYS.filter(k => !used[k]);
+  const key = pool[Math.floor(Math.random()*pool.length)] || ALL_KEYS[0];
+  used[key] = true;
+  return key;
+}
+function buildEnemyTeam(){
+  const used = {};
+  const roles = G.team.map(u => u.role);
+  const missing = ROLES.filter(r => !roles.includes(r));
+  return G.team.map((p,i) => {
+    const key = enemyKeyFor(p,used,missing[i] || p.role);
+    const u = createUnit(key,p.level,"enemy");
+    u.baseHp *= 1+G.wave*0.04;
+    u.baseAtk *= 1+G.wave*0.03;
+    u.grid.gx = clamp(GRID.cols-1-(i%2)*0.7,0,GRID.cols-1);
+    u.grid.gy = clamp(0.6+Math.floor(i/2)*1.7,0,GRID.rows-1);
+    u.attackCd = Math.random()*0.4;
+    return u;
+  });
+}
 function startBattle(){
   if(!G.team.length || G.phase === "battle" || G.phase === "draft") return;
+  if(G.team.length < G.teamSize){ openDraft(); return; }
+  G.team = G.team.slice(0,G.teamSize);
   G.phase = "battle";
+  setBattleMode(true);
   clearEffects();
   reviveTeam();
   G.team.forEach((u,i) => {
     u.grid.gx = clamp((i%2)*0.7,0,GRID.cols-1);
     u.grid.gy = clamp(0.6+Math.floor(i/2)*1.7,0,GRID.rows-1);
     u.attackCd = Math.random()*0.4;
-  });
-  const enemyCount = Math.min(2+Math.floor(G.wave/2),6);
-  const enemyTeam = [];
-  for(let i=0;i<enemyCount;i++){
-    const key = ALL_KEYS[Math.floor(Math.random()*ALL_KEYS.length)];
-    const lvl = 1+Math.floor((G.wave-1)/4);
-    const u = createUnit(key,lvl,"enemy");
-    u.baseHp *= 1+G.wave*0.04;
-    u.baseAtk *= 1+G.wave*0.03;
     recalcUnit(u);
-    u.grid.gx = clamp(GRID.cols-1-(i%2)*0.7,0,GRID.cols-1);
-    u.grid.gy = clamp(0.6+Math.floor(i/2)*1.7,0,GRID.rows-1);
-    u.attackCd = Math.random()*0.4;
-    enemyTeam.push(u);
-  }
+  });
+  const enemyTeam = buildEnemyTeam();
   G.battle = {player:G.team,enemies:enemyTeam,time:0};
+  enemyTeam.forEach(recalcUnit);
   G.mana = Math.min(G.maxMana,G.mana+10);
   syncUnits();
-  showToast("Welle "+G.wave+" beginnt!");
+  showToast("Welle "+G.wave+": "+G.team.length+" gegen "+enemyTeam.length);
   updateHud();
   updateTeamList();
+  updateSynergies();
   updateButtons();
 }
 function updateVisuals(time,dt){
@@ -1433,69 +1913,96 @@ function updateTeamList(){
       const el = document.createElement("div");
       el.className = 'unitline '+(u.isDead?'dead':'');
       el.innerHTML = `
-        <span class="nm" title="${u.role} · ${u.cls}">${u.emoji} ${u.name}</span>
+        <span class="nm" title="${u.role} · ${RACE_META[u.race]?.label||u.race} · ${u.cls} · Fernzauber: ${SPELLS[u.spell]?.name||"—"}">${u.emoji} ${u.name}</span>
         <span class="hpbar"><i style="width:${pct}%;background:${pct>50?'#4ade80':'#e5484d'}"></i></span>
         <span class="lvl">L${u.level}</span>
       `;
       tl.appendChild(el);
     });
   }
-  document.getElementById("hudTeam").textContent = G.team.length+'/6';
+  document.getElementById("hudTeam").textContent = G.team.length+'/'+G.teamSize;
 }
 function updateSynergies(){
   const badges = document.getElementById("synBadges");
   badges.innerHTML = '';
-  const counts = synergyCounts();
-  for(const cls in counts){
-    if(counts[cls] < 2 || !CLASS_META[cls]) continue;
+  const addBadge = (key,meta,count) => {
+    if(count < 2 || !meta) return;
     const badge = document.createElement("div");
     badge.className = 'badge hot';
-    badge.title = CLASS_META[cls].desc;
-    badge.style.borderColor = CLASS_META[cls].col;
-    badge.innerHTML = `<span style="color:${CLASS_META[cls].col}">●</span> ${CLASS_META[cls].label} ${counts[cls]}`;
+    badge.title = meta.desc;
+    badge.style.borderColor = meta.col;
+    badge.innerHTML = `<span style="color:${meta.col}">●</span> ${meta.label} ${count}`;
     badges.appendChild(badge);
-  }
+  };
+  const counts = synergyCounts();
+  for(const key in counts) addBadge(key,CLASS_META[key],counts[key]);
+  const races = raceCounts();
+  for(const key in races) addBadge(key,RACE_META[key],races[key]);
 }
 function updateHud(){
   document.getElementById("hudGold").textContent = G.gold;
   document.getElementById("hudWave").textContent = G.wave;
-  document.getElementById("hudTeam").textContent = G.team.length+'/6';
+  document.getElementById("hudTeam").textContent = G.team.length+'/'+G.teamSize;
   const avg = G.team.length ? G.team.reduce((s,u) => s+u.level,0)/G.team.length : 1;
   document.getElementById("hudLvl").textContent = avg.toFixed(1).replace(/\.0$/,'');
+  document.getElementById("battleInfo").textContent = "Welle "+G.wave+" · "+G.team.length+"/"+G.teamSize+(G.battle ? " · Kampf" : "");
 }
 function updateManaBar(){
   document.getElementById("manaBar").style.width = (G.mana/G.maxMana*100)+'%';
 }
 function updateButtons(){
+  const menu = G.phase === "menu";
   const inBattle = G.phase === "battle" && !!G.battle;
   const drafting = G.phase === "draft";
+  const full = G.team.length >= G.teamSize;
   const battleBtn = document.getElementById("btnBattle");
-  battleBtn.disabled = inBattle || drafting || !G.team.length;
-  battleBtn.textContent = G.phase === "defeat" ? "Erneut versuchen" : "Schlacht starten";
-  document.getElementById("btnDraft").disabled = inBattle || drafting || G.team.length >= 6;
-  document.getElementById("btnHeal").disabled = !inBattle || G.mana < 40;
-  document.getElementById("btnNova").disabled = !inBattle || G.mana < 70;
+  battleBtn.disabled = menu || inBattle || drafting || !full;
+  battleBtn.textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
+  document.getElementById("btnDraft").disabled = menu || inBattle || drafting || full;
+  document.getElementById("btnHeal").disabled = menu || !inBattle || G.mana < 40;
+  document.getElementById("btnNova").disabled = menu || !inBattle || G.mana < 70;
+  document.getElementById("btnBattleSelect").disabled = menu || drafting || full;
+  document.getElementById("btnBattleNext").disabled = menu || inBattle || drafting || !full;
+  document.getElementById("btnBattleNext").textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
+  document.getElementById("btnBattleHeal").disabled = !inBattle || G.mana < 40;
+  document.getElementById("btnBattleNova").disabled = !inBattle || G.mana < 70;
   let hint = "";
-  if(!G.team.length) hint = "Wähle zuerst Wesen im Draft.";
-  else if(drafting) hint = "Wähle eine Karte oder überspringe den Draft.";
-  else if(inBattle) hint = "Welle "+G.wave+" läuft. Greife mit Mana ein.";
-  else if(G.phase === "defeat") hint = "Dein Team ist besiegt. Starte die Welle erneut.";
-  else hint = "Flache Iso-Arena, 3D-Wesen. Synergien ab 2 gleichen Klassen wirken.";
+  if(menu) hint = "Menü: Start, Einstellungen oder Credits wählen.";
+  else if(drafting) hint = "Wähle "+G.teamSize+" Wesen. Das Gegnerteam wird auf dieselbe Größe angepasst.";
+  else if(!full) hint = "Noch "+(G.teamSize-G.team.length)+" Wesen wählen.";
+  else if(inBattle) hint = "Welle "+G.wave+" läuft. "+G.team.length+" gegen "+G.battle.enemies.length+".";
+  else if(G.phase === "defeat") hint = "Team besiegt – erneut versuchen.";
+  else hint = "Team bereit. Starte die nächste Welle.";
   document.getElementById("hint").textContent = hint;
 }
-function openDraft(){
-  if(draftTimer){ clearTimeout(draftTimer); draftTimer = null; }
-  if(G.phase === "battle") return;
-  if(G.team.length >= 6){ showToast("Team ist bereits voll"); return; }
-  G.phase = "draft";
-  document.getElementById("mdTitle").textContent = "Wähle eine Einheit";
-  document.getElementById("mdSub").textContent = "2 Gold pro Wesen · Gold: "+G.gold+" · Team: "+G.team.length+"/6"+(G.team.length ? "" : " · Bitte mindestens ein Wesen wählen.");
-  document.getElementById("mdSkip").disabled = G.team.length === 0;
-  document.getElementById("overlay").classList.add("show");
+function draftKeys(){
+  const have = role => G.team.filter(u => u.role === role).length;
+  const order = ROLES.slice().sort((a,b) => have(a)-have(b));
+  const used = {};
+  G.team.forEach(u => { used[u.key] = true; });
+  const pool = ALL_KEYS.filter(k => !used[k]);
+  const picks = [];
+  order.slice(0,2).forEach(role => {
+    const candidates = shuffle(pool.filter(k => ROSTER[k].role === role && !picks.includes(k)));
+    if(candidates.length) picks.push(candidates[0]);
+  });
+  shuffle(pool).forEach(k => { if(picks.length < 4 && !picks.includes(k)) picks.push(k); });
+  return shuffle(picks).slice(0,4);
+}
+function renderDraftCards(){
+  document.getElementById("mdTitle").textContent = "Wähle dein Team";
+  document.getElementById("mdSub").textContent = G.team.length+"/"+G.teamSize+" gewählt · 2 Gold pro Wesen · Gold: "+G.gold+
+    " · Gegnerteam: "+G.teamSize+" Einheiten";
+  const start = document.getElementById("mdSkip");
+  start.disabled = G.team.length < G.teamSize;
+  start.textContent = G.team.length >= G.teamSize ? "Kampf starten" : "Noch "+(G.teamSize-G.team.length)+" wählen";
   const draft = document.getElementById("mdDraft");
   draft.innerHTML = '';
-  shuffle(ALL_KEYS).slice(0,3).forEach(key => {
+  draftKeys().forEach(key => {
     const unit = ROSTER[key];
+    const classes = [unit.cls,unit.cls2].filter(Boolean).map(c => CLASS_META[c]).filter(Boolean);
+    const race = RACE_META[unit.race];
+    const spell = SPELLS[unit.spell];
     const card = document.createElement("div");
     card.className = "cardpick";
     card.innerHTML = `
@@ -1503,33 +2010,44 @@ function openDraft(){
         <span class="em">${unit.emoji}</span>
         <div>
           <div class="nm">${unit.name}</div>
-          <div class="rl">${ROLE_META[unit.role].label} · ${CLASS_META[unit.cls].label}</div>
+          <div class="rl">${ROLE_META[unit.role].label} · ${race ? race.label : unit.race} · ${classes.map(c => c.label).join(" / ")}</div>
         </div>
       </div>
       <div class="stats">HP ${unit.hp} · ATK ${unit.atk} · ${ABILITY_DESC[unit.ability]}</div>
-      <div class="abil" style="color:${CLASS_META[unit.cls].col}">${CLASS_META[unit.cls].label}-Synergie: ${CLASS_META[unit.cls].desc}</div>
+      <div class="abil" style="color:${spell ? spell.color : "#e6edf5"}">${spell ? spell.name+" · "+spell.range+" Felder" : "—"}${unit.role === "HEALER" ? " · heilt bis "+unit.healRange+" Felder" : ""} · ${classes.map(c => c.label+": "+c.desc).join(" · ")}</div>
     `;
     card.onclick = () => {
-      if(G.gold < 2){ showToast("Zu wenig Gold – Draft überspringen"); return; }
+      if(G.team.length >= G.teamSize){ showToast("Team ist bereits voll"); return; }
+      if(G.gold < 2){ showToast("Zu wenig Gold – Wesen nicht verfügbar"); return; }
       G.gold -= 2;
       const pickLevel = G.team.length ? Math.max.apply(null,G.team.map(u => u.level)) : 1;
       G.team.push(createUnit(key,pickLevel,"player"));
       refreshTeamStats();
-      closeDraft();
       syncUnits();
       updateHud();
       updateTeamList();
       updateSynergies();
-      showToast("+1 "+unit.emoji+" "+unit.name);
+      showToast("+1 "+unit.emoji+" "+unit.name+" ("+G.team.length+"/"+G.teamSize+")");
+      renderDraftCards();
+      updateButtons();
     };
     if(G.gold < 2) card.style.opacity = "0.5";
     draft.appendChild(card);
   });
+}
+function openDraft(){
+  if(G.phase === "menu" || G.phase === "draft") return;
+  if(G.team.length >= G.teamSize){ showToast("Team ist bereits voll"); return; }
+  if(draftTimer){ clearTimeout(draftTimer); draftTimer = null; }
+  draftReturnPhase = G.phase === "battle" ? "battle" : "prep";
+  G.phase = "draft";
+  document.getElementById("overlay").classList.add("show");
+  renderDraftCards();
   updateButtons();
 }
 function closeDraft(){
   document.getElementById("overlay").classList.remove("show");
-  if(G.phase === "draft") G.phase = "prep";
+  if(G.phase === "draft") G.phase = draftReturnPhase === "battle" && G.battle ? "battle" : "prep";
   updateButtons();
 }
 function showToast(msg){
@@ -1550,15 +2068,34 @@ window.addEventListener("load", () => {
   updateManaBar();
   updateButtons();
   document.getElementById("btnBattle").onclick = () => {
-    if(G.phase !== "battle" && G.phase !== "draft") startBattle();
+    if(G.phase !== "menu" && G.phase !== "battle" && G.phase !== "draft") startBattle();
   };
   document.getElementById("btnDraft").onclick = openDraft;
   document.getElementById("btnReset").onclick = () => location.reload();
+  document.getElementById("menuStart").onclick = beginRun;
+  document.getElementById("menuSettings").onclick = () => openInfo(
+    "Einstellungen",
+    "Teamgröße für beide Seiten festlegen. Das Gegnerteam erhält immer dieselbe Anzahl an Einheiten und orientiert sich an deinen Klassen.",
+    '<label class="tiny">Teamgröße: <select id="setTeamSize"><option value="3">3 gegen 3</option><option value="4">4 gegen 4</option><option value="5">5 gegen 5</option><option value="6">6 gegen 6</option></select></label>'
+  );
+  document.getElementById("menuCredits").onclick = () => openInfo(
+    "Credits",
+    "Wesen, Klassen und Fähigkeiten basieren auf Volkskunde, Mythologie und Filmlore. Quellen: Wikipedia, Britannica, Goethezeitportal, Österreichisches Volksliedwerk, HBO Max, Toho/Legendary Monsterpedia und Wikizilla. Unsichere Wesen (Duden, Fernrisswolf, Krötenmönch, Nachzehrer-Schreibweise) sind als Design-Annahmen markiert.",
+    ""
+  );
+  document.getElementById("infoClose").onclick = closeInfo;
+  document.getElementById("mdBack").onclick = closeDraft;
   document.getElementById("mdSkip").onclick = () => {
-    if(!G.team.length) return;
+    if(G.team.length < G.teamSize) return;
+    const resumeBattle = draftReturnPhase === "battle" && !!G.battle;
     closeDraft();
-    showToast("Draft übersprungen");
+    if(!resumeBattle) startBattle();
   };
+  document.getElementById("btnBattleSelect").onclick = openDraft;
+  document.getElementById("btnBattleNext").onclick = () => startBattle();
+  document.getElementById("btnBattleHeal").onclick = () => document.getElementById("btnHeal").click();
+  document.getElementById("btnBattleNova").onclick = () => document.getElementById("btnNova").click();
+  document.getElementById("btnBattleExit").onclick = () => setBattleMode(false);
   document.getElementById("btnHeal").onclick = () => {
     if(G.mana < 40 || !G.battle || G.phase !== "battle") return;
     G.mana -= 40;
@@ -1576,7 +2113,6 @@ window.addEventListener("load", () => {
     showToast("Fabel-Blitz ✺");
     updateButtons();
   };
-  draftTimer = setTimeout(() => { draftTimer = null; if(G.phase === "prep" && !G.team.length) openDraft(); }, 350);
   let last = performance.now();
   let uiTick = 0;
   function frame(now){
