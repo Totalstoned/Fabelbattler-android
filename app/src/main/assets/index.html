@@ -133,7 +133,31 @@ const ROSTER = {
   medusa:{name:"Medusa",emoji:"🐍",role:"DPS",cls:"Mythos",hp:80,atk:13,rng:105,spd:1.0,ability:"versteinern"},
   dschinn:{name:"Dschinn",emoji:"🪔",role:"HEALER",cls:"Mythos",hp:70,atk:9,rng:115,spd:1.0,ability:"wunsch"},
   goblin:{name:"Goblin",emoji:"👺",role:"DPS",cls:"Chaos",hp:50,atk:10,rng:60,spd:1.4,ability:"meuterei"},
-  klabautermann:{name:"Klabautermann",emoji:"⚓",role:"HEALER",cls:"Mythos",hp:75,atk:6,rng:110,spd:1.0,ability:"reparatur"}
+  klabautermann:{name:"Klabautermann",emoji:"⚓",role:"HEALER",cls:"Mythos",hp:75,atk:6,rng:110,spd:1.0,ability:"reparatur"},
+  kingkong:{name:"King Kong",emoji:"🦍",role:"TANK",cls:"Kaiju",hp:230,atk:17,rng:60,spd:0.72,ability:"protz"},
+  shingodzilla:{name:"Shin Godzilla",emoji:"☢️",role:"DPS",cls:"Kaiju",hp:195,atk:21,rng:90,spd:0.68,ability:"seelenfeuer"},
+  minilla:{name:"Minilla",emoji:"🦎",role:"BUFFER",cls:"Kaiju",hp:105,atk:8,rng:80,spd:1.05,ability:"heulen"},
+  queenmuto:{name:"Queen M.U.T.O.",emoji:"🕷️",role:"DPS",cls:"Kaiju",hp:120,atk:19,rng:75,spd:1.15,ability:"blutdurst"},
+  scarking:{name:"Scar King",emoji:"🦍",role:"DPS",cls:"Kaiju",hp:175,atk:20,rng:65,spd:1.0,ability:"meuterei"},
+  burninggodzilla:{name:"Burning Godzilla",emoji:"🌋",role:"DPS",cls:"Kaiju",hp:220,atk:24,rng:95,spd:0.6,ability:"seelenfeuer"},
+  methuselah:{name:"Methuselah",emoji:"⛰️",role:"TANK",cls:"Kaiju",hp:260,atk:12,rng:55,spd:0.5,ability:"berg"},
+  mechagodzilla:{name:"MechaGodzilla",emoji:"🤖",role:"DPS",cls:"Kaiju",hp:200,atk:23,rng:110,spd:0.8,ability:"werk"},
+  warbat:{name:"WarBat",emoji:"🦇",role:"DPS",cls:"Kaiju",hp:130,atk:18,rng:85,spd:1.25,ability:"blutdurst"},
+  bagan:{name:"Bagan",emoji:"🐉",role:"TANK",cls:"Kaiju",hp:215,atk:18,rng:70,spd:0.75,ability:"protz"},
+  kingghidorah:{name:"King Ghidorah",emoji:"🐲",role:"DPS",cls:"Kaiju",hp:205,atk:22,rng:120,spd:0.85,ability:"atom"},
+  shimo:{name:"Shimo",emoji:"❄️",role:"TANK",cls:"Kaiju",hp:240,atk:16,rng:80,spd:0.65,ability:"berg"},
+  godzillaearth:{name:"Godzilla Earth",emoji:"🌲",role:"TANK",cls:"Kaiju",hp:300,atk:20,rng:90,spd:0.42,ability:"protz"},
+  rodan:{name:"Rodan",emoji:"🦅",role:"DPS",cls:"Kaiju",hp:135,atk:17,rng:95,spd:1.3,ability:"staub"},
+  alp:{name:"Alp",emoji:"🎩",role:"DPS",cls:"Dunkel",hp:85,atk:16,rng:80,spd:1.2,ability:"bezirzen"},
+  blaubart:{name:"Blaubart",emoji:"🗝️",role:"DPS",cls:"Dunkel",hp:130,atk:18,rng:70,spd:0.85,ability:"raub"},
+  duden:{name:"Duden",emoji:"📕",role:"BUFFER",cls:"Magie",hp:110,atk:9,rng:115,spd:0.9,ability:"werk"},
+  nachtzerrer:{name:"Nachzehrer",emoji:"⚰️",role:"DPS",cls:"Dunkel",hp:125,atk:17,rng:60,spd:0.95,ability:"blutdurst"},
+  moosweiblein:{name:"Moosweiblein",emoji:"🌿",role:"HEALER",cls:"Wald",hp:95,atk:7,rng:110,spd:0.9,ability:"segen"},
+  aufhocker:{name:"Aufhocker",emoji:"🐕",role:"TANK",cls:"Dunkel",hp:165,atk:13,rng:55,spd:0.8,ability:"protz"},
+  fernrisswolf:{name:"Fernrisswolf",emoji:"🐺",role:"DPS",cls:"Wald",hp:140,atk:19,rng:65,spd:1.3,ability:"heulen"},
+  nixen:{name:"Nixen",emoji:"🧜‍♀️",role:"BUFFER",cls:"Magie",hp:100,atk:10,rng:110,spd:1.05,ability:"staub"},
+  kroetenmoench:{name:"Krötenmönch",emoji:"🐸",role:"TANK",cls:"Wald",hp:175,atk:12,rng:65,spd:0.7,ability:"berg"},
+  sensenmann:{name:"Sensenmann",emoji:"💀",role:"DPS",cls:"Dunkel",hp:105,atk:21,rng:95,spd:0.95,ability:"versteinern"}
 };
 const ALL_KEYS = Object.keys(ROSTER);
 const ROLE_META = {TANK:{col:"#6ea8fe",label:"Tank"},DPS:{col:"#e5484d",label:"DPS"},HEALER:{col:"#4ade80",label:"Heiler"},BUFFER:{col:"#a78bfa",label:"Puffer"}};
@@ -726,10 +750,11 @@ function drawUnit(u){
     ctx.ellipse(p.x,p.y-6,16*VIEW.scale,22*VIEW.scale,0,0,Math.PI*2);
     ctx.stroke();
   }
-  ctx.font = Math.round(22*VIEW.scale)+"px sans-serif";
+  const iconSize = u.cls === "Kaiju" ? 30 : 22;
+  ctx.font = Math.round(iconSize*VIEW.scale)+"px sans-serif";
   ctx.textAlign = "center";
   ctx.fillStyle = "#ffffff";
-  ctx.fillText(u.emoji,p.x,p.y-10*VIEW.scale);
+  ctx.fillText(u.emoji,p.x,p.y-iconSize*0.45*VIEW.scale);
   ctx.font = Math.round(9*VIEW.scale)+"px system-ui";
   ctx.fillStyle = ROLE_META[u.role].col;
   ctx.fillText("L"+u.level,p.x,p.y-24*VIEW.scale);

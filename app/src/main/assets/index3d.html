@@ -136,7 +136,31 @@ const ROSTER = {
   medusa:{name:"Medusa",emoji:"🐍",role:"DPS",cls:"Mythos",hp:80,atk:13,rng:105,spd:1.0,ability:"versteinern"},
   dschinn:{name:"Dschinn",emoji:"🪔",role:"HEALER",cls:"Mythos",hp:70,atk:9,rng:115,spd:1.0,ability:"wunsch"},
   goblin:{name:"Goblin",emoji:"👺",role:"DPS",cls:"Chaos",hp:50,atk:10,rng:60,spd:1.4,ability:"meuterei"},
-  klabautermann:{name:"Klabautermann",emoji:"⚓",role:"HEALER",cls:"Mythos",hp:75,atk:6,rng:110,spd:1.0,ability:"reparatur"}
+  klabautermann:{name:"Klabautermann",emoji:"⚓",role:"HEALER",cls:"Mythos",hp:75,atk:6,rng:110,spd:1.0,ability:"reparatur"},
+  kingkong:{name:"King Kong",emoji:"🦍",role:"TANK",cls:"Kaiju",hp:230,atk:17,rng:60,spd:0.72,ability:"protz"},
+  shingodzilla:{name:"Shin Godzilla",emoji:"☢️",role:"DPS",cls:"Kaiju",hp:195,atk:21,rng:90,spd:0.68,ability:"seelenfeuer"},
+  minilla:{name:"Minilla",emoji:"🦎",role:"BUFFER",cls:"Kaiju",hp:105,atk:8,rng:80,spd:1.05,ability:"heulen"},
+  queenmuto:{name:"Queen M.U.T.O.",emoji:"🕷️",role:"DPS",cls:"Kaiju",hp:120,atk:19,rng:75,spd:1.15,ability:"blutdurst"},
+  scarking:{name:"Scar King",emoji:"🦍",role:"DPS",cls:"Kaiju",hp:175,atk:20,rng:65,spd:1.0,ability:"meuterei"},
+  burninggodzilla:{name:"Burning Godzilla",emoji:"🌋",role:"DPS",cls:"Kaiju",hp:220,atk:24,rng:95,spd:0.6,ability:"seelenfeuer"},
+  methuselah:{name:"Methuselah",emoji:"⛰️",role:"TANK",cls:"Kaiju",hp:260,atk:12,rng:55,spd:0.5,ability:"berg"},
+  mechagodzilla:{name:"MechaGodzilla",emoji:"🤖",role:"DPS",cls:"Kaiju",hp:200,atk:23,rng:110,spd:0.8,ability:"werk"},
+  warbat:{name:"WarBat",emoji:"🦇",role:"DPS",cls:"Kaiju",hp:130,atk:18,rng:85,spd:1.25,ability:"blutdurst"},
+  bagan:{name:"Bagan",emoji:"🐉",role:"TANK",cls:"Kaiju",hp:215,atk:18,rng:70,spd:0.75,ability:"protz"},
+  kingghidorah:{name:"King Ghidorah",emoji:"🐲",role:"DPS",cls:"Kaiju",hp:205,atk:22,rng:120,spd:0.85,ability:"atom"},
+  shimo:{name:"Shimo",emoji:"❄️",role:"TANK",cls:"Kaiju",hp:240,atk:16,rng:80,spd:0.65,ability:"berg"},
+  godzillaearth:{name:"Godzilla Earth",emoji:"🌲",role:"TANK",cls:"Kaiju",hp:300,atk:20,rng:90,spd:0.42,ability:"protz"},
+  rodan:{name:"Rodan",emoji:"🦅",role:"DPS",cls:"Kaiju",hp:135,atk:17,rng:95,spd:1.3,ability:"staub"},
+  alp:{name:"Alp",emoji:"🎩",role:"DPS",cls:"Dunkel",hp:85,atk:16,rng:80,spd:1.2,ability:"bezirzen"},
+  blaubart:{name:"Blaubart",emoji:"🗝️",role:"DPS",cls:"Dunkel",hp:130,atk:18,rng:70,spd:0.85,ability:"raub"},
+  duden:{name:"Duden",emoji:"📕",role:"BUFFER",cls:"Magie",hp:110,atk:9,rng:115,spd:0.9,ability:"werk"},
+  nachtzerrer:{name:"Nachzehrer",emoji:"⚰️",role:"DPS",cls:"Dunkel",hp:125,atk:17,rng:60,spd:0.95,ability:"blutdurst"},
+  moosweiblein:{name:"Moosweiblein",emoji:"🌿",role:"HEALER",cls:"Wald",hp:95,atk:7,rng:110,spd:0.9,ability:"segen"},
+  aufhocker:{name:"Aufhocker",emoji:"🐕",role:"TANK",cls:"Dunkel",hp:165,atk:13,rng:55,spd:0.8,ability:"protz"},
+  fernrisswolf:{name:"Fernrisswolf",emoji:"🐺",role:"DPS",cls:"Wald",hp:140,atk:19,rng:65,spd:1.3,ability:"heulen"},
+  nixen:{name:"Nixen",emoji:"🧜‍♀️",role:"BUFFER",cls:"Magie",hp:100,atk:10,rng:110,spd:1.05,ability:"staub"},
+  kroetenmoench:{name:"Krötenmönch",emoji:"🐸",role:"TANK",cls:"Wald",hp:175,atk:12,rng:65,spd:0.7,ability:"berg"},
+  sensenmann:{name:"Sensenmann",emoji:"💀",role:"DPS",cls:"Dunkel",hp:105,atk:21,rng:95,spd:0.95,ability:"versteinern"}
 };
 const ALL_KEYS = Object.keys(ROSTER);
 const ROLE_META = {TANK:{col:"#6ea8fe",label:"Tank"},DPS:{col:"#e5484d",label:"DPS"},HEALER:{col:"#4ade80",label:"Heiler"},BUFFER:{col:"#a78bfa",label:"Puffer"}};
@@ -373,29 +397,580 @@ function makeHpBar(){
   group.userData.fill = fill;
   return group;
 }
+const MONSTER_STYLE = {
+  godzilla:{type:"kaiju",variant:"classic",body:0x39434b,trim:0x82939d,plate:0xd9e6ee,glow:0x62d9ff,glowIntensity:0.18,scale:1.08,hpY:1.78,radius:0.56,plates:5,tail:1.35},
+  mothra:{type:"moth",body:0xe8eef5,trim:0xf6c453,plate:0x7fc7ff,glow:0x63c7ff,glowIntensity:0.22,scale:1.12,hpY:1.55,radius:0.62},
+  kingkong:{type:"ape",variant:"kong",body:0x6b422c,trim:0xc99b70,plate:0x8b5a3c,glow:0xffd08a,glowIntensity:0.25,scale:1.14,hpY:1.78,radius:0.6},
+  shingodzilla:{type:"kaiju",variant:"shin",body:0x1d1b20,trim:0x8d2f3c,plate:0x6f4b9f,glow:0xa978ff,glowIntensity:0.55,scale:1.18,hpY:1.9,radius:0.6,plates:7,tail:1.7},
+  minilla:{type:"kaiju",variant:"minilla",body:0x5d7f6a,trim:0xc7d7bd,plate:0xe2e8c8,glow:0xb9e8a9,glowIntensity:0.14,scale:0.78,hpY:1.25,radius:0.42,plates:3,tail:0.85},
+  queenmuto:{type:"bug",body:0x565b61,trim:0xa8aeb2,plate:0x7d858a,glow:0xff8a3d,glowIntensity:0.55,scale:1.05,hpY:1.35,radius:0.55},
+  scarking:{type:"ape",variant:"scar",body:0x8f3c32,trim:0xd9a47a,plate:0x7fe3ff,glow:0x6fe8ff,glowIntensity:1.4,scale:1.08,hpY:1.78,radius:0.55},
+  burninggodzilla:{type:"kaiju",variant:"burning",body:0x30272a,trim:0x8c4a3a,plate:0xff7a2f,glow:0xff5a1f,glowIntensity:1.3,scale:1.12,hpY:1.84,radius:0.58,plates:7,tail:1.4},
+  methuselah:{type:"rock",body:0x6b6a62,trim:0x8b8a7c,plate:0x4f8b5b,glow:0x9bd47f,glowIntensity:0.12,scale:1.2,hpY:1.75,radius:0.62},
+  mechagodzilla:{type:"robot",body:0x9aa7b1,trim:0x3b424b,plate:0xd4dde5,glow:0xff3659,glowIntensity:1.5,scale:1.15,hpY:1.82,radius:0.6,plates:5,tail:1.25},
+  warbat:{type:"serpent",body:0x5a6762,trim:0x9aa49d,plate:0xb53748,glow:0xff6b7a,glowIntensity:0.3,scale:1.12,hpY:1.45,radius:0.6},
+  bagan:{type:"quadruped",variant:"bagan",body:0x2f2b33,trim:0x8a3237,plate:0x4b3a46,glow:0xff4d3d,glowIntensity:0.35,scale:1.12,hpY:1.55,radius:0.6},
+  kingghidorah:{type:"dragon",body:0xb79b4b,trim:0xe3cf7b,plate:0x7e5a2d,glow:0xfff0a8,glowIntensity:0.35,scale:1.16,hpY:2.05,radius:0.65},
+  shimo:{type:"quadruped",variant:"shimo",body:0xe7eff3,trim:0xb9cbd3,plate:0x7fdcff,glow:0x8ad9ff,glowIntensity:0.8,scale:1.14,hpY:1.55,radius:0.62},
+  godzillaearth:{type:"kaiju",variant:"earth",body:0x4e6243,trim:0x7c8d63,plate:0x6fa35c,glow:0x9bd66f,glowIntensity:0.25,scale:1.28,hpY:1.96,radius:0.66,plates:7,tail:1.5},
+  rodan:{type:"pterosaur",body:0xb84c36,trim:0xe38a4a,plate:0x8f2f2c,glow:0xffb35c,glowIntensity:0.3,scale:1.1,hpY:1.5,radius:0.65},
+  rumpelstilzchen:{type:"folk",variant:"rumpel",body:0x6b3f2a,trim:0xd9c27a,plate:0xf2c14e,glow:0xffd76a,glowIntensity:0.25,scale:0.82,hpY:1.35,radius:0.36},
+  hotzenplotz:{type:"folk",variant:"hotze",body:0x4a2230,trim:0xb98a45,plate:0x2a1b20,glow:0xff9f43,glowIntensity:0.15,scale:0.95,hpY:1.5,radius:0.42},
+  chupacabra:{type:"beast",variant:"chupa",body:0x6d7770,trim:0xc3b89c,plate:0x2e3a34,glow:0x9bffb1,glowIntensity:0.3,scale:0.9,hpY:1.2,radius:0.44},
+  bigfoot:{type:"folk",variant:"bigfoot",body:0x6b4c34,trim:0x8b6242,plate:0x3d2b20,glow:0xd9a066,glowIntensity:0.12,scale:1.22,hpY:1.72,radius:0.58},
+  vampire:{type:"folk",variant:"vampire",body:0x252132,trim:0xd9dbe6,plate:0x8b1c32,glow:0xff3659,glowIntensity:0.6,scale:1,hpY:1.55,radius:0.42},
+  werewolf:{type:"beast",variant:"werewolf",body:0x5a4030,trim:0x8a6b4d,plate:0x2b1f19,glow:0xffc46b,glowIntensity:0.3,scale:1.05,hpY:1.35,radius:0.5},
+  hexe:{type:"folk",variant:"hexe",body:0x3c2542,trim:0x7fb45b,plate:0x1b1420,glow:0x9bff6a,glowIntensity:0.65,scale:0.94,hpY:1.5,radius:0.42},
+  fee:{type:"folk",variant:"fee",body:0x6ec5ff,trim:0xffe7a8,plate:0xff9ad5,glow:0x9fe8ff,glowIntensity:0.9,scale:0.78,hpY:1.2,radius:0.36},
+  ruebezahl:{type:"folk",variant:"ruebezahl",body:0x4f4634,trim:0x8d7d5b,plate:0x6b5a3f,glow:0xb7d48a,glowIntensity:0.2,scale:1.24,hpY:1.75,radius:0.58},
+  waldschrat:{type:"folk",variant:"waldschrat",body:0x4a5e35,trim:0x8fa360,plate:0x3b2d1e,glow:0x8fe07a,glowIntensity:0.35,scale:1.02,hpY:1.55,radius:0.46},
+  heinzelmaennchen:{type:"folk",variant:"heinzel",body:0x7b5338,trim:0xd4b27e,plate:0x3d2a1e,glow:0xffd08a,glowIntensity:0.2,scale:0.72,hpY:1.15,radius:0.34},
+  wichtel:{type:"folk",variant:"wichtel",body:0x9b3d3d,trim:0xf0c66a,plate:0x3a2440,glow:0xffd76a,glowIntensity:0.3,scale:0.7,hpY:1.05,radius:0.32},
+  sukubus:{type:"folk",variant:"sukubus",body:0x4a2148,trim:0xb35f8f,plate:0x201322,glow:0xff5cc8,glowIntensity:0.8,scale:0.95,hpY:1.5,radius:0.44},
+  lilith:{type:"folk",variant:"lilith",body:0x2f1a3d,trim:0xd6a94a,plate:0x5c2444,glow:0xff4d6d,glowIntensity:0.9,scale:1,hpY:1.55,radius:0.44},
+  hydra:{type:"hydra",body:0x3e6b46,trim:0x7bb06f,plate:0x27452f,glow:0xa8ff8f,glowIntensity:0.35,scale:1.05,hpY:1.75,radius:0.55},
+  medusa:{type:"folk",variant:"medusa",body:0x4b6b4d,trim:0x8fb37a,plate:0x1f3324,glow:0xb9ff7a,glowIntensity:0.5,scale:0.96,hpY:1.5,radius:0.44},
+  dschinn:{type:"folk",variant:"dschinn",body:0x4aa4d8,trim:0xf2d98c,plate:0x2d5f8a,glow:0x7fe8ff,glowIntensity:0.8,scale:1.02,hpY:1.5,radius:0.46},
+  goblin:{type:"folk",variant:"goblin",body:0x5f8f3e,trim:0xb9c88a,plate:0x2d3d28,glow:0xb6ff6a,glowIntensity:0.3,scale:0.76,hpY:1.18,radius:0.36},
+  klabautermann:{type:"folk",variant:"klabauter",body:0x3f6a72,trim:0xd9c08a,plate:0x253b42,glow:0x7fe0d8,glowIntensity:0.55,scale:0.9,hpY:1.45,radius:0.42},
+  alp:{type:"folk",variant:"alp",body:0x2b2130,trim:0xa493ab,plate:0x141018,glow:0xb36bff,glowIntensity:0.75,scale:0.86,hpY:1.32,radius:0.4},
+  blaubart:{type:"folk",variant:"blaubart",body:0x25334f,trim:0x4f6fc0,plate:0x141c2d,glow:0x6d8cff,glowIntensity:0.3,scale:1.05,hpY:1.58,radius:0.46},
+  duden:{type:"book",body:0xb4232c,trim:0xf2c14e,plate:0xf4e8d0,glow:0xff8f4a,glowIntensity:0.3,scale:1,hpY:1.35,radius:0.5},
+  nachtzerrer:{type:"folk",variant:"nachtzerrer",body:0x4b4a43,trim:0x8d8775,plate:0x2b2724,glow:0xa84d3a,glowIntensity:0.5,scale:1.02,hpY:1.5,radius:0.46},
+  moosweiblein:{type:"folk",variant:"moosweib",body:0x667a4d,trim:0xcad4a8,plate:0x4a3b2c,glow:0xb8f08a,glowIntensity:0.28,scale:0.82,hpY:1.25,radius:0.4},
+  aufhocker:{type:"beast",variant:"aufhocker",body:0x2c262b,trim:0x5f4d50,plate:0x141116,glow:0xff5d4d,glowIntensity:0.7,scale:1.02,hpY:1.38,radius:0.5},
+  fernrisswolf:{type:"beast",variant:"fenris",body:0x3d4652,trim:0x8d9bab,plate:0x171c24,glow:0x7fe8ff,glowIntensity:1.05,scale:1.16,hpY:1.45,radius:0.56},
+  nixen:{type:"mermaid",body:0x4ba7c9,trim:0xe3d6a8,plate:0x2b7fa8,glow:0x7fe8ff,glowIntensity:0.65,scale:0.95,hpY:1.4,radius:0.46},
+  kroetenmoench:{type:"folk",variant:"kroetenmoench",body:0x4b5a35,trim:0x9caa70,plate:0x33291e,glow:0xd9e86a,glowIntensity:0.45,scale:0.98,hpY:1.48,radius:0.46},
+  sensenmann:{type:"reaper",body:0x211f2a,trim:0xd9dbe2,plate:0x0e0d14,glow:0x8fb5ff,glowIntensity:0.8,scale:1.06,hpY:1.6,radius:0.48}
+};
+function monsterMat(color,glow,intensity,metal,rough){
+  const opts={color:color,roughness:rough===undefined?0.72:rough,metalness:metal===undefined?0.06:metal};
+  if(glow!==undefined && intensity) { opts.emissive=glow; opts.emissiveIntensity=intensity; }
+  return new THREE.MeshStandardMaterial(opts);
+}
+function part(parent,geo,mat,x,y,z,rx,ry,rz,sx,sy,sz){
+  const mesh=new THREE.Mesh(geo,mat);
+  mesh.position.set(x,y,z);
+  mesh.rotation.set(rx||0,ry||0,rz||0);
+  mesh.scale.set(sx===undefined?1:sx,sy===undefined?1:sy,sz===undefined?1:sz);
+  mesh.castShadow=true;
+  parent.add(mesh);
+  return mesh;
+}
+function addEyes(parent,mat,y,z,sep,size){
+  [-1,1].forEach(side => part(parent,new THREE.SphereGeometry(size,8,6),mat,side*sep,y,z));
+}
+function addPlates(parent,mat,count,z0,z1,y0,y1,size){
+  const n=Math.max(1,count);
+  for(let i=0;i<n;i++){
+    const t=n===1?0:i/(n-1);
+    const sc=size*(1-0.45*t);
+    part(parent,new THREE.ConeGeometry(sc*0.62,sc*1.7,4),mat,0,y0+(y1-y0)*t,z0+(z1-z0)*t,0,Math.PI/4,0,0.42,1,1);
+  }
+}
+function addTail(parent,mat,baseY,length,radius,segments,droop){
+  const step=length/segments;
+  for(let i=0;i<segments;i++){
+    const t=i/segments;
+    const r=radius*(1-t*0.78);
+    part(parent,new THREE.CylinderGeometry(r*0.76,r,step*1.08,8),mat,0,baseY-droop*t*t,-0.38-(i+0.5)*step,-Math.PI/2,0,0);
+  }
+}
+function addWings(parent,mat,accent,span,height,y,z,tilt){
+  [-1,1].forEach(side => {
+    part(parent,new THREE.SphereGeometry(1,16,10),mat,side*span,y,z,0,0,side*tilt,span,height,0.09);
+    if(accent) part(parent,new THREE.SphereGeometry(1,12,8),accent,side*span*0.72,y+height*0.18,z+0.06,0,0,side*tilt,span*0.3,height*0.34,0.1);
+  });
+}
+function addTeeth(parent,mat,y,z,count,down){
+  for(let i=0;i<count;i++){
+    const x=(i-(count-1)/2)*0.075;
+    part(parent,new THREE.ConeGeometry(0.032,0.12,5),mat,x,y+(down?-0.06:0.06),z,down?Math.PI:0,0,0);
+  }
+}
+function buildKaiju(model,s,bodyMat,variant){
+  const trim=monsterMat(s.trim,s.glow,s.glowIntensity*0.25,0.12,0.68);
+  const plate=monsterMat(s.plate,s.glow,variant==="burning"?1.6:variant==="shin"?1.1:0.45,0.08,0.58);
+  const dark=monsterMat(0x11161c,undefined,0,0.05,0.86);
+  const accent=monsterMat(s.trim,s.glow,0.35,0.08,0.7);
+  const eye=monsterMat(s.glow,s.glow,2,0.1,0.35);
+  const round=variant==="minilla"?1.08:variant==="earth"?1.14:1;
+  const lean=variant==="shin"?0.78:1;
+  part(model,new THREE.SphereGeometry(0.43,16,12),bodyMat,0,0.76,0,0,0,0,0.82*round*lean,1.22*round,0.72*round);
+  part(model,new THREE.SphereGeometry(0.31,14,10),trim,0,0.68,0.29,0,0,0,0.8,0.94,0.5);
+  const headScale=variant==="minilla"?1.15:1;
+  part(model,new THREE.SphereGeometry(0.32,16,12),bodyMat,0,1.38,0.12,0,0,0,0.86*headScale,0.78*headScale,1.02*headScale);
+  part(model,new THREE.SphereGeometry(0.25,14,10),bodyMat,0,1.31,0.48,0,0,0,0.86,0.58,1.18);
+  part(model,new THREE.BoxGeometry(0.36,0.09,0.4),dark,0,1.15,0.46);
+  addEyes(model,eye,1.47,0.49,0.14,variant==="minilla"?0.06:0.045);
+  [-1,1].forEach(side => {
+    part(model,new THREE.CylinderGeometry(0.14,0.12,0.48,10),bodyMat,side*0.23,0.33,0.02);
+    part(model,new THREE.SphereGeometry(0.16,10,8),bodyMat,side*0.23,0.08,0.16,0,0,0,1,0.55,1.35);
+    part(model,new THREE.CapsuleGeometry(0.07,0.24,4,8),bodyMat,side*0.45,0.86,0.12,0,0,side*0.5);
+  });
+  addPlates(model,plate,s.plates||5,-0.25,-1.05,1.33,0.66,variant==="minilla"?0.14:0.26);
+  addTail(model,bodyMat,0.66,s.tail||1.3,0.22,6,0.22);
+  if(variant==="shin"){
+    [-0.3,0.3].forEach(x => part(model,new THREE.SphereGeometry(0.11,10,8),accent,x,0.82,0.3,0,0,0,0.7,1.3,0.5));
+    addTeeth(model,trim,1.19,0.63,7,false);
+    addTeeth(model,trim,1.13,0.63,7,true);
+  }
+  if(variant==="burning"){
+    for(let i=0;i<7;i++) part(model,new THREE.BoxGeometry(0.035,0.16,0.025),eye,(i%2?0.15:-0.15),0.5+i*0.13,0.28,0,0,(i%2?0.2:-0.2));
+  }
+  if(variant==="earth"){
+    [-0.34,-0.12,0.12,0.34].forEach((x,i) => {
+      part(model,new THREE.ConeGeometry(0.13,0.38,6),plate,x,1.02+i*0.03,-0.22-i*0.18);
+      part(model,new THREE.ConeGeometry(0.07,0.24,6),trim,x+0.12,1.18+i*0.03,-0.28-i*0.18);
+    });
+  }
+}
+function buildMoth(model,s,bodyMat){
+  const trim=monsterMat(s.trim,s.glow,0.2,0.08,0.68);
+  const wing=monsterMat(s.plate,s.glow,0.18,0.02,0.76);
+  const eye=monsterMat(s.glow,s.glow,2,0.08,0.35);
+  part(model,new THREE.CapsuleGeometry(0.23,0.5,6,12),bodyMat,0,0.78,-0.1,Math.PI/2,0,0);
+  part(model,new THREE.SphereGeometry(0.28,14,10),trim,0,0.86,0.12,0,0,0,0.9,1.08,0.85);
+  part(model,new THREE.SphereGeometry(0.2,12,10),bodyMat,0,0.9,0.47);
+  addWings(model,wing,trim,0.72,0.52,0.95,-0.12,0.18);
+  addEyes(model,eye,0.94,0.63,0.1,0.055);
+  [-1,1].forEach(side => {
+    part(model,new THREE.CylinderGeometry(0.015,0.02,0.38,6),trim,side*0.1,1.08,0.62,0.7,0,side*0.25);
+    part(model,new THREE.SphereGeometry(0.035,8,6),eye,side*0.16,1.25,0.76);
+  });
+}
+function buildApe(model,s,bodyMat,variant){
+  const skin=monsterMat(s.trim,undefined,0,0.05,0.86);
+  const eye=monsterMat(s.glow,s.glow,2.2,0.1,0.32);
+  const dark=monsterMat(0x15110f,undefined,0,0.05,0.9);
+  part(model,new THREE.SphereGeometry(0.46,16,12),bodyMat,0,0.78,0,0,0,0,0.96,1.15,0.76);
+  part(model,new THREE.SphereGeometry(0.32,14,12),skin,0,1.34,0.1,0,0,0,0.96,0.94,0.86);
+  part(model,new THREE.SphereGeometry(0.23,12,10),skin,0,1.23,0.37,0,0,0,0.9,0.7,1.15);
+  addEyes(model,eye,1.4,0.54,0.12,0.042);
+  [-1,1].forEach(side => {
+    part(model,new THREE.SphereGeometry(0.11,10,8),skin,side*0.32,1.36,0.03,0,0,0,0.5,1,0.75);
+    part(model,new THREE.CapsuleGeometry(0.1,0.54,5,10),bodyMat,side*0.52,0.74,0.1,0,0,side*0.28);
+    part(model,new THREE.SphereGeometry(0.16,10,8),skin,side*0.64,0.4,0.18);
+    part(model,new THREE.CapsuleGeometry(0.12,0.34,4,10),bodyMat,side*0.21,0.28,0,0,0,0);
+  });
+  if(variant==="scar"){
+    part(model,new THREE.BoxGeometry(0.1,0.28,0.03),monsterMat(0xd82432,undefined,0,0.05,0.8),0,1.48,0.55);
+    part(model,new THREE.CylinderGeometry(0.018,0.025,1.05,6),dark,0.62,0.62,-0.12,0.4,0,-0.2);
+    part(model,new THREE.ConeGeometry(0.11,0.32,5),eye,0.78,1.04,-0.42,0.5,0,-0.2);
+  } else {
+    part(model,new THREE.BoxGeometry(0.34,0.08,0.08),dark,0,1.42,0.5);
+  }
+}
+function buildDragon(model,s,bodyMat){
+  const horn=monsterMat(s.trim,s.glow,0.15,0.1,0.6);
+  const wing=monsterMat(s.plate,s.glow,0.18,0.06,0.72);
+  const eye=monsterMat(s.glow,s.glow,2.2,0.08,0.35);
+  part(model,new THREE.SphereGeometry(0.42,16,12),bodyMat,0,0.76,0,0,0,0,0.9,1.05,0.8);
+  addWings(model,wing,null,0.62,0.42,1.02,-0.15,0.22);
+  [-1,1].forEach(side => {
+    part(model,new THREE.CapsuleGeometry(0.09,0.34,4,8),bodyMat,side*0.22,0.28,0.04);
+  });
+  [-0.26,0,0.26].forEach((x,i) => {
+    part(model,new THREE.CylinderGeometry(0.08,0.13,0.82,8),bodyMat,x,1.28,0.16,0.35,0,0);
+    part(model,new THREE.SphereGeometry(0.19,12,10),bodyMat,x*1.2,1.73+(Math.abs(i)===1?0.08:0),0.35,0,0,0,0.78,0.76,1.15);
+    part(model,new THREE.ConeGeometry(0.06,0.18,6),horn,x*1.2-0.09,1.9,0.32,0,0,-0.3);
+    part(model,new THREE.ConeGeometry(0.06,0.18,6),horn,x*1.2+0.09,1.9,0.32,0,0,0.3);
+    part(model,new THREE.SphereGeometry(0.035,8,6),eye,x*1.2-0.09,1.76,0.51);
+    part(model,new THREE.SphereGeometry(0.035,8,6),eye,x*1.2+0.09,1.76,0.51);
+  });
+  [-0.18,0.18].forEach(x => {
+    for(let i=0;i<4;i++) part(model,new THREE.CylinderGeometry(0.075-i*0.014,0.09-i*0.014,0.28,8),bodyMat,x*(1+i*0.25),0.58,-0.4-i*0.27,-Math.PI/2,0,0);
+  });
+}
+function buildBug(model,s,bodyMat){
+  const shell=monsterMat(s.trim,s.glow,0.12,0.12,0.66);
+  const eye=monsterMat(s.glow,s.glow,2.2,0.08,0.35);
+  part(model,new THREE.CapsuleGeometry(0.28,0.42,6,12),bodyMat,0,0.72,-0.24,Math.PI/2,0,0);
+  part(model,new THREE.SphereGeometry(0.3,14,10),shell,0,0.78,0.22,0,0,0,0.95,0.82,1.05);
+  part(model,new THREE.SphereGeometry(0.2,12,10),bodyMat,0,0.82,0.55,0,0,0,0.85,0.8,1);
+  addEyes(model,eye,0.87,0.7,0.11,0.055);
+  for(let i=0;i<3;i++){
+    const z=0.3-i*0.27;
+    [-1,1].forEach(side => {
+      part(model,new THREE.CylinderGeometry(0.025,0.035,0.56,6),bodyMat,side*0.4,0.45,z,0,0,side*0.9);
+      part(model,new THREE.ConeGeometry(0.03,0.22,5),bodyMat,side*0.62,0.18,z,0,0,side*0.9);
+    });
+  }
+  addPlates(model,shell,6,0.18,-0.58,1.01,0.9,0.12);
+  [-1,1].forEach(side => part(model,new THREE.ConeGeometry(0.05,0.28,6),shell,side*0.12,0.72,0.72,1.2,0,side*0.35));
+}
+function buildRobot(model,s,bodyMat,variant){
+  const dark=monsterMat(s.trim,undefined,0,0.72,0.42);
+  const plate=monsterMat(s.plate,s.glow,0.25,0.68,0.36);
+  const eye=monsterMat(s.glow,s.glow,2.4,0.2,0.28);
+  part(model,new THREE.BoxGeometry(0.68,0.78,0.52),bodyMat,0,0.76,0);
+  part(model,new THREE.BoxGeometry(0.5,0.36,0.12),plate,0,0.83,0.3);
+  part(model,new THREE.BoxGeometry(0.44,0.36,0.42),bodyMat,0,1.36,0.13);
+  part(model,new THREE.BoxGeometry(0.32,0.16,0.16),dark,0,1.3,0.4);
+  addEyes(model,eye,1.42,0.4,0.14,0.05);
+  [-1,1].forEach(side => {
+    part(model,new THREE.BoxGeometry(0.2,0.58,0.2),dark,side*0.46,0.82,0.02,0,0,side*0.18);
+    part(model,new THREE.BoxGeometry(0.22,0.22,0.3),plate,side*0.54,0.48,0.12);
+    part(model,new THREE.ConeGeometry(0.06,0.22,4),plate,side*0.54,0.35,0.28,Math.PI,0,0);
+    part(model,new THREE.BoxGeometry(0.2,0.48,0.22),dark,side*0.22,0.28,0);
+    part(model,new THREE.CylinderGeometry(0.1,0.12,0.38,10),plate,side*0.44,1.18,-0.08,Math.PI/2,0,0);
+    part(model,new THREE.SphereGeometry(0.045,8,6),eye,side*0.44,1.18,0.12);
+  });
+  addPlates(model,plate,5,-0.24,-1.05,1.3,0.68,0.26);
+  addTail(model,dark,0.64,s.tail||1.25,0.18,6,0.18);
+}
+function buildSerpent(model,s,bodyMat){
+  const membrane=monsterMat(s.plate,s.glow,0.22,0.03,0.7);
+  const rib=monsterMat(s.trim,undefined,0,0.08,0.8);
+  const eye=monsterMat(s.glow,s.glow,1.8,0.08,0.35);
+  part(model,new THREE.CapsuleGeometry(0.24,0.8,6,12),bodyMat,0,0.68,-0.12,Math.PI/2,0,0);
+  part(model,new THREE.SphereGeometry(0.32,14,10),bodyMat,0,0.76,0.54,0,0,0,0.8,0.76,1.25);
+  part(model,new THREE.BoxGeometry(0.3,0.1,0.34),rib,0,0.62,0.66);
+  addEyes(model,eye,0.86,0.73,0.14,0.055);
+  addWings(model,membrane,null,0.76,0.46,0.96,-0.18,0.34);
+  [-1,1].forEach(side => {
+    for(let i=0;i<3;i++){
+      part(model,new THREE.CylinderGeometry(0.018,0.025,0.7,6),rib,side*(0.18+i*0.22),0.86,0.1-i*0.18,0,0,side*(0.5+i*0.08));
+    }
+    part(model,new THREE.ConeGeometry(0.05,0.24,6),rib,side*0.1,0.57,0.78,Math.PI,0,0);
+  });
+  addTail(model,bodyMat,0.66,1.15,0.19,6,0.14);
+}
+function buildRock(model,s,bodyMat){
+  const moss=monsterMat(s.plate,s.glow,0.15,0.03,0.85);
+  const horn=monsterMat(s.trim,undefined,0,0.08,0.82);
+  part(model,new THREE.DodecahedronGeometry(0.52,0),bodyMat,0,0.72,0,0,0,0,1.05,1,1.25);
+  part(model,new THREE.DodecahedronGeometry(0.3,0),bodyMat,0,1.18,0.34,0,0,0,0.9,0.85,1);
+  addEyes(model,horn,1.24,0.58,0.12,0.04);
+  [-1,1].forEach(side => {
+    part(model,new THREE.ConeGeometry(0.09,0.34,6),horn,side*0.22,1.48,0.29,0,0,side*0.35);
+    part(model,new THREE.CylinderGeometry(0.16,0.13,0.46,7),bodyMat,side*0.34,0.28,0.16);
+    part(model,new THREE.CylinderGeometry(0.16,0.13,0.46,7),bodyMat,side*0.34,0.28,-0.32);
+  });
+  [[0,0.04,-0.12,0.36],[-0.26,0.02,-0.24,0.28],[0.24,0.03,-0.2,0.3]].forEach(values => {
+    part(model,new THREE.ConeGeometry(values[3],0.48,6),bodyMat,values[0],1.24+values[1],values[2]);
+  });
+  [-0.22,0.16].forEach(x => part(model,new THREE.ConeGeometry(0.09,0.3,6),moss,x,1.5,-0.3));
+}
+function buildQuadruped(model,s,bodyMat,variant){
+  const trim=monsterMat(s.trim,s.glow,s.glowIntensity*0.2,0.1,0.7);
+  const plate=monsterMat(s.plate,s.glow,variant==="shimo"?1.1:0.5,0.1,0.55);
+  const eye=monsterMat(s.glow,s.glow,2.2,0.08,0.35);
+  part(model,new THREE.CapsuleGeometry(0.36,0.66,6,14),bodyMat,0,0.64,-0.06,Math.PI/2,0,0);
+  part(model,new THREE.SphereGeometry(0.3,14,10),bodyMat,0,0.7,0.53,0,0,0,0.9,0.82,1.15);
+  part(model,new THREE.BoxGeometry(0.34,0.1,0.28),trim,0,0.55,0.68);
+  addEyes(model,eye,0.78,0.75,0.13,0.05);
+  [-1,1].forEach(side => {
+    [-0.28,0.28].forEach(z => {
+      part(model,new THREE.CylinderGeometry(0.11,0.09,0.48,8),bodyMat,side*0.28,0.32,z);
+      part(model,new THREE.SphereGeometry(0.13,10,8),bodyMat,side*0.28,0.08,z+0.05,0,0,0,1,0.6,1.2);
+    });
+  });
+  if(variant==="shimo"){
+    addPlates(model,plate,7,-0.35,-0.85,1.02,0.82,0.2);
+    [-0.18,0,0.18].forEach(x => part(model,new THREE.ConeGeometry(0.08,0.3,5),plate,x,1.05,0.58,0,0,x*0.8));
+    addTail(model,bodyMat,0.63,0.95,0.18,5,0.12);
+    [-0.16,0.16].forEach(x => part(model,new THREE.ConeGeometry(0.07,0.34,5),plate,x,0.68,-1.18,Math.PI/2,0,0));
+  } else {
+    addWings(model,plate,null,0.55,0.36,0.95,-0.22,0.25);
+    [-0.18,0,0.18].forEach(x => part(model,new THREE.ConeGeometry(0.08,0.32,6),trim,x,1.04,0.56,0,0,x));
+    addPlates(model,plate,5,-0.32,-0.8,1.0,0.8,0.16);
+    addTail(model,bodyMat,0.62,1.05,0.19,5,0.16);
+  }
+}
+function buildPterosaur(model,s,bodyMat){
+  const wing=monsterMat(s.plate,s.glow,0.2,0.03,0.72);
+  const trim=monsterMat(s.trim,s.glow,0.18,0.08,0.62);
+  const eye=monsterMat(s.glow,s.glow,2,0.08,0.35);
+  part(model,new THREE.CapsuleGeometry(0.22,0.48,6,12),bodyMat,0,0.72,0,Math.PI/2,0,0);
+  part(model,new THREE.SphereGeometry(0.24,14,10),bodyMat,0,0.82,0.42);
+  part(model,new THREE.ConeGeometry(0.11,0.42,6),trim,0,0.8,0.7,Math.PI/2,0,0);
+  part(model,new THREE.ConeGeometry(0.13,0.38,6),trim,0,1.06,0.38,-0.5,0,0);
+  addEyes(model,eye,0.88,0.58,0.1,0.045);
+  addWings(model,wing,null,0.82,0.34,0.9,-0.04,0.12);
+  [-1,1].forEach(side => part(model,new THREE.CylinderGeometry(0.025,0.035,0.32,6),bodyMat,side*0.13,0.28,0.05));
+  addTail(model,bodyMat,0.68,0.9,0.12,5,0.1);
+}
+function buildFolk(model,s,bodyMat,variant){
+  const trim=monsterMat(s.trim,s.glow,s.glowIntensity*0.35,0.08,0.65);
+  const plate=monsterMat(s.plate,s.glow,s.glowIntensity*0.25,0.05,0.8);
+  const skin=monsterMat(s.trim,undefined,0,0.03,0.85);
+  const dark=monsterMat(0x13151b,undefined,0,0.05,0.9);
+  const eyeGlow = variant==="vampire"||variant==="sukubus"||variant==="alp"||variant==="nachtzerrer" ? 0xff3659 : s.glow;
+  const eye=monsterMat(eyeGlow,s.glow,1.8,0.1,0.32);
+  const small = variant==="rumpel"||variant==="heinzel"||variant==="wichtel"||variant==="alp"||variant==="moosweib";
+  const bodyH = small?0.4:0.6;
+  const bodyY = small?0.55:0.68;
+  const headY = small?1.02:1.18;
+  part(model,new THREE.CapsuleGeometry(small?0.22:0.28,bodyH,5,10),bodyMat,0,bodyY,0,0,0,0,1,1,0.86);
+  part(model,new THREE.SphereGeometry(small?0.21:0.25,14,10),skin,0,headY,0.04,0,0,0,1,1,0.95);
+  addEyes(model,eye,headY+0.02,0.25,small?0.085:0.1,0.035);
+  [-1,1].forEach(side => {
+    part(model,new THREE.CapsuleGeometry(small?0.055:0.07,small?0.22:0.34,4,8),bodyMat,side*(small?0.28:0.36),bodyY+0.02,0,0,0,side*(small?0.35:0.18));
+    part(model,new THREE.CylinderGeometry(small?0.065:0.08,small?0.065:0.08,small?0.26:0.38,8),plate,side*(small?0.11:0.14),small?0.15:0.22,0);
+  });
+  if(variant==="rumpel"){
+    part(model,new THREE.ConeGeometry(0.34,0.55,12),plate,0,headY+0.3,0);
+    part(model,new THREE.CylinderGeometry(0.37,0.37,0.04,14),plate,0,headY+0.08,0);
+    part(model,new THREE.CylinderGeometry(0.025,0.025,0.82,8),trim,0.43,0.66,0.1,Math.PI/2,0,0.1);
+    part(model,new THREE.TorusGeometry(0.13,0.025,8,18),trim,0.43,0.66,0.1);
+  } else if(variant==="hotze"){
+    part(model,new THREE.ConeGeometry(0.34,0.2,3),plate,0,headY+0.24,0);
+    part(model,new THREE.BoxGeometry(0.22,0.08,0.14),dark,0,headY-0.1,0.24);
+    part(model,new THREE.CylinderGeometry(0.025,0.03,0.92,8),dark,0.42,0.74,0.1,0,0,-0.18);
+    part(model,new THREE.SphereGeometry(0.06,8,6),trim,0.38,1.12,0.1);
+  } else if(variant==="bigfoot"){
+    [-1,1].forEach(side => {
+      part(model,new THREE.SphereGeometry(0.16,10,8),bodyMat,side*0.38,bodyY+0.3,0);
+      part(model,new THREE.SphereGeometry(0.17,10,8),plate,side*0.14,0.08,0.16,0,0,0,1.1,0.55,1.4);
+    });
+    part(model,new THREE.SphereGeometry(0.29,14,10),bodyMat,0,headY,0.04,0,0,0,1.15,0.9,1);
+  } else if(variant==="vampire"){
+    addWings(model,plate,trim,0.46,0.58,0.92,0.04,0.12);
+    part(model,new THREE.BoxGeometry(0.18,0.5,0.04),skin,0,bodyY+0.05,0.25);
+    addTeeth(model,trim,headY-0.08,0.27,4,true);
+  } else if(variant==="hexe"){
+    part(model,new THREE.CylinderGeometry(0.39,0.39,0.04,14),plate,0,headY+0.12,0);
+    part(model,new THREE.ConeGeometry(0.28,0.6,12),plate,0,headY+0.42,0);
+    part(model,new THREE.CylinderGeometry(0.03,0.04,1.05,8),plate,0.42,0.7,0.08);
+    part(model,new THREE.ConeGeometry(0.1,0.22,8),trim,0.42,1.28,0.08,Math.PI,0,0);
+  } else if(variant==="fee"){
+    const wing=monsterMat(s.plate,s.glow,0.4,0.02,0.6);
+    addWings(model,wing,trim,0.36,0.3,1.04,-0.12,0.18);
+    part(model,new THREE.CylinderGeometry(0.018,0.022,0.62,6),trim,0.4,0.82,0.1,0,0,-0.3);
+    part(model,new THREE.SphereGeometry(0.065,8,6),eye,0.5,1.1,0.1);
+  } else if(variant==="ruebezahl"){
+    part(model,new THREE.ConeGeometry(0.25,0.62,10),trim,0,headY-0.22,0.2,Math.PI,0,0);
+    part(model,new THREE.CylinderGeometry(0.04,0.05,1.2,8),plate,0.46,0.78,0);
+    part(model,new THREE.DodecahedronGeometry(0.13,0),trim,0.46,1.38,0);
+    [-1,1].forEach(side => part(model,new THREE.DodecahedronGeometry(0.16,0),plate,side*0.3,0.9,-0.06));
+  } else if(variant==="waldschrat"){
+    [-1,1].forEach(side => {
+      part(model,new THREE.ConeGeometry(0.07,0.42,7),plate,side*0.19,headY+0.28,0,0,0,side*0.4);
+      part(model,new THREE.SphereGeometry(0.12,8,6),trim,side*0.24,0.92,-0.12);
+    });
+    part(model,new THREE.ConeGeometry(0.18,0.5,8),trim,0,headY-0.16,0.2,Math.PI,0,0);
+  } else if(variant==="heinzel"){
+    part(model,new THREE.SphereGeometry(0.23,12,10),bodyMat,0,headY+0.02,0,0,0,0,1,0.8,1);
+    part(model,new THREE.CylinderGeometry(0.055,0.06,0.48,8),plate,0.4,0.6,0.06,0,0,-0.25);
+    part(model,new THREE.BoxGeometry(0.22,0.08,0.08),trim,0.48,0.82,0.06,0,0,-0.25);
+  } else if(variant==="wichtel"){
+    part(model,new THREE.ConeGeometry(0.28,0.48,10),plate,0,headY+0.28,0);
+    part(model,new THREE.TorusGeometry(0.09,0.02,8,14),trim,0,0.72,0.22);
+  } else if(variant==="sukubus"){
+    [-1,1].forEach(side => part(model,new THREE.ConeGeometry(0.07,0.3,7),trim,side*0.16,headY+0.28,0,0,0,side*0.35));
+    addWings(model,plate,trim,0.4,0.46,0.98,-0.16,0.22);
+    addTail(model,bodyMat,0.54,0.7,0.07,5,0.18);
+  } else if(variant==="lilith"){
+    part(model,new THREE.CylinderGeometry(0.26,0.26,0.1,12),trim,0,headY+0.23,0);
+    [-0.2,0,0.2].forEach(x => part(model,new THREE.ConeGeometry(0.05,0.24,6),trim,x,headY+0.37,0));
+    addWings(model,plate,trim,0.42,0.5,0.96,-0.14,0.2);
+    part(model,new THREE.CylinderGeometry(0.025,0.03,0.95,8),trim,0.44,0.75,0);
+    part(model,new THREE.SphereGeometry(0.09,10,8),eye,0.44,1.28,0);
+  } else if(variant==="medusa"){
+    for(let i=0;i<9;i++){
+      const a=i/9*Math.PI*2;
+      part(model,new THREE.CylinderGeometry(0.035,0.045,0.34,6),trim,Math.cos(a)*0.2,headY+0.24,Math.sin(a)*0.16,0.5,0,a);
+      part(model,new THREE.ConeGeometry(0.045,0.16,6),trim,Math.cos(a)*0.25,headY+0.4,Math.sin(a)*0.2,0.5,0,a);
+    }
+  } else if(variant==="dschinn"){
+    part(model,new THREE.TorusGeometry(0.23,0.08,8,18),trim,0,headY+0.2,0,Math.PI/2,0,0);
+    for(let i=0;i<4;i++) part(model,new THREE.ConeGeometry(0.16-i*0.03,0.34,8),bodyMat,0,0.42-i*0.12,0,Math.PI,0,0);
+    part(model,new THREE.SphereGeometry(0.12,10,8),trim,0.42,0.5,0.05,0,0,0,1.3,0.7,1);
+  } else if(variant==="goblin"){
+    [-1,1].forEach(side => part(model,new THREE.ConeGeometry(0.1,0.34,6),skin,side*0.28,headY+0.04,0,0,0,side*Math.PI/2));
+    part(model,new THREE.BoxGeometry(0.22,0.18,0.2),plate,0,0.52,0.2);
+    part(model,new THREE.CylinderGeometry(0.045,0.06,0.68,7),plate,0.44,0.7,0,0,0,-0.2);
+    part(model,new THREE.SphereGeometry(0.11,8,6),plate,0.53,1.0,0,0,0,0,1,0.8,1);
+  } else if(variant==="klabauter"){
+    part(model,new THREE.CylinderGeometry(0.27,0.27,0.1,12),plate,0,headY+0.18,0);
+    part(model,new THREE.ConeGeometry(0.22,0.18,12),plate,0,headY+0.28,0);
+    part(model,new THREE.CylinderGeometry(0.04,0.045,0.5,8),plate,0.42,0.62,0.08);
+    part(model,new THREE.BoxGeometry(0.2,0.07,0.08),trim,0.42,0.84,0.08);
+    part(model,new THREE.TorusGeometry(0.11,0.025,8,16),trim,0,0.54,0.24);
+  } else if(variant==="alp"){
+    part(model,new THREE.SphereGeometry(0.42,14,10),plate,0,bodyY+0.08,-0.14,0,0,0,1,1.1,0.55);
+    part(model,new THREE.CylinderGeometry(0.38,0.38,0.04,14),plate,0,headY+0.12,0);
+    part(model,new THREE.ConeGeometry(0.26,0.34,10),plate,0,headY+0.3,0);
+    part(model,new THREE.SphereGeometry(0.09,10,8),dark,0,headY+0.02,0.25);
+    part(model,new THREE.SphereGeometry(0.035,8,6),eye,0,headY+0.02,0.32);
+  } else if(variant==="blaubart"){
+    part(model,new THREE.ConeGeometry(0.29,0.7,12),trim,0,headY-0.28,0.18,Math.PI,0,0);
+    part(model,new THREE.BoxGeometry(0.34,0.08,0.12),trim,0,headY+0.13,0.2);
+    [-1,1].forEach(side => {
+      part(model,new THREE.TorusGeometry(0.07,0.018,8,14),trim,side*0.34,0.58,0.16);
+      part(model,new THREE.BoxGeometry(0.03,0.2,0.03),trim,side*0.34,0.45,0.16);
+    });
+  } else if(variant==="nachtzerrer"){
+    part(model,new THREE.ConeGeometry(0.34,0.76,10),plate,0,0.55,-0.1,Math.PI,0,0);
+    part(model,new THREE.BoxGeometry(0.3,0.08,0.24),trim,0,0.82,0.16);
+    [-1,1].forEach(side => part(model,new THREE.TorusGeometry(0.1,0.02,8,14,Math.PI),trim,0,0.68+side*0.12,0.19,0,0,0));
+    part(model,new THREE.SphereGeometry(0.06,8,6),eye,0.1,headY,0.25);
+  } else if(variant==="moosweib"){
+    [-1,1].forEach(side => part(model,new THREE.SphereGeometry(0.12,8,6),trim,side*0.18,headY+0.16,-0.03));
+    part(model,new THREE.ConeGeometry(0.32,0.42,10),trim,0,0.38,0,Math.PI,0,0);
+    part(model,new THREE.TorusGeometry(0.16,0.035,8,16),plate,0.36,0.58,0.1,0,0,Math.PI/2);
+    part(model,new THREE.TorusGeometry(0.1,0.02,8,14),plate,0.36,0.75,0.1,0,Math.PI/2,0);
+  } else if(variant==="kroetenmoench"){
+    part(model,new THREE.ConeGeometry(0.3,0.62,10),plate,0,headY+0.08,-0.02);
+    [-1,1].forEach(side => {
+      part(model,new THREE.SphereGeometry(0.09,10,8),skin,side*0.13,headY+0.2,0.1);
+      part(model,new THREE.SphereGeometry(0.035,8,6),eye,side*0.13,headY+0.2,0.18);
+      part(model,new THREE.SphereGeometry(0.035,8,6),trim,side*0.2,0.8,0.18);
+    });
+    part(model,new THREE.CylinderGeometry(0.035,0.045,1.0,8),plate,0.44,0.72,0);
+    part(model,new THREE.SphereGeometry(0.08,8,6),trim,0.44,1.24,0);
+  }
+}
+function buildBeast(model,s,bodyMat,variant){
+  const trim=monsterMat(s.trim,s.glow,s.glowIntensity*0.3,0.08,0.7);
+  const plate=monsterMat(s.plate,s.glow,s.glowIntensity*0.4,0.05,0.78);
+  const eye=monsterMat(s.glow,s.glow,2.2,0.1,0.32);
+  const dark=monsterMat(0x11131a,undefined,0,0.04,0.9);
+  const heavy=variant==="aufhocker"||variant==="fenris";
+  part(model,new THREE.CapsuleGeometry(heavy?0.36:0.28,heavy?0.7:0.58,6,12),bodyMat,0,0.68,-0.1,Math.PI/2,0,0);
+  part(model,new THREE.SphereGeometry(heavy?0.3:0.24,14,10),bodyMat,0,0.8,0.55,0,0,0,0.9,0.85,1.2);
+  part(model,new THREE.SphereGeometry(0.17,12,10),trim,0,0.7,0.76,0,0,0,0.85,0.7,1.1);
+  addEyes(model,eye,0.87,0.72,heavy?0.14:0.11,heavy?0.045:0.04);
+  addTeeth(model,trim,0.63,0.82,6,true);
+  [-1,1].forEach(side => {
+    part(model,new THREE.ConeGeometry(0.09,0.28,6),plate,side*0.19,1.04,0.5,0,0,side*0.28);
+    [-0.3,0.3].forEach(z => {
+      part(model,new THREE.CylinderGeometry(0.08,0.07,0.48,8),bodyMat,side*0.25,0.3,z);
+      part(model,new THREE.SphereGeometry(0.095,8,6),plate,side*0.25,0.07,z+0.05,0,0,0,1,0.6,1.25);
+    });
+  });
+  addTail(model,bodyMat,0.7,heavy?1.2:0.9,heavy?0.18:0.13,5,0.16);
+  if(variant==="chupa"){
+    addPlates(model,plate,7,-0.2,-0.75,1.05,0.86,0.15);
+    [-1,1].forEach(side => part(model,new THREE.SphereGeometry(0.075,10,8),eye,side*0.12,0.9,0.7));
+  } else if(variant==="werewolf"){
+    part(model,new THREE.SphereGeometry(0.32,12,10),trim,0,0.86,0.25,0,0,0,1.05,0.72,0.7);
+    part(model,new THREE.ConeGeometry(0.1,0.34,7),trim,0,1.08,-0.02,Math.PI,0,0);
+  } else if(variant==="aufhocker"){
+    part(model,new THREE.SphereGeometry(0.42,14,10),plate,0,0.92,-0.16,0,0,0,1,0.8,0.75);
+    [-1,1].forEach(side => part(model,new THREE.ConeGeometry(0.13,0.36,7),dark,side*0.26,1.14,0.38,0,0,side*0.45));
+  } else if(variant==="fenris"){
+    addPlates(model,plate,8,-0.2,-0.95,1.12,0.86,0.2);
+    [-1,1].forEach(side => {
+      for(let i=0;i<3;i++) part(model,new THREE.BoxGeometry(0.03,0.24,0.03),trim,side*(0.18+i*0.06),0.84-i*0.08,0.16-i*0.12,0,0,side*0.35);
+      part(model,new THREE.ConeGeometry(0.07,0.34,6),plate,side*0.28,1.18,0.42,0,0,side*0.5);
+    });
+  }
+}
+function buildBook(model,s,bodyMat){
+  const gold=monsterMat(s.trim,s.glow,0.5,0.6,0.36);
+  const pages=monsterMat(s.plate,undefined,0,0.02,0.9);
+  const dark=monsterMat(0x1b1114,undefined,0,0.05,0.88);
+  const eye=monsterMat(s.glow,s.glow,2,0.1,0.35);
+  part(model,new THREE.BoxGeometry(0.72,0.95,0.2),bodyMat,0,0.72,0);
+  part(model,new THREE.BoxGeometry(0.09,0.95,0.22),gold,-0.34,0.72,0);
+  part(model,new THREE.BoxGeometry(0.61,0.84,0.03),pages,0.04,0.72,0.12);
+  part(model,new THREE.BoxGeometry(0.05,0.5,0.03),gold,-0.05,0.72,0.15);
+  part(model,new THREE.BoxGeometry(0.22,0.05,0.03),gold,0.05,0.96,0.15);
+  part(model,new THREE.BoxGeometry(0.22,0.05,0.03),gold,0.05,0.72,0.15);
+  part(model,new THREE.BoxGeometry(0.22,0.05,0.03),gold,0.05,0.48,0.15);
+  addWings(model,pages,gold,0.46,0.3,0.9,-0.08,0.16);
+  addEyes(model,eye,1.02,0.16,0.13,0.04);
+  part(model,new THREE.BoxGeometry(0.3,0.06,0.04),dark,0,0.88,0.17);
+}
+function buildMermaid(model,s,bodyMat){
+  const skin=monsterMat(s.trim,undefined,0,0.02,0.82);
+  const tail=monsterMat(s.plate,s.glow,0.28,0.08,0.62);
+  const hair=monsterMat(s.plate,s.glow,0.18,0.03,0.78);
+  const eye=monsterMat(s.glow,s.glow,1.8,0.08,0.35);
+  part(model,new THREE.CapsuleGeometry(0.22,0.44,6,12),skin,0,0.92,0);
+  part(model,new THREE.SphereGeometry(0.23,14,10),skin,0,1.34,0.04);
+  addEyes(model,eye,1.36,0.25,0.1,0.035);
+  part(model,new THREE.ConeGeometry(0.23,0.72,10),tail,0,0.42,-0.05,Math.PI,0,0);
+  part(model,new THREE.SphereGeometry(0.28,12,8),tail,0,0.12,-0.42,0,0,0,1.5,0.18,0.5);
+  for(let i=0;i<5;i++) part(model,new THREE.CylinderGeometry(0.045,0.06,0.72,7),hair,-0.18+i*0.09,1.12,-0.13,0.12,0,(i-2)*0.08);
+  part(model,new THREE.BoxGeometry(0.22,0.03,0.05),monsterMat(s.trim,s.glow,0.4,0.5,0.35),0.34,1.02,0.12,0,0,0.2);
+  for(let i=0;i<5;i++) part(model,new THREE.BoxGeometry(0.012,0.08,0.012),monsterMat(s.trim,s.glow,0.4,0.5,0.35),0.28+i*0.03,0.98,0.12,0,0,0.2);
+}
+function buildHydra(model,s,bodyMat){
+  const horn=monsterMat(s.trim,s.glow,0.25,0.1,0.62);
+  const eye=monsterMat(s.glow,s.glow,2.1,0.08,0.35);
+  part(model,new THREE.TorusGeometry(0.34,0.22,8,18),bodyMat,0,0.42,0,Math.PI/2,0,0);
+  part(model,new THREE.SphereGeometry(0.34,14,10),bodyMat,0,0.7,0,0,0,0,1,0.86,1);
+  [-0.24,0,0.24].forEach((x,i) => {
+    part(model,new THREE.CylinderGeometry(0.09,0.13,0.68+Math.abs(i)*0.12,8),bodyMat,x,1.12+Math.abs(i)*0.06,0.14,0.28,0,0);
+    part(model,new THREE.SphereGeometry(0.18,12,10),bodyMat,x*1.3,1.52+Math.abs(i)*0.08,0.32,0,0,0,0.85,0.8,1.1);
+    part(model,new THREE.ConeGeometry(0.06,0.22,6),horn,x*1.3-0.1,1.7+Math.abs(i)*0.08,0.3,0,0,-0.3);
+    part(model,new THREE.ConeGeometry(0.06,0.22,6),horn,x*1.3+0.1,1.7+Math.abs(i)*0.08,0.3,0,0,0.3);
+    addEyes(model,eye,1.55+Math.abs(i)*0.08,0.46,0.08,0.03);
+  });
+  [-0.18,0.18].forEach(x => addTail(model,bodyMat,0.48,0.95,0.16,5,0.12));
+}
+function buildReaper(model,s,bodyMat){
+  const bone=monsterMat(s.trim,undefined,0,0.02,0.78);
+  const cloak=monsterMat(s.plate,s.glow,0.18,0.04,0.88);
+  const eye=monsterMat(s.glow,s.glow,2.4,0.1,0.32);
+  const dark=monsterMat(0x08080c,undefined,0,0.02,0.95);
+  part(model,new THREE.ConeGeometry(0.44,1.25,12),bodyMat,0,0.63,0);
+  part(model,new THREE.SphereGeometry(0.28,14,10),cloak,0,1.36,-0.03,0,0,0,1.05,1,1);
+  part(model,new THREE.SphereGeometry(0.2,12,10),bone,0,1.31,0.18);
+  part(model,new THREE.BoxGeometry(0.24,0.08,0.16),bone,0,1.17,0.26);
+  addEyes(model,eye,1.34,0.35,0.08,0.045);
+  for(let i=0;i<4;i++) part(model,new THREE.BoxGeometry(0.025,0.12,0.02),bone,-0.08+i*0.05,1.11,0.34);
+  [-1,1].forEach(side => part(model,new THREE.CapsuleGeometry(0.055,0.46,4,8),cloak,side*0.34,0.92,0.08,0,0,side*0.32));
+  part(model,new THREE.CylinderGeometry(0.025,0.03,1.75,8),bone,0.46,0.86,0.1,0,0,-0.12);
+  part(model,new THREE.TorusGeometry(0.34,0.035,6,18,Math.PI*1.15),bone,0.52,1.5,0.1,0,0,-1.1,1,0.55,1);
+}
+function makeMonsterModel(model,u,s,bodyMat){
+  if(s.type==="kaiju") buildKaiju(model,s,bodyMat,s.variant||"classic");
+  else if(s.type==="moth") buildMoth(model,s,bodyMat);
+  else if(s.type==="ape") buildApe(model,s,bodyMat,s.variant||"kong");
+  else if(s.type==="dragon") buildDragon(model,s,bodyMat);
+  else if(s.type==="bug") buildBug(model,s,bodyMat);
+  else if(s.type==="robot") buildRobot(model,s,bodyMat,s.variant||"mecha");
+  else if(s.type==="serpent") buildSerpent(model,s,bodyMat);
+  else if(s.type==="rock") buildRock(model,s,bodyMat);
+  else if(s.type==="quadruped") buildQuadruped(model,s,bodyMat,s.variant||"shimo");
+  else if(s.type==="pterosaur") buildPterosaur(model,s,bodyMat);
+  else if(s.type==="folk") buildFolk(model,s,bodyMat,s.variant||"generic");
+  else if(s.type==="beast") buildBeast(model,s,bodyMat,s.variant||"wolf");
+  else if(s.type==="book") buildBook(model,s,bodyMat);
+  else if(s.type==="mermaid") buildMermaid(model,s,bodyMat);
+  else if(s.type==="hydra") buildHydra(model,s,bodyMat);
+  else if(s.type==="reaper") buildReaper(model,s,bodyMat);
+}
 function makeCharacter(u){
   const group = new THREE.Group();
-  const classColor = new THREE.Color(CLASS_META[u.cls].col);
-  const bodyMat = new THREE.MeshStandardMaterial({color:classColor,roughness:0.62,metalness:0.08});
+  const style = MONSTER_STYLE[u.key];
+  const classColor = new THREE.Color(style ? "#"+style.body.toString(16).padStart(6,"0") : CLASS_META[u.cls].col);
+  const bodyMat = style
+    ? monsterMat(style.body,style.glow,(style.glowIntensity||0)*0.22,style.metalness||0.08,style.roughness||0.72)
+    : new THREE.MeshStandardMaterial({color:classColor,roughness:0.62,metalness:0.08});
   const trimMat = new THREE.MeshStandardMaterial({color:0xe6edf5,roughness:0.45,metalness:0.25});
   const darkMat = new THREE.MeshStandardMaterial({color:0x111820,roughness:0.85});
   const skinMat = new THREE.MeshStandardMaterial({color:u.side === "player" ? 0xf3d3b5 : 0xc9a2a2,roughness:0.8});
   const glowMat = new THREE.MeshStandardMaterial({color:classColor,emissive:classColor,emissiveIntensity:1.4,roughness:0.4});
+  const shadowRadius = (style && style.radius) || 0.42;
   const shadow = new THREE.Mesh(
-    new THREE.CircleGeometry(0.42,24),
+    new THREE.CircleGeometry(shadowRadius,24),
     new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.32,depthWrite:false})
   );
   shadow.rotation.x = -Math.PI/2;
   shadow.position.y = 0.022;
   group.add(shadow);
   const shieldRing = new THREE.Mesh(
-    new THREE.TorusGeometry(0.5,0.025,8,28),
+    new THREE.TorusGeometry(shadowRadius+0.08,0.025,8,28),
     new THREE.MeshBasicMaterial({color:0x8fb5ff,transparent:true,opacity:0.75,depthWrite:false})
   );
   shieldRing.rotation.x = Math.PI/2;
   shieldRing.position.y = 0.05;
   shieldRing.visible = false;
   group.add(shieldRing);
+  if(style){
+    const model = new THREE.Group();
+    model.scale.setScalar(style.scale||1);
+    model.rotation.y = u.side === "enemy" ? -Math.PI/2 : Math.PI/2;
+    makeMonsterModel(model,u,style,bodyMat);
+    group.add(model);
+    group.userData.model = model;
+  } else {
   const body = new THREE.Mesh(new THREE.CylinderGeometry(0.27,0.34,0.62,12),bodyMat);
   body.position.y = 0.52;
   body.castShadow = true;
@@ -461,14 +1036,17 @@ function makeCharacter(u){
     ring.rotation.x = Math.PI/2;
     group.add(ring);
   }
+  }
+  const hpY = (style && style.hpY) || 1.52;
   const hp = makeHpBar();
-  hp.position.y = 1.52;
+  hp.position.y = hpY;
   hp.quaternion.copy(camera.quaternion);
   group.add(hp);
   const label = makeTextSprite(u.name+" L"+u.level,u.side === "player" ? "#e6edf5" : "#ff9a9a",0.8);
-  label.position.y = 1.95;
+  label.position.y = hpY+0.43;
   group.add(label);
-  group.userData = {u:u,bodyMat:bodyMat,hp:hp,fill:hp.userData.fill,label:label,shieldRing:shieldRing};
+  const modelRef = group.userData.model;
+  group.userData = {u:u,bodyMat:bodyMat,hp:hp,fill:hp.userData.fill,label:label,shieldRing:shieldRing,model:modelRef};
   return group;
 }
 function syncUnits(){
