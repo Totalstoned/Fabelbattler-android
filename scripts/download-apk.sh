@@ -16,7 +16,7 @@ if [ -z "$RUN_ID" ]; then
   exit 1
 fi
 
-ARTIFACT="$($GH_BIN run view "$RUN_ID" --repo "$REPO" --json artifacts --jq '[.artifacts[] | select(.name | startswith("fabelbattler-v"))][0].name')"
+ARTIFACT="$($GH_BIN api "repos/$REPO/actions/runs/$RUN_ID/artifacts" --paginate --jq '[.artifacts[] | select(.name | startswith("fabelbattler-v"))][0].name // empty')"
 
 if [ "$ARTIFACT" = "null" ] || [ -z "$ARTIFACT" ]; then
   echo "Kein versionsbenannter APK-Artifact gefunden" >&2
