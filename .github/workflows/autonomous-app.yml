@@ -1,0 +1,99 @@
+name: Fabelbattler Autonomous Agent
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: fabelbattler-autonomous
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "opencode[bot]"
+          git config user.email "opencode[bot]@users.noreply.github.com"
+
+      - name: Verify API key
+        id: api_key
+        run: |
+          if [ -n "$OPENCODE_API_KEY" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run OpenCode agent
+        if: steps.api_key.outputs.ok == 'true'
+        uses: anomalyco/opencode/github@latest
+        with:
+          model: opencode/big-pickle
+          timeout_minutes: 30
+          use_github_token: true
+          prompt: |
+            Du arbeitest autonom an Fabelbattler in diesem Repository.
+
+            Lies zuerst Issue #${{ vars.FABEL_PROGRESS_ISSUE }} und wähle genau ein offenes, kleines Ziel aus der Checkliste. Falls kein sinnvolles Ziel offen ist, wähle eine kleine, eigene Verbesserung mit klarem Nutzen für die App.
+
+            Aktueller Stand:
+            - Aktive App ist die Three.js-WebView-Version in app/src/main/assets/index3d.html.
+            - 95 Einheiten, 10 Klassen, 7 Rassen, 48 Zauber sind bereits enthalten.
+            - Grafik hat bereits Schatten, Glow, Partikel, HP-/Schildbalken und Kamera-Zoom.
+            - UE5-Daten und C++-Gerüst liegen außerhalb dieses Repos nur als spätere Option.
+
+            Regeln:
+            - Pro Lauf nur ein abgeschlossenes, kleines Ziel.
+            - Keine Engine-Installation, keine großen Dependency-Neuerungen, keine Secrets oder Tokens in Dateien.
+            - Kein Wechsel der Engine; Three.js/WebView bleibt der aktive Pfad.
+            - Ändere bevorzugt app/src/main/assets/index3d.html und bei Bedarf vorhandene Repo-Dateien.
+            - Validiere nach Änderungen mit: python3 scripts/check_js.py app/src/main/assets/index3d.html
+            - Erstelle einen Commit und einen Pull Request mit kurzer, konkreter Beschreibung.
+            - Falls die Änderung nicht sicher abgeschlossen werden kann, ändere nichts und erkläre den Grund im Issue-Kommentar.
+
+            Am Ende sollt du auf jeden Fall einen kurzen Issue-Kommentar mit dem gewählten Ziel, dem Ergebnis und dem nächsten Schritt schreiben.
+
+      - name: Comment progress
+        if: always()
+        env:
+          ISSUE_NUMBER: ${{ vars.FABEL_PROGRESS_ISSUE }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          KEY_OK: ${{ steps.api_key.outputs.ok }}
+          RUN_STATUS: ${{ job.status }}
+        run: |
+          if [ -z "$ISSUE_NUMBER" ]; then
+            exit 0
+          fi
+          {
+            echo "### Fabelbattler background run"
+            echo
+            echo "- Status: $RUN_STATUS"
+            echo "- Zeit: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            echo "- Run: $RUN_URL"
+            echo "- Commit: $GITHUB_SHA"
+            echo "- Model key: $KEY_OK"
+            if [ "$KEY_OK" != "true" ]; then
+              echo
+              echo "Blockiert: GitHub Secret OPENCODE_API_KEY fehlt."
+            fi
+            echo
+            echo "Der Agent wählt das nächste offene Ziel aus dem Fortschritts-Issue. Änderungen erscheinen als PR."
+          } > /tmp/fabelbattler-progress.md
+          gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file /tmp/fabelbattler-progress.md
