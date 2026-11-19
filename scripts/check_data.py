@@ -1,0 +1,170 @@
+import ast, re, sys
+from pathlib import Path
+
+path = Path(sys.argv[1] if len(sys.argv) > 1 else 'app/src/main/assets/index3d.html')
+src = path.read_text(encoding='utf-8')
+
+def extract_block(name):
+    marker = 'const ' + name + ' = {'
+    start = src.find(marker)
+    if start < 0:
+        raise SystemExit('Block fehlt: ' + name)
+    i = src.find('{', start)
+    depth = 0
+    quote = None
+    escaped = False
+    for j in range(i, len(src)):
+        c = src[j]
+        if quote:
+            if escaped:
+                escaped = False
+            elif c == '\\':
+                escaped = True
+            elif c == quote:
+                quote = None
+            continue
+        if c in '"\'`':
+            quote = c
+        elif c == '{':
+            depth += 1
+        elif c == '}':
+            depth -= 1
+            if depth == 0:
+                return src[i + 1:j]
+    raise SystemExit('Block nicht geschlossen: ' + name)
+
+def field(body, key):
+    m = re.search(r'\b' + re.escape(key) + r'\s*:\s*"((?:\\.|[^"\\])*)"', body)
+    return m.group(1) if m else None
+
+def keys(body):
+    result = set()
+    depth = 0
+    quote = None
+    escaped = False
+    i = 0
+    while i < len(body):
+        c = body[i]
+        if quote:
+            if escaped:
+                escaped = False
+            elif c == '\\':
+                escaped = True
+            elif c == quote:
+                quote = None
+            i += 1
+            continue
+        if c in '"\'`':
+            quote = c
+            i += 1
+            continue
+        if c in '{[(':
+            depth += 1
+            i += 1
+            continue
+        if c in '}])':
+            depth -= 1
+            i += 1
+            continue
+        if depth == 0 and (c.isalnum() or c == '_'):
+            m = re.match(r'[A-Za-z0-9_ÄÖÜäöüß]+', body[i:])
+            if m:
+                key = m.group(0)
+                j = i + len(key)
+                while j < len(body) and body[j].isspace():
+                    j += 1
+                if j < len(body) and body[j] == ':':
+                    result.add(key)
+                i = j
+                continue
+        i += 1
+    return result
+
+roster = {}
+base_block = extract_block('ROSTER')
+for m in re.finditer(r'^\s*([A-Za-z0-9_]+):\{(.*)\},?\s*$', base_block, re.M):
+    key, body = m.group(1), m.group(2)
+    roster[key] = {
+        'name': field(body, 'name'),
+        'role': field(body, 'role'),
+        'cls': field(body, 'cls'),
+        'cls2': field(body, 'cls2'),
+        'ability': field(body, 'ability'),
+        'race': 'Kaiju' if field(body, 'cls') == 'Kaiju' else 'Folklore',
+    }
+
+race = None
+pack_block = extract_block('RACE_PACKS')
+for line in pack_block.splitlines():
+    header = re.match(r'^\s*([A-Za-z0-9_ÄÖÜäöü]+)\s*:\s*\[\s*$', line)
+    if header:
+        race = header.group(1)
+        continue
+    entry = re.match(r'^\s*(\[.*\]),?\s*$', line)
+    if not entry or not race:
+        continue
+    e = ast.literal_eval(entry.group(1))
+    roster[e[0]] = {'name': e[1], 'role': e[3], 'cls': e[4], 'cls2': e[5], 'ability': e[10], 'race': race}
+
+spells = set(re.findall(r'^\s*([A-Za-z0-9_]+):S\(', extract_block('SPELLS'), re.M))
+roles = keys(extract_block('ROLE_META'))
+classes = keys(extract_block('CLASS_META'))
+races = keys(extract_block('RACE_META'))
+descs = keys(extract_block('ABILITY_DESC'))
+innate = keys(extract_block('INNATE'))
+ability_spell = {}
+for k, v in re.findall(r'([A-Za-z0-9_]+)\s*:\s*"([A-Za-z0-9_]+)"', extract_block('ABILITY_SPELL')):
+    ability_spell[k] = v
+spell_override = {}
+for k, v in re.findall(r'([A-Za-z0-9_]+)\s*:\s*"([A-Za-z0-9_]+)"', extract_block('SPELL_OVERRIDE')):
+    spell_override[k] = v
+styles = keys(extract_block('MONSTER_STYLE'))
+
+problems = []
+if len(roster) != 95:
+    problems.append('Einheiten: erwartet 95, gefunden ' + str(len(roster)))
+if len(spells) != 48:
+    problems.append('Zauber: erwartet 48, gefunden ' + str(len(spells)))
+if len(roster) != len(set(roster)):
+    problems.append('doppelte Einheitenschlüssel')
+
+for key, u in roster.items():
+    for label in ['name', 'role', 'cls', 'ability', 'race']:
+        if not u.get(label):
+            problems.append(key + ': fehlt ' + label)
+    if u.get('role') and u['role'] not in roles:
+        problems.append(key + ': unbekannte Rolle ' + u['role'])
+    for label in ['cls', 'cls2']:
+        if u.get(label) and u[label] not in classes:
+            problems.append(key + ': unbekannte Klasse ' + u[label])
+    if u.get('race') and u['race'] not in races:
+        problems.append(key + ': unbekannte Rasse ' + u['race'])
+    if u.get('ability') and u['ability'] not in descs:
+        problems.append(key + ': keine Fähigkeitenbeschreibung für ' + u['ability'])
+    if u.get('ability') and u['ability'] not in innate:
+        problems.append(key + ': keine INNATE-Definition für ' + u['ability'])
+    spell = spell_override.get(key) or ability_spell.get(u.get('ability')) or (u.get('ability') if u.get('ability') in spells else 'schlag')
+    if spell not in spells:
+        problems.append(key + ': Zauber ' + spell + ' fehlt')
+
+for key in spell_override:
+    if key not in roster:
+        problems.append('SPELL_OVERRIDE: unbekannte Einheit ' + key)
+for value in spell_override.values():
+    if value not in spells:
+        problems.append('SPELL_OVERRIDE: unbekannter Zauber ' + value)
+for value in ability_spell.values():
+    if value not in spells:
+        problems.append('ABILITY_SPELL: unbekannter Zauber ' + value)
+for key in styles:
+    if key not in roster:
+        problems.append('MONSTER_STYLE: unbekannte Einheit ' + key)
+
+if problems:
+    for p in problems[:30]:
+        print('FEHLER:', p)
+    if len(problems) > 30:
+        print('... und', len(problems) - 30, 'weitere')
+    sys.exit(1)
+
+print('Daten gültig: Einheiten', len(roster), 'Zauber', len(spells), 'Rollen', len(roles), 'Klassen', len(classes), 'Rassen', len(races))

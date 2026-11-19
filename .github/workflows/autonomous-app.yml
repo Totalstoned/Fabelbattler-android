@@ -65,7 +65,7 @@ jobs:
             - Kein Wechsel der Engine; Three.js/WebView bleibt der aktive Pfad.
             - Ändere bevorzugt app/src/main/assets/index3d.html und bei Bedarf vorhandene Repo-Dateien.
             - Bei jeder App-Änderung APP_VERSION_CODE in gradle.properties um 1 erhöhen und APP_VERSION_NAME bei Bedarf aktualisieren.
-            - Validiere nach Änderungen mit: python3 scripts/check_js.py app/src/main/assets/index3d.html
+            - Validiere nach Änderungen mit: python3 scripts/check_js.py app/src/main/assets/index3d.html und python3 scripts/check_data.py app/src/main/assets/index3d.html
             - Erstelle einen Commit und einen Pull Request mit kurzer, konkreter Beschreibung.
             - Falls die Änderung nicht sicher abgeschlossen werden kann, ändere nichts und erkläre den Grund im Issue-Kommentar.
 

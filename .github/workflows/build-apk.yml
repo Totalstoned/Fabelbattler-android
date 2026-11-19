@@ -36,6 +36,11 @@ jobs:
           echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "apk=fabelbattler-v${VERSION_NAME}-b${VERSION_CODE}.apk" >> "$GITHUB_OUTPUT"
 
+      - name: Validate JS and game data
+        run: |
+          python3 scripts/check_js.py app/src/main/assets/index3d.html
+          python3 scripts/check_data.py app/src/main/assets/index3d.html
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
