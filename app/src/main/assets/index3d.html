@@ -55,6 +55,8 @@
   .unitinfo b{color:var(--txt);}
   .unitinfo .abil{color:var(--acc);margin:4px 0 2px;}
   .unitinfo .spell{color:var(--gold);}
+  .unitinfo .cd{color:#67e8f9;margin:3px 0;}
+  .unitinfo .statuses{color:#fca5a5;margin-top:3px;}
   .tiny{font-size:11px;color:var(--dim);line-height:1.45;}
   .draft{display:flex;flex-direction:column;gap:8px;}
   .cardpick{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;transition:.15s;}
@@ -324,6 +326,16 @@ const RACE_SYNERGY = {
   Barbar:m=>{m.hp*=1.15;m.rage+=0.2;},
   Assassine:m=>{m.crit+=0.15;m.spd*=1.12;},
   Alien:m=>{m.splash+=0.12;m.burn+=0.025;}
+};
+const STATUS_META = {
+  burn:{label:"Brand",emoji:"🔥",hex:0xff6b4a,css:"#ff6b4a"},
+  slow:{label:"Langsam",emoji:"❄",hex:0x67e8f9,css:"#67e8f9"},
+  root:{label:"Wurzel",emoji:"🌿",hex:0x86efac,css:"#86efac"},
+  stun:{label:"Betäubt",emoji:"💫",hex:0xfde68a,css:"#fde68a"},
+  charm:{label:"Verwirrt",emoji:"💜",hex:0xd8b4fe,css:"#d8b4fe"},
+  weaken:{label:"Geschwächt",emoji:"▼",hex:0xfca5a5,css:"#fca5a5"},
+  atkBuff:{label:"Gestärkt",emoji:"▲",hex:0xfcd34d,css:"#fcd34d"},
+  taunt:{label:"Spott",emoji:"↯",hex:0xfb923c,css:"#fb923c"}
 };
 const ABILITY_DESC = {
   goldspinnen:"Stroh zu Gold: Bonus-Gold und kleine Schilde",
@@ -802,15 +814,22 @@ function makeHpBar(){
     new THREE.PlaneGeometry(0.86,0.028),
     new THREE.MeshBasicMaterial({color:0x8fb5ff,depthTest:false,depthWrite:false})
   );
+  const cdFill = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.86,0.032),
+    new THREE.MeshBasicMaterial({color:0x67e8f9,depthTest:false,depthWrite:false})
+  );
   border.position.z = -0.002;
   bg.position.z = 0;
   fill.position.z = 0.003;
   shieldFill.position.set(0,-0.052,0.004);
   shieldFill.visible = false;
-  group.add(border,bg,fill,shieldFill);
+  cdFill.position.set(0,0.064,0.004);
+  cdFill.visible = false;
+  group.add(border,bg,fill,shieldFill,cdFill);
   group.renderOrder = 15;
   group.userData.fill = fill;
   group.userData.shieldFill = shieldFill;
+  group.userData.cdFill = cdFill;
   return group;
 }
 const MONSTER_STYLE = {
@@ -1502,6 +1521,14 @@ function makeCharacter(u){
   selectGlow.position.y = 0.95;
   selectGlow.visible = false;
   group.add(selectGlow);
+  const statusRing = new THREE.Mesh(
+    new THREE.TorusGeometry(shadowRadius+0.45,0.022,8,28),
+    new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending,depthWrite:false})
+  );
+  statusRing.rotation.x = Math.PI/2;
+  statusRing.position.y = 0.09;
+  statusRing.visible = false;
+  group.add(statusRing);
   if(style){
     const model = new THREE.Group();
     model.scale.setScalar(style.scale||1);
@@ -1585,7 +1612,7 @@ function makeCharacter(u){
   label.position.y = hpY+0.43;
   group.add(label);
   const modelRef = group.userData.model;
-  group.userData = {u:u,bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,model:modelRef};
+  group.userData = {u:u,bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef};
   return group;
 }
 function syncUnits(){
@@ -2117,6 +2144,20 @@ function updateVisuals(time,dt){
       group.userData.selectRing.material.opacity = 0.5+0.4*pulse;
       group.userData.selectGlow.material.opacity = 0.14+0.2*pulse;
     }
+    const sp = SPELLS[u.spell];
+    const cdTotal = sp && sp.cd ? sp.cd/Math.max(0.7,u.spd) : 0;
+    const cdRatio = cdTotal ? 1-clamp(u.spellCd/cdTotal,0,1) : 0;
+    group.userData.cdFill.visible = !u.isDead && cdTotal > 0 && (u.spellCd > 0 || isSelected);
+    group.userData.cdFill.scale.x = Math.max(0.001,cdRatio);
+    group.userData.cdFill.position.x = -(1-cdRatio)*0.43;
+    group.userData.cdFill.material.color.setHex(cdRatio >= 1 ? 0x86efac : 0x67e8f9);
+    const statusHex = dominantStatus(u);
+    group.userData.statusRing.visible = !u.isDead && statusHex !== null;
+    if(statusHex !== null){
+      group.userData.statusRing.material.color.setHex(statusHex);
+      group.userData.statusRing.material.opacity = 0.45+Math.sin(time*5+u.id)*0.25;
+      group.userData.statusRing.rotation.z -= dt*1.6;
+    }
   });
   updateParticles(dt);
   renderer.render(scene,camera);
@@ -2133,6 +2174,22 @@ function spellTagList(sp){
   const labels = {dmg:"Schaden",splash:"Splash",stun:"Betäubung",burn:"Brand",slow:"Verlangsamung",root:"Wurzel",charm:"Verwirrung",weaken:"Schwächung",shield:"Schild",heal:"Heilung",buff:"Stärkung",rage:"Wut",revive:"Wiederbelebung",gold:"Gold",dash:"Sprint",taunt:"Spott"};
   return Object.keys(labels).filter(k => sp[k]).map(k => labels[k]).join(" · ");
 }
+function activeStatusKeys(u){
+  return Object.keys(u.statuses||{}).filter(k => u.statuses[k] > 0 && STATUS_META[k]);
+}
+function statusText(u){
+  const keys = activeStatusKeys(u);
+  return keys.length ? keys.map(k => STATUS_META[k].emoji+" "+STATUS_META[k].label+" "+u.statuses[k].toFixed(1)+"s").join(" · ") : "keine Effekte";
+}
+function dominantStatus(u){
+  const keys = activeStatusKeys(u);
+  return keys.length ? STATUS_META[keys[0]].hex : null;
+}
+function cooldownText(u){
+  const sp = SPELLS[u.spell];
+  if(!sp || !sp.cd) return "Zauber: sofort verfügbar";
+  return u.spellCd > 0 ? `Zauber: ${sp.name} · bereit in ${u.spellCd.toFixed(1)}s` : `Zauber: ${sp.name} · bereit`;
+}
 function abilityInfoHtml(u){
   const sp = SPELLS[u.spell] || {};
   const role = ROLE_META[u.role] ? ROLE_META[u.role].label : u.role;
@@ -2144,6 +2201,8 @@ function abilityInfoHtml(u){
     `<span>${role} · ${race}${classes ? " · "+classes : ""}</span><br>`+
     `<div class="abil">Fähigkeit: ${ABILITY_DESC[u.ability]||"—"}</div>`+
     `<div class="spell">Zauber: ${sp.name||"—"} · ${range} · CD ${sp.cd||"—"}s</div>`+
+    `<div class="cd">${cooldownText(u)}</div>`+
+    `<div class="statuses">Status: ${statusText(u)}</div>`+
     `<div>${tags ? tags+"<br>" : ""}HP ${Math.round(u.hp)}/${u.maxHp} · ATK ${Math.round(u.atk)} · Tempo ${u.spd.toFixed(2)}</div></div>`;
 }
 function updateUnitInfo(){
