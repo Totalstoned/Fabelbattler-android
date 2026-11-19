@@ -5,9 +5,11 @@ Ziel: Fabelbattler später als Fullscreen-3D-Spiel in Unreal Engine 5 umsetzen. 
 ## Aktueller Stand
 
 - 2D-Version: `/root/fabelbattler/index.html`
-- 3D-Version: `/root/fabelbattler/index3d.html`
-- Lokale Three.js-Abhängigkeit: `/root/fabelbattler/vendor/three.min.js`
+- 3D-Version und Source of Truth: `/root/fabelbattler/index3d.html`
+- Synchrone WebView-Kopie in diesem Repo: `app/src/main/assets/index3d.html`
+- Lokale Three.js-Abhängigkeit: `app/src/main/assets/vendor/three.min.js`
 - Android-WebView lädt `file:///android_asset/index3d.html`
+- Build/Versionierung/Checks: siehe `README.md`
 - `ROSTER` ist die zentrale Datenquelle für Einheiten:
   - Name, Emoji, Rolle, primäre Klasse, sekundäre Klasse (`cls2`), Rasse, HP, ATK, Reichweite, Geschwindigkeit, Fähigkeit, Fernzauber, Heilreichweite
   - Klassen: Wald, Magie, Dunkel, Chaos, Kaiju, Mythos, Geist, Tier, Stahl, Element
@@ -31,6 +33,8 @@ Ziel: Fabelbattler später als Fullscreen-3D-Spiel in Unreal Engine 5 umsetzen. 
 
 - Für jetzt bleibt die 3D-Version aus `/root/fabelbattler/index3d.html` die aktive Version; kein Engine-Wechsel vorerst.
 - Grafik-Polish im Three.js-Prototyp: weichere Schatten, Hemisphere-/Fill-Licht, additive Glow-Sprites, Partikel-Bursts bei Treffer/Heal/Shield/Zauber/Tod, weiche Bodenschatten, Team-Ringe und verbesserte HP-/Schildbalken.
+- Kampf-Lesbarkeit: Cooldown-Balken über den HP-Balken, Statusring mit Restzeit, auswählbare Einheiten per 3D-Tap, Fokusring/Glow und `◀`/`▶`-Buttons zum Wechseln des Fokus.
+- Synergie-Hinweise: pulsierende, farbige Bodenlinien verbinden Wesen mit aktiver Klassen- oder Rassen-Synergie.
 - Kamera: Mausrad oder Zwei-Finger-Zoom, Doppelklick oder `0` setzt die Ansicht zurück.
 - Die exportierten UE5-Daten und das C++-Gerüst bleiben erhalten; ein späterer Wechsel zu UE5 oder Godot muss die Logik nicht neu erfinden.
 - Größen/Ziel: aktuell reicht der leichte WebView-Prototyp; für später beeindruckende Grafik sind echte Meshes/Materials/VFX und ggf. UE5/Godot nötig.
