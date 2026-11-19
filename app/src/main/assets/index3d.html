@@ -510,6 +510,7 @@ const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,u
 const GRID = {cols:8,rows:6};
 const TILE = 1.35;
 let arenaPulse = null;
+let synergyLinks = [];
 let draftTimer = null;
 let draftReturnPhase = "prep";
 const sceneEl = document.getElementById("scene");
@@ -558,9 +559,11 @@ scene.add(fillLight);
 const arena = new THREE.Group();
 const unitLayer = new THREE.Group();
 const fxLayer = new THREE.Group();
+const synergyLayer = new THREE.Group();
 scene.add(arena);
 scene.add(unitLayer);
 scene.add(fxLayer);
+scene.add(synergyLayer);
 const moteGeo = new THREE.BufferGeometry();
 const motePos = new Float32Array(90*3);
 for(let i=0;i<90;i++){
@@ -1632,6 +1635,7 @@ function syncUnits(){
     unitLayer.add(group);
     unitGroups.set(u.id,group);
   });
+  rebuildSynergyLinks();
 }
 function synergyCounts(list){
   const counts = {};
@@ -1644,6 +1648,35 @@ function raceCounts(list){
   const counts = {};
   (list || G.team).forEach(u => { if(u.race) counts[u.race] = (counts[u.race]||0)+1; });
   return counts;
+}
+function rebuildSynergyLinks(){
+  clearGroup(synergyLayer);
+  synergyLinks = [];
+  const units = (G.battle ? G.battle.player : G.team).filter(u => !u.isDead);
+  if(units.length < 2) return;
+  const classes = synergyCounts(units);
+  const races = raceCounts(units);
+  for(let i=0;i<units.length;i++){
+    for(let j=i+1;j<units.length;j++){
+      const a = units[i], b = units[j];
+      const traits = [a.cls,a.cls2].filter(c => c && classes[c] >= 2 && (c === b.cls || c === b.cls2));
+      if(a.race && a.race === b.race && races[a.race] >= 2) traits.push(a.race);
+      if(!traits.length) continue;
+      const key = traits[0];
+      const meta = CLASS_META[key] || RACE_META[key];
+      if(!meta) continue;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position",new THREE.BufferAttribute(new Float32Array(6),3));
+      const mat = new THREE.LineBasicMaterial({
+        color:new THREE.Color(meta.col),transparent:true,opacity:0.32,
+        blending:THREE.AdditiveBlending,depthWrite:false
+      });
+      const line = new THREE.Line(geo,mat);
+      line.renderOrder = 6;
+      synergyLayer.add(line);
+      synergyLinks.push({a:a,b:b,line:line,phase:i*1.7+j});
+    }
+  }
 }
 function recalcUnit(u){
   const m = Object.assign({},DEFAULT_MODS,u.mods,INNATE[u.ability]||{});
@@ -2099,6 +2132,16 @@ function updateVisuals(time,dt){
   }
   motes.rotation.y = time*0.02;
   if(arenaPulse) arenaPulse.material.opacity = 0.3+Math.sin(time*2.4)*0.14;
+  synergyLinks.forEach(link => {
+    const ga = unitGroups.get(link.a.id), gb = unitGroups.get(link.b.id);
+    link.line.visible = !!(ga && gb) && !link.a.isDead && !link.b.isDead;
+    if(!link.line.visible) return;
+    const pos = link.line.geometry.attributes.position;
+    pos.setXYZ(0,ga.position.x,0.05,ga.position.z);
+    pos.setXYZ(1,gb.position.x,0.05,gb.position.z);
+    pos.needsUpdate = true;
+    link.line.material.opacity = 0.22+0.14*Math.sin(time*2+link.phase);
+  });
   const units = G.battle ? [...G.battle.player,...G.battle.enemies] : G.team;
   units.forEach(u => {
     const group = unitGroups.get(u.id);
@@ -2263,6 +2306,7 @@ function updateSynergies(){
   for(const key in counts) addBadge(key,CLASS_META[key],counts[key]);
   const races = raceCounts();
   for(const key in races) addBadge(key,RACE_META[key],races[key]);
+  rebuildSynergyLinks();
 }
 function updateHud(){
   document.getElementById("hudGold").textContent = G.gold;
