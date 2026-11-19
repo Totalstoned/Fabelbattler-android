@@ -172,6 +172,8 @@
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
   <button class="btn heal" id="btnBattleHeal">Heilregen</button>
   <button class="btn nova" id="btnBattleNova">Blitz</button>
+  <button class="btn ghost" id="btnPrevUnit" title="Vorheriges Wesen">◀</button>
+  <button class="btn ghost" id="btnNextUnit" title="Nächstes Wesen">▶</button>
   <button class="btn ghost" id="btnBattleInfo">Fähigkeit</button>
   <button class="btn ghost" id="btnBattleExit">Vollbild aus</button>
 </div>
@@ -2215,6 +2217,14 @@ function selectUnit(u){
   updateTeamList();
   showToast("Info: "+u.emoji+" "+u.name);
 }
+function cycleFocus(dir){
+  const list = G.battle ? G.battle.player : G.team;
+  const alive = list.filter(u => !u.isDead);
+  if(!alive.length){ showToast("Kein aktives Wesen"); return; }
+  const idx = alive.findIndex(u => u.id === G.selectedUnitId);
+  const base = idx < 0 ? (dir > 0 ? -1 : 0) : idx;
+  selectUnit(alive[(base+dir+alive.length)%alive.length]);
+}
 function updateTeamList(){
   const tl = document.getElementById("teamList");
   tl.innerHTML = '';
@@ -2260,7 +2270,9 @@ function updateHud(){
   document.getElementById("hudTeam").textContent = G.team.length+'/'+G.teamSize;
   const avg = G.team.length ? G.team.reduce((s,u) => s+u.level,0)/G.team.length : 1;
   document.getElementById("hudLvl").textContent = avg.toFixed(1).replace(/\.0$/,'');
-  document.getElementById("battleInfo").textContent = "Welle "+G.wave+" · "+G.team.length+"/"+G.teamSize+(G.battle ? " · Kampf" : "");
+  const focus = findUnitById(G.selectedUnitId);
+  document.getElementById("battleInfo").textContent = "Welle "+G.wave+" · "+G.team.length+"/"+G.teamSize+
+    (G.battle ? " · Kampf" : "")+(focus ? " · Fokus: "+focus.emoji+" "+focus.name : "");
 }
 function updateManaBar(){
   document.getElementById("manaBar").style.width = (G.mana/G.maxMana*100)+'%';
@@ -2412,6 +2424,8 @@ window.addEventListener("load", () => {
   document.getElementById("btnBattleHeal").onclick = () => document.getElementById("btnHeal").click();
   document.getElementById("btnBattleNova").onclick = () => document.getElementById("btnNova").click();
   document.getElementById("btnBattleExit").onclick = () => setBattleMode(false);
+  document.getElementById("btnPrevUnit").onclick = () => cycleFocus(-1);
+  document.getElementById("btnNextUnit").onclick = () => cycleFocus(1);
   document.getElementById("btnBattleInfo").onclick = () => {
     const u = findUnitById(G.selectedUnitId) || G.battle?.player.find(x => !x.isDead) || G.team[0];
     if(!u){ showToast("Kein Wesen verfügbar"); return; }
