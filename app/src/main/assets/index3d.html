@@ -337,6 +337,7 @@ const STATUS_META = {
   charm:{label:"Verwirrt",emoji:"💜",hex:0xd8b4fe,css:"#d8b4fe"},
   weaken:{label:"Geschwächt",emoji:"▼",hex:0xfca5a5,css:"#fca5a5"},
   atkBuff:{label:"Gestärkt",emoji:"▲",hex:0xfcd34d,css:"#fcd34d"},
+  defBuff:{label:"Gepanzert",emoji:"⛨",hex:0x8fb5ff,css:"#8fb5ff"},
   taunt:{label:"Spott",emoji:"↯",hex:0xfb923c,css:"#fb923c"}
 };
 const ABILITY_DESC = {
@@ -494,6 +495,23 @@ Object.keys(ROSTER).forEach(k => {
   u.healRange = u.role === "HEALER" ? 3 : 2;
 });
 const DEFAULT_MODS = {hp:1,atk:1,spd:1,dr:0,lifesteal:0,crit:0,splash:0,curse:0,slow:0,root:0,stun:0,charm:0,burn:0,heal:0,howl:0,shieldPct:0,rage:0,gold:0,killAtk:0,taunt:false,revive:0};
+const AURA_DEFS = {
+  atk:{status:"atkBuff",power:0.16,dur:3.2,radius:2.8,cd:6,label:"Kampfgeschrei",emoji:"▲",css:"#fcd34d"},
+  guard:{status:"defBuff",power:0.18,dur:3.2,radius:2.8,cd:6,label:"Schutzruf",emoji:"⛨",css:"#8fb5ff"}
+};
+const UNIT_TRAITS = {
+  bigfoot:{taunt:true},
+  kingkong:{taunt:true,aura:"atk"},
+  methuselah:{taunt:true,aura:"guard"},
+  bagan:{taunt:true},
+  shimo:{aura:"guard"},
+  aufhocker:{taunt:true},
+  fee:{aura:"atk"},
+  heinzelmaennchen:{aura:"atk"},
+  nixen:{aura:"guard"},
+  moosweiblein:{aura:"guard"},
+  scarking:{aura:"atk"}
+};
 const SYNERGY = {
   Wald:m=>{m.hp*=1.2;},
   Magie:m=>{m.atk*=1.15;},
@@ -583,6 +601,29 @@ function worldPos(gx,gy){
 }
 function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
 function dist(a,b){ return Math.hypot(a.grid.gx-b.grid.gx, a.grid.gy-b.grid.gy); }
+function unitRadius(u){
+  const s = MONSTER_STYLE[u.key];
+  return clamp((s && s.radius ? s.radius : 0.45)*0.72,0.28,0.5);
+}
+function collisionAt(u,gx,gy,b,ignore){
+  const all = b ? [...b.player,...b.enemies] : G.team;
+  return all.find(o => o !== u && o !== ignore && !o.isDead &&
+    Math.hypot(gx-o.grid.gx,gy-o.grid.gy) < unitRadius(u)+unitRadius(o)) || null;
+}
+function moveUnit(u,dx,dy,b){
+  const tryPos = (gx,gy) => {
+    gx = clamp(gx,0,GRID.cols-1);
+    gy = clamp(gy,0,GRID.rows-1);
+    return collisionAt(u,gx,gy,b) ? null : {gx:gx,gy:gy};
+  };
+  let p = tryPos(u.grid.gx+dx,u.grid.gy+dy);
+  if(!p) p = tryPos(u.grid.gx+dx,u.grid.gy);
+  if(!p) p = tryPos(u.grid.gx,u.grid.gy+dy);
+  if(!p) return false;
+  u.grid.gx = p.gx;
+  u.grid.gy = p.gy;
+  return true;
+}
 function shuffle(arr){
   const a = arr.slice();
   for(let i=a.length-1;i>0;i--){
@@ -1680,6 +1721,10 @@ function rebuildSynergyLinks(){
 }
 function recalcUnit(u){
   const m = Object.assign({},DEFAULT_MODS,u.mods,INNATE[u.ability]||{});
+  const trait = UNIT_TRAITS[u.key] || null;
+  if(trait && trait.taunt) m.taunt = true;
+  u.trait = trait;
+  u.aura = trait && AURA_DEFS[trait.aura] ? AURA_DEFS[trait.aura] : null;
   const list = u.side === "enemy" && G.battle ? G.battle.enemies : G.team;
   const counts = synergyCounts(list);
   [u.cls,u.cls2].filter(Boolean).forEach(c => {
@@ -1703,9 +1748,10 @@ function createUnit(key,lvl=1,side="player"){
     rng:base.rng,healRange:base.healRange||3,mods:Object.assign({},DEFAULT_MODS),modsEffective:Object.assign({},DEFAULT_MODS),
     maxHp:0,hp:0,atk:0,spd:1,shield:0,
     grid:{gx:0,gy:0},target:null,attackCd:0,spellCd:Math.random()*0.8,hitFlash:0,animAttack:0,deathTimer:0,
-    statuses:{},statusPower:{},isDead:false,revived:false
+    statuses:{},statusPower:{},isDead:false,revived:false,auraCd:0,trait:null,aura:null
   };
   recalcUnit(u);
+  u.auraCd = u.aura ? u.aura.cd*0.5 : 0;
   return u;
 }
 function clearStatuses(u){ u.statuses = {}; u.statusPower = {}; }
@@ -1724,6 +1770,17 @@ function addStatus(u,key,dur,power){
 }
 function livingEnemiesOf(u,b){ return (u.side === "player" ? b.enemies : b.player).filter(t => !t.isDead); }
 function livingAlliesOf(u,b){ return (u.side === "player" ? b.player : b.enemies).filter(t => !t.isDead); }
+function castAura(u,b){
+  if(!u.aura || !b) return;
+  const a = u.aura;
+  let hits = 0;
+  livingAlliesOf(u,b).filter(ally => dist(u,ally) <= a.radius).forEach(ally => {
+    addStatus(ally,a.status,a.dur,a.power);
+    pushEffect(ally,a.emoji+" "+a.label,a.css);
+    hits++;
+  });
+  if(hits) spawnBurst(u,a.css,12,0.85);
+}
 function pushEffect(u,text,color){
   const sprite = makeTextSprite(text,color,0.7);
   const p = worldPos(u.grid.gx,u.grid.gy);
@@ -1821,6 +1878,7 @@ function killUnit(u,source){
 function applyDamage(target,amount,source,opts={}){
   if(target.isDead || amount <= 0) return 0;
   let dmg = amount*(1-(target.modsEffective.dr||0));
+  if(hasStatus(target,"defBuff")) dmg *= 1-(target.statusPower.defBuff||0);
   if(target.shield > 0){
     const absorbed = Math.min(target.shield,dmg);
     target.shield -= absorbed;
@@ -1836,7 +1894,7 @@ function applyDamage(target,amount,source,opts={}){
   if(target.hp <= 0) killUnit(target,source);
   return dmg;
 }
-function tickUnit(u,dt){
+function tickUnit(u,dt,b){
   u.attackCd = Math.max(0,u.attackCd-dt);
   u.spellCd = Math.max(0,u.spellCd-dt);
   u.hitFlash = Math.max(0,u.hitFlash-dt);
@@ -1844,17 +1902,24 @@ function tickUnit(u,dt){
   for(const key in u.statuses){
     if(u.statuses[key] > 0) u.statuses[key] = Math.max(0,u.statuses[key]-dt);
   }
+  if(u.aura && !u.isDead){
+    u.auraCd = Math.max(0,u.auraCd-dt);
+    if(u.auraCd <= 0 && !hasStatus(u,"stun") && !hasStatus(u,"charm")){
+      castAura(u,b);
+      u.auraCd = u.aura.cd;
+    }
+  }
   if(hasStatus(u,"burn")) applyDamage(u,(u.statusPower.burn||0)*u.maxHp*dt,null,{number:false});
 }
 function chooseTarget(u,b){
   if(hasStatus(u,"charm")) return lowestAlly(livingAlliesOf(u,b).filter(a => a !== u));
   const targets = livingEnemiesOf(u,b);
-  const taunt = targets.find(t => hasStatus(t,"taunt") || t.modsEffective.taunt);
-  if(taunt) return taunt;
+  const taunts = targets.filter(t => hasStatus(t,"taunt") || t.modsEffective.taunt);
+  if(taunts.length) return taunts.sort((a,c) => dist(u,a)-dist(u,c))[0];
   if(!targets.length) return null;
   return targets.sort((a,c) => (dist(u,a)+a.hp/a.maxHp*0.4)-(dist(u,c)+c.hp/c.maxHp*0.4))[0];
 }
-function moveToward(u,target,dt){
+function moveToward(u,target,dt,b){
   if(hasStatus(u,"root") || hasStatus(u,"stun")) return;
   const dx = target.grid.gx-u.grid.gx, dy = target.grid.gy-u.grid.gy;
   const d = Math.hypot(dx,dy);
@@ -1862,8 +1927,7 @@ function moveToward(u,target,dt){
   const slow = hasStatus(u,"slow") ? (1-(u.statusPower.slow||0.3)) : 1;
   const speed = (0.55+u.spd*0.35)*slow;
   const step = Math.min(speed*dt,d);
-  u.grid.gx = clamp(u.grid.gx+dx/d*step,0,GRID.cols-1);
-  u.grid.gy = clamp(u.grid.gy+dy/d*step,0,GRID.rows-1);
+  moveUnit(u,dx/d*step,dy/d*step,b);
 }
 function supportAction(u,b,dt){
   if(hasStatus(u,"charm") || hasStatus(u,"stun")) return false;
@@ -1874,7 +1938,7 @@ function supportAction(u,b,dt){
   const need = (ally.hp+ally.shield)/ally.maxHp;
   if(need >= 0.78) return false;
   if(dist(u,ally) > u.healRange){
-    moveToward(u,ally,dt||0);
+    moveToward(u,ally,dt||0,b);
     return true;
   }
   if(e.heal) healUnit(ally,u.maxHp*e.heal+u.atk*0.4);
@@ -1917,8 +1981,7 @@ function castSpell(u,target,b){
     if(d > 1.05){
       const dx = target.grid.gx-u.grid.gx, dy = target.grid.gy-u.grid.gy;
       const step = Math.min(d-1.05,1.6);
-      u.grid.gx = clamp(u.grid.gx+dx/d*step,0,GRID.cols-1);
-      u.grid.gy = clamp(u.grid.gy+dy/d*step,0,GRID.rows-1);
+      moveUnit(u,dx/d*step,dy/d*step,b);
     }
   }
   if(sp.dmg){
@@ -1974,8 +2037,8 @@ function separate(units,dt){
       if(d <= 0.001){
         a.grid.gx=clamp(a.grid.gx-0.02,0,GRID.cols-1);
         c.grid.gx=clamp(c.grid.gx+0.02,0,GRID.cols-1);
-      } else if(d < 0.65){
-        const push=(0.65-d)*0.5*Math.min(1,dt*8);
+      } else if(d < unitRadius(a)+unitRadius(c)){
+        const push=((unitRadius(a)+unitRadius(c))-d)*0.5*Math.min(1,dt*8);
         a.grid.gx=clamp(a.grid.gx-dx/d*push,0,GRID.cols-1);
         a.grid.gy=clamp(a.grid.gy-dy/d*push,0,GRID.rows-1);
         c.grid.gx=clamp(c.grid.gx+dx/d*push,0,GRID.cols-1);
@@ -2006,7 +2069,7 @@ function updateBattle(dt){
   const b = G.battle;
   if(!b) return;
   b.time += dt;
-  [...b.player,...b.enemies].forEach(u => { if(!u.isDead) tickUnit(u,dt); });
+  [...b.player,...b.enemies].forEach(u => { if(!u.isDead) tickUnit(u,dt,b); });
   const alive = [...b.player,...b.enemies].filter(u => !u.isDead);
   alive.forEach(u => {
     if(u.isDead) return;
@@ -2015,7 +2078,7 @@ function updateBattle(dt){
     u.target = target;
     if(!target) return;
     if(castSpell(u,target,b)) return;
-    if(dist(u,target) > Math.max(1,u.rng/70)) moveToward(u,target,dt);
+    if(dist(u,target) > Math.max(1,u.rng/70)) moveToward(u,target,dt,b);
     else tryAttack(u,target,b);
   });
   separate([...b.player,...b.enemies].filter(u => !u.isDead),dt);
@@ -2197,9 +2260,10 @@ function updateVisuals(time,dt){
     group.userData.cdFill.position.x = -(1-cdRatio)*0.43;
     group.userData.cdFill.material.color.setHex(cdRatio >= 1 ? 0x86efac : 0x67e8f9);
     const statusHex = dominantStatus(u);
-    group.userData.statusRing.visible = !u.isDead && statusHex !== null;
-    if(statusHex !== null){
-      group.userData.statusRing.material.color.setHex(statusHex);
+    const ringHex = statusHex !== null ? statusHex : (u.modsEffective && u.modsEffective.taunt ? STATUS_META.taunt.hex : null);
+    group.userData.statusRing.visible = !u.isDead && ringHex !== null;
+    if(ringHex !== null){
+      group.userData.statusRing.material.color.setHex(ringHex);
       group.userData.statusRing.material.opacity = 0.45+Math.sin(time*5+u.id)*0.25;
       group.userData.statusRing.rotation.z -= dt*1.6;
     }
@@ -2242,8 +2306,12 @@ function abilityInfoHtml(u){
   const classes = [u.cls,u.cls2].filter(Boolean).map(k => CLASS_META[k] ? CLASS_META[k].label : k).join(" / ");
   const tags = spellTagList(sp);
   const range = u.role === "HEALER" ? `${sp.range||"—"} Fernzauber · heilt bis ${u.healRange} Felder` : `${sp.range||"—"} Felder`;
+  const traits = [];
+  if(u.modsEffective && u.modsEffective.taunt) traits.push("↯ Spott: Gegner greifen dieses Wesen bevorzugt an");
+  if(u.aura) traits.push(u.aura.emoji+" "+u.aura.label+": Verbündete im Umkreis von "+u.aura.radius+" erhalten "+STATUS_META[u.aura.status].label);
   return `<div><b>${u.emoji} ${u.name}</b> · L${u.level}<br>`+
     `<span>${role} · ${race}${classes ? " · "+classes : ""}</span><br>`+
+    (traits.length ? `<div class="spell" style="color:#fbbf24">${traits.join("<br>")}</div>` : "")+
     `<div class="abil">Fähigkeit: ${ABILITY_DESC[u.ability]||"—"}</div>`+
     `<div class="spell">Zauber: ${sp.name||"—"} · ${range} · CD ${sp.cd||"—"}s</div>`+
     `<div class="cd">${cooldownText(u)}</div>`+

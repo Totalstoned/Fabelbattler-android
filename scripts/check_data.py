@@ -119,6 +119,12 @@ spell_override = {}
 for k, v in re.findall(r'([A-Za-z0-9_]+)\s*:\s*"([A-Za-z0-9_]+)"', extract_block('SPELL_OVERRIDE')):
     spell_override[k] = v
 styles = keys(extract_block('MONSTER_STYLE'))
+statuses = keys(extract_block('STATUS_META'))
+auras = keys(extract_block('AURA_DEFS'))
+traits = {}
+for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block('UNIT_TRAITS')):
+    m = re.search(r'aura\s*:\s*"([A-Za-z0-9_]+)"', body)
+    traits[key] = m.group(1) if m else None
 
 problems = []
 if len(roster) != 95:
@@ -159,6 +165,15 @@ for value in ability_spell.values():
 for key in styles:
     if key not in roster:
         problems.append('MONSTER_STYLE: unbekannte Einheit ' + key)
+for key, aura in traits.items():
+    if key not in roster:
+        problems.append('UNIT_TRAITS: unbekannte Einheit ' + key)
+    if aura and aura not in auras:
+        problems.append('UNIT_TRAITS: unbekannte Aura ' + aura)
+for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block('AURA_DEFS')):
+    status = re.search(r'\bstatus\s*:\s*"([A-Za-z0-9_]+)"', body)
+    if not status or status.group(1) not in statuses:
+        problems.append('AURA_DEFS: ' + key + ' hat unbekannten Status ' + (status.group(1) if status else '?'))
 
 if problems:
     for p in problems[:30]:

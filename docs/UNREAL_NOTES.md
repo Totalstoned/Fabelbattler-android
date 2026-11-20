@@ -23,6 +23,9 @@ Ziel: Fabelbattler später als Fullscreen-3D-Spiel in Unreal Engine 5 umsetzen. 
   - Gegnerteam wird nach Anzahl, Rolle und Klassen des Spielerteams erzeugt
   - 2 Gold pro gewählter Einheit
   - Draft-Karten werden nach fehlenden Rollen komplementiert; Gegner spiegeln Rassen/Klassen und füllen fehlende Rollen
+  - Kollisionsabfragen: `unitRadius`, `collisionAt`, `moveUnit` und `separate` verhindern Überlappen; Dashes werden ebenfalls gegen Einheiten geprüft
+  - Spott-Tanks (`bigfoot`, `kingkong`, `methuselah`, `bagan`, `aufhocker`) werden von Gegnern bevorzugt angegriffen
+  - Aura-Buffs (`UNIT_TRAITS`/`AURA_DEFS`) stärken nahstehende Verbündete alle 6 Sekunden (`atkBuff` oder `defBuff`)
   - Heiler heilen bis zu 3 Felder entfernt und bewegen sich bei größerem Abstand zum Ziel
   - aktive Fernzauber mit Reichweite/Cooldown: Godzilla Atomstrahl, King Kong Ansturm & Spott, Plus Varianten für alle anderen Wesen
   - aktive Eingriffe: Heilregen und Fabel-Blitz
