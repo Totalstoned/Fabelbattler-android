@@ -38,7 +38,8 @@ Ziel: Fabelbattler später als Fullscreen-3D-Spiel in Unreal Engine 5 umsetzen. 
 - Grafik-Polish im Three.js-Prototyp: weichere Schatten, Hemisphere-/Fill-Licht, additive Glow-Sprites, Partikel-Bursts bei Treffer/Heal/Shield/Zauber/Tod, weiche Bodenschatten, Team-Ringe und verbesserte HP-/Schildbalken.
 - Kampf-Lesbarkeit: Cooldown-Balken über den HP-Balken, Statusring mit Restzeit, auswählbare Einheiten per 3D-Tap, Fokusring/Glow und `◀`/`▶`-Buttons zum Wechseln des Fokus.
 - Synergie-Hinweise: pulsierende, farbige Bodenlinien verbinden Wesen mit aktiver Klassen- oder Rassen-Synergie.
-- Kamera: Mausrad oder Zwei-Finger-Zoom, Doppelklick oder `0` setzt die Ansicht zurück.
+- Kamera: Mausrad oder Zwei-Finger-Zoom, Doppelklick oder `0` setzt die Ansicht zurück; die Kamera folgt weich dem fokussierten Wesen und reagiert mit leichtem Shake auf Treffer, Zauber und Tode.
+- Treffer, Zauber, Auren, Tode und Fabel-Blitz erzeugen expandierende Bodenschockwellen; der Renderer nutzt `powerPreference: "high-performance"`.
 - Die exportierten UE5-Daten und das C++-Gerüst bleiben erhalten; ein späterer Wechsel zu UE5 oder Godot muss die Logik nicht neu erfinden.
 - Größen/Ziel: aktuell reicht der leichte WebView-Prototyp; für später beeindruckende Grafik sind echte Meshes/Materials/VFX und ggf. UE5/Godot nötig.
 
