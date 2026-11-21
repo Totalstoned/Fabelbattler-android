@@ -61,6 +61,9 @@ vm.createContext(ctx);
 const html = fs.readFileSync(htmlPath, 'utf8');
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
 if (!match) throw new Error(`Kein <script>-Block in ${htmlPath} gefunden`);
+if (!/body\.battle-mode\s+\.battle-bar\s*\{[^}]*display:\s*flex/.test(html)) {
+  throw new Error('Kampfleiste wird im Kampfmodus nicht eingeblendet (body.battle-mode .battle-bar)');
+}
 const gameJs = match[1];
 vm.runInContext(fs.readFileSync(threePath, 'utf8'), ctx, {filename: 'three.min.js'});
 vm.runInContext('var THREE = globalThis.THREE;', ctx);
