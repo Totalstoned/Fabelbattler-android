@@ -41,6 +41,7 @@ jobs:
           python3 scripts/check_js.py app/src/main/assets/index3d.html
           python3 scripts/check_data.py app/src/main/assets/index3d.html
           node scripts/check_runtime.js app/src/main/assets/index3d.html
+          grep -q 'android:screenOrientation="landscape"' app/src/main/AndroidManifest.xml
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
