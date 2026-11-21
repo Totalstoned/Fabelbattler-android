@@ -181,6 +181,7 @@
 <script src="./vendor/three.min.js"></script>
 <script>
 "use strict";
+const OUTLINE_COLOR = 0x151018;
 const ROSTER = {
   rumpelstilzchen:{name:"Rumpelstilzchen",emoji:"🧵",role:"DPS",cls:"Chaos",cls2:"Magie",hp:60,atk:11,rng:90,spd:1.1,ability:"goldspinnen"},
   hotzenplotz:{name:"Räuber Hotzenplotz",emoji:"🔫",role:"DPS",cls:"Chaos",cls2:"Stahl",hp:80,atk:13,rng:70,spd:1.0,ability:"pfeffer"},
@@ -511,6 +512,14 @@ const UNIT_TRAITS = {
   nixen:{aura:"guard"},
   moosweiblein:{aura:"guard"},
   scarking:{aura:"atk"}
+};
+const UNIT_SIZE = {
+  rumpelstilzchen:0.42,hotzenplotz:0.44,chupacabra:0.5,waldschrat:0.55,heinzelmaennchen:0.5,wichtel:0.52,sukubus:0.55,
+  lilith:0.6,goblin:0.65,blaubart:0.6,moosweiblein:0.6,nixen:0.62,medusa:0.62,bigfoot:0.78,vampire:0.8,werewolf:0.85,
+  hexe:0.78,fee:0.8,ruebezahl:0.78,hydra:0.85,dschinn:0.78,klabautermann:0.78,aufhocker:0.8,fernrisswolf:0.85,
+  kroetenmoench:0.8,sensenmann:0.85,godzilla:1.15,kingkong:1.25,mothra:0.95,kingghidorah:1.25,shimo:1.2,burninggodzilla:1.2,
+  methuselah:1.2,bagan:1.2,shimgodzilla:1.18,queenmuto:1.05,warbat:1.0,scarking:1.25,rodan:1.1,godzillaearth:1.3,
+  mechagodzilla:1.15,minilla:0.9,gojira:1.15
 };
 const SYNERGY = {
   Wald:m=>{m.hp*=1.2;},
@@ -946,7 +955,7 @@ Object.keys(ROSTER).forEach(k => {
   };
 });
 function monsterMat(color,glow,intensity,metal,rough){
-  const opts={color:color,roughness:rough===undefined?0.72:rough,metalness:metal===undefined?0.06:metal};
+  const opts={color:color,roughness:rough===undefined?0.72:rough,metalness:metal===undefined?0.06:metal,flatShading:true};
   if(glow!==undefined && intensity) { opts.emissive=glow; opts.emissiveIntensity=intensity; }
   return new THREE.MeshStandardMaterial(opts);
 }
@@ -1528,6 +1537,18 @@ function makeMonsterModel(model,u,s,bodyMat){
   else if(s.type==="reaper") buildReaper(model,s,bodyMat);
   else if(s.type==="alien") buildAlien(model,s,bodyMat,s.variant||"grey");
 }
+function addCartoonOutline(obj,color){
+  obj.traverse(child => {
+    if(!child.isMesh) return;
+    const geo = child.geometry;
+    if(!geo) return;
+    const source = geo.index ? geo.toNonIndexed() : geo;
+    const edges = new THREE.EdgesGeometry(source);
+    const line = new THREE.Line(edges, new THREE.LineBasicMaterial({color:color,linewidth:1.6,toneMapped:false}));
+    line.frustumCulled = false;
+    obj.add(line);
+  });
+}
 function makeCharacter(u){
   const group = new THREE.Group();
   const style = MONSTER_STYLE[u.key];
@@ -1584,6 +1605,7 @@ function makeCharacter(u){
     model.scale.setScalar(style.scale||1);
     model.rotation.y = u.side === "enemy" ? -Math.PI/2 : Math.PI/2;
     makeMonsterModel(model,u,style,bodyMat);
+    addCartoonOutline(model,OUTLINE_COLOR);
     group.add(model);
     group.userData.model = model;
   } else {
@@ -1662,7 +1684,7 @@ function makeCharacter(u){
   label.position.y = hpY+0.43;
   group.add(label);
   const modelRef = group.userData.model;
-  group.userData = {u:u,bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef};
+  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef};
   return group;
 }
 function syncUnits(){
@@ -2278,7 +2300,7 @@ function updateVisuals(time,dt){
       group.visible = t > 0.02;
     } else {
       const lunge = u.animAttack > 0 ? Math.sin((0.25-u.animAttack)/0.25*Math.PI)*0.12 : 0;
-      group.scale.setScalar(1);
+      group.scale.setScalar(group.userData.size || 1);
       group.position.y = Math.sin(time*2.2+u.id*0.7)*0.035+lunge;
       group.visible = true;
     }
