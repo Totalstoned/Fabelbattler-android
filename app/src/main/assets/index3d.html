@@ -1538,16 +1538,20 @@ function makeMonsterModel(model,u,s,bodyMat){
   else if(s.type==="alien") buildAlien(model,s,bodyMat,s.variant||"grey");
 }
 function addCartoonOutline(obj,color){
-  obj.traverse(child => {
-    if(!child.isMesh) return;
-    const geo = child.geometry;
-    if(!geo) return;
-    const source = geo.index ? geo.toNonIndexed() : geo;
-    const edges = new THREE.EdgesGeometry(source);
-    const line = new THREE.Line(edges, new THREE.LineBasicMaterial({color:color,linewidth:1.6,toneMapped:false}));
-    line.frustumCulled = false;
-    obj.add(line);
-  });
+  try{
+    obj.traverse(child => {
+      if(!child.isMesh) return;
+      const geo = child.geometry;
+      if(!geo) return;
+      const source = geo.index ? geo.toNonIndexed() : geo;
+      const edges = new THREE.EdgesGeometry(source);
+      const line = new THREE.Line(edges, new THREE.LineBasicMaterial({color:color,linewidth:1.6,toneMapped:false}));
+      line.frustumCulled = false;
+      obj.add(line);
+    });
+  }catch(err){
+    console.warn("Outline fehlgeschlagen: "+err);
+  }
 }
 function makeCharacter(u){
   const group = new THREE.Group();
