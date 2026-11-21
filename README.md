@@ -16,6 +16,7 @@ Nach jeder App-Änderung:
 ```bash
 python3 scripts/check_js.py app/src/main/assets/index3d.html
 python3 scripts/check_data.py app/src/main/assets/index3d.html
+node scripts/check_runtime.js app/src/main/assets/index3d.html
 # Version in gradle.properties erhöhen, dann committen/pushen
 ```
 

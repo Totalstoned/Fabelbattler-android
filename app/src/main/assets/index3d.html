@@ -1688,7 +1688,7 @@ function makeCharacter(u){
   label.position.y = hpY+0.43;
   group.add(label);
   const modelRef = group.userData.model;
-  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef};
+  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef};
   return group;
 }
 function syncUnits(){
@@ -1841,7 +1841,7 @@ function spawnBurst(u,color,count,strength){
   geo.setAttribute("position",new THREE.BufferAttribute(positions,3));
   const points = new THREE.Points(geo,new THREE.PointsMaterial({color:color,size:0.11,transparent:true,opacity:0.95,blending:THREE.AdditiveBlending,depthWrite:false}));
   fxLayer.add(points);
-  G.particles.push({obj:points,vel:vel,life:0.7,max:0.7});
+  G.particles.push({obj:points,vel:velocities,life:0.7,max:0.7});
 }
 function addShake(amount){
   cameraShake = Math.min(0.5,cameraShake+amount);
