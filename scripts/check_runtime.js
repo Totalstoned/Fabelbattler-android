@@ -64,6 +64,12 @@ if (!match) throw new Error(`Kein <script>-Block in ${htmlPath} gefunden`);
 if (!/body\.battle-mode\s+\.battle-bar\s*\{[^}]*display:\s*flex/.test(html)) {
   throw new Error('Kampfleiste wird im Kampfmodus nicht eingeblendet (body.battle-mode .battle-bar)');
 }
+if (!html.includes('id="battleTimer"') || !html.includes('function updateBattleTimer')) {
+  throw new Error('Kampf-Timer fehlt');
+}
+if (!html.includes('renderer.setSize(w,h);')) {
+  throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
+}
 const gameJs = match[1];
 vm.runInContext(fs.readFileSync(threePath, 'utf8'), ctx, {filename: 'three.min.js'});
 vm.runInContext('var THREE = globalThis.THREE;', ctx);
@@ -92,7 +98,17 @@ vm.runInContext(`
   G.teamSize = 4;
   for (let i = 0; i < 4; i++) G.team.push(createUnit("hotzenplotz", 1, "player"));
   startBattle();
-  for (let f = 0; f < 600; f++) { updateVisuals(f * 0.016, 0.016); updateBattle(0.016); }
+  globalThis.__maxBattleTime = 0;
+  globalThis.__timerText = "";
+  for (let f = 0; f < 600; f++) {
+    updateVisuals(f * 0.016, 0.016);
+    updateBattle(0.016);
+    updateBattleTimer();
+    if (G.battle) {
+      globalThis.__maxBattleTime = Math.max(globalThis.__maxBattleTime, G.battle.time);
+      globalThis.__timerText = document.getElementById("battleTimer").textContent;
+    }
+  }
 
   G.phase = "menu";
   G.battle = null;
@@ -109,4 +125,10 @@ vm.runInContext(`
   }
 `, ctx);
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, battle, draft)`);
+const maxBattleTime = vm.runInContext('globalThis.__maxBattleTime', ctx);
+const timerText = vm.runInContext('globalThis.__timerText', ctx);
+if (!(maxBattleTime >= 1) || !/^Zeit \d+s$/.test(timerText)) {
+  throw new Error(`Timer läuft nicht: max=${maxBattleTime}, text=${timerText}`);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, battle, draft, timer ${timerText})`);

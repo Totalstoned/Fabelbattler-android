@@ -28,7 +28,8 @@ Die GitHub Action `.github/workflows/build-apk.yml` baut die APK und benennt sie
 - `◀` / `▶` in der Kampfleiste wechselt den Fokus; die Anzeige nennt das aktive Wesen
 - Mausrad oder Zwei-Finger-Zoom, Doppelklick oder `0` setzt die Ansicht zurück
 - Kampf: Auswahl, nächste Welle, Heilregen, Blitz, Fähigkeit, Vollbild aus
-- HP/Schild/Cooldown-Balken, Statusring, pulsierende Synergielinien und Fokusring zeigen den Kampfzustand
+- Kampfzeit läuft in Sekunden (Kampfleiste und HUD)
+- App startet immer im Querformat und immersive Fullscreen-Modus
 
 ## Automatisierung
 

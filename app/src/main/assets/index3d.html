@@ -106,6 +106,7 @@
     <div class="pill">Gold <b id="hudGold">20</b></div>
     <div class="pill">Team <b id="hudTeam">0/6</b></div>
     <div class="pill">Wesen-Lvl <b id="hudLvl">1</b></div>
+    <div class="pill">Zeit <b id="hudTime">0s</b></div>
   </div>
   <div class="main">
     <div>
@@ -168,6 +169,7 @@
 </div>
 <div class="battle-bar" id="battleBar">
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
+  <span class="battle-info" id="battleTimer">Zeit 0s</span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
@@ -650,7 +652,7 @@ function resize(){
   const full = document.body.classList.contains("battle-mode");
   const w = full ? window.innerWidth : (sceneEl.clientWidth || 720);
   const h = full ? window.innerHeight : (sceneEl.clientHeight || 460);
-  renderer.setSize(w,h,false);
+  renderer.setSize(w,h);
   const aspect = w/h;
   const view = cameraView;
   camera.left = -view*aspect/2;
@@ -2470,9 +2472,16 @@ function updateHud(){
   const focus = findUnitById(G.selectedUnitId);
   document.getElementById("battleInfo").textContent = "Welle "+G.wave+" · "+G.team.length+"/"+G.teamSize+
     (G.battle ? " · Kampf" : "")+(focus ? " · Fokus: "+focus.emoji+" "+focus.name : "");
+  updateBattleTimer();
 }
 function updateManaBar(){
   document.getElementById("manaBar").style.width = (G.mana/G.maxMana*100)+'%';
+}
+function updateBattleTimer(){
+  const seconds = Math.floor(G.battle ? G.battle.time : 0);
+  const text = seconds+'s';
+  document.getElementById("battleTimer").textContent = 'Zeit '+text;
+  document.getElementById("hudTime").textContent = text;
 }
 function updateButtons(){
   const menu = G.phase === "menu";
@@ -2654,6 +2663,7 @@ window.addEventListener("load", () => {
     last = now;
     G.mana = Math.min(G.maxMana,G.mana+dt*(G.phase === "battle" ? 12 : 7));
     updateManaBar();
+    updateBattleTimer();
     if(G.phase === "battle" && G.battle) updateBattle(dt);
     updateEffects(dt);
     uiTick += dt;
