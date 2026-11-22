@@ -662,6 +662,49 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  G.wave = 10;
+  startBattle();
+  const tierElite = G.battle.enemyMobs.find(m => m.isElite);
+  const tierBoss = G.battle.enemyMobs.find(m => m.isBoss);
+  const tierNormal = G.battle.enemyMobs.find(m => !m.isElite && !m.isBoss);
+  const tierToastEl = document.getElementById("toasts");
+  const tierOrigAppend = tierToastEl.appendChild;
+  globalThis.__tierToasts = [];
+  tierToastEl.appendChild = (node) => { globalThis.__tierToasts.push(node.textContent); };
+  const tierP0 = G.particles.length, tierS0 = G.shockwaves.length;
+  killUnit(tierNormal);
+  globalThis.__tierNormalNoFx = G.particles.length === tierP0 && G.shockwaves.length === tierS0;
+  killUnit(tierElite);
+  globalThis.__tierEliteFx = G.particles.length === tierP0 + 1 && G.shockwaves.length === tierS0 + 1;
+  const tierP1 = G.particles.length, tierS1 = G.shockwaves.length;
+  killUnit(tierBoss);
+  globalThis.__tierBossFx = G.particles.length === tierP1 + 1 && G.shockwaves.length === tierS1 + 1 &&
+    globalThis.__tierToasts.some(t => t.indexOf("besiegt") >= 0);
+  const tierOwnElite = G.battle.playerMobs.find(m => m.isElite);
+  SIM.headless = true;
+  const tierP2 = G.particles.length, tierS2 = G.shockwaves.length;
+  killUnit(tierOwnElite);
+  const tierNoHeadlessFx = G.particles.length === tierP2 && G.shockwaves.length === tierS2;
+  SIM.headless = false;
+  globalThis.__tierHeadlessNoFx = tierNoHeadlessFx && !SIM.headless;
+  tierToastEl.appendChild = tierOrigAppend;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__tierNormalNoFx', 'Normale Mobs erzeugen unerwünschte Tod-Effekte'],
+  ['__tierEliteFx', 'Elite-Mobs zeigen keinen eigenen Tod-Effekt'],
+  ['__tierBossFx', 'Boss-Tod zeigt keinen Effekt und keine Meldung'],
+  ['__tierHeadlessNoFx', 'Headless-Modus erzeugt Mob-Tod-Effekte'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   startBattle();
   const bar = document.getElementById("focusHp");
   const value = document.getElementById("focusHpValue");
@@ -752,4 +795,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, elite/boss-tod-fx, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
