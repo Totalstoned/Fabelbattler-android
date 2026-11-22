@@ -46,7 +46,6 @@ jobs:
         uses: anomalyco/opencode/github@latest
         with:
           model: opencode/big-pickle
-          timeout_minutes: 8
           use_github_token: true
           prompt: |
             Du arbeitest autonom an Fabelbattler in diesem Repository.
