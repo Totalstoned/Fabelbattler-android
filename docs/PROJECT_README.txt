@@ -172,6 +172,13 @@ v1.22-b23 2026-11-22  (Animationen)
   - check_runtime.js prueft Funktionen, userData-Felder und Treffer-Reaktion; alle Checks gruen.
   - CI 45038192792 gruen, SHA-256 2742f779625bc5fedc8b994dc1a55100587e9ef551bb5f160cbc574cc0dee60c
 
+Automatisierung ab 2026-11-22:
+  - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
+  - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
+  - GitHub-Cron autonomous-app.yml von "0 * * * *" auf "*/10 * * * *" gestellt,
+    Timeouts 8/10 min, manueller Run 45040243574.
+  - GitHub-Agent weiter blockiert: Repo-Secret OPENCODE_API_KEY fehlt.
+
 Weitere wichtige Commits ohne Versionssprung:
   20870e8 Folklore-Einheiten + prozedurale Modelle
   2a8882b Rassen, Fernkampf-Zauber, Heiler-Reichweite 3
