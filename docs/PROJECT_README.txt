@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.27-b28 (CI ausstehend)
+Aktuelle Version: v1.28-b29 (CI ausstehend)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -203,6 +203,12 @@ v1.27-b28 2026-11-22  (Team-HP-Balken)
   - check_runtime.js prueft Start, Schaden, Schild, kritische HP, Tote und Ausblenden;
     check_data.py prueft die UI-Tokens.
 
+v1.28-b29 2026-11-22  (Schwarmzahlen in der Kampfleiste)
+  - updateBattleStatus() ergaenzt "Mobs Spieler/Gegner" (id statusMobs) im Kampfstatus.
+  - Damit bleibt der Schwarm im Kampfmodus sichtbar, in dem das HUD ausgeblendet ist.
+  - check_runtime.js prueft Startwert und Tod eines Gegner-Mobs;
+    check_data.py prueft den UI-Token.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -232,6 +238,7 @@ Core-Loop-Status:
   [x] 10. Live-Kampfstatus in der Kampfleiste (v1.25)
   [x] 11. Warnung fuer kritische Helden (v1.26)
   [x] 12. Team-HP-Balken in der Kampfleiste (v1.27)
+  [x] 13. Schwarmzahlen in der Kampfleiste (v1.28)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

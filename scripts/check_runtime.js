@@ -93,7 +93,7 @@ if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -416,14 +416,18 @@ vm.runInContext(`
   updateBattleStatus();
   const status = document.getElementById("battleStatus");
   const foesStart = parseInt(document.getElementById("statusEnemies").textContent, 10);
+  const mobsPlayerStart = G.battle.playerMobs.length;
+  const mobsEnemyStart = G.battle.enemyMobs.length;
   globalThis.__statusShowCheck = status.classList.contains("show") &&
     foesStart === sideUnits(G.battle, "enemy").length &&
+    document.getElementById("statusMobs").textContent === mobsPlayerStart+'/'+mobsEnemyStart &&
     document.getElementById("statusHeroes").textContent === "3/3";
   G.battle.enemyMobs[0].isDead = true;
   G.battle.enemies[0].isDead = true;
   G.battle.player[0].isDead = true;
   updateBattleStatus();
   globalThis.__statusLiveCheck = parseInt(document.getElementById("statusEnemies").textContent, 10) === foesStart - 2 &&
+    document.getElementById("statusMobs").textContent === mobsPlayerStart+'/'+(mobsEnemyStart-1) &&
     document.getElementById("statusHeroes").textContent === "2/3";
   G.phase = "menu";
   G.battle = null;
@@ -432,10 +436,10 @@ vm.runInContext(`
 `, ctx);
 
 if (!vm.runInContext('globalThis.__statusShowCheck', ctx)) {
-  throw new Error('Kampf-Status zeigt nicht Gegner und Helden zu Kampfbeginn');
+  throw new Error('Kampf-Status zeigt nicht Gegner, Mobs und Helden zu Kampfbeginn');
 }
 if (!vm.runInContext('globalThis.__statusLiveCheck', ctx)) {
-  throw new Error('Kampf-Status reagiert nicht auf Tod von Gegnern/Helden');
+  throw new Error('Kampf-Status reagiert nicht auf Tod von Gegnern, Mobs oder Helden');
 }
 if (!vm.runInContext('globalThis.__statusHideCheck', ctx)) {
   throw new Error('Kampf-Status verschwindet nicht außerhalb des Kampfes');
@@ -544,4 +548,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+heldenwarnung+teamHp, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

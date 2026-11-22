@@ -58,6 +58,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Startwert, Schadensreaktion, Schildausgleich, kritische HP,
   tote Helden und Ausblenden; `check_data.py` prüft die UI-Tokens.
 
+- [x] **13. Schwarmzahlen in der Kampfleiste** (v1.28)
+  `updateBattleStatus()` zeigt zusätzlich die lebenden Schwarm-Mobs beider Seiten als
+  „Mobs Spieler/Gegner“ (id `statusMobs`) in der Kampfleiste. Damit bleibt der Kernmechaniker
+  des 500er-Schwarms auch im Kampfmodus sichtbar, in dem das HUD ausgeblendet ist.
+  *Erledigt:* `check_runtime.js` prüft Startwert und Abzug bei einem toten Gegner-Mob;
+  `check_data.py` prüft den UI-Token.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

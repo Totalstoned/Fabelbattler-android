@@ -210,7 +210,7 @@
 <div class="battle-bar" id="battleBar">
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
-  <span class="battle-info status" id="battleStatus">Gegner <b id="statusEnemies">0</b> · Helden <b id="statusHeroes">0/0</b></span>
+  <span class="battle-info status" id="battleStatus" title="Lebende Gegner, Schwarm-Mobs (Spieler/Gegner) und Helden">Gegner <b id="statusEnemies">0</b> · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
@@ -2869,7 +2869,10 @@ function updateBattleStatus(){
   bar.classList.add("show");
   const foes = sideUnits(G.battle,"enemy").filter(u => !u.isDead).length;
   const heroes = G.battle.player.filter(u => !u.isDead).length;
+  const mobsPlayer = (G.battle.playerMobs||[]).filter(u => !u.isDead).length;
+  const mobsEnemy = (G.battle.enemyMobs||[]).filter(u => !u.isDead).length;
   document.getElementById("statusEnemies").textContent = String(foes);
+  document.getElementById("statusMobs").textContent = mobsPlayer+'/'+mobsEnemy;
   document.getElementById("statusHeroes").textContent = heroes+'/'+G.battle.player.length;
 }
 function updateTeamHpBar(){
