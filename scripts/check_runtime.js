@@ -79,10 +79,14 @@ if (!html.includes('id="battleTimer"') || !html.includes('function updateBattleT
 if (!html.includes('id="bossBar"') || !html.includes('function updateBossBar')) {
   throw new Error('Boss-Lebensbalken in der Kampfleiste fehlt');
 }
+if (!html.includes('id="battleStatus"') || !html.includes('function updateBattleStatus') ||
+    !html.includes('id="statusEnemies"') || !html.includes('id="statusHeroes"')) {
+  throw new Error('Kampf-Status (Gegner/Helden) in der Kampfleiste fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusHeroes']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -396,4 +400,38 @@ if (!vm.runInContext('globalThis.__noTierCheck', ctx)) {
   throw new Error('Welle 1 enthält bereits Elite-/Boss-Mobs');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  updateBattleStatus();
+  const status = document.getElementById("battleStatus");
+  const foesStart = parseInt(document.getElementById("statusEnemies").textContent, 10);
+  globalThis.__statusShowCheck = status.classList.contains("show") &&
+    foesStart === sideUnits(G.battle, "enemy").length &&
+    document.getElementById("statusHeroes").textContent === "3/3";
+  G.battle.enemyMobs[0].isDead = true;
+  G.battle.enemies[0].isDead = true;
+  G.battle.player[0].isDead = true;
+  updateBattleStatus();
+  globalThis.__statusLiveCheck = parseInt(document.getElementById("statusEnemies").textContent, 10) === foesStart - 2 &&
+    document.getElementById("statusHeroes").textContent === "2/3";
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleStatus();
+  globalThis.__statusHideCheck = !status.classList.contains("show");
+`, ctx);
+
+if (!vm.runInContext('globalThis.__statusShowCheck', ctx)) {
+  throw new Error('Kampf-Status zeigt nicht Gegner und Helden zu Kampfbeginn');
+}
+if (!vm.runInContext('globalThis.__statusLiveCheck', ctx)) {
+  throw new Error('Kampf-Status reagiert nicht auf Tod von Gegnern/Helden');
+}
+if (!vm.runInContext('globalThis.__statusHideCheck', ctx)) {
+  throw new Error('Kampf-Status verschwindet nicht außerhalb des Kampfes');
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

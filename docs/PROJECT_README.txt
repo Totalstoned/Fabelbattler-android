@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.24-b25 (CI ausstehend)
+Aktuelle Version: v1.25-b26 (CI ausstehend)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -182,6 +182,12 @@ v1.24-b25 2026-11-22  (Kritische Boss-HP)
     und pulsierender Prozentwert; beim Boss-Tod werden beide Klassen entfernt.
   - check_runtime.js prueft Normalzustand (50 %), Warnung (20 %) und Ausblenden nach Tod.
 
+v1.25-b26 2026-11-22  (Live-Kampfstatus)
+  - Neue Anzeige in der Kampfleiste: "Gegner N · Helden A/B" (id battleStatus),
+    updateBattleStatus() zaehlt lebende Gegner (Helden + Mobs) und Helden.
+  - Wird wie der Boss-Balken pro Frame aktualisiert und ausserhalb des Kampfes
+    ausgeblendet; check_runtime.js prueft Startwert, Tod-Updates und Ausblenden.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -208,6 +214,7 @@ Core-Loop-Status:
   [x] 7. Animationen (v1.22)
   [x] 8. Boss-Lebensbalken (v1.23)
   [x] 9. Kritische Boss-HP als Warnung (v1.24)
+  [x] 10. Live-Kampfstatus in der Kampfleiste (v1.25)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
