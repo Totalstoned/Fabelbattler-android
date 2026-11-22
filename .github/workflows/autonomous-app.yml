@@ -20,6 +20,7 @@ jobs:
     timeout-minutes: 10
     env:
       OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
       GITHUB_TOKEN: ${{ github.token }}
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -46,7 +47,7 @@ jobs:
         if: steps.api_key.outputs.ok == 'true'
         uses: anomalyco/opencode/github@latest
         with:
-          model: opencode/big-pickle
+          model: openai/gpt-4o-mini
           use_github_token: true
           prompt: |
             Du arbeitest autonom an Fabelbattler in diesem Repository.
