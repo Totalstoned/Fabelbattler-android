@@ -132,6 +132,9 @@
   .battle-info.focuscd.show{display:inline-block;}
   .battle-info.focuscd.ready{color:#9ff0bd;}
   .battle-info.focusbar .fx{font-size:10px;opacity:.85;margin-left:5px;}
+  .battle-info.gold{display:none;color:var(--gold);}
+  .battle-info.gold.show{display:inline-block;}
+  .battle-info.gold b{color:#fff3c4;}
   .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
   body.battle-mode .battle-bar{display:flex;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
@@ -224,6 +227,7 @@
 <div class="battle-bar" id="battleBar">
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
+  <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll">◆ <b id="battleGoldValue">0</b></span>
   <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner) und eigene Helden">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
@@ -2921,6 +2925,13 @@ function updateBattleManaBar(){
   document.getElementById("battleManaFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("battleManaValue").textContent = Math.floor(G.mana)+'/'+G.maxMana;
 }
+function updateBattleGold(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("battleGold");
+  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  bar.classList.add("show");
+  document.getElementById("battleGoldValue").textContent = String(G.gold);
+}
 function updateHeroAlert(){
   if(SIM.headless) return;
   const bar = document.getElementById("heroAlert");
@@ -3233,6 +3244,7 @@ window.addEventListener("load", () => {
     updateBattleStatus();
     updateTeamHpBar();
     updateBattleManaBar();
+    updateBattleGold();
     updateHeroAlert();
     updateFocusHp();
     updateFocusCooldown();
