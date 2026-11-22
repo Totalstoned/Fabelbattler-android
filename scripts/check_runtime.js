@@ -90,10 +90,13 @@ if (!html.includes('id="heroAlert"') || !html.includes('id="heroAlertCount"') ||
 if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar')) {
   throw new Error('Team-HP-Balken in der Kampfleiste fehlt');
 }
+if (!html.includes('id="battleMana"') || !html.includes('function updateBattleManaBar')) {
+  throw new Error('Mana-Anzeige in der Kampfleiste fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -548,4 +551,41 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  const mana = document.getElementById("battleMana");
+  const manaFill = document.getElementById("battleManaFill");
+  const manaValue = document.getElementById("battleManaValue");
+  updateBattleManaBar();
+  globalThis.__manaHidden = !mana.classList.contains("show");
+  G.wave = 1;
+  startBattle();
+  G.mana = 40;
+  updateBattleManaBar();
+  globalThis.__manaShow = mana.classList.contains("show") &&
+    parseFloat(manaFill.style.width) === 40 && manaValue.textContent === "40/100";
+  G.mana = 70;
+  updateBattleManaBar();
+  globalThis.__manaLive = parseFloat(manaFill.style.width) === 70 && manaValue.textContent === "70/100";
+  G.mana = 0;
+  updateBattleManaBar();
+  globalThis.__manaEmpty = parseFloat(manaFill.style.width) === 0 && manaValue.textContent === "0/100";
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleManaBar();
+  globalThis.__manaHideCheck = !mana.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__manaHidden', 'Mana-Anzeige erscheint außerhalb des Kampfes'],
+  ['__manaShow', 'Mana-Anzeige zeigt Startwert nicht an'],
+  ['__manaLive', 'Mana-Anzeige reagiert nicht auf Mana-Änderungen'],
+  ['__manaEmpty', 'Mana-Anzeige zeigt 0 nicht korrekt an'],
+  ['__manaHideCheck', 'Mana-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

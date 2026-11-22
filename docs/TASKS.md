@@ -65,6 +65,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Startwert und Abzug bei einem toten Gegner-Mob;
   `check_data.py` prüft den UI-Token.
 
+- [x] **14. Mana-Anzeige in der Kampfleiste** (v1.29)
+  Das HUD mit dem Mana-Balken ist im Kampfmodus ausgeblendet, obwohl dort die mana-kostenden
+  Fähigkeiten „Heilregen“ (40) und „Blitz“ (70) angeboten werden. `updateBattleManaBar()`
+  blendet jetzt einen kompakten Mana-Balken mit aktuellem Wert in der Kampfleiste ein und
+  verbirgt ihn außerhalb des Kampfes wieder.
+  *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert, 40/70-Mana und 0;
+  `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

@@ -112,6 +112,11 @@
   .teamhp.critical .track{border-color:#ff6b6b;}
   .teamhp.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
   .teamhp.critical b{animation:bossWarn .7s ease-in-out infinite;}
+  .battle-mana{display:none;align-items:center;gap:6px;font-size:11px;color:#8fb5ff;padding:0 6px;white-space:nowrap;}
+  .battle-mana.show{display:flex;}
+  .battle-mana .track{width:84px;height:6px;background:#0b0e13;border:1px solid #2f4a8f;border-radius:4px;overflow:hidden;}
+  .battle-mana .track i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#4f7cff,#8fb5ff);transition:width .15s;}
+  .battle-mana b{min-width:48px;text-align:right;}
   .battle-info.status{display:none;color:var(--txt);}
   .battle-info.status.show{display:inline-block;}
   .battle-info.status b{color:var(--gold);}
@@ -212,6 +217,7 @@
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
   <span class="battle-info status" id="battleStatus" title="Lebende Gegner, Schwarm-Mobs (Spieler/Gegner) und Helden">Gegner <b id="statusEnemies">0</b> · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
+  <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
@@ -2889,6 +2895,15 @@ function updateTeamHpBar(){
   document.getElementById("teamHpFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("teamHpPct").textContent = Math.ceil(pct)+'%';
 }
+function updateBattleManaBar(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("battleMana");
+  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  bar.classList.add("show");
+  const pct = clamp(G.mana/G.maxMana*100,0,100);
+  document.getElementById("battleManaFill").style.width = pct.toFixed(1)+'%';
+  document.getElementById("battleManaValue").textContent = Math.floor(G.mana)+'/'+G.maxMana;
+}
 function updateHeroAlert(){
   if(SIM.headless) return;
   const bar = document.getElementById("heroAlert");
@@ -3164,6 +3179,7 @@ window.addEventListener("load", () => {
     updateBossBar();
     updateBattleStatus();
     updateTeamHpBar();
+    updateBattleManaBar();
     updateHeroAlert();
     if(G.phase === "battle" && G.battle) updateBattle(dt);
     updateEffects(dt);

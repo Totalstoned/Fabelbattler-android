@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.28-b29 (CI ausstehend)
+Aktuelle Version: v1.29-b30 (CI ausstehend)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -209,6 +209,15 @@ v1.28-b29 2026-11-22  (Schwarmzahlen in der Kampfleiste)
   - check_runtime.js prueft Startwert und Tod eines Gegner-Mobs;
     check_data.py prueft den UI-Token.
 
+v1.29-b30 2026-11-22  (Mana-Anzeige in der Kampfleiste)
+   - Im Kampfmodus ist das HUD inklusive Mana-Balken ausgeblendet, obwohl dort die
+     mana-kostenden Faehigkeiten "Heilregen" (40) und "Blitz" (70) angeboten werden.
+   - Neue kompakte Mana-Anzeige (id battleMana) mit Balken (battleManaFill) und
+     Wert (battleManaValue) in der Kampfleiste; updateBattleManaBar() zeigt
+     aktuellen Mana/Wert und verbirgt die Anzeige ausserhalb des Kampfes.
+   - check_runtime.js prueft Tokens, Ein-/Ausblenden, Startwert, 40/70-Mana und 0;
+     check_data.py prueft die UI-Tokens.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -239,6 +248,7 @@ Core-Loop-Status:
   [x] 11. Warnung fuer kritische Helden (v1.26)
   [x] 12. Team-HP-Balken in der Kampfleiste (v1.27)
   [x] 13. Schwarmzahlen in der Kampfleiste (v1.28)
+  [x] 14. Mana-Anzeige in der Kampfleiste (v1.29)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
