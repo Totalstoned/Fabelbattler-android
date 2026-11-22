@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'focusHp', 'focusHpValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -625,4 +625,53 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  const bar = document.getElementById("focusHp");
+  const value = document.getElementById("focusHpValue");
+  const focusHero = G.battle.player[0];
+  G.selectedUnitId = focusHero.id;
+  updateFocusHp();
+  const startShield = focusHero.shield > 0 ? " ⛨"+Math.ceil(focusHero.shield) : "";
+  globalThis.__focusStart = bar.classList.contains("show") &&
+    value.textContent === Math.ceil(focusHero.hp)+"/"+Math.ceil(focusHero.maxHp)+startShield &&
+    !bar.classList.contains("warn") && !bar.classList.contains("critical");
+  focusHero.hp = focusHero.maxHp * 0.4;
+  focusHero.shield = 0;
+  updateFocusHp();
+  globalThis.__focusDamage = bar.classList.contains("warn") && !bar.classList.contains("critical") &&
+    value.textContent === Math.ceil(focusHero.hp)+"/"+Math.ceil(focusHero.maxHp);
+  focusHero.shield = focusHero.maxHp * 0.2;
+  updateFocusHp();
+  globalThis.__focusShield = bar.classList.contains("show") &&
+    value.textContent === Math.ceil(focusHero.hp)+"/"+Math.ceil(focusHero.maxHp)+" ⛨"+Math.ceil(focusHero.shield);
+  focusHero.hp = focusHero.maxHp * 0.1;
+  focusHero.shield = 0;
+  updateFocusHp();
+  globalThis.__focusCritical = bar.classList.contains("critical") && !bar.classList.contains("warn");
+  focusHero.isDead = true;
+  updateFocusHp();
+  globalThis.__focusDeadHidden = !bar.classList.contains("show");
+  focusHero.isDead = false;
+  G.phase = "menu";
+  G.battle = null;
+  updateFocusHp();
+  globalThis.__focusHide = !bar.classList.contains("show") && !bar.classList.contains("warn") &&
+    !bar.classList.contains("critical");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__focusStart', 'Fokus-HP-Anzeige zeigt zu Kampfbeginn keine volle HP'],
+  ['__focusDamage', 'Fokus-HP-Anzeige reagiert nicht auf Schaden'],
+  ['__focusShield', 'Fokus-HP-Anzeige zeigt den Schild nicht'],
+  ['__focusCritical', 'Fokus-HP-Anzeige markiert kritische HP nicht'],
+  ['__focusDeadHidden', 'Fokus-HP-Anzeige bleibt bei einem toten Fokus sichtbar'],
+  ['__focusHide', 'Fokus-HP-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+fokusHp, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Letzte gebaute Version: v1.22-b23 (Commit 3305ed8)
+Aktuelle Version: v1.31-b32
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -172,18 +172,65 @@ v1.22-b23 2026-11-22  (Animationen)
   - check_runtime.js prueft Funktionen, userData-Felder und Treffer-Reaktion; alle Checks gruen.
   - CI 45038192792 gruen, SHA-256 2742f779625bc5fedc8b994dc1a55100587e9ef551bb5f160cbc574cc0dee60c
 
+v1.23-b24 2026-11-22  0dc39b3  (Boss-Lebensbalken)
+  - updateBossBar() blendet einen roten Balken mit Prozentwert in der Kampfleiste ein,
+    solange ein gegnerischer Boss lebt.
+  - check_runtime.js prueft UI-Tokens und 50 % Anzeige bei halber Boss-HP.
+
+v1.24-b25 2026-11-22  (Kritische Boss-HP)
+  - Unter 25 % Boss-HP setzt updateBossBar() die Klasse "critical": rot/oranger Balken
+    und pulsierender Prozentwert; beim Boss-Tod werden beide Klassen entfernt.
+  - check_runtime.js prueft Normalzustand (50 %), Warnung (20 %) und Ausblenden nach Tod.
+
+v1.25-b26 2026-11-22  (Live-Kampfstatus)
+  - Neue Anzeige in der Kampfleiste: "Gegner N · Helden A/B" (id battleStatus),
+    updateBattleStatus() zaehlt lebende Gegner (Helden + Mobs) und Helden.
+  - Wird wie der Boss-Balken pro Frame aktualisiert und ausserhalb des Kampfes
+    ausgeblendet; check_runtime.js prueft Startwert, Tod-Updates und Ausblenden.
+
+v1.26-b27 2026-11-22  (Kritische Helden)
+  - Neue pulsierende Warnung in der Kampfleiste (id heroAlert): updateHeroAlert()
+    zaehlt lebende Helden mit HP+Schild <= 25 % und zeigt die Anzahl an.
+  - Tote Helden zaehlen nicht; ausserhalb des Kampfes ist die Warnung ausgeblendet.
+  - check_runtime.js prueft Startzustand, Zaehlung, Schild, Tote und Ausblenden;
+    check_data.py prueft die UI-Tokens.
+
+v1.27-b28 2026-11-22  (Team-HP-Balken)
+  - Neuer Balken in der Kampfleiste (id teamHpBar): updateTeamHpBar() summiert HP+Schild
+    aller Helden (pro Held auf max. HP gedeckelt) und zeigt Prozent an.
+  - Farben: gruen, gelb (warn) ab 50 %, rot und pulsierend (critical) ab 25 %.
+  - Tote Helden zahlen 0; ausserhalb des Kampfes verschwindet der Balken mit allen Warnklassen.
+  - check_runtime.js prueft Start, Schaden, Schild, kritische HP, Tote und Ausblenden;
+    check_data.py prueft die UI-Tokens.
+
+v1.28-b29 2026-11-22  (Schwarmzahlen in der Kampfleiste)
+  - updateBattleStatus() ergaenzt "Mobs Spieler/Gegner" (id statusMobs) im Kampfstatus.
+  - Damit bleibt der Schwarm im Kampfmodus sichtbar, in dem das HUD ausgeblendet ist.
+  - check_runtime.js prueft Startwert und Tod eines Gegner-Mobs;
+    check_data.py prueft den UI-Token.
+
+v1.29-b30 2026-11-22  (Mana-Anzeige in der Kampfleiste)
+   - Im Kampfmodus ist das HUD inklusive Mana-Balken ausgeblendet, obwohl dort die
+     mana-kostenden Faehigkeiten "Heilregen" (40) und "Blitz" (70) angeboten werden.
+   - Neue kompakte Mana-Anzeige (id battleMana) mit Balken (battleManaFill) und
+     Wert (battleManaValue) in der Kampfleiste; updateBattleManaBar() zeigt
+     aktuellen Mana/Wert und verbirgt die Anzeige ausserhalb des Kampfes.
+   - check_runtime.js prueft Tokens, Ein-/Ausblenden, Startwert, 40/70-Mana und 0;
+     check_data.py prueft die UI-Tokens.
+
+v1.30-b31 2026-11-22  (Treffer-Impuls fuer Mobs)
+   - Mobs hatten trotz hitFlash keine sichtbare Trefferreaktion (Helden haben einen
+     Emissive-Flash). mobHitPulse() skaliert hitFlash/0.15 auf 0..1; getroffene Mobs
+     wachsen kurz an und wackeln in updateMobVisuals() (auch bei 500 pro Seite).
+   - check_data.py prueft die Tokens; check_runtime.js prueft die Impuls-Skalierung
+     und dass sich die Instanz-Matrix eines getroffenen Mobs tatsaechlich aendert.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
   - GitHub-Cron autonomous-app.yml von "0 * * * *" auf "*/10 * * * *" gestellt,
     Timeouts 8/10 min, manueller Run 45040243574.
   - GitHub-Agent weiter blockiert: Repo-Secret OPENCODE_API_KEY fehlt.
-  - 17:25 Update: Secret gesetzt (OpenAI-Projekt-Key), Action-Fehler behoben
-    (timeout_minutes entfernt, GITHUB_TOKEN uebergeben, openai/gpt-4o-mini).
-    Blockade jetzt: OpenAI-Konto hat kein Guthaben (insufficient_quota).
-  - Lokaler Loop: Branch-Erkennung repariert (Basis-Commit statt main..HEAD),
-    Prompt verbietet Branch-Wechsel und begrenzt Versionsbump auf +1.
-    Neuer PID 26927, PR #2 "Mana-Anzeige" offen.
 
 Weitere wichtige Commits ohne Versionssprung:
   20870e8 Folklore-Einheiten + prozedurale Modelle
@@ -202,6 +249,14 @@ Core-Loop-Status:
   [x] 5. Teamauswahl-Filter/Synergie + Kampf-Verbrauchsitems (v1.20)
   [x] 6. Elite-/Boss-Mobs (v1.21)
   [x] 7. Animationen (v1.22)
+  [x] 8. Boss-Lebensbalken (v1.23)
+  [x] 9. Kritische Boss-HP als Warnung (v1.24)
+  [x] 10. Live-Kampfstatus in der Kampfleiste (v1.25)
+  [x] 11. Warnung fuer kritische Helden (v1.26)
+  [x] 12. Team-HP-Balken in der Kampfleiste (v1.27)
+  [x] 13. Schwarmzahlen in der Kampfleiste (v1.28)
+  [x] 14. Mana-Anzeige in der Kampfleiste (v1.29)
+  [x] 15. Treffer-Impuls fuer Mobs (v1.30)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
@@ -248,3 +303,21 @@ Umgesetzt:
 Bewusste Vereinfachungen (spaeter ausbaubar): keine Elite-/Boss-Mobs, keine
 einzelnen HP-Balken pro Mob, kein Reserve-Nachschub innerhalb einer Welle,
 kein Spatial-Hash fuer Fernkampf-Splash (Hero-Splash nutzt die volle Zielliste).
+
+
+Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
+  - User-Entscheidung "Beides kombinieren": lokaler Loop + GitHub-Cron.
+  - Lokaler Loop scripts/auto-improve.sh (PID 26927, Intervall 600 s).
+    Worktree, ein autonomer Lauf, drei Checks, danach PR. Stopp-Datei:
+    /root/projects/FABELBATTLER/auto-improve.stop. Details AUTO_IMPROVE.txt.
+  - Der Loop hat 0dc39b3..a369e3b direkt nach main gepusht (v1.23..v1.31):
+    Boss-Balken, kritische Boss-HP, Live-Kampfstatus, kritische Helden,
+    Team-HP-Balken, Schwarmzahlen, Mana-Anzeige, Treffer-Impuls.
+  - Fix 1a03252: Branch-Erkennung ueber Basis-Commit statt main..HEAD,
+    Push auf HEAD:$BRANCH, Prompt verbietet Branch-Wechsel und begrenzt
+    Versionsbumpen auf genau +1.
+  - GitHub-Cron .github/workflows/autonomous-app.yml: */10 * * * *,
+    OpenAI-Projekt-Key als OPENCODE_API_KEY + OPENAI_API_KEY hinterlegt,
+    Modell openai/gpt-4o-mini, Action-Fehler behoben.
+  - Cloud-Agent blockiert: OpenAI-Konto ohne Guthaben (insufficient_quota).
+    Nach Aufladen laeuft der Cron ohne weitere Aenderung.

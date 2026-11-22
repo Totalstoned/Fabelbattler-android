@@ -79,6 +79,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft die Impuls-Skalierung und dass sich die Instanz-Matrix
   eines getroffenen Mobs tatsächlich ändert; `check_data.py` prüft die Tokens.
 
+- [x] **16. Fokus-HP in der Kampfleiste** (v1.31)
+  `updateFocusHp()` zeigt HP und Schild des per ◀/▶ fokussierten Wesens in der Kampfleiste.
+  HUD und Einheiten-Panel sind im Kampfmodus ausgeblendet, daher waren die Werte bisher nur
+  über die kleinen 3D-Balken ablesbar. Grün/gelb/rot ab 50/25 %, Ausblenden außerhalb des Kampfes
+  und bei totem Fokus.
+  *Erledigt:* `check_runtime.js` prüft Startwert, Schaden, Schild, kritische HP, toten Fokus
+  und Ausblenden; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
