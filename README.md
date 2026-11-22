@@ -30,7 +30,8 @@ Die GitHub Action `.github/workflows/build-apk.yml` baut die APK und benennt sie
 - `◀` / `▶` in der Kampfleiste wechselt den Fokus; die Anzeige nennt das aktive Wesen
 - Mausrad oder Zwei-Finger-Zoom, Doppelklick oder `0` setzt die Ansicht zurück
 - Kampf: Auswahl, nächste Welle, Heilregen, Blitz, Fähigkeit, Vollbild aus
-- Draft: drei verschiedene Karten, `Reroll 1 Gold`, Auswahl kostet 2 Gold pro Wesen
+- Draft: drei verschiedene Karten, Rollen-/Klassenfilter und Synergie-Hinweis, `Reroll 1 Gold`, Auswahl kostet 2 Gold pro Wesen
+- Verbrauchsitems: Heiltrank (35 % HP für den schwächsten Helden), Schutzrune (25 % Schild für alle), Blitzsplitter (30 % Schaden + Stun). Start 2/1/1, Nachschub nach Wellensieg; HUD-Pill und Kampfleisten-Buttons zeigen den Bestand
 - Kampfzeit läuft in Sekunden (Kampfleiste und HUD)
 - App startet immer im Querformat und immersive Fullscreen-Modus
 - Team-Buffs: ab zwei Wesen mit gleicher Klasse/Rasse gilt ein Stack pro weiterem Duden (max. 4); zusätzlich gibt jeder weitere Dude dem ganzen Team +4 % HP/ATK

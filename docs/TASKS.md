@@ -14,6 +14,10 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   `draftKeys()` liefert über `draftOffer` genau drei verschiedene Karten; der neue Button `mdReroll` verwirft das Angebot für 1 Gold. Die Auswahl kostet weiterhin 2 Gold pro Wesen, das Gegnerteam wird wie bisher angepasst.
   *Erledigt:* `check_runtime.js` prüft drei verschiedene Keys und den Gold-Abzug von genau 1, `check_data.py` prüft die Tokens.
 
+- [x] **5. Teamauswahl-Filter/Synergie + Kampf-Verbrauchsitems** (v1.20)
+  Draft mit Rollen-Chips und Klassen-Dropdown (gefiltertes Angebot), Synergie-Hinweis zu fehlenden Rollen, aktiven Klassen/Rassen und Duden-Bonus. Drei Verbrauchsitems: Heiltrank (35 % des schwächsten Helden), Schutzrune (25 % Schild für alle Helden), Blitzsplitter (30 % Schaden + Stun auf gegnerischen Helden, sonst Mob). Startbestand 2/1/1, Nachschub nach Wellensieg (jede Welle Trank, gerade Welle Schild, jede dritte Splitter). HUD-Pill und Kampfleisten-Buttons zeigen Bestand.
+  *Erledigt:* `check_runtime.js` prüft Rollen-/Klassenfilter, Synergie-Text, Item-Startbestand und Wirkung aller drei Items; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

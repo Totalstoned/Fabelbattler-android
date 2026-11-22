@@ -70,6 +70,9 @@ if (!html.includes('id="battleTimer"') || !html.includes('function updateBattleT
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova']) {
+  if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
+}
 const gameJs = match[1];
 vm.runInContext(fs.readFileSync(threePath, 'utf8'), ctx, {filename: 'three.min.js'});
 vm.runInContext('var THREE = globalThis.THREE;', ctx);
@@ -194,6 +197,18 @@ vm.runInContext(`
   const goldBefore = G.gold;
   const rolled = rerollDraft();
   globalThis.__rerollCheck = rolled === true && G.gold === goldBefore - 1;
+  draftFilterRole = "HEALER";
+  draftFilterClass = "ALL";
+  draftOffer = [];
+  globalThis.__filterRoleCheck = draftKeys().length > 0 && draftKeys().every(k => ROSTER[k].role === "HEALER");
+  draftFilterRole = "ALL";
+  draftFilterClass = "Kaiju";
+  draftOffer = [];
+  globalThis.__filterClassCheck = draftKeys().length > 0 && draftKeys().every(k => ROSTER[k].cls === "Kaiju" || ROSTER[k].cls2 === "Kaiju");
+  draftFilterRole = "ALL";
+  draftFilterClass = "ALL";
+  draftOffer = [];
+  globalThis.__synergyTextCheck = typeof draftSynergyText === "function" && draftSynergyText().indexOf("Lücken:") === 0;
   G.phase = "menu";
 `, ctx);
 
@@ -202,6 +217,49 @@ if (!vm.runInContext('globalThis.__draftCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__rerollCheck', ctx)) {
   throw new Error('Draft-Reroll zieht nicht genau 1 Gold ab');
+}
+if (!vm.runInContext('globalThis.__filterRoleCheck', ctx)) {
+  throw new Error('Draft-Rollenfilter liefert falsche Karten');
+}
+if (!vm.runInContext('globalThis.__filterClassCheck', ctx)) {
+  throw new Error('Draft-Klassenfilter liefert falsche Karten');
+}
+if (!vm.runInContext('globalThis.__synergyTextCheck', ctx)) {
+  throw new Error('Synergie-Hinweis im Draft fehlt');
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  globalThis.__itemsInitCheck = G.items.heal === 2 && G.items.shield === 1 && G.items.nova === 1;
+  startBattle();
+  G.battle.player.forEach(u => { u.hp = u.maxHp; u.shield = 0; });
+  const hero = G.battle.player[0];
+  hero.hp = hero.maxHp * 0.4;
+  const healBefore = G.items.heal;
+  globalThis.__healItemCheck = useItem("heal") && G.items.heal === healBefore - 1 && hero.hp > hero.maxHp * 0.4;
+  const shieldBefore = G.items.shield;
+  const shieldsBefore = G.battle.player.reduce((s,u) => s + u.shield, 0);
+  globalThis.__shieldItemCheck = useItem("shield") && G.items.shield === shieldBefore - 1 &&
+    G.battle.player.reduce((s,u) => s + u.shield, 0) > shieldsBefore;
+  const novaBefore = G.items.nova;
+  globalThis.__novaItemCheck = useItem("nova") && G.items.nova === novaBefore - 1;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__itemsInitCheck', ctx)) {
+  throw new Error('Item-Startbestand fehlt');
+}
+if (!vm.runInContext('globalThis.__healItemCheck', ctx)) {
+  throw new Error('Heiltrank heilt keinen verletzten Helden');
+}
+if (!vm.runInContext('globalThis.__shieldItemCheck', ctx)) {
+  throw new Error('Schutzrune gibt keinen Schild');
+}
+if (!vm.runInContext('globalThis.__novaItemCheck', ctx)) {
+  throw new Error('Blitzsplitter verbraucht kein Item');
 }
 
 vm.runInContext(`
@@ -239,4 +297,4 @@ if (!vm.runInContext('globalThis.__mobAfterCheck', ctx)) {
   throw new Error('Mob-Kampf-Simulation mit 500 Mobs pro Seite läuft nicht');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, draft3+reroll, krypto, stacks, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, draft3+reroll+filter, items, krypto, stacks, timer ${timerText})`);

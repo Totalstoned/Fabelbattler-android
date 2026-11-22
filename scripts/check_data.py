@@ -149,7 +149,7 @@ for key, role in core_roles.items():
 mob_cap = re.search(r'const MOB_CAP = (\d+);', src)
 if not mob_cap or int(mob_cap.group(1)) != 500:
     problems.append('MOB_CAP: erwartet 500')
-for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'updateMobVisuals', 'hudMobs', 'mdReroll', 'rerollDraft', 'slice(0,3)']:
+for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'updateMobVisuals', 'hudMobs', 'mdReroll', 'rerollDraft', 'slice(0,3)', 'mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'draftFilterRole', 'draftSynergyText', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'function useItem']:
     if token not in src:
         problems.append('Mob-System fehlt: ' + token)
 if len(roster) != len(set(roster)):

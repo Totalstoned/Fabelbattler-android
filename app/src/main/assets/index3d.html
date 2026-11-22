@@ -59,6 +59,11 @@
   .unitinfo .statuses{color:#fca5a5;margin-top:3px;}
   .tiny{font-size:11px;color:var(--dim);line-height:1.45;}
   .draft{display:flex;flex-direction:column;gap:8px;}
+  .draft-filters{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;}
+  .filter-chip{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:999px;padding:4px 9px;font-size:10px;cursor:pointer;}
+  .filter-chip.on{border-color:var(--acc);color:var(--txt);background:rgba(167,139,250,0.16);}
+  .filter-select{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:4px 7px;font-size:10px;max-width:150px;}
+  .synergy-hint{font-size:10px;color:var(--gold);line-height:1.4;margin-bottom:8px;}
   .cardpick{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;transition:.15s;}
   .cardpick:hover{border-color:var(--acc);}
   .cardpick .row1{display:flex;align-items:center;gap:8px;}
@@ -106,6 +111,7 @@
     <div class="pill">Gold <b id="hudGold">20</b></div>
     <div class="pill">Team <b id="hudTeam">0/6</b></div>
     <div class="pill">Mobs <b id="hudMobs">0/0</b></div>
+    <div class="pill">Items <b id="hudItems">♥2 ⛨1 ✺1</b></div>
     <div class="pill">Wesen-Lvl <b id="hudLvl">1</b></div>
     <div class="pill">Zeit <b id="hudTime">0s</b></div>
   </div>
@@ -162,6 +168,9 @@
   <div class="modal">
     <h3 id="mdTitle">Wähle eine Einheit</h3>
     <p class="tiny" id="mdSub" style="margin:0 0 12px"></p>
+    <div class="draft-filters" id="mdRoleFilters"></div>
+    <select class="filter-select" id="mdClassFilter"></select>
+    <div class="synergy-hint" id="mdSynergy"></div>
     <div class="draft" id="mdDraft"></div>
     <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn ghost" id="mdBack">Zurück</button>
@@ -178,6 +187,9 @@
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
   <button class="btn heal" id="btnBattleHeal">Heilregen</button>
   <button class="btn nova" id="btnBattleNova">Blitz</button>
+  <button class="btn heal" id="btnItemHeal">Trank</button>
+  <button class="btn" id="btnItemShield">Schild</button>
+  <button class="btn nova" id="btnItemNova">Splitter</button>
   <button class="btn ghost" id="btnPrevUnit" title="Vorheriges Wesen">◀</button>
   <button class="btn ghost" id="btnNextUnit" title="Nächstes Wesen">▶</button>
   <button class="btn ghost" id="btnBattleInfo">Fähigkeit</button>
@@ -549,7 +561,7 @@ const SYNERGY = {
   Stahl:m=>{m.shieldPct+=0.12;m.dr+=0.08;},
   Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
-const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,selectedUnitId:null};
+const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null};
 const SIM = {headless:false};
 const CORE_UNITS = ["bigfoot","chupacabra","fee"];
 const MOB_CAP = 500;
@@ -570,6 +582,8 @@ let synergyLinks = [];
 let draftTimer = null;
 let draftReturnPhase = "prep";
 let draftOffer = [];
+let draftFilterRole = "ALL";
+let draftFilterClass = "ALL";
 const sceneEl = document.getElementById("scene");
 let renderer;
 try{
@@ -768,6 +782,7 @@ function beginRun(){
   G.wave = 1;
   G.gold = 20;
   G.mana = 30;
+  G.items = {heal:2,shield:1,nova:1};
   G.battle = null;
   G.selectedUnitId = null;
   G.phase = "prep";
@@ -2087,6 +2102,35 @@ function shieldUnit(u,amount){
   pushEffect(u,"+"+Math.round(amount)+" ⛨","#8fb5ff");
   spawnBurst(u,"#8fb5ff",9,0.6);
 }
+function useItem(kind){
+  if(!G.items || !(G.items[kind] > 0) || !G.battle || G.phase !== "battle") return false;
+  const heroes = G.battle.player.filter(u => !u.isDead);
+  if(kind === "heal"){
+    const ally = lowestAlly(heroes);
+    if(!ally || ally.hp >= ally.maxHp) return false;
+    G.items.heal -= 1;
+    healUnit(ally,ally.maxHp*0.35);
+    showToast("Heiltrank "+ally.emoji+" +35 %");
+  } else if(kind === "shield"){
+    if(!heroes.length) return false;
+    G.items.shield -= 1;
+    heroes.forEach(u => shieldUnit(u,u.maxHp*0.25));
+    showToast("Schutzrune ⛨ +25 % für alle Helden");
+  } else if(kind === "nova"){
+    const foes = G.battle.enemies.filter(u => !u.isDead);
+    const mobs = (G.battle.enemyMobs||[]).filter(u => !u.isDead);
+    const targets = foes.length ? foes : mobs;
+    if(!targets.length) return false;
+    G.items.nova -= 1;
+    const target = targets[Math.floor(Math.random()*targets.length)];
+    applyDamage(target,target.maxHp*0.3,null,{});
+    if(!target.isMob) addStatus(target,"stun",0.8,1);
+    showToast("Blitzsplitter ✺ 30 %");
+  } else return false;
+  updateHud();
+  updateButtons();
+  return true;
+}
 function lowestAlly(list){
   return list.slice().sort((a,b) => (a.hp+a.shield)/a.maxHp-(b.hp+b.shield)/b.maxHp)[0] || null;
 }
@@ -2373,6 +2417,9 @@ function winBattle(){
   const reward = 5+cleared*2;
   G.gold += reward;
   G.mana = Math.min(G.maxMana,G.mana+25);
+  G.items.heal += 1;
+  if(cleared % 2 === 0) G.items.shield += 1;
+  if(cleared % 3 === 0) G.items.nova += 1;
   reviveTeam();
   if(cleared % 3 === 0){
     G.team.forEach(u => setUnitLevel(u,u.level+1));
@@ -2677,6 +2724,7 @@ function updateHud(){
   const pm = G.battle && G.battle.playerMobs ? G.battle.playerMobs.length : mobWaveSize(G.wave,"player");
   const em = G.battle && G.battle.enemyMobs ? G.battle.enemyMobs.length : mobWaveSize(G.wave,"enemy");
   document.getElementById("hudMobs").textContent = pm+'/'+em;
+  document.getElementById("hudItems").textContent = "♥"+(G.items.heal||0)+" ⛨"+(G.items.shield||0)+" ✺"+(G.items.nova||0);
   const avg = G.team.length ? G.team.reduce((s,u) => s+u.level,0)/G.team.length : 1;
   document.getElementById("hudLvl").textContent = avg.toFixed(1).replace(/\.0$/,'');
   const focus = findUnitById(G.selectedUnitId);
@@ -2710,6 +2758,14 @@ function updateButtons(){
   document.getElementById("btnBattleNext").textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
   document.getElementById("btnBattleHeal").disabled = !inBattle || G.mana < 40;
   document.getElementById("btnBattleNova").disabled = !inBattle || G.mana < 70;
+  const itemBtns = {btnItemHeal:"heal",btnItemShield:"shield",btnItemNova:"nova"};
+  const itemLabels = {heal:"Trank",shield:"Schild",nova:"Splitter"};
+  Object.keys(itemBtns).forEach(id => {
+    const kind = itemBtns[id];
+    const b = document.getElementById(id);
+    b.disabled = !inBattle || !(G.items[kind] > 0);
+    b.textContent = itemLabels[kind]+" ×"+(G.items[kind]||0);
+  });
   let hint = "";
   if(menu) hint = "Menü: Start, Einstellungen oder Credits wählen.";
   else if(drafting) hint = "Wähle "+G.teamSize+" Wesen. Das Gegnerteam wird auf dieselbe Größe angepasst.";
@@ -2719,20 +2775,69 @@ function updateButtons(){
   else hint = "Team bereit. Starte die nächste Welle.";
   document.getElementById("hint").textContent = hint;
 }
+function draftSynergyText(){
+  const missing = ROLES.filter(r => !G.team.some(u => u.role === r));
+  const classes = synergyCounts(G.team);
+  const races = raceCounts(G.team);
+  const active = Object.keys(classes).filter(c => classes[c] >= 2)
+    .concat(Object.keys(races).filter(r => races[r] >= 2));
+  const bonus = swarmStacks(G.team.length+mobWaveSize(G.wave,"player"))*4;
+  return "Lücken: "+(missing.length ? missing.map(r => ROLE_META[r].label).join(", ") : "keine")+
+    " · Aktiv: "+(active.length ? active.join(", ") : "noch keine")+" · Duden +"+bonus+" %";
+}
+function renderDraftFilters(){
+  const box = document.getElementById("mdRoleFilters");
+  if(!box) return;
+  box.innerHTML = '';
+  const roles = [{key:"ALL",label:"Alle"}].concat(ROLES.map(r => ({key:r,label:ROLE_META[r].label})));
+  roles.forEach(opt => {
+    const b = document.createElement("button");
+    b.className = "filter-chip"+(draftFilterRole === opt.key ? " on" : "");
+    b.textContent = opt.label;
+    b.onclick = () => {
+      draftFilterRole = opt.key;
+      draftOffer = [];
+      renderDraftCards();
+    };
+    box.appendChild(b);
+  });
+  const sel = document.getElementById("mdClassFilter");
+  if(sel){
+    sel.innerHTML = '';
+    const classes = [{key:"ALL",label:"Alle Klassen"}].concat(Object.keys(CLASS_META).map(c => ({key:c,label:CLASS_META[c].label})));
+    classes.forEach(opt => {
+      const o = document.createElement("option");
+      o.value = opt.key;
+      o.textContent = opt.label;
+      sel.appendChild(o);
+    });
+    sel.value = draftFilterClass;
+    sel.onchange = () => {
+      draftFilterClass = sel.value;
+      draftOffer = [];
+      renderDraftCards();
+    };
+  }
+  const hint = document.getElementById("mdSynergy");
+  if(hint) hint.textContent = draftSynergyText();
+}
 function draftKeys(){
   if(draftOffer.length !== 3 || new Set(draftOffer).size !== 3){
     const have = role => G.team.filter(u => u.role === role).length;
     const order = ROLES.slice().sort((a,b) => have(a)-have(b));
     const used = {};
     G.team.forEach(u => { used[u.key] = true; });
-    const pool = ALL_KEYS.filter(k => !used[k]);
+    const filtered = ALL_KEYS.filter(k => !used[k] &&
+      (draftFilterRole === "ALL" || ROSTER[k].role === draftFilterRole) &&
+      (draftFilterClass === "ALL" || ROSTER[k].cls === draftFilterClass || ROSTER[k].cls2 === draftFilterClass));
+    const pool = filtered.length >= 3 ? filtered : ALL_KEYS.filter(k => !used[k]);
     const picks = [];
     order.slice(0,2).forEach(role => {
       const candidates = shuffle(pool.filter(k => ROSTER[k].role === role && !picks.includes(k)));
       if(candidates.length) picks.push(candidates[0]);
     });
     shuffle(pool).forEach(k => { if(picks.length < 3 && !picks.includes(k)) picks.push(k); });
-    if(picks.length < 3) shuffle(ALL_KEYS).forEach(k => { if(picks.length < 3 && !picks.includes(k)) picks.push(k); });
+    if(picks.length < 3) shuffle(pool).forEach(k => { if(picks.length < 3 && !picks.includes(k)) picks.push(k); });
     draftOffer = shuffle(picks).slice(0,3);
   }
   return draftOffer.slice();
@@ -2748,6 +2853,7 @@ function rerollDraft(){
   return true;
 }
 function renderDraftCards(){
+  renderDraftFilters();
   document.getElementById("mdTitle").textContent = "Wähle dein Team";
   document.getElementById("mdSub").textContent = G.team.length+"/"+G.teamSize+" gewählt · 2 Gold pro Wesen · Reroll 1 Gold · Gold: "+G.gold+
     " · Gegnerteam: "+G.teamSize+" Einheiten";
@@ -2861,6 +2967,9 @@ window.addEventListener("load", () => {
   document.getElementById("btnBattleNext").onclick = () => startBattle();
   document.getElementById("btnBattleHeal").onclick = () => document.getElementById("btnHeal").click();
   document.getElementById("btnBattleNova").onclick = () => document.getElementById("btnNova").click();
+  document.getElementById("btnItemHeal").onclick = () => useItem("heal");
+  document.getElementById("btnItemShield").onclick = () => useItem("shield");
+  document.getElementById("btnItemNova").onclick = () => useItem("nova");
   document.getElementById("btnBattleExit").onclick = () => setBattleMode(false);
   document.getElementById("btnPrevUnit").onclick = () => cycleFocus(-1);
   document.getElementById("btnNextUnit").onclick = () => cycleFocus(1);
