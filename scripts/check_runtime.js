@@ -10,9 +10,18 @@ const htmlPath = path.resolve(process.argv[2] || path.join(root, 'app/src/main/a
 const threePath = path.join(root, 'app/src/main/assets/vendor/three.min.js');
 
 function makeElement() {
+  const classes = new Set();
   return {
     style: {},
-    classList: {contains: () => false, add() {}, remove() {}, toggle() {}},
+    classList: {
+      contains: (name) => classes.has(name),
+      add: (name) => classes.add(name),
+      remove: (name) => classes.delete(name),
+      toggle: (name, on) => {
+        if (on === undefined) on = !classes.has(name);
+        if (on) classes.add(name); else classes.delete(name);
+      },
+    },
     innerHTML: '', textContent: '', children: [], childNodes: [], dataset: {},
     appendChild() {}, removeChild() {}, remove() {},
     addEventListener() {}, removeEventListener() {},
@@ -333,6 +342,16 @@ vm.runInContext(`
   updateBossBar();
   globalThis.__bossBarCheck = parseFloat(document.getElementById("bossBarFill").style.width) === 50 &&
     document.getElementById("bossBarPct").textContent === "50%";
+  const bossBar = document.getElementById("bossBar");
+  globalThis.__bossBarShowCheck = bossBar.classList.contains("show") && !bossBar.classList.contains("critical");
+  boss.hp = boss.maxHp * 0.2;
+  updateBossBar();
+  globalThis.__bossBarCriticalCheck = bossBar.classList.contains("show") && bossBar.classList.contains("critical") &&
+    parseFloat(document.getElementById("bossBarFill").style.width) === 20 &&
+    document.getElementById("bossBarPct").textContent === "20%";
+  boss.isDead = true;
+  updateBossBar();
+  globalThis.__bossBarHideCheck = !bossBar.classList.contains("show") && !bossBar.classList.contains("critical");
   const bossGoldBefore = G.gold;
   const eliteCount = em.filter(m => m.isElite).length;
   winBattle();
@@ -358,6 +377,15 @@ if (!vm.runInContext('globalThis.__bossStatsCheck', ctx)) {
 if (!vm.runInContext('globalThis.__bossBarCheck', ctx)) {
   throw new Error('Boss-Lebensbalken zeigt nicht die aktuelle Boss-HP');
 }
+if (!vm.runInContext('globalThis.__bossBarShowCheck', ctx)) {
+  throw new Error('Boss-Lebensbalken wird bei sicherer HP nicht normal angezeigt');
+}
+if (!vm.runInContext('globalThis.__bossBarCriticalCheck', ctx)) {
+  throw new Error('Boss-Lebensbalken zeigt keine kritische HP unter 25 %');
+}
+if (!vm.runInContext('globalThis.__bossBarHideCheck', ctx)) {
+  throw new Error('Boss-Lebensbalken verschwindet nicht nach dem Boss-Tod');
+}
 if (!vm.runInContext('globalThis.__bossGoldCheck', ctx)) {
   throw new Error('Boss/Elite geben keinen Bonus-Gold');
 }
@@ -368,4 +396,4 @@ if (!vm.runInContext('globalThis.__noTierCheck', ctx)) {
   throw new Error('Welle 1 enthält bereits Elite-/Boss-Mobs');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, draft3+reroll+filter, items, krypto, stacks, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

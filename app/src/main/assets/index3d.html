@@ -95,6 +95,11 @@
   .bossbar .track{width:84px;height:6px;background:#0b0e13;border:1px solid #7f3b3b;border-radius:4px;overflow:hidden;}
   .bossbar .track i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ff6b6b,#ffb86b);transition:width .15s;}
   .bossbar b{min-width:30px;text-align:right;}
+  .bossbar.critical{color:#ff6b6b;}
+  .bossbar.critical .track{border-color:#ff6b6b;}
+  .bossbar.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
+  .bossbar.critical b{animation:bossWarn .7s ease-in-out infinite;}
+  @keyframes bossWarn{50%{opacity:.3;}}
   .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
   body.battle-mode .battle-bar{display:flex;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
@@ -2829,9 +2834,10 @@ function updateBossBar(){
   if(SIM.headless) return;
   const bar = document.getElementById("bossBar");
   const boss = G.battle && G.battle.enemyMobs ? G.battle.enemyMobs.find(m => m.isBoss && !m.isDead) : null;
-  if(!boss){ bar.classList.remove("show"); return; }
+  if(!boss){ bar.classList.remove("show"); bar.classList.remove("critical"); return; }
   bar.classList.add("show");
   const pct = clamp(boss.hp/boss.maxHp*100,0,100);
+  bar.classList.toggle("critical",pct <= 25);
   document.getElementById("bossBarFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("bossBarPct").textContent = Math.ceil(pct)+'%';
 }

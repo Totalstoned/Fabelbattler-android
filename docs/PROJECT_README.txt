@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Letzte gebaute Version: v1.22-b23 (Commit 3305ed8)
+Aktuelle Version: v1.24-b25 (CI ausstehend)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -172,6 +172,16 @@ v1.22-b23 2026-11-22  (Animationen)
   - check_runtime.js prueft Funktionen, userData-Felder und Treffer-Reaktion; alle Checks gruen.
   - CI 45038192792 gruen, SHA-256 2742f779625bc5fedc8b994dc1a55100587e9ef551bb5f160cbc574cc0dee60c
 
+v1.23-b24 2026-11-22  0dc39b3  (Boss-Lebensbalken)
+  - updateBossBar() blendet einen roten Balken mit Prozentwert in der Kampfleiste ein,
+    solange ein gegnerischer Boss lebt.
+  - check_runtime.js prueft UI-Tokens und 50 % Anzeige bei halber Boss-HP.
+
+v1.24-b25 2026-11-22  (Kritische Boss-HP)
+  - Unter 25 % Boss-HP setzt updateBossBar() die Klasse "critical": rot/oranger Balken
+    und pulsierender Prozentwert; beim Boss-Tod werden beide Klassen entfernt.
+  - check_runtime.js prueft Normalzustand (50 %), Warnung (20 %) und Ausblenden nach Tod.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -196,6 +206,8 @@ Core-Loop-Status:
   [x] 5. Teamauswahl-Filter/Synergie + Kampf-Verbrauchsitems (v1.20)
   [x] 6. Elite-/Boss-Mobs (v1.21)
   [x] 7. Animationen (v1.22)
+  [x] 8. Boss-Lebensbalken (v1.23)
+  [x] 9. Kritische Boss-HP als Warnung (v1.24)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
