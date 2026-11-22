@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'statusEliteWrap', 'statusElites', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -456,6 +456,47 @@ vm.runInContext(`
   beginRun();
   G.wave = 1;
   startBattle();
+  const eliteWrap = document.getElementById("statusEliteWrap");
+  const eliteText = document.getElementById("statusElites");
+  updateBattleStatus();
+  globalThis.__eliteStatusWave1 = !eliteWrap.classList.contains("show") && eliteText.textContent === "0/0";
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  updateBattleStatus();
+  const totalElites = G.battle.enemyMobs.filter(m => m.isElite).length;
+  globalThis.__eliteStatusWave5 = totalElites > 0 && eliteWrap.classList.contains("show") &&
+    eliteText.textContent === totalElites+'/'+totalElites;
+  G.battle.enemyMobs.filter(m => m.isElite)[0].isDead = true;
+  updateBattleStatus();
+  globalThis.__eliteStatusDead = eliteWrap.classList.contains("show") &&
+    eliteText.textContent === (totalElites-1)+'/'+totalElites;
+  G.battle.enemyMobs.filter(m => m.isElite).forEach(m => { m.isDead = true; });
+  updateBattleStatus();
+  globalThis.__eliteStatusCleared = eliteWrap.classList.contains("show") &&
+    eliteText.textContent === "0/"+totalElites;
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleStatus();
+  globalThis.__eliteStatusHide = !eliteWrap.classList.contains("show") && eliteText.textContent === "0/0";
+`, ctx);
+
+for (const [flag, message] of [
+  ['__eliteStatusWave1', 'Eliten-Anzeige erscheint in Welle 1 ohne Eliten'],
+  ['__eliteStatusWave5', 'Eliten-Anzeige zeigt die Eliten der Welle 5 nicht'],
+  ['__eliteStatusDead', 'Eliten-Anzeige reagiert nicht auf einen getöteten Eliten'],
+  ['__eliteStatusCleared', 'Eliten-Anzeige zeigt nach dem letzten Eliten nicht 0'],
+  ['__eliteStatusHide', 'Eliten-Anzeige verschwindet außerhalb des Kampfes nicht'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
   const alert = document.getElementById("heroAlert");
   const count = document.getElementById("heroAlertCount");
   updateHeroAlert();
@@ -752,4 +793,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+eliten+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
