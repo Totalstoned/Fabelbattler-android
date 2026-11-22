@@ -203,6 +203,7 @@ vm.runInContext(`
   let mobDamaged = false;
   for (let f = 0; f < 600 && G.battle; f++) {
     simulateBattle(0.016);
+    if (!G.battle) break;
     if (G.battle.playerMobs.some(m => m.isDead) || G.battle.enemyMobs.some(m => m.isDead)) mobDamaged = true;
   }
   globalThis.__mobAfterCheck = mobDamaged && !SIM.headless;
