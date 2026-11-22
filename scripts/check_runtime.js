@@ -79,6 +79,10 @@ if (!html.includes('id="battleTimer"') || !html.includes('function updateBattleT
 if (!html.includes('id="bossBar"') || !html.includes('function updateBossBar')) {
   throw new Error('Boss-Lebensbalken in der Kampfleiste fehlt');
 }
+if (!html.includes('id="battleMana"') || !html.includes('id="battleManaFill"') ||
+    !html.includes('id="battleManaPct"')) {
+  throw new Error('Mana-Anzeige in der Kampfleiste fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
@@ -293,6 +297,28 @@ if (!vm.runInContext('globalThis.__novaItemCheck', ctx)) {
 }
 
 vm.runInContext(`
+  G.mana = 42;
+  updateManaBar();
+  globalThis.__battleManaCheck =
+    Math.abs(parseFloat(document.getElementById("battleManaFill").style.width) - 42) < 0.1 &&
+    document.getElementById("battleManaPct").textContent === "42/100" &&
+    Math.abs(parseFloat(document.getElementById("manaBar").style.width) - 42) < 0.1;
+  G.mana = 250;
+  updateManaBar();
+  globalThis.__battleManaCapCheck =
+    parseFloat(document.getElementById("battleManaFill").style.width) === 100 &&
+    document.getElementById("battleManaPct").textContent === "100/100";
+  G.mana = 30;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__battleManaCheck', ctx)) {
+  throw new Error('Mana-Anzeige in der Kampfleiste zeigt nicht den aktuellen Wert');
+}
+if (!vm.runInContext('globalThis.__battleManaCapCheck', ctx)) {
+  throw new Error('Mana-Anzeige in der Kampfleiste begrenzt den Wert nicht auf das Maximum');
+}
+
+vm.runInContext(`
   const w1 = mobWaveSize(1,"enemy"), w20 = mobWaveSize(20,"enemy"), w40 = mobWaveSize(40,"enemy");
   globalThis.__mobSizeCheck = w1 >= 4 && w20 > w1 && w40 === 500 && mobWaveSize(40,"player") === 500;
   G.phase = "menu";
@@ -396,4 +422,4 @@ if (!vm.runInContext('globalThis.__noTierCheck', ctx)) {
   throw new Error('Welle 1 enthält bereits Elite-/Boss-Mobs');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, draft3+reroll+filter, items, battle-mana, krypto, stacks, bossbar-crit, timer ${timerText})`);

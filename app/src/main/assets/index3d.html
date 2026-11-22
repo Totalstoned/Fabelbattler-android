@@ -100,6 +100,10 @@
   .bossbar.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
   .bossbar.critical b{animation:bossWarn .7s ease-in-out infinite;}
   @keyframes bossWarn{50%{opacity:.3;}}
+  .manabar{display:flex;align-items:center;gap:6px;font-size:11px;color:#8fb5ff;padding:0 6px;white-space:nowrap;}
+  .manabar .track{width:64px;height:6px;background:#0b0e13;border:1px solid #2f4d78;border-radius:4px;overflow:hidden;}
+  .manabar .track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4f8cff,#9ec5ff);transition:width .15s;}
+  .manabar b{min-width:44px;text-align:right;font-variant-numeric:tabular-nums;}
   .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
   body.battle-mode .battle-bar{display:flex;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
@@ -192,6 +196,7 @@
 <div class="battle-bar" id="battleBar">
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
+  <span class="manabar" id="battleMana" title="Mana: Heilregen ab 40, Fabel-Blitz ab 70">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaPct">30/100</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
@@ -2822,7 +2827,12 @@ function updateHud(){
   updateBattleTimer();
 }
 function updateManaBar(){
-  document.getElementById("manaBar").style.width = (G.mana/G.maxMana*100)+'%';
+  const mana = clamp(G.mana,0,G.maxMana);
+  const pct = mana/G.maxMana*100;
+  document.getElementById("manaBar").style.width = pct+'%';
+  if(SIM.headless) return;
+  document.getElementById("battleManaFill").style.width = pct.toFixed(1)+'%';
+  document.getElementById("battleManaPct").textContent = Math.floor(mana)+'/'+G.maxMana;
 }
 function updateBattleTimer(){
   const seconds = Math.floor(G.battle ? G.battle.time : 0);

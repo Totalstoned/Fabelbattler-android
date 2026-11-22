@@ -38,6 +38,12 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Normalzustand bei 50 %, Warnung bei 20 % und dass der Balken
   nach dem Tod des Bosses ausgeblendet und die Warnung zurückgesetzt wird.
 
+- [x] **10. Mana-Anzeige in der Kampfleiste** (v1.25)
+  Im Kampfmodus sind HUD und Mana-Balken ausgeblendet, obwohl Heilregen (40 Mana) und
+  Fabel-Blitz (70 Mana) in der Kampfleiste nutzbar sind. `battleMana` zeigt jetzt Mana
+  als blauen Balken mit aktuellem Wert; der Tooltip nennt die beiden Kosten-Schwellen.
+  *Erledigt:* `check_runtime.js` prüft die UI-Tokens, den angezeigten Wert und das Cap bei maxMana.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
