@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -264,6 +264,14 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
 
+v1.37-b38 2026-11-22  (Fokus-Rolle in der Kampfleiste)
+   - Neue Anzeige focusRole/updateFocusRole(): Rolle und Klassen des per ◀/▶
+     fokussierten Helden direkt in der Kampfleiste. HUD und Einheiten-Panel sind
+     im Kampfmodus ausgeblendet; zuvor war die Info nur ueber die Faehigkeits-
+     Ansicht erreichbar. Bei totem Fokus und ausserhalb des Kampfes ausgeblendet.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Startwert,
+     Fokuswechsel, toten Fokus und Ausblenden.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung)" unten.
@@ -299,6 +307,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Fokus-Rolle und Klassen in der Kampfleiste (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

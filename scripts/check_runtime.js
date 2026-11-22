@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusRole', 'focusRoleValue', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -752,4 +752,45 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  const roleBar = document.getElementById("focusRole");
+  const roleValue = document.getElementById("focusRoleValue");
+  updateFocusRole();
+  globalThis.__focusRoleHidden = !roleBar.classList.contains("show") && roleValue.textContent === "–";
+  G.wave = 1;
+  startBattle();
+  const tank = G.battle.player[0];
+  G.selectedUnitId = tank.id;
+  updateFocusRole();
+  globalThis.__focusRoleStart = roleBar.classList.contains("show") && roleValue.textContent === "🛡 Tank · Wald/Tier";
+  cycleFocus(1);
+  const nextRoleFocus = findUnitById(G.selectedUnitId);
+  updateFocusRole();
+  globalThis.__focusRoleCycle = !!nextRoleFocus && nextRoleFocus.id !== tank.id &&
+    roleBar.classList.contains("show") && roleValue.textContent.indexOf(ROLE_META[nextRoleFocus.role].label) >= 0 &&
+    roleValue.textContent !== "🛡 Tank · Wald/Tier";
+  G.selectedUnitId = tank.id;
+  tank.isDead = true;
+  updateFocusRole();
+  globalThis.__focusRoleDead = !roleBar.classList.contains("show") && roleValue.textContent === "–";
+  tank.isDead = false;
+  G.phase = "menu";
+  G.battle = null;
+  updateFocusRole();
+  globalThis.__focusRoleHide = !roleBar.classList.contains("show") && roleValue.textContent === "–";
+`, ctx);
+
+for (const [flag, message] of [
+  ['__focusRoleHidden', 'Fokus-Rollenanzeige erscheint außerhalb des Kampfes'],
+  ['__focusRoleStart', 'Fokus-Rollenanzeige zeigt Rolle und Klassen nicht'],
+  ['__focusRoleCycle', 'Fokus-Rollenanzeige aktualisiert sich nicht nach der ◀/▶-Navigation'],
+  ['__focusRoleDead', 'Fokus-Rollenanzeige bleibt bei einem toten Fokus sichtbar'],
+  ['__focusRoleHide', 'Fokus-Rollenanzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusRolle+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
