@@ -266,10 +266,7 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
-  - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
-  - GitHub-Cron autonomous-app.yml von "0 * * * *" auf "*/10 * * * *" gestellt,
-    Timeouts 8/10 min, manueller Run 45040243574.
-  - GitHub-Agent weiter blockiert: Repo-Secret OPENCODE_API_KEY fehlt.
+  - Details im Abschnitt "Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung)" unten.
 
 Weitere wichtige Commits ohne Versionssprung:
   20870e8 Folklore-Einheiten + prozedurale Modelle
@@ -352,8 +349,9 @@ kein Spatial-Hash fuer Fernkampf-Splash (Hero-Splash nutzt die volle Zielliste).
 
 Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
   - User-Entscheidung "Beides kombinieren": lokaler Loop + GitHub-Cron.
-  - Lokaler Loop scripts/auto-improve.sh (PID 26927, Intervall 600 s).
-    Worktree, ein autonomer Lauf, drei Checks, danach PR. Stopp-Datei:
+  - Lokaler Loop scripts/auto-improve.sh (Intervall 600 s; PID/Aktualisierung
+    in AUTO_IMPROVE.txt). Worktree, ein autonomer Lauf, drei Checks, danach PR.
+    Stopp-Datei:
     /root/projects/FABELBATTLER/auto-improve.stop. Details AUTO_IMPROVE.txt.
   - Der Loop hat 0dc39b3..a369e3b direkt nach main gepusht (v1.23..v1.31):
     Boss-Balken, kritische Boss-HP, Live-Kampfstatus, kritische Helden,
@@ -366,3 +364,7 @@ Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
     Modell openai/gpt-4o-mini, Action-Fehler behoben.
   - Cloud-Agent blockiert: OpenAI-Konto ohne Guthaben (insufficient_quota).
     Nach Aufladen laeuft der Cron ohne weitere Aenderung.
+  - PRs #3-#7 aus dem Loop wurden geprueft, Konflikte mit den vorherigen
+    Kampfleisten-Funktionen aufgeloest und als v1.32-b33 bis v1.36-b37
+    nacheinander in main integriert (Commit 042f4f0). Jeder PR behielt seinen
+    Featureschritt; Versionsnummern wurden fortlaufend korrigiert.
