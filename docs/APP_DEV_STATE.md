@@ -13,8 +13,9 @@ Letztes Update: 2026-11-22
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.16**, Build **17**; APK: `/root/projects/FABELBATTLER/fabelbattler-v1.16-b17.apk`.
+- Version **1.17**, Build **18**; APK: `/root/projects/FABELBATTLER/fabelbattler-v1.17-b18.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
+- Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
 - Inhalt: **95 Einheiten, 10 Klassen, 7 Rassen, 50 Zauber**.
 - Rassen: Folklore, Kaiju, Fee, Zwerg, **Kryptozoologie**, Assassine, Alien. Barbar-Rasse wurde entfernt.
 - Kryptiden-Pack mit 12 Wesen; neue Fähigkeiten `schrecken` (Schreckensblick) und `schwarmruf` (Team-Buff).

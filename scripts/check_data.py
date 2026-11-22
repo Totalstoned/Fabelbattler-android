@@ -138,6 +138,14 @@ if sum(1 for u in roster.values() if u['race'] == 'Krypto') < 10:
 for key in ['schrecken', 'schwarmruf']:
     if key not in descs or key not in innate or key not in ability_spell:
         problems.append('Neue Fähigkeit unvollständig: ' + key)
+core = re.search(r'const CORE_UNITS = \[(.*?)\];', src)
+core_keys = re.findall(r'"([A-Za-z0-9_]+)"', core.group(1)) if core else []
+if core_keys != ['bigfoot', 'chupacabra', 'fee']:
+    problems.append('CORE_UNITS: erwartet bigfoot/chupacabra/fee, gefunden ' + str(core_keys))
+core_roles = {'bigfoot': 'TANK', 'chupacabra': 'DPS', 'fee': 'HEALER'}
+for key, role in core_roles.items():
+    if key not in roster or roster[key]['role'] != role:
+        problems.append('CORE_UNITS: ' + key + ' ist kein ' + role)
 if len(roster) != len(set(roster)):
     problems.append('doppelte Einheitenschlüssel')
 

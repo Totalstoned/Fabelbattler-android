@@ -549,6 +549,7 @@ const SYNERGY = {
 };
 const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,selectedUnitId:null};
 const SIM = {headless:false};
+const CORE_UNITS = ["bigfoot","chupacabra","fee"];
 const GRID = {cols:8,rows:6};
 const TILE = 1.35;
 let arenaPulse = null;
@@ -744,6 +745,8 @@ function beginRun(){
   document.getElementById("menuOverlay").classList.remove("show");
   closeInfo();
   G.team = [];
+  G.teamSize = CORE_UNITS.length;
+  CORE_UNITS.forEach(key => G.team.push(createUnit(key,1,"player")));
   G.wave = 1;
   G.gold = 20;
   G.mana = 30;
@@ -756,7 +759,6 @@ function beginRun(){
   updateTeamList();
   updateSynergies();
   updateButtons();
-  openDraft();
 }
 function addGroundRect(x,z,w,d,color,opacity,y){
   const mesh = new THREE.Mesh(

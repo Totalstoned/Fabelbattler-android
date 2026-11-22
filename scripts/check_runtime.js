@@ -169,4 +169,21 @@ if (!vm.runInContext('globalThis.__stackCheck', ctx)) {
   throw new Error('Team-Buffs skalieren nicht mit der Dudes-Anzahl');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, draft, krypto, stacks, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  globalThis.__coreCheck = G.teamSize === 3 && G.team.length === 3 &&
+    G.team.map(u => u.key + ":" + u.role).join(",") === "bigfoot:TANK,chupacabra:DPS,fee:HEALER";
+  startBattle();
+  globalThis.__coreBattleCheck = !!G.battle && G.battle.player.length === 3 && G.battle.enemies.length === 3;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__coreCheck', ctx)) {
+  throw new Error('Basis-Trio als Startteam fehlt oder hat falsche Rollen');
+}
+if (!vm.runInContext('globalThis.__coreBattleCheck', ctx)) {
+  throw new Error('3-gegen-3-Kampf mit dem Basis-Trio startet nicht');
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, draft, krypto, stacks, timer ${timerText})`);
