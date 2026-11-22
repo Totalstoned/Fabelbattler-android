@@ -240,6 +240,15 @@ v1.33-b34 2026-11-22  (Gegner-Helden im Kampfstatus)
    - check_runtime.js prueft Startwert und Abzug nach einem toten Gegner-Helden;
      check_data.py prueft den UI-Token statusFoeHeroes.
 
+v1.34-b35 2026-11-22  (Fokus-Statuseffekte)
+   - Die Fokus-Anzeige in der Kampfleiste zeigt aktive Buffs/Debuffs des
+     fokussierten Wesens als Emoji mit Restzeit (id focusStatus).
+   - Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet; Statuseffekte
+     waren dort bisher nicht erkennbar. activeStatusKeys() filtert unbekannte
+     und abgelaufene Effekte; die Anzeige wird bei Fokuswechsel geleert.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige,
+     Filtern unbekannter Effekte und Loschen nach Ablauf/Fokusverlust.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -275,6 +284,7 @@ Core-Loop-Status:
   [x] 16. Fokus-HP in der Kampfleiste (v1.31)
   [x] 17. Fokus-Zauber-Cooldown in der Kampfleiste (v1.32)
   [x] 18. Gegner-Helden im Kampfstatus (v1.33)
+  [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

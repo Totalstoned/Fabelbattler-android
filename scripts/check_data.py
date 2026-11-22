@@ -164,6 +164,9 @@ for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'function updat
 for token in ['focusHp', 'focusHpValue', 'function updateFocusHp']:
     if token not in src:
         problems.append('Fokus-HP-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['focusStatus', 'function updateFocusHp', 'activeStatusKeys(u).map']:
+    if token not in src:
+        problems.append('Fokus-Statusanzeige in der Kampfleiste fehlt: ' + token)
 for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
     if token not in src:
         problems.append('Fokus-Zauber-Cooldown in der Kampfleiste fehlt: ' + token)
