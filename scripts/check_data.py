@@ -152,7 +152,7 @@ if not mob_cap or int(mob_cap.group(1)) != 500:
 for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'updateMobVisuals', 'hudMobs', 'mdReroll', 'rerollDraft', 'slice(0,3)', 'mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'draftFilterRole', 'draftSynergyText', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'function useItem', 'ELITE_EVERY', 'BOSS_EVERY', 'MOB_TIERS', 'mobTierFor', 'isBoss', 'isElite', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'function updateBattleStatus']:
     if token not in src:
         problems.append('Mob-System fehlt: ' + token)
-for token in ['heroAlert', 'heroAlertCount', 'function updateHeroAlert']:
+for token in ['heroAlert', 'heroAlertCount', 'heroAlertName', 'function updateHeroAlert']:
     if token not in src:
         problems.append('Kritische-Helden-Warnung fehlt: ' + token)
 for token in ['teamHpBar', 'teamHpFill', 'teamHpPct', 'function updateTeamHpBar']:

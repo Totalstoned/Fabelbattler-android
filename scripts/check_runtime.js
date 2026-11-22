@@ -84,7 +84,7 @@ if (!html.includes('id="battleStatus"') || !html.includes('function updateBattle
   throw new Error('Kampf-Status (Gegner/Helden) in der Kampfleiste fehlt');
 }
 if (!html.includes('id="heroAlert"') || !html.includes('id="heroAlertCount"') ||
-    !html.includes('function updateHeroAlert')) {
+    !html.includes('id="heroAlertName"') || !html.includes('function updateHeroAlert')) {
   throw new Error('Warnung für kritische Helden in der Kampfleiste fehlt');
 }
 if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar')) {
@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'heroAlertName', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -458,44 +458,65 @@ vm.runInContext(`
   startBattle();
   const alert = document.getElementById("heroAlert");
   const count = document.getElementById("heroAlertCount");
+  const alertName = document.getElementById("heroAlertName");
   updateHeroAlert();
   globalThis.__heroAlertHidden = !alert.classList.contains("show");
+  globalThis.__heroAlertNameHidden = alertName.textContent === "";
   const [a, b, c] = G.battle.player;
   a.shield = 0;
   a.hp = a.maxHp * 0.2;
   updateHeroAlert();
   globalThis.__heroAlertOne = alert.classList.contains("show") && count.textContent === "1";
+  globalThis.__heroAlertNameOne = alertName.textContent === "· "+a.emoji+" "+a.name;
   a.shield = a.maxHp * 0.2;
   b.shield = 0;
   b.hp = b.maxHp * 0.2;
   updateHeroAlert();
   globalThis.__heroAlertShield = alert.classList.contains("show") && count.textContent === "1";
+  globalThis.__heroAlertNameShield = alertName.textContent === "· "+b.emoji+" "+b.name;
   a.shield = 0;
   a.isDead = true;
   c.shield = 0;
   c.hp = c.maxHp * 0.1;
   updateHeroAlert();
   globalThis.__heroAlertCount = count.textContent === "2";
+  globalThis.__heroAlertNameWorst = alertName.textContent === "· "+c.emoji+" "+c.name;
   G.phase = "menu";
   G.battle = null;
   updateHeroAlert();
   globalThis.__heroAlertHideCheck = !alert.classList.contains("show");
+  globalThis.__heroAlertNameReset = alertName.textContent === "";
 `, ctx);
 
 if (!vm.runInContext('globalThis.__heroAlertHidden', ctx)) {
   throw new Error('Kritische-Helden-Warnung erscheint bei voller HP');
 }
+if (!vm.runInContext('globalThis.__heroAlertNameHidden', ctx)) {
+  throw new Error('Kritische-Helden-Warnung zeigt bei voller HP einen Namen');
+}
 if (!vm.runInContext('globalThis.__heroAlertOne', ctx)) {
   throw new Error('Kritische-Helden-Warnung zählt nicht korrekt');
+}
+if (!vm.runInContext('globalThis.__heroAlertNameOne', ctx)) {
+  throw new Error('Kritische-Helden-Warnung nennt nicht den kritischen Helden');
 }
 if (!vm.runInContext('globalThis.__heroAlertShield', ctx)) {
   throw new Error('Schild wird bei der kritischen-Helden-Warnung ignoriert');
 }
+if (!vm.runInContext('globalThis.__heroAlertNameShield', ctx)) {
+  throw new Error('Kritische-Helden-Warnung nennt nicht den Helden ohne Schild');
+}
 if (!vm.runInContext('globalThis.__heroAlertCount', ctx)) {
   throw new Error('Kritische-Helden-Warnung zählt Tote mit oder aktualisiert nicht');
 }
+if (!vm.runInContext('globalThis.__heroAlertNameWorst', ctx)) {
+  throw new Error('Kritische-Helden-Warnung nennt nicht den gefährdetsten Helden');
+}
 if (!vm.runInContext('globalThis.__heroAlertHideCheck', ctx)) {
   throw new Error('Kritische-Helden-Warnung verschwindet nicht außerhalb des Kampfes');
+}
+if (!vm.runInContext('globalThis.__heroAlertNameReset', ctx)) {
+  throw new Error('Kritische-Helden-Warnung löscht den Namen nicht außerhalb des Kampfes');
 }
 
 vm.runInContext(`
@@ -752,4 +773,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+warnname+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

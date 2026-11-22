@@ -123,6 +123,7 @@
   .battle-info.danger{display:none;color:#ff6b6b;}
   .battle-info.danger.show{display:inline-block;}
   .battle-info.danger b{animation:bossWarn .7s ease-in-out infinite;}
+  .battle-info.danger #heroAlertName{color:#ffb86b;margin-left:5px;}
   .battle-info.focusbar{display:none;color:#9ff0bd;}
   .battle-info.focusbar.show{display:inline-block;}
   .battle-info.focusbar.warn{color:#ffb86b;}
@@ -233,7 +234,7 @@
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
-  <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
+  <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild; nennt den gefährdetsten Helden">⚠ Kritisch <b id="heroAlertCount">0</b><span id="heroAlertName"></span></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
@@ -2935,10 +2936,16 @@ function updateBattleGold(){
 function updateHeroAlert(){
   if(SIM.headless) return;
   const bar = document.getElementById("heroAlert");
-  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
-  const critical = G.battle.player.filter(u => !u.isDead && (u.hp+(u.shield||0))/u.maxHp <= 0.25).length;
-  bar.classList.toggle("show",critical > 0);
-  if(critical) document.getElementById("heroAlertCount").textContent = String(critical);
+  const name = document.getElementById("heroAlertName");
+  const hide = () => { bar.classList.remove("show"); name.textContent = ""; };
+  if(G.phase !== "battle" || !G.battle){ hide(); return; }
+  const critical = G.battle.player.filter(u => !u.isDead && (u.hp+(u.shield||0))/u.maxHp <= 0.25);
+  if(!critical.length){ hide(); return; }
+  const ratio = u => (u.hp+(u.shield||0))/u.maxHp;
+  const worst = critical.reduce((a,u) => ratio(u) < ratio(a) ? u : a);
+  bar.classList.add("show");
+  document.getElementById("heroAlertCount").textContent = String(critical.length);
+  name.textContent = "· "+worst.emoji+" "+worst.name;
 }
 function updateFocusHp(){
   if(SIM.headless) return;
