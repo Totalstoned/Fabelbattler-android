@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Letzte gebaute Version: v1.18-b19 (Commit ccf8a65, Test-Fix 5646ba0)
+Letzte gebaute Version: v1.19-b20 (Commit 6300169)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -128,6 +128,14 @@ v1.18-b19 2026-11-22  (Mob-Schwarm)
   - Mob-KI nutzt alle 0,2 s einen Front-/Ziel-Cache (max. 40 Ziele) statt pro Mob sortierter Zielwahl.
   - Helden behalten volle ROSTER-/Zauber-/Statuslogik; Sieg/Niederlage prueft beide Seiten inkl. Mobs.
   - HUD-Pill "Mobs player/enemy"; check_data.py prueft Cap/Tokens, check_runtime.js spawnt 500/500 und simuliert 600 Ticks.
+  - CI 45025103386 gruen (nach Test-Fix 5646ba0), SHA-256 5641934b62ab0c0a1adb2572ec3ad27a41ad48c87068e6bdf78b29581a75bd85
+
+v1.19-b20 2026-11-22  (Draft)
+  - draftKeys() liefert ueber draftOffer genau 3 verschiedene Karten statt 4.
+  - Neuer Button mdReroll: verwirft das Angebot und zieht genau 1 Gold ab.
+  - Auswahl weiterhin 2 Gold pro Wesen; Gegnerteam wird wie bisher angepasst.
+  - check_runtime.js prueft 3 verschiedene Keys und den Gold-Abzug von genau 1.
+  - CI 45030182990 gruen, SHA-256 93ed3c036a8cf6d57c4cde20fb72f41aa5c5c97f80337848610d0fe3cc4b3d93
 
 Weitere wichtige Commits ohne Versionssprung:
   20870e8 Folklore-Einheiten + prozedurale Modelle
@@ -141,7 +149,7 @@ Weitere wichtige Commits ohne Versionssprung:
 Core-Loop-Status:
   [x] 1. Kampf-Simulation entkoppeln (v1.16)
   [x] 2. Drei Basis-Einheiten als Startteam (v1.17)
-  [ ] 3. Einfacher Shop/Draft mit drei Karten + Reroll fuer 1 Gold
+  [x] 3. Einfacher Shop/Draft mit drei Karten + Reroll fuer 1 Gold (v1.19)
   [x] 4. Mob-Schwarm auf beiden Seiten bis 500 (v1.18)
 
 =====================================================================
@@ -185,7 +193,6 @@ Umgesetzt:
 - HUD-Pill "Mobs <spieler>/<gegner>".
 - checks: check_data.py prueft MOB_CAP und System-Tokens; check_runtime.js spawnt
   500/500 Mobs, simuliert 600 Ticks headless und prueft Schaden sowie Cap.
-  - CI 45025103386 gruen (nach Test-Fix 5646ba0), SHA-256 5641934b62ab0c0a1adb2572ec3ad27a41ad48c87068e6bdf78b29581a75bd85
 
 Bewusste Vereinfachungen (spaeter ausbaubar): keine Elite-/Boss-Mobs, keine
 einzelnen HP-Balken pro Mob, kein Reserve-Nachschub innerhalb einer Welle,
