@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpFill', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -664,6 +664,7 @@ vm.runInContext(`
   beginRun();
   startBattle();
   const bar = document.getElementById("focusHp");
+  const fill = document.getElementById("focusHpFill");
   const value = document.getElementById("focusHpValue");
   const cdBar = document.getElementById("focusCd");
   const cdValue = document.getElementById("focusCdValue");
@@ -679,6 +680,8 @@ vm.runInContext(`
     value.textContent === Math.ceil(focusHero.hp)+"/"+Math.ceil(focusHero.maxHp)+startShield &&
     fx.textContent === "" &&
     !bar.classList.contains("warn") && !bar.classList.contains("critical");
+  globalThis.__focusBarStart = bar.classList.contains("show") &&
+    Math.abs(parseFloat(fill.style.width)-100) < 0.2;
   focusHero.spellCd = 2.5;
   updateFocusCooldown();
   globalThis.__focusCdStart = cdBar.classList.contains("show") &&
@@ -702,10 +705,12 @@ vm.runInContext(`
   updateFocusHp();
   globalThis.__focusDamage = bar.classList.contains("warn") && !bar.classList.contains("critical") &&
     value.textContent === Math.ceil(focusHero.hp)+"/"+Math.ceil(focusHero.maxHp);
+  globalThis.__focusBarDamage = Math.abs(parseFloat(fill.style.width)-40) < 0.2;
   focusHero.shield = focusHero.maxHp * 0.2;
   updateFocusHp();
   globalThis.__focusShield = bar.classList.contains("show") &&
     value.textContent === Math.ceil(focusHero.hp)+"/"+Math.ceil(focusHero.maxHp)+" ⛨"+Math.ceil(focusHero.shield);
+  globalThis.__focusBarShield = Math.abs(parseFloat(fill.style.width)-60) < 0.2;
   focusHero.statuses = {burn:3, slow:1, unknown:9};
   updateFocusHp();
   globalThis.__focusStatus = fx.textContent === "🔥3s ❄1s";
@@ -716,9 +721,11 @@ vm.runInContext(`
   focusHero.shield = 0;
   updateFocusHp();
   globalThis.__focusCritical = bar.classList.contains("critical") && !bar.classList.contains("warn");
+  globalThis.__focusBarCritical = Math.abs(parseFloat(fill.style.width)-10) < 0.2;
   focusHero.isDead = true;
   updateFocusHp();
   globalThis.__focusDeadHidden = !bar.classList.contains("show") && fx.textContent === "";
+  globalThis.__focusBarDead = parseFloat(fill.style.width) === 0;
   updateFocusCooldown();
   globalThis.__focusCdDeadHidden = !cdBar.classList.contains("show");
   focusHero.isDead = false;
@@ -727,6 +734,7 @@ vm.runInContext(`
   updateFocusHp();
   globalThis.__focusHide = !bar.classList.contains("show") && !bar.classList.contains("warn") &&
     !bar.classList.contains("critical") && fx.textContent === "";
+  globalThis.__focusBarHide = parseFloat(fill.style.width) === 0;
   updateFocusCooldown();
   globalThis.__focusCdHide = !cdBar.classList.contains("show") && !cdBar.classList.contains("ready");
   globalThis.__focusNameReset = name.textContent === "Fokus";
@@ -734,6 +742,12 @@ vm.runInContext(`
 
 for (const [flag, message] of [
   ['__focusStart', 'Fokus-HP-Anzeige zeigt zu Kampfbeginn keine volle HP'],
+  ['__focusBarStart', 'Fokus-HP-Balken startet nicht bei 100 %'],
+  ['__focusBarDamage', 'Fokus-HP-Balken reagiert nicht auf Schaden'],
+  ['__focusBarShield', 'Fokus-HP-Balken berücksichtigt den Schild nicht'],
+  ['__focusBarCritical', 'Fokus-HP-Balken zeigt keine kritische HP'],
+  ['__focusBarDead', 'Fokus-HP-Balken bleibt bei einem toten Fokus gefüllt'],
+  ['__focusBarHide', 'Fokus-HP-Balken wird außerhalb des Kampfes nicht zurückgesetzt'],
   ['__focusCdStart', 'Fokus-Cooldown zeigt den Zauber und die Restzeit nicht'],
   ['__focusCdReady', 'Fokus-Cooldown zeigt keinen bereiten Zauber an'],
   ['__focusName', 'Fokus-HP-Anzeige zeigt nicht den Namen des fokussierten Wesens'],
@@ -752,4 +766,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusHpBalken+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
