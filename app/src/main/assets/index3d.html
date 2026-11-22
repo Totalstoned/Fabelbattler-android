@@ -165,6 +165,7 @@
     <div class="draft" id="mdDraft"></div>
     <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn ghost" id="mdBack">Zurück</button>
+      <button class="btn ghost" id="mdReroll">Reroll 1 Gold</button>
       <button class="btn" id="mdSkip">Kampf starten</button>
     </div>
   </div>
@@ -568,6 +569,7 @@ let arenaPulse = null;
 let synergyLinks = [];
 let draftTimer = null;
 let draftReturnPhase = "prep";
+let draftOffer = [];
 const sceneEl = document.getElementById("scene");
 let renderer;
 try{
@@ -2718,26 +2720,43 @@ function updateButtons(){
   document.getElementById("hint").textContent = hint;
 }
 function draftKeys(){
-  const have = role => G.team.filter(u => u.role === role).length;
-  const order = ROLES.slice().sort((a,b) => have(a)-have(b));
-  const used = {};
-  G.team.forEach(u => { used[u.key] = true; });
-  const pool = ALL_KEYS.filter(k => !used[k]);
-  const picks = [];
-  order.slice(0,2).forEach(role => {
-    const candidates = shuffle(pool.filter(k => ROSTER[k].role === role && !picks.includes(k)));
-    if(candidates.length) picks.push(candidates[0]);
-  });
-  shuffle(pool).forEach(k => { if(picks.length < 4 && !picks.includes(k)) picks.push(k); });
-  return shuffle(picks).slice(0,4);
+  if(draftOffer.length !== 3 || new Set(draftOffer).size !== 3){
+    const have = role => G.team.filter(u => u.role === role).length;
+    const order = ROLES.slice().sort((a,b) => have(a)-have(b));
+    const used = {};
+    G.team.forEach(u => { used[u.key] = true; });
+    const pool = ALL_KEYS.filter(k => !used[k]);
+    const picks = [];
+    order.slice(0,2).forEach(role => {
+      const candidates = shuffle(pool.filter(k => ROSTER[k].role === role && !picks.includes(k)));
+      if(candidates.length) picks.push(candidates[0]);
+    });
+    shuffle(pool).forEach(k => { if(picks.length < 3 && !picks.includes(k)) picks.push(k); });
+    if(picks.length < 3) shuffle(ALL_KEYS).forEach(k => { if(picks.length < 3 && !picks.includes(k)) picks.push(k); });
+    draftOffer = shuffle(picks).slice(0,3);
+  }
+  return draftOffer.slice();
+}
+function rerollDraft(){
+  if(G.phase !== "draft") return false;
+  if(G.gold < 1){ showToast("Zu wenig Gold für Reroll"); return false; }
+  G.gold -= 1;
+  draftOffer = [];
+  renderDraftCards();
+  updateHud();
+  showToast("Draft neu gewürfelt (−1 Gold)");
+  return true;
 }
 function renderDraftCards(){
   document.getElementById("mdTitle").textContent = "Wähle dein Team";
-  document.getElementById("mdSub").textContent = G.team.length+"/"+G.teamSize+" gewählt · 2 Gold pro Wesen · Gold: "+G.gold+
+  document.getElementById("mdSub").textContent = G.team.length+"/"+G.teamSize+" gewählt · 2 Gold pro Wesen · Reroll 1 Gold · Gold: "+G.gold+
     " · Gegnerteam: "+G.teamSize+" Einheiten";
   const start = document.getElementById("mdSkip");
   start.disabled = G.team.length < G.teamSize;
   start.textContent = G.team.length >= G.teamSize ? "Kampf starten" : "Noch "+(G.teamSize-G.team.length)+" wählen";
+  const reroll = document.getElementById("mdReroll");
+  reroll.disabled = G.gold < 1 || G.team.length >= G.teamSize;
+  reroll.textContent = "Reroll 1 Gold";
   const draft = document.getElementById("mdDraft");
   draft.innerHTML = '';
   draftKeys().forEach(key => {
@@ -2771,6 +2790,7 @@ function renderDraftCards(){
       updateTeamList();
       updateSynergies();
       showToast("+1 "+unit.emoji+" "+unit.name+" ("+G.team.length+"/"+G.teamSize+")");
+      draftOffer = [];
       renderDraftCards();
       updateButtons();
     };
@@ -2783,6 +2803,7 @@ function openDraft(){
   if(G.team.length >= G.teamSize){ showToast("Team ist bereits voll"); return; }
   if(draftTimer){ clearTimeout(draftTimer); draftTimer = null; }
   draftReturnPhase = G.phase === "battle" ? "battle" : "prep";
+  draftOffer = [];
   G.phase = "draft";
   document.getElementById("overlay").classList.add("show");
   renderDraftCards();
@@ -2829,6 +2850,7 @@ window.addEventListener("load", () => {
   );
   document.getElementById("infoClose").onclick = closeInfo;
   document.getElementById("mdBack").onclick = closeDraft;
+  document.getElementById("mdReroll").onclick = rerollDraft;
   document.getElementById("mdSkip").onclick = () => {
     if(G.team.length < G.teamSize) return;
     const resumeBattle = draftReturnPhase === "battle" && !!G.battle;

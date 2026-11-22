@@ -187,6 +187,24 @@ if (!vm.runInContext('globalThis.__coreBattleCheck', ctx)) {
 }
 
 vm.runInContext(`
+  G.phase = "draft";
+  draftOffer = [];
+  const dk = draftKeys();
+  globalThis.__draftCheck = dk.length === 3 && new Set(dk).size === 3;
+  const goldBefore = G.gold;
+  const rolled = rerollDraft();
+  globalThis.__rerollCheck = rolled === true && G.gold === goldBefore - 1;
+  G.phase = "menu";
+`, ctx);
+
+if (!vm.runInContext('globalThis.__draftCheck', ctx)) {
+  throw new Error('Draft liefert nicht genau drei verschiedene Karten');
+}
+if (!vm.runInContext('globalThis.__rerollCheck', ctx)) {
+  throw new Error('Draft-Reroll zieht nicht genau 1 Gold ab');
+}
+
+vm.runInContext(`
   const w1 = mobWaveSize(1,"enemy"), w20 = mobWaveSize(20,"enemy"), w40 = mobWaveSize(40,"enemy");
   globalThis.__mobSizeCheck = w1 >= 4 && w20 > w1 && w40 === 500 && mobWaveSize(40,"player") === 500;
   G.phase = "menu";
@@ -221,4 +239,4 @@ if (!vm.runInContext('globalThis.__mobAfterCheck', ctx)) {
   throw new Error('Mob-Kampf-Simulation mit 500 Mobs pro Seite läuft nicht');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, draft, krypto, stacks, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, draft3+reroll, krypto, stacks, timer ${timerText})`);
