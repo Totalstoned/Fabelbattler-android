@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.26-b27 (CI ausstehend)
+Aktuelle Version: v1.27-b28 (CI ausstehend)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -195,6 +195,14 @@ v1.26-b27 2026-11-22  (Kritische Helden)
   - check_runtime.js prueft Startzustand, Zaehlung, Schild, Tote und Ausblenden;
     check_data.py prueft die UI-Tokens.
 
+v1.27-b28 2026-11-22  (Team-HP-Balken)
+  - Neuer Balken in der Kampfleiste (id teamHpBar): updateTeamHpBar() summiert HP+Schild
+    aller Helden (pro Held auf max. HP gedeckelt) und zeigt Prozent an.
+  - Farben: gruen, gelb (warn) ab 50 %, rot und pulsierend (critical) ab 25 %.
+  - Tote Helden zahlen 0; ausserhalb des Kampfes verschwindet der Balken mit allen Warnklassen.
+  - check_runtime.js prueft Start, Schaden, Schild, kritische HP, Tote und Ausblenden;
+    check_data.py prueft die UI-Tokens.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -223,6 +231,7 @@ Core-Loop-Status:
   [x] 9. Kritische Boss-HP als Warnung (v1.24)
   [x] 10. Live-Kampfstatus in der Kampfleiste (v1.25)
   [x] 11. Warnung fuer kritische Helden (v1.26)
+  [x] 12. Team-HP-Balken in der Kampfleiste (v1.27)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

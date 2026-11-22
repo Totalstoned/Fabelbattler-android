@@ -87,10 +87,13 @@ if (!html.includes('id="heroAlert"') || !html.includes('id="heroAlertCount"') ||
     !html.includes('function updateHeroAlert')) {
   throw new Error('Warnung für kritische Helden in der Kampfleiste fehlt');
 }
+if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar')) {
+  throw new Error('Team-HP-Balken in der Kampfleiste fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusHeroes', 'heroAlert', 'heroAlertCount']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -486,4 +489,59 @@ if (!vm.runInContext('globalThis.__heroAlertHideCheck', ctx)) {
   throw new Error('Kritische-Helden-Warnung verschwindet nicht außerhalb des Kampfes');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+heldenwarnung, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  const heroes = G.battle.player;
+  heroes.forEach(u => { u.hp = u.maxHp; u.shield = 0; });
+  const hpBar = document.getElementById("teamHpBar");
+  const hpFill = document.getElementById("teamHpFill");
+  const hpPct = document.getElementById("teamHpPct");
+  hpBar.classList.remove("show");
+  hpBar.classList.remove("warn");
+  hpBar.classList.remove("critical");
+  updateTeamHpBar();
+  globalThis.__teamHpStart = hpBar.classList.contains("show") && hpPct.textContent === "100%" &&
+    parseFloat(hpFill.style.width) === 100 && !hpBar.classList.contains("warn") && !hpBar.classList.contains("critical");
+  const totalMax = heroes.reduce((s,u) => s+u.maxHp, 0);
+  heroes[0].hp = heroes[0].maxHp * 0.5;
+  const expectedDamage = (totalMax - heroes[0].maxHp * 0.5) / totalMax * 100;
+  updateTeamHpBar();
+  globalThis.__teamHpDamage = Math.abs(parseFloat(hpFill.style.width) - expectedDamage) < 0.2;
+  heroes[0].shield = heroes[0].maxHp * 0.5;
+  updateTeamHpBar();
+  globalThis.__teamHpShield = parseFloat(hpFill.style.width) === 100 && hpPct.textContent === "100%";
+  heroes.forEach(u => { u.shield = 0; u.hp = u.maxHp * 0.1; });
+  updateTeamHpBar();
+  globalThis.__teamHpCritical = hpBar.classList.contains("critical") && !hpBar.classList.contains("warn") &&
+    parseFloat(hpFill.style.width) <= 25 && parseFloat(hpPct.textContent) <= 25;
+  heroes[0].isDead = true;
+  heroes[0].hp = 0;
+  heroes.slice(1).forEach(u => { u.hp = u.maxHp; });
+  updateTeamHpBar();
+  const expectedDead = (totalMax - heroes[0].maxHp) / totalMax * 100;
+  globalThis.__teamHpDead = Math.abs(parseFloat(hpFill.style.width) - expectedDead) < 0.2 &&
+    hpBar.classList.contains("warn") === (expectedDead <= 50 && expectedDead > 25) &&
+    hpBar.classList.contains("critical") === (expectedDead <= 25);
+  G.phase = "menu";
+  G.battle = null;
+  updateTeamHpBar();
+  globalThis.__teamHpHide = !hpBar.classList.contains("show") && !hpBar.classList.contains("warn") &&
+    !hpBar.classList.contains("critical");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__teamHpStart', 'Team-HP-Balken startet nicht bei 100 %'],
+  ['__teamHpDamage', 'Team-HP-Balken reagiert nicht auf Schaden'],
+  ['__teamHpShield', 'Team-HP-Balken berücksichtigt Schilde nicht'],
+  ['__teamHpCritical', 'Team-HP-Balken zeigt keine kritische Gesamt-HP'],
+  ['__teamHpDead', 'Team-HP-Balken zählt tote Helden falsch'],
+  ['__teamHpHide', 'Team-HP-Balken verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+heldenwarnung+teamHp, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

@@ -100,6 +100,18 @@
   .bossbar.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
   .bossbar.critical b{animation:bossWarn .7s ease-in-out infinite;}
   @keyframes bossWarn{50%{opacity:.3;}}
+  .teamhp{display:none;align-items:center;gap:6px;font-size:11px;color:#9ff0bd;padding:0 6px;white-space:nowrap;}
+  .teamhp.show{display:flex;}
+  .teamhp .track{width:84px;height:6px;background:#0b0e13;border:1px solid #2f6b47;border-radius:4px;overflow:hidden;}
+  .teamhp .track i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#2f9e60,#4ade80);transition:width .15s;}
+  .teamhp b{min-width:30px;text-align:right;}
+  .teamhp.warn{color:#ffb86b;}
+  .teamhp.warn .track{border-color:#ffb86b;}
+  .teamhp.warn .track i{background:linear-gradient(90deg,#e08e2d,#ffd166);}
+  .teamhp.critical{color:#ff6b6b;}
+  .teamhp.critical .track{border-color:#ff6b6b;}
+  .teamhp.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
+  .teamhp.critical b{animation:bossWarn .7s ease-in-out infinite;}
   .battle-info.status{display:none;color:var(--txt);}
   .battle-info.status.show{display:inline-block;}
   .battle-info.status b{color:var(--gold);}
@@ -199,6 +211,7 @@
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
   <span class="battle-info status" id="battleStatus">Gegner <b id="statusEnemies">0</b> · Helden <b id="statusHeroes">0/0</b></span>
+  <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
@@ -2859,6 +2872,20 @@ function updateBattleStatus(){
   document.getElementById("statusEnemies").textContent = String(foes);
   document.getElementById("statusHeroes").textContent = heroes+'/'+G.battle.player.length;
 }
+function updateTeamHpBar(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("teamHpBar");
+  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); bar.classList.remove("warn"); bar.classList.remove("critical"); return; }
+  const heroes = G.battle.player;
+  const maxHp = heroes.reduce((s,u) => s+u.maxHp,0);
+  const current = heroes.reduce((s,u) => s+(u.isDead ? 0 : Math.min(u.hp+(u.shield||0),u.maxHp)),0);
+  const pct = maxHp > 0 ? clamp(current/maxHp*100,0,100) : 0;
+  bar.classList.add("show");
+  bar.classList.toggle("warn",pct <= 50 && pct > 25);
+  bar.classList.toggle("critical",pct <= 25);
+  document.getElementById("teamHpFill").style.width = pct.toFixed(1)+'%';
+  document.getElementById("teamHpPct").textContent = Math.ceil(pct)+'%';
+}
 function updateHeroAlert(){
   if(SIM.headless) return;
   const bar = document.getElementById("heroAlert");
@@ -3133,6 +3160,7 @@ window.addEventListener("load", () => {
     updateBattleTimer();
     updateBossBar();
     updateBattleStatus();
+    updateTeamHpBar();
     updateHeroAlert();
     if(G.phase === "battle" && G.battle) updateBattle(dt);
     updateEffects(dt);
