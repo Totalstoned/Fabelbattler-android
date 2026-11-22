@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.31-b32 (Commit a1e658d)
+Aktuelle Version: v1.32-b33
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -225,6 +225,15 @@ v1.30-b31 2026-11-22  (Treffer-Impuls fuer Mobs)
    - check_data.py prueft die Tokens; check_runtime.js prueft die Impuls-Skalierung
      und dass sich die Instanz-Matrix eines getroffenen Mobs tatsaechlich aendert.
 
+v1.32-b33 2026-11-22  (Fokus-Statuseffekte)
+   - Die Fokus-Anzeige in der Kampfleiste zeigt aktive Buffs/Debuffs des
+     fokussierten Wesens als Emoji mit Restzeit (id focusStatus).
+   - Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet; Statuseffekte
+     waren dort bisher nicht erkennbar. activeStatusKeys() filtert unbekannte
+     und abgelaufene Effekte; die Anzeige wird bei Fokuswechsel geleert.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige,
+     Filtern unbekannter Effekte und Loschen nach Ablauf/Fokusverlust.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -257,6 +266,8 @@ Core-Loop-Status:
   [x] 13. Schwarmzahlen in der Kampfleiste (v1.28)
   [x] 14. Mana-Anzeige in der Kampfleiste (v1.29)
   [x] 15. Treffer-Impuls fuer Mobs (v1.30)
+  [x] 16. Fokus-HP in der Kampfleiste (v1.31)
+  [x] 17. Statuseffekte des Fokus in der Kampfleiste (v1.32)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
