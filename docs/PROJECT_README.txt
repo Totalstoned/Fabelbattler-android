@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.31-b32 (Commit a1e658d)
+Aktuelle Version: v1.32-b33
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -225,6 +225,15 @@ v1.30-b31 2026-11-22  (Treffer-Impuls fuer Mobs)
    - check_data.py prueft die Tokens; check_runtime.js prueft die Impuls-Skalierung
      und dass sich die Instanz-Matrix eines getroffenen Mobs tatsaechlich aendert.
 
+v1.32-b33 2026-11-22  (Fokus-Zauber-Cooldown)
+   - Neben der Fokus-HP (v1.31) zeigt die Kampfleiste jetzt den Zauber des
+     fokussierten Wesens: Restzeit in Sekunden oder "bereit" in Gruen.
+   - updateFocusCooldown() wird pro Frame aufgerufen; das Einheiten-Panel mit
+     cooldownText() ist im Kampfmodus ausgeblendet. Bei totem Fokus und
+     ausserhalb des Kampfes verschwindet die Anzeige.
+   - check_data.py prueft die UI-Tokens; check_runtime.js prueft Restzeit,
+     Bereit-Zustand, toten Fokus und Ausblenden.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -257,6 +266,8 @@ Core-Loop-Status:
   [x] 13. Schwarmzahlen in der Kampfleiste (v1.28)
   [x] 14. Mana-Anzeige in der Kampfleiste (v1.29)
   [x] 15. Treffer-Impuls fuer Mobs (v1.30)
+  [x] 16. Fokus-HP in der Kampfleiste (v1.31)
+  [x] 17. Fokus-Zauber-Cooldown in der Kampfleiste (v1.32)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
@@ -307,7 +318,7 @@ kein Spatial-Hash fuer Fernkampf-Splash (Hero-Splash nutzt die volle Zielliste).
 
 Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
   - User-Entscheidung "Beides kombinieren": lokaler Loop + GitHub-Cron.
-  - Lokaler Loop scripts/auto-improve.sh (PID 29059, Intervall 600 s).
+  - Lokaler Loop scripts/auto-improve.sh (PID 26927, Intervall 600 s).
     Worktree, ein autonomer Lauf, drei Checks, danach PR. Stopp-Datei:
     /root/projects/FABELBATTLER/auto-improve.stop. Details AUTO_IMPROVE.txt.
   - Der Loop hat 0dc39b3..a369e3b direkt nach main gepusht (v1.23..v1.31):
@@ -321,9 +332,3 @@ Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
     Modell openai/gpt-4o-mini, Action-Fehler behoben.
   - Cloud-Agent blockiert: OpenAI-Konto ohne Guthaben (insufficient_quota).
     Nach Aufladen laeuft der Cron ohne weitere Aenderung.
-  - a1e658d: Fokus-HP-Anzeige (updateFocusHp, v1.31) mit Check-Fixes
-    (classList-Mock, doppelte Variable hero, Start-Schild im Test).
-  - 2b61a3d: Agent arbeitet jetzt wirklich im Worktree (expliziter Pfad im
-    Prompt + Verwurf von Hauptcheckout-Aenderungen). Neuer PID 29059.
-  - CI 45049515223 gruen, SHA-256 f298718ebea938e2994aa20e3f9fe1c00759f6c33f3874385e57525b757b83a2
-    APK /root/projects/FABELBATTLER/fabelbattler-v1.31-b32.apk
