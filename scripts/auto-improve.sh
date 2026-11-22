@@ -67,9 +67,20 @@ Regeln:
 Antworte am Ende mit einer einzeiligen Zusammenfassung: Ziel, Ergebnis, nächster Schritt.
 EOF
 )
+  PROMPT="$PROMPT
+
+WICHTIG – Arbeitsverzeichnis: $WT
+Nutze fuer JEDE Datei-, Shell- und Git-Operation ausschliesslich $WT als workdir/Pfad.
+Verwende NIE workdir: /root/fabelbattler/android und keine absoluten Pfade in den Hauptcheckout.
+Der Hauptcheckout /root/fabelbattler/android ist tabu und darf nicht veraendert werden."
 
   if timeout 480 opencode run --auto --standalone --archived \
        --model "$MODEL" --title "auto-improve $TS" "$PROMPT" >>"$LOG" 2>&1; then
+    if [ -n "$(git status --porcelain)" ]; then
+      log "WARNUNG: Hauptcheckout wurde veraendert – Aenderungen werden verworfen"
+      git checkout -- . >/dev/null 2>&1
+      git clean -fd >/dev/null 2>&1
+    fi
     log "Agent $TS beendet – validiere erneut"
     if (cd "$WT" && python3 scripts/check_js.py app/src/main/assets/index3d.html \
          && python3 scripts/check_data.py app/src/main/assets/index3d.html \
@@ -96,6 +107,11 @@ EOF
     fi
   else
     log "Agent $TS abgebrochen oder fehlgeschlagen"
+    if [ -n "$(git status --porcelain)" ]; then
+      log "WARNUNG: Hauptcheckout wurde veraendert – Aenderungen werden verworfen"
+      git checkout -- . >/dev/null 2>&1
+      git clean -fd >/dev/null 2>&1
+    fi
   fi
 
   git worktree remove --force "$WT" >/dev/null 2>&1 || rm -rf "$WT"
