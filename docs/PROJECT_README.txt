@@ -234,6 +234,12 @@ v1.32-b33 2026-11-22  (Fokus-Zauber-Cooldown)
    - check_data.py prueft die UI-Tokens; check_runtime.js prueft Restzeit,
      Bereit-Zustand, toten Fokus und Ausblenden.
 
+v1.33-b34 2026-11-22  (Gegner-Helden im Kampfstatus)
+   - updateBattleStatus() zeigt "Gegner N (Helden x/y)", damit die gegnerischen
+     Helden im 500er-Schwarm erkennbar sind und Mobs nicht doppelt gezaehlt wirken.
+   - check_runtime.js prueft Startwert und Abzug nach einem toten Gegner-Helden;
+     check_data.py prueft den UI-Token statusFoeHeroes.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -268,6 +274,7 @@ Core-Loop-Status:
   [x] 15. Treffer-Impuls fuer Mobs (v1.30)
   [x] 16. Fokus-HP in der Kampfleiste (v1.31)
   [x] 17. Fokus-Zauber-Cooldown in der Kampfleiste (v1.32)
+  [x] 18. Gegner-Helden im Kampfstatus (v1.33)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

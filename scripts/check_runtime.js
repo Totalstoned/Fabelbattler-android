@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'focusHp', 'focusHpValue', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'focusHp', 'focusHpValue', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -423,6 +423,7 @@ vm.runInContext(`
   const mobsEnemyStart = G.battle.enemyMobs.length;
   globalThis.__statusShowCheck = status.classList.contains("show") &&
     foesStart === sideUnits(G.battle, "enemy").length &&
+    document.getElementById("statusFoeHeroes").textContent === G.battle.enemies.length+'/'+G.battle.enemies.length &&
     document.getElementById("statusMobs").textContent === mobsPlayerStart+'/'+mobsEnemyStart &&
     document.getElementById("statusHeroes").textContent === "3/3";
   G.battle.enemyMobs[0].isDead = true;
@@ -430,6 +431,7 @@ vm.runInContext(`
   G.battle.player[0].isDead = true;
   updateBattleStatus();
   globalThis.__statusLiveCheck = parseInt(document.getElementById("statusEnemies").textContent, 10) === foesStart - 2 &&
+    document.getElementById("statusFoeHeroes").textContent === (G.battle.enemies.length-1)+'/'+G.battle.enemies.length &&
     document.getElementById("statusMobs").textContent === mobsPlayerStart+'/'+(mobsEnemyStart-1) &&
     document.getElementById("statusHeroes").textContent === "2/3";
   G.phase = "menu";
@@ -439,10 +441,10 @@ vm.runInContext(`
 `, ctx);
 
 if (!vm.runInContext('globalThis.__statusShowCheck', ctx)) {
-  throw new Error('Kampf-Status zeigt nicht Gegner, Mobs und Helden zu Kampfbeginn');
+  throw new Error('Kampf-Status zeigt nicht Gegner, Gegner-Helden, Mobs und Helden zu Kampfbeginn');
 }
 if (!vm.runInContext('globalThis.__statusLiveCheck', ctx)) {
-  throw new Error('Kampf-Status reagiert nicht auf Tod von Gegnern, Mobs oder Helden');
+  throw new Error('Kampf-Status reagiert nicht auf Tod von Gegner-Helden, Mobs oder Helden');
 }
 if (!vm.runInContext('globalThis.__statusHideCheck', ctx)) {
   throw new Error('Kampf-Status verschwindet nicht außerhalb des Kampfes');

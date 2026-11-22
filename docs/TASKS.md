@@ -94,6 +94,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Restzeit, Bereit-Zustand, toten Fokus und Ausblenden;
   `check_data.py` prüft die UI-Tokens.
 
+- [x] **18. Gegner-Helden im Kampfstatus** (v1.33)
+  `updateBattleStatus()` zeigt neben der Gesamtzahl der lebenden Gegner die lebenden
+  gegnerischen Helden als „Helden x/y“ (id `statusFoeHeroes`). Damit ist erkennbar,
+  wie viele Helden im 500er-Schwarm noch am Leben sind, ohne Mobs doppelt zu zählen.
+  *Erledigt:* `check_runtime.js` prüft Startwert und Abzug bei einem toten Gegner-Helden;
+  `check_data.py` prüft den UI-Token.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
