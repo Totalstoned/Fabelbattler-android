@@ -570,6 +570,25 @@ const MOB_ARCHETYPES = {
   flieger:{name:"Fledermaus",emoji:"🦇",hp:6,atk:1.8,spd:1.25,rng:30,color:0x38bdf8,scale:0.36},
   brute:{name:"Brute",emoji:"👹",hp:22,atk:4.5,spd:0.65,rng:55,color:0xef4444,scale:0.62}
 };
+const ELITE_EVERY = 5;
+const BOSS_EVERY = 10;
+const MOB_TIERS = {
+  normal:{hp:1,atk:1,scale:1,glow:0.35,prefix:"",emoji:""},
+  elite:{hp:3.5,atk:2.2,scale:1.7,glow:0.75,prefix:"Elit-",emoji:"✨"},
+  boss:{hp:12,atk:3.5,scale:2.6,glow:1.1,prefix:"Boss-",emoji:"👑"}
+};
+function mobTierFor(wave,index,count){
+  if(wave > 0 && wave % BOSS_EVERY === 0 && index === count-1) return "boss";
+  if(wave > 0 && wave % ELITE_EVERY === 0){
+    const n = Math.max(2,Math.floor(count/50));
+    return index < n ? "elite" : "normal";
+  }
+  return "normal";
+}
+function mobTierColor(tier,side,color){
+  return tier === "boss" ? 0xff2d55 : tier === "elite" ? 0xfbbf24 :
+    (side === "player" ? 0x67e8f9 : color);
+}
 function mobWaveSize(wave,side){
   const raw = 4 + 3*(wave-1) + 0.6*(wave-1)*(wave-1);
   const bonus = side === "enemy" ? 1 : 0;
@@ -1772,16 +1791,18 @@ function syncUnits(){
 function initMobMeshes(){
   if(SIM.headless || Object.keys(mobMeshes).length) return;
   Object.keys(MOB_ARCHETYPES).forEach(key => {
-    ["player","enemy"].forEach(side => {
-      const a = MOB_ARCHETYPES[key];
-      const color = side === "player" ? 0x67e8f9 : a.color;
-      const geo = new THREE.IcosahedronGeometry(0.5,0);
-      const mat = new THREE.MeshStandardMaterial({color:color,emissive:color,emissiveIntensity:0.35,roughness:0.6,metalness:0.1});
-      const mesh = new THREE.InstancedMesh(geo,mat,MOB_CAP);
-      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-      mesh.count = 0;
-      mobLayer.add(mesh);
-      mobMeshes[side+":"+key] = mesh;
+    Object.keys(MOB_TIERS).forEach(tier => {
+      ["player","enemy"].forEach(side => {
+        const a = MOB_ARCHETYPES[key];
+        const color = mobTierColor(tier,side,a.color);
+        const geo = new THREE.IcosahedronGeometry(0.5,tier === "boss" ? 1 : 0);
+        const mat = new THREE.MeshStandardMaterial({color:color,emissive:color,emissiveIntensity:MOB_TIERS[tier].glow,roughness:0.6,metalness:0.1});
+        const mesh = new THREE.InstancedMesh(geo,mat,MOB_CAP);
+        mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+        mesh.count = 0;
+        mobLayer.add(mesh);
+        mobMeshes[side+":"+key+":"+tier] = mesh;
+      });
     });
   });
 }
@@ -1801,24 +1822,27 @@ function updateMobVisuals(time,dt){
   ["player","enemy"].forEach(side => {
     const list = side === "player" ? G.battle.playerMobs : G.battle.enemyMobs;
     Object.keys(MOB_ARCHETYPES).forEach(key => {
-      const mesh = mobMeshes[side+":"+key];
-      if(!mesh) return;
-      let n = 0;
-      list.forEach(m => {
-        if(m.archetype !== key) return;
-        if(m.isDead && m.deathTimer <= 0) return;
-        const p = worldPos(m.grid.gx,m.grid.gy);
-        const hp = clamp(m.hp/m.maxHp,0,1);
-        const size = m.scale*(m.isDead ? 0.2*clamp(m.deathTimer/0.6,0,1) : 0.75+0.25*hp);
-        mobDummy.position.set(p.x,0.3*size+Math.sin(time*3+m.id*0.4)*0.025,p.z);
-        mobDummy.scale.setScalar(size);
-        mobDummy.rotation.set(0,m.id*0.7,0);
-        mobDummy.updateMatrix();
-        mesh.setMatrixAt(n++,mobDummy.matrix);
-        if(m.isDead) m.deathTimer = Math.max(0,m.deathTimer-dt);
+      Object.keys(MOB_TIERS).forEach(tier => {
+        const mesh = mobMeshes[side+":"+key+":"+tier];
+        if(!mesh) return;
+        let n = 0;
+        list.forEach(m => {
+          if(m.archetype !== key || (m.tier||"normal") !== tier) return;
+          if(m.isDead && m.deathTimer <= 0) return;
+          const p = worldPos(m.grid.gx,m.grid.gy);
+          const hp = clamp(m.hp/m.maxHp,0,1);
+          const size = m.scale*(m.isDead ? 0.2*clamp(m.deathTimer/0.6,0,1) : 0.75+0.25*hp)*
+            (m.isBoss ? 1+0.05*Math.sin(time*4) : 1);
+          mobDummy.position.set(p.x,0.35*size+Math.sin(time*3+m.id*0.4)*0.025,p.z);
+          mobDummy.scale.setScalar(size);
+          mobDummy.rotation.set(0,m.id*0.7,0);
+          mobDummy.updateMatrix();
+          mesh.setMatrixAt(n++,mobDummy.matrix);
+          if(m.isDead) m.deathTimer = Math.max(0,m.deathTimer-dt);
+        });
+        mesh.count = n;
+        mesh.instanceMatrix.needsUpdate = true;
       });
-      mesh.count = n;
-      mesh.instanceMatrix.needsUpdate = true;
     });
   });
 }
@@ -1909,17 +1933,21 @@ function createUnit(key,lvl=1,side="player"){
   u.auraCd = u.aura ? u.aura.cd*0.5 : 0;
   return u;
 }
-function createMob(archetype,side,wave){
+function createMob(archetype,side,wave,tier){
   const a = MOB_ARCHETYPES[archetype];
+  const t = MOB_TIERS[tier] || MOB_TIERS.normal;
   const scale = 1+(wave-1)*0.035;
   const total = G.team.length+mobWaveSize(wave,side);
   const buff = 1+0.04*swarmStacks(total);
+  const baseHp = a.hp*scale*t.hp;
+  const baseAtk = a.atk*(1+(wave-1)*0.025)*t.atk;
   const m = {
-    id:++G.uid,key:"mob_"+archetype,name:a.name,emoji:a.emoji,role:"MOB",cls:null,cls2:null,race:null,
-    level:wave,side,ability:null,spell:null,isMob:true,archetype:archetype,color:a.color,scale:a.scale,
-    baseHp:a.hp*scale,baseAtk:a.atk*(1+(wave-1)*0.025),baseSpd:a.spd,
+    id:++G.uid,key:"mob_"+archetype,name:t.prefix+a.name,emoji:t.emoji||a.emoji,role:"MOB",cls:null,cls2:null,race:null,
+    level:wave,side,ability:null,spell:null,isMob:true,archetype:archetype,tier:tier||"normal",
+    isElite:tier === "elite",isBoss:tier === "boss",color:mobTierColor(tier,side,a.color),scale:a.scale*t.scale,
+    baseHp:baseHp,baseAtk:baseAtk,baseSpd:a.spd,
     rng:a.rng,healRange:0,modsEffective:Object.assign({},DEFAULT_MODS),
-    maxHp:Math.round(a.hp*scale*buff),hp:0,atk:a.atk*(1+(wave-1)*0.025)*buff,spd:a.spd,shield:0,
+    maxHp:Math.round(baseHp*buff),hp:0,atk:baseAtk*buff,spd:a.spd,shield:0,
     grid:{gx:0,gy:0},target:null,attackCd:Math.random()*0.5,spellCd:999,hitFlash:0,animAttack:0,deathTimer:0.6,
     statuses:{},statusPower:{},isDead:false,revived:false,auraCd:0,aura:null,trait:null
   };
@@ -1933,7 +1961,7 @@ function buildMobSwarm(side,wave){
   for(let i=0;i<count;i++){
     const r = (i*7+wave*3)%10;
     const key = r < 5 ? keys[0] : r < 8 ? keys[1] : keys[2];
-    const m = createMob(key,side,wave);
+    const m = createMob(key,side,wave,mobTierFor(wave,i,count));
     const lane = side === "player" ? 0.25+(i%3)*0.45 : GRID.cols-1-(i%3)*0.45;
     m.grid.gx = clamp(lane,0,GRID.cols-1);
     m.grid.gy = clamp(0.3+((i*5)%Math.round(GRID.rows*10))/10,0,GRID.rows-1);
@@ -2411,10 +2439,13 @@ function reviveTeam(){
 }
 function winBattle(){
   const cleared = G.wave;
+  const b = G.battle;
+  const eliteGold = b && b.enemyMobs ? b.enemyMobs.filter(m => m.isElite).length*2 : 0;
+  const bossGold = b && b.enemyMobs ? b.enemyMobs.filter(m => m.isBoss).length*15 : 0;
   G.phase = "prep";
   G.battle = null;
   clearEffects();
-  const reward = 5+cleared*2;
+  const reward = 5+cleared*2+eliteGold+bossGold;
   G.gold += reward;
   G.mana = Math.min(G.maxMana,G.mana+25);
   G.items.heal += 1;
@@ -2427,7 +2458,7 @@ function winBattle(){
     showToast("Team-Level-Up! Mindestlevel: "+minLvl);
   }
   G.wave++;
-  showToast("Welle "+cleared+" besiegt! +"+reward+" Gold");
+  showToast("Welle "+cleared+" besiegt! +"+reward+" Gold"+(bossGold ? " (Boss +"+bossGold+")" : eliteGold ? " (Elite +"+eliteGold+")" : ""));
   syncUnits();
   updateHud();
   updateTeamList();
@@ -2496,7 +2527,8 @@ function startBattle(){
   G.mana = Math.min(G.maxMana,G.mana+10);
   syncUnits();
   syncMobs();
-  showToast("Welle "+G.wave+": "+G.team.length+"+"+playerMobs.length+" gegen "+enemyTeam.length+"+"+enemyMobs.length);
+  const tierHint = enemyMobs.some(m => m.isBoss) ? " · 👑 BOSS" : enemyMobs.some(m => m.isElite) ? " · ✨ Elite" : "";
+  showToast("Welle "+G.wave+": "+G.team.length+"+"+playerMobs.length+" gegen "+enemyTeam.length+"+"+enemyMobs.length+tierHint);
   updateHud();
   updateTeamList();
   updateSynergies();
@@ -2729,7 +2761,8 @@ function updateHud(){
   document.getElementById("hudLvl").textContent = avg.toFixed(1).replace(/\.0$/,'');
   const focus = findUnitById(G.selectedUnitId);
   document.getElementById("battleInfo").textContent = "Welle "+G.wave+" · "+G.team.length+"/"+G.teamSize+
-    (G.battle ? " · Kampf" : "")+(focus ? " · Fokus: "+focus.emoji+" "+focus.name : "");
+    (G.battle ? " · Kampf" : "")+(focus ? " · Fokus: "+focus.emoji+" "+focus.name : "")+
+    (G.battle && G.battle.enemyMobs && G.battle.enemyMobs.some(m => m.isBoss) ? " · 👑 Boss" : "");
   updateBattleTimer();
 }
 function updateManaBar(){

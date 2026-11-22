@@ -297,4 +297,47 @@ if (!vm.runInContext('globalThis.__mobAfterCheck', ctx)) {
   throw new Error('Mob-Kampf-Simulation mit 500 Mobs pro Seite läuft nicht');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, draft3+reroll+filter, items, krypto, stacks, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 10;
+  startBattle();
+  const em = G.battle.enemyMobs, pm = G.battle.playerMobs;
+  globalThis.__bossCheck = em.filter(m => m.isBoss).length === 1 && pm.filter(m => m.isBoss).length === 1 &&
+    em.filter(m => m.isElite).length > 0;
+  const boss = em.find(m => m.isBoss), normal = em.find(m => !m.isElite && !m.isBoss);
+  globalThis.__bossStatsCheck = boss.maxHp > normal.maxHp*3 && boss.atk > normal.atk && boss.scale > normal.scale;
+  const bossGoldBefore = G.gold;
+  const eliteCount = em.filter(m => m.isElite).length;
+  winBattle();
+  globalThis.__bossGoldCheck = G.gold > bossGoldBefore + 5 + 10*2 + eliteCount*2;
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  globalThis.__eliteCheck = G.battle.enemyMobs.some(m => m.isElite) && !G.battle.enemyMobs.some(m => m.isBoss);
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  globalThis.__noTierCheck = !G.battle.enemyMobs.some(m => m.isElite || m.isBoss);
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__bossCheck', ctx)) {
+  throw new Error('Bosse/Eliten werden nicht auf beiden Seiten gespawnt');
+}
+if (!vm.runInContext('globalThis.__bossStatsCheck', ctx)) {
+  throw new Error('Boss-Werte sind nicht stärker als normale Mobs');
+}
+if (!vm.runInContext('globalThis.__bossGoldCheck', ctx)) {
+  throw new Error('Boss/Elite geben keinen Bonus-Gold');
+}
+if (!vm.runInContext('globalThis.__eliteCheck', ctx)) {
+  throw new Error('Elite-Welle ohne Boss fehlt');
+}
+if (!vm.runInContext('globalThis.__noTierCheck', ctx)) {
+  throw new Error('Welle 1 enthält bereits Elite-/Boss-Mobs');
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss, draft3+reroll+filter, items, krypto, stacks, timer ${timerText})`);
