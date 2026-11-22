@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Letzte gebaute Version: v1.19-b20 (Commit 6300169)
+Letzte gebaute Version: v1.20-b21 (Commit b1ebfbc)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -137,6 +137,18 @@ v1.19-b20 2026-11-22  (Draft)
   - check_runtime.js prueft 3 verschiedene Keys und den Gold-Abzug von genau 1.
   - CI 45030182990 gruen, SHA-256 93ed3c036a8cf6d57c4cde20fb72f41aa5c5c97f80337848610d0fe3cc4b3d93
 
+v1.20-b21 2026-11-22  (Teamauswahl + Items)
+  - User-Abfrage: "Filter + Synergie" und "Kampf-Verbrauch" gewaehlt.
+  - Draft: Rollen-Chips (Alle/Tank/DPS/Heiler/Puffer), Klassen-Dropdown, Synergie-Hinweis
+    mit fehlenden Rollen, aktiven Klassen/Rassen und Duden-Bonus. Filter setzen draftOffer
+    zurueck; zu wenige passende Karten -> Fallback auf alle unverwendeten Wesen.
+  - Verbrauchsitems: heal (35 % HP des schwaechsten Helden), shield (25 % Schild fuer alle
+    Helden), nova (30 % Schaden + Stun auf gegnerischen Helden, sonst Mob).
+  - Startbestand 2/1/1; Wellensieg: +1 Trank, +1 Schild in geraden Wellen, +1 Splitter
+    in Wellen durch 3. HUD-Pill und Kampfleiste zeigen Bestand.
+  - Items wirken bewusst auf Helden, nicht auf Mobs (Hp/Schild-Suche).
+  - CI 45034999915 gruen, SHA-256 d8d3074c82605a6b184028d41c96ee20ad37253609089ad89dbe489de9b9d06a
+
 Weitere wichtige Commits ohne Versionssprung:
   20870e8 Folklore-Einheiten + prozedurale Modelle
   2a8882b Rassen, Fernkampf-Zauber, Heiler-Reichweite 3
@@ -151,6 +163,7 @@ Core-Loop-Status:
   [x] 2. Drei Basis-Einheiten als Startteam (v1.17)
   [x] 3. Einfacher Shop/Draft mit drei Karten + Reroll fuer 1 Gold (v1.19)
   [x] 4. Mob-Schwarm auf beiden Seiten bis 500 (v1.18)
+  [x] 5. Teamauswahl-Filter/Synergie + Kampf-Verbrauchsitems (v1.20)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
