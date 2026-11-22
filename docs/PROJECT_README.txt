@@ -368,3 +368,7 @@ Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
     Kampfleisten-Funktionen aufgeloest und als v1.32-b33 bis v1.36-b37
     nacheinander in main integriert (Commit 042f4f0). Jeder PR behielt seinen
     Featureschritt; Versionsnummern wurden fortlaufend korrigiert.
+  - CI 45055518497 gruen; APK /root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk
+    SHA-256 88f2bd7bcf1ad5d6e60c0caa7bc9dc03c56d134988b43458411fb718469f8821
+  - Externe Quelle /root/fabelbattler/index3d.html synchronisiert; alle drei
+    Checks dort und in der WebView-Datei gruen.
