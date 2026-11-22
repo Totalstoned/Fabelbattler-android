@@ -93,10 +93,13 @@ if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar
 if (!html.includes('id="battleMana"') || !html.includes('function updateBattleManaBar')) {
   throw new Error('Mana-Anzeige in der Kampfleiste fehlt');
 }
+if (!/const SPELL_COST = \{heal:\s*40,\s*nova:\s*70\};/.test(html)) {
+  throw new Error('Mana-Kosten-Konstante fehlt oder passt nicht zu den Zaubern');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'btnBattleHeal', 'btnBattleNova', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -625,6 +628,40 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  const healBtn = document.getElementById("btnBattleHeal");
+  const novaBtn = document.getElementById("btnBattleNova");
+  updateButtons();
+  globalThis.__costValues = SPELL_COST.heal === 40 && SPELL_COST.nova === 70;
+  globalThis.__costLabels = healBtn.textContent === "Heilregen (40)" && novaBtn.textContent === "Blitz (70)";
+  G.wave = 1;
+  startBattle();
+  G.mana = 40;
+  updateButtons();
+  globalThis.__costAt40 = !healBtn.disabled && novaBtn.disabled &&
+    healBtn.textContent === "Heilregen (40)" && novaBtn.textContent === "Blitz (70)";
+  G.mana = 70;
+  updateButtons();
+  globalThis.__costAt70 = !healBtn.disabled && !novaBtn.disabled;
+  G.mana = 0;
+  updateButtons();
+  globalThis.__costAt0 = healBtn.disabled && novaBtn.disabled &&
+    healBtn.textContent === "Heilregen (40)" && novaBtn.textContent === "Blitz (70)";
+`, ctx);
+
+for (const [flag, message] of [
+  ['__costValues', 'Mana-Kosten passen nicht zu Heilregen (40) und Blitz (70)'],
+  ['__costLabels', 'Kampfleiste zeigt die Mana-Kosten nicht an'],
+  ['__costAt40', 'Heilregen ist bei 40 Mana nicht nutzbar bzw. Blitz nicht gesperrt'],
+  ['__costAt70', 'Blitz ist bei 70 Mana nicht nutzbar'],
+  ['__costAt0', 'Zauber-Buttons sind ohne Mana nicht gesperrt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   startBattle();
   initMobMeshes();
   const m = G.battle.enemyMobs[0];
@@ -752,4 +789,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+mana-kosten+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
