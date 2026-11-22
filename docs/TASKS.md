@@ -73,6 +73,12 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert, 40/70-Mana und 0;
   `check_data.py` prüft die UI-Tokens.
 
+- [x] **15. Treffer-Impuls für Mobs** (v1.30)
+  `mobHitPulse()` nutzt das vorhandene `hitFlash` der Mobs für einen kurzen Scale-/Wackel-Impuls
+  in `updateMobVisuals()`. Damit sind Treffer auch im 500er-Schwarm sichtbar, nicht nur bei Helden.
+  *Erledigt:* `check_runtime.js` prüft die Impuls-Skalierung und dass sich die Instanz-Matrix
+  eines getroffenen Mobs tatsächlich ändert; `check_data.py` prüft die Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

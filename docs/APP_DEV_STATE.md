@@ -13,7 +13,7 @@ Letztes Update: 2026-11-22
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.29**, Build **30** (CI ausstehend); letzte APK: `/root/projects/FABELBATTLER/fabelbattler-v1.24-b25.apk`.
+- Version **1.30**, Build **31** (CI ausstehend); letzte APK: `/root/projects/FABELBATTLER/fabelbattler-v1.24-b25.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
@@ -35,6 +35,7 @@ Letztes Update: 2026-11-22
 - Kampfleiste zeigt einen Team-HP-Balken (`updateTeamHpBar()`, v1.27): Summe aus HP+Schild aller Helden, gedeckelt pro Held auf max. HP; grün/gelb/rot ab 50/25 %, außerhalb des Kampfes ausgeblendet.
 - Kampfleiste zeigt im Kampfstatus die lebenden Schwarm-Mobs beider Seiten als „Mobs Spieler/Gegner“ (`statusMobs`, v1.28); das HUD ist im Kampfmodus ausgeblendet.
 - Kampfleiste zeigt im Kampf eine kompakte Mana-Anzeige mit Balken und Wert (`battleMana`, v1.29), da das HUD mit dem Mana-Balken im Kampfmodus ausgeblendet ist; außerhalb des Kampfes ausgeblendet.
+- Mob-Schwarm zeigt einen kurzen Treffer-Impuls (`mobHitPulse()`, v1.30): Getroffene Mobs wachsen kurz an und wackeln, damit Treffer im 500er-Schwarm sichtbar bleiben.
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - GitHub-Issue #1 ist der Fortschrittskanal für den stündlichen Hintergrund-Agenten.
 

@@ -161,6 +161,9 @@ for token in ['teamHpBar', 'teamHpFill', 'teamHpPct', 'function updateTeamHpBar'
 for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'function updateBattleManaBar']:
     if token not in src:
         problems.append('Mana-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:
+    if token not in src:
+        problems.append('Treffer-Impuls für Mobs fehlt: ' + token)
 if len(roster) != len(set(roster)):
     problems.append('doppelte Einheitenschlüssel')
 

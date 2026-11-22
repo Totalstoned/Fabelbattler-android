@@ -1857,6 +1857,8 @@ function syncMobs(){
   Object.keys(mobMeshes).forEach(k => { mobMeshes[k].count = 0; });
 }
 const mobDummy = new THREE.Object3D();
+// Kurzer Treffer-Impuls für Mobs, damit Treffer im Schwarm sichtbar sind (wie der Helden-Flash).
+function mobHitPulse(m){ return clamp((m && m.hitFlash > 0 ? m.hitFlash : 0)/0.15,0,1); }
 function updateMobVisuals(time,dt){
   if(SIM.headless) return;
   if(!G.battle){
@@ -1877,11 +1879,13 @@ function updateMobVisuals(time,dt){
           const p = worldPos(m.grid.gx,m.grid.gy);
           const hp = clamp(m.hp/m.maxHp,0,1);
           const swing = attackPulse(m,0.18);
+          const hit = mobHitPulse(m);
           const size = m.scale*(m.isDead ? 0.2*clamp(m.deathTimer/0.6,0,1) : 0.75+0.25*hp)*
-            (m.isBoss ? 1+0.05*Math.sin(time*4) : 1)*(1+swing*0.16);
-          mobDummy.position.set(p.x,0.35*size+Math.sin(time*3+m.id*0.4)*0.025+swing*0.08,p.z);
+            (m.isBoss ? 1+0.05*Math.sin(time*4) : 1)*(1+swing*0.16+hit*0.2);
+          mobDummy.position.set(p.x,0.35*size+Math.sin(time*3+m.id*0.4)*0.025+swing*0.08+hit*0.06,p.z);
           mobDummy.scale.set(size*(1-swing*0.06),size*(1+swing*0.1),size*(1-swing*0.06));
-          mobDummy.rotation.set(Math.sin(time*4+m.id*0.5)*0.06,m.id*0.7+Math.sin(time*1.5+m.id)*0.08,Math.sin(time*3+m.id*0.7)*0.08);
+          mobDummy.rotation.set(Math.sin(time*4+m.id*0.5)*0.06+hit*0.1,
+            m.id*0.7+Math.sin(time*1.5+m.id)*0.08,Math.sin(time*3+m.id*0.7)*0.08+hit*0.16);
           mobDummy.updateMatrix();
           mesh.setMatrixAt(n++,mobDummy.matrix);
           if(m.isDead) m.deathTimer = Math.max(0,m.deathTimer-dt);

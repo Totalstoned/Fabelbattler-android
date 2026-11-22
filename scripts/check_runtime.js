@@ -588,4 +588,41 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  initMobMeshes();
+  const m = G.battle.enemyMobs[0];
+  const tier = m.tier || "normal";
+  const mesh = mobMeshes["enemy:"+m.archetype+":"+tier];
+  const peers = G.battle.enemyMobs.filter(x => x.archetype === m.archetype &&
+    (x.tier || "normal") === tier && !(x.isDead && x.deathTimer <= 0));
+  const idx = peers.indexOf(m);
+  m.hitFlash = 0;
+  mobFrame = 2;
+  updateMobVisuals(1,0);
+  const before = mesh.instanceMatrix.array.slice(idx*16, idx*16+16);
+  m.hitFlash = 0.15;
+  mobFrame = 2;
+  updateMobVisuals(1,0);
+  const after = mesh.instanceMatrix.array.slice(idx*16, idx*16+16);
+  globalThis.__mobHitPulseCheck = mobHitPulse({hitFlash:0.15}) === 1 &&
+    mobHitPulse({hitFlash:0.075}) > 0.4 && mobHitPulse({hitFlash:0.075}) < 0.6 &&
+    mobHitPulse({hitFlash:0}) === 0 && mobHitPulse({}) === 0;
+  globalThis.__mobHitVisualCheck = mesh.count > idx &&
+    before.some((v,i) => Math.abs(v-after[i]) > 0.005);
+  m.hitFlash = 0;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__mobHitPulseCheck', 'Mob-Treffer-Impuls skaliert nicht mit hitFlash'],
+  ['__mobHitVisualCheck', 'Mob-Instanz reagiert visuell nicht auf einen Treffer'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

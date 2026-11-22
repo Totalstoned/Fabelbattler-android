@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.29-b30 (CI ausstehend)
+Aktuelle Version: v1.30-b31 (CI ausstehend)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -218,6 +218,13 @@ v1.29-b30 2026-11-22  (Mana-Anzeige in der Kampfleiste)
    - check_runtime.js prueft Tokens, Ein-/Ausblenden, Startwert, 40/70-Mana und 0;
      check_data.py prueft die UI-Tokens.
 
+v1.30-b31 2026-11-22  (Treffer-Impuls fuer Mobs)
+   - Mobs hatten trotz hitFlash keine sichtbare Trefferreaktion (Helden haben einen
+     Emissive-Flash). mobHitPulse() skaliert hitFlash/0.15 auf 0..1; getroffene Mobs
+     wachsen kurz an und wackeln in updateMobVisuals() (auch bei 500 pro Seite).
+   - check_data.py prueft die Tokens; check_runtime.js prueft die Impuls-Skalierung
+     und dass sich die Instanz-Matrix eines getroffenen Mobs tatsaechlich aendert.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -249,6 +256,7 @@ Core-Loop-Status:
   [x] 12. Team-HP-Balken in der Kampfleiste (v1.27)
   [x] 13. Schwarmzahlen in der Kampfleiste (v1.28)
   [x] 14. Mana-Anzeige in der Kampfleiste (v1.29)
+  [x] 15. Treffer-Impuls fuer Mobs (v1.30)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
