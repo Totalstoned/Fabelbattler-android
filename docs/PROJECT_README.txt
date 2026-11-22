@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Letzte gebaute Version: v1.17-b18 (Commit 2ee95f0)
+Letzte gebaute Version: v1.18-b19 (Commit ccf8a65, Test-Fix 5646ba0)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -119,6 +119,16 @@ v1.17-b18 2026-11-22  2ee95f0
     und 3-gegen-3-Kampf.
   - CI 45023346370 gruen, SHA-256 a2090c625cd4b136b0c8001737c14182ab0bbdfdbd3039fb38449e3745ffa64c
 
+v1.18-b19 2026-11-22  (Mob-Schwarm)
+  - User hat entschieden: Mobs auf BEIDEN Seiten, nicht nur gegnerisch.
+  - MOB_CAP = 500; mobWaveSize(wave,side) = min(500, 4 + 3*(w-1) + 0.6*(w-1)^2 + enemyBonus).
+  - Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs; ab Welle ~28 je 500 Mobs.
+  - 3 Archetypen: kriecher (hp 9), flieger (hp 6), brute (hp 22); Werte skalieren leicht mit der Welle.
+  - Mobs sind kompakte Objekte ohne makeCharacter(); Rendern via THREE.InstancedMesh (6 Meshes, alle 3 Frames).
+  - Mob-KI nutzt alle 0,2 s einen Front-/Ziel-Cache (max. 40 Ziele) statt pro Mob sortierter Zielwahl.
+  - Helden behalten volle ROSTER-/Zauber-/Statuslogik; Sieg/Niederlage prueft beide Seiten inkl. Mobs.
+  - HUD-Pill "Mobs player/enemy"; check_data.py prueft Cap/Tokens, check_runtime.js spawnt 500/500 und simuliert 600 Ticks.
+
 Weitere wichtige Commits ohne Versionssprung:
   20870e8 Folklore-Einheiten + prozedurale Modelle
   2a8882b Rassen, Fernkampf-Zauber, Heiler-Reichweite 3
@@ -132,6 +142,7 @@ Core-Loop-Status:
   [x] 1. Kampf-Simulation entkoppeln (v1.16)
   [x] 2. Drei Basis-Einheiten als Startteam (v1.17)
   [ ] 3. Einfacher Shop/Draft mit drei Karten + Reroll fuer 1 Gold
+  [x] 4. Mob-Schwarm auf beiden Seiten bis 500 (v1.18)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
@@ -154,29 +165,28 @@ GH_BIN=/tmp/opencode/gh/gh_2.104.0_linux_arm64/bin/gh bash scripts/download-apk.
 aapt dump badging /root/projects/FABELBATTLER/fabelbattler-v<VERSION>-b<CODE>.apk | grep versionCode
 
 =====================================================================
-4) OFFENE ANFORDERUNG: MOB-SCHWARM (noch NICHT umgesetzt)
+4) MOB-SCHWARM (umgesetzt in v1.18)
 =====================================================================
-User wuenscht: gegnerische Monster sollen "mehr Mobs" sein, also zahlenmaessig
-groesser als das auswaehlbare Spielerteam; bis 500 zum Spielende.
-Der User schrieb "auf der Spielerseite" - vor Umsetzung kurz klaeren, ob er die
-Gegnerseite meint (sehr wahrscheinlich) oder tatsaechlich 500 eigene Einheiten.
+Der User wollte explizit BEIDE Seiten: bis 500 Mobs auf Spielerseite und bis 500
+auf Gegnerseite. Die auswaehlbaren Helden bleiben klein (Start 3); der Rest ist
+automatisch generierter Schwarm.
 
-Entwurf (vorgeschlagen, noch nicht implementiert):
-- Spielerteam bleibt klein (Start 3, spaeter wenige durch Draft) und nutzt die
-  vorhandenen detailreichen ROSTER-Einheiten/makeCharacter().
-- Gegner bekommen ein eigenes MOB_SYSTEM statt 500 voller createUnit()-Objekte:
-  kompakte Mobs mit hp/atk/spd/position/cd, 3 Archetypen (kriecher/flieger/brute).
-- Anzahl pro Welle: z. B. min(500, 4 + 3*(w-1) + 0.6*(w-1)^2).
-  Welle 1 = 4 Mobs (> 3 Spieler), Welle 20 ~ 277, Welle 28+ = 500 (Cap).
-- Rendering ueber THREE.InstancedMesh pro Archetyp (max. 500 Instanzen), HP-Balken
-  in einem weiteren InstancedMesh, keine 500 DOM-Labels; mobile Qualitaetskappe.
-- Simulation mit Spatial Hash fuer Targets; Spieler-Attacken treffen mehrere Mobs
-  (Cleave/Splash), Mob-Schaden wird pro Ziel zu Tick-Schaden aggregiert.
-- Spawn in Tranchen von rechts; tote Mobs werden aus Reserve nachgefuellt, bis das
-  Wellen-Budget aufgebraucht ist; alle 5 Wellen Elite-Mobs, finale Welle Boss.
-- headless check_runtime.js: 500 Mobs 600 Ticks ohne DOM simulieren, Cap und
-  "mobCount > teamSize" pruefen.
-- HUD erweitern: "Mobs 137/500".
+Umgesetzt:
+- MOB_CAP = 500, mobWaveSize() mit quadratischem Wachstum und Cap.
+  Welle 1 = 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
+- 3 Archetypen: kriecher, flieger, brute. Werte skalieren leicht mit der Welle;
+  der Duden-Stack (+4 % pro weiterem Wesen) wirkt auch auf Mobs.
+- Mobs sind kompakte Objekte ohne ROSTER/makeCharacter(); 6 THREE.InstancedMesh
+  (3 Archetypen x 2 Seiten), Update alle 3 Frames, keine DOM-Labels.
+- Mob-KI: alle 0,2 s Front und bis zu 40 Ziele pro Seite cachen; Mobs laufen zur
+  gegnerischen Front und schlagen dort auf Ziele. Kein O(n^2) pro Mob.
+- Helden behalten volle Zielwahl, Zauber, Statuseffekte und Splash; Sieg/Niederlage
+  prueft alle Einheiten beider Seiten inklusive Mobs.
+- HUD-Pill "Mobs <spieler>/<gegner>".
+- checks: check_data.py prueft MOB_CAP und System-Tokens; check_runtime.js spawnt
+  500/500 Mobs, simuliert 600 Ticks headless und prueft Schaden sowie Cap.
+  - CI 45025103386 gruen (nach Test-Fix 5646ba0), SHA-256 5641934b62ab0c0a1adb2572ec3ad27a41ad48c87068e6bdf78b29581a75bd85
 
-Naechster sinnvoller Schritt nach Rueckfrage: MOB_SYSTEM als Mikro-Schritt 4 anlegen
-und zuerst nur Zaehlung + leichtgewichtige Simulation + Instanced-Rendering bauen.
+Bewusste Vereinfachungen (spaeter ausbaubar): keine Elite-/Boss-Mobs, keine
+einzelnen HP-Balken pro Mob, kein Reserve-Nachschub innerhalb einer Welle,
+kein Spatial-Hash fuer Fernkampf-Splash (Hero-Splash nutzt die volle Zielliste).
