@@ -235,7 +235,7 @@
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
-  <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
+  <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · ◀▶ Fokus</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
   <button class="btn heal" id="btnBattleHeal">Heilregen</button>
@@ -2862,9 +2862,10 @@ function updateHud(){
   const avg = G.team.length ? G.team.reduce((s,u) => s+u.level,0)/G.team.length : 1;
   document.getElementById("hudLvl").textContent = avg.toFixed(1).replace(/\.0$/,'');
   const focus = findUnitById(G.selectedUnitId);
-  document.getElementById("battleInfo").textContent = "Welle "+G.wave+" · "+G.team.length+"/"+G.teamSize+
+  const tierHint = (G.wave % BOSS_EVERY === 0) ? " · 👑 Boss-Welle" : (G.wave % ELITE_EVERY === 0) ? " · ✨ Elite-Welle" : "";
+  document.getElementById("battleInfo").textContent = "Welle "+G.wave+tierHint+" · "+G.team.length+"/"+G.teamSize+
     (G.battle ? " · Kampf" : "")+(focus ? " · Fokus: "+focus.emoji+" "+focus.name : "")+
-    (G.battle && G.battle.enemyMobs && G.battle.enemyMobs.some(m => m.isBoss) ? " · 👑 Boss" : "");
+    (G.battle && G.battle.enemyMobs && G.battle.enemyMobs.some(m => m.isBoss) && G.wave % BOSS_EVERY !== 0 ? " · 👑 Boss" : "");
   updateBattleTimer();
 }
 function updateManaBar(){
