@@ -103,6 +103,9 @@
   .battle-info.status{display:none;color:var(--txt);}
   .battle-info.status.show{display:inline-block;}
   .battle-info.status b{color:var(--gold);}
+  .battle-info.danger{display:none;color:#ff6b6b;}
+  .battle-info.danger.show{display:inline-block;}
+  .battle-info.danger b{animation:bossWarn .7s ease-in-out infinite;}
   .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
   body.battle-mode .battle-bar{display:flex;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
@@ -196,6 +199,7 @@
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
   <span class="battle-info status" id="battleStatus">Gegner <b id="statusEnemies">0</b> · Helden <b id="statusHeroes">0/0</b></span>
+  <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
@@ -2855,6 +2859,14 @@ function updateBattleStatus(){
   document.getElementById("statusEnemies").textContent = String(foes);
   document.getElementById("statusHeroes").textContent = heroes+'/'+G.battle.player.length;
 }
+function updateHeroAlert(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("heroAlert");
+  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  const critical = G.battle.player.filter(u => !u.isDead && (u.hp+(u.shield||0))/u.maxHp <= 0.25).length;
+  bar.classList.toggle("show",critical > 0);
+  if(critical) document.getElementById("heroAlertCount").textContent = String(critical);
+}
 function updateButtons(){
   if(SIM.headless) return;
   const menu = G.phase === "menu";
@@ -3121,6 +3133,7 @@ window.addEventListener("load", () => {
     updateBattleTimer();
     updateBossBar();
     updateBattleStatus();
+    updateHeroAlert();
     if(G.phase === "battle" && G.battle) updateBattle(dt);
     updateEffects(dt);
     uiTick += dt;

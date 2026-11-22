@@ -83,10 +83,14 @@ if (!html.includes('id="battleStatus"') || !html.includes('function updateBattle
     !html.includes('id="statusEnemies"') || !html.includes('id="statusHeroes"')) {
   throw new Error('Kampf-Status (Gegner/Helden) in der Kampfleiste fehlt');
 }
+if (!html.includes('id="heroAlert"') || !html.includes('id="heroAlertCount"') ||
+    !html.includes('function updateHeroAlert')) {
+  throw new Error('Warnung für kritische Helden in der Kampfleiste fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusHeroes']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusHeroes', 'heroAlert', 'heroAlertCount']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -434,4 +438,52 @@ if (!vm.runInContext('globalThis.__statusHideCheck', ctx)) {
   throw new Error('Kampf-Status verschwindet nicht außerhalb des Kampfes');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  const alert = document.getElementById("heroAlert");
+  const count = document.getElementById("heroAlertCount");
+  updateHeroAlert();
+  globalThis.__heroAlertHidden = !alert.classList.contains("show");
+  const [a, b, c] = G.battle.player;
+  a.shield = 0;
+  a.hp = a.maxHp * 0.2;
+  updateHeroAlert();
+  globalThis.__heroAlertOne = alert.classList.contains("show") && count.textContent === "1";
+  a.shield = a.maxHp * 0.2;
+  b.shield = 0;
+  b.hp = b.maxHp * 0.2;
+  updateHeroAlert();
+  globalThis.__heroAlertShield = alert.classList.contains("show") && count.textContent === "1";
+  a.shield = 0;
+  a.isDead = true;
+  c.shield = 0;
+  c.hp = c.maxHp * 0.1;
+  updateHeroAlert();
+  globalThis.__heroAlertCount = count.textContent === "2";
+  G.phase = "menu";
+  G.battle = null;
+  updateHeroAlert();
+  globalThis.__heroAlertHideCheck = !alert.classList.contains("show");
+`, ctx);
+
+if (!vm.runInContext('globalThis.__heroAlertHidden', ctx)) {
+  throw new Error('Kritische-Helden-Warnung erscheint bei voller HP');
+}
+if (!vm.runInContext('globalThis.__heroAlertOne', ctx)) {
+  throw new Error('Kritische-Helden-Warnung zählt nicht korrekt');
+}
+if (!vm.runInContext('globalThis.__heroAlertShield', ctx)) {
+  throw new Error('Schild wird bei der kritischen-Helden-Warnung ignoriert');
+}
+if (!vm.runInContext('globalThis.__heroAlertCount', ctx)) {
+  throw new Error('Kritische-Helden-Warnung zählt Tote mit oder aktualisiert nicht');
+}
+if (!vm.runInContext('globalThis.__heroAlertHideCheck', ctx)) {
+  throw new Error('Kritische-Helden-Warnung verschwindet nicht außerhalb des Kampfes');
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+heldenwarnung, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

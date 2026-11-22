@@ -44,6 +44,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft die UI-Tokens, den Startwert, die Aktualisierung bei Toden
   und das Ausblenden nach Kampfende; `check_data.py` prüft die Tokens.
 
+- [x] **11. Warnung für kritische Helden** (v1.26)
+  `updateHeroAlert()` blendet in der Kampfleiste eine pulsierende Warnung mit der Anzahl lebender
+  Helden ein, deren HP plus Schild höchstens 25 % beträgt. Tote Helden zählen nicht; außerhalb des
+  Kampfes verschwindet die Warnung.
+  *Erledigt:* `check_runtime.js` prüft Startzustand, Zählung, Schildberücksichtigung, Tote und
+  Ausblenden; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
