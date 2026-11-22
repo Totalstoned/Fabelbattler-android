@@ -161,6 +161,10 @@ for token in ['teamHpBar', 'teamHpFill', 'teamHpPct', 'function updateTeamHpBar'
 for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'function updateBattleManaBar']:
     if token not in src:
         problems.append('Mana-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['manaTickHeal', 'manaTickNova', 'MANA_COST_HEAL = 40', 'MANA_COST_NOVA = 70',
+              'healReady', 'novaReady', 'manaTickHeal").style.left', 'manaTickNova").style.left']:
+    if token not in src:
+        problems.append('Mana-Schwellen in der Kampfleiste fehlen: ' + token)
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)

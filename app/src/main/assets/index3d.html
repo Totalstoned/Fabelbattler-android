@@ -114,9 +114,12 @@
   .teamhp.critical b{animation:bossWarn .7s ease-in-out infinite;}
   .battle-mana{display:none;align-items:center;gap:6px;font-size:11px;color:#8fb5ff;padding:0 6px;white-space:nowrap;}
   .battle-mana.show{display:flex;}
-  .battle-mana .track{width:84px;height:6px;background:#0b0e13;border:1px solid #2f4a8f;border-radius:4px;overflow:hidden;}
+  .battle-mana .track{width:84px;height:6px;background:#0b0e13;border:1px solid #2f4a8f;border-radius:4px;overflow:hidden;position:relative;}
   .battle-mana .track i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#4f7cff,#8fb5ff);transition:width .15s;}
+  .battle-mana .track .tick{position:absolute;top:0;width:2px;height:100%;background:#e6edf5;opacity:.7;}
   .battle-mana b{min-width:48px;text-align:right;}
+  .battle-mana.healReady b{color:#9ff0bd;}
+  .battle-mana.novaReady b{color:#ffd166;}
   .battle-info.status{display:none;color:var(--txt);}
   .battle-info.status.show{display:inline-block;}
   .battle-info.status b{color:var(--gold);}
@@ -232,7 +235,7 @@
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
-  <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
+  <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i><span class="tick" id="manaTickHeal"></span><span class="tick" id="manaTickNova"></span></span> <b id="battleManaValue">0/100</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
@@ -615,6 +618,8 @@ const SYNERGY = {
   Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
 const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null};
+const MANA_COST_HEAL = 40;
+const MANA_COST_NOVA = 70;
 const SIM = {headless:false};
 const CORE_UNITS = ["bigfoot","chupacabra","fee"];
 const MOB_CAP = 500;
@@ -2919,9 +2924,17 @@ function updateTeamHpBar(){
 function updateBattleManaBar(){
   if(SIM.headless) return;
   const bar = document.getElementById("battleMana");
-  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  const max = Math.max(1,G.maxMana);
+  document.getElementById("manaTickHeal").style.left = (MANA_COST_HEAL/max*100).toFixed(1)+'%';
+  document.getElementById("manaTickNova").style.left = (MANA_COST_NOVA/max*100).toFixed(1)+'%';
+  bar.classList.remove("show");
+  bar.classList.remove("healReady");
+  bar.classList.remove("novaReady");
+  if(G.phase !== "battle" || !G.battle) return;
   bar.classList.add("show");
-  const pct = clamp(G.mana/G.maxMana*100,0,100);
+  const pct = clamp(G.mana/max*100,0,100);
+  bar.classList.toggle("healReady",G.mana >= MANA_COST_HEAL);
+  bar.classList.toggle("novaReady",G.mana >= MANA_COST_NOVA);
   document.getElementById("battleManaFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("battleManaValue").textContent = Math.floor(G.mana)+'/'+G.maxMana;
 }
@@ -2986,13 +2999,13 @@ function updateButtons(){
   battleBtn.disabled = menu || inBattle || drafting || !full;
   battleBtn.textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
   document.getElementById("btnDraft").disabled = menu || inBattle || drafting || full;
-  document.getElementById("btnHeal").disabled = menu || !inBattle || G.mana < 40;
-  document.getElementById("btnNova").disabled = menu || !inBattle || G.mana < 70;
+  document.getElementById("btnHeal").disabled = menu || !inBattle || G.mana < MANA_COST_HEAL;
+  document.getElementById("btnNova").disabled = menu || !inBattle || G.mana < MANA_COST_NOVA;
   document.getElementById("btnBattleSelect").disabled = menu || drafting || full;
   document.getElementById("btnBattleNext").disabled = menu || inBattle || drafting || !full;
   document.getElementById("btnBattleNext").textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
-  document.getElementById("btnBattleHeal").disabled = !inBattle || G.mana < 40;
-  document.getElementById("btnBattleNova").disabled = !inBattle || G.mana < 70;
+  document.getElementById("btnBattleHeal").disabled = !inBattle || G.mana < MANA_COST_HEAL;
+  document.getElementById("btnBattleNova").disabled = !inBattle || G.mana < MANA_COST_NOVA;
   const itemBtns = {btnItemHeal:"heal",btnItemShield:"shield",btnItemNova:"nova"};
   const itemLabels = {heal:"Trank",shield:"Schild",nova:"Splitter"};
   Object.keys(itemBtns).forEach(id => {
@@ -3214,17 +3227,17 @@ window.addEventListener("load", () => {
     openInfo(u.name+" · Fähigkeit", abilityInfoHtml(u), "");
   };
   document.getElementById("btnHeal").onclick = () => {
-    if(G.mana < 40 || !G.battle || G.phase !== "battle") return;
-    G.mana -= 40;
+    if(G.mana < MANA_COST_HEAL || !G.battle || G.phase !== "battle") return;
+    G.mana -= MANA_COST_HEAL;
     G.battle.player.filter(u => !u.isDead).forEach(u => healUnit(u,u.maxHp*0.25));
     showToast("Heilregen ☔");
     updateButtons();
   };
   document.getElementById("btnNova").onclick = () => {
-    if(G.mana < 70 || !G.battle || G.phase !== "battle") return;
+    if(G.mana < MANA_COST_NOVA || !G.battle || G.phase !== "battle") return;
     const targets = G.battle.enemies.filter(u => !u.isDead);
     if(!targets.length) return;
-    G.mana -= 70;
+    G.mana -= MANA_COST_NOVA;
     const target = targets[Math.floor(Math.random()*targets.length)];
     applyDamage(target,target.maxHp*0.35,null,{});
     spawnShockwave(target,"#fde68a",1.5);
