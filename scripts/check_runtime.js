@@ -93,6 +93,9 @@ if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar
 if (!html.includes('id="battleMana"') || !html.includes('function updateBattleManaBar')) {
   throw new Error('Mana-Anzeige in der Kampfleiste fehlt');
 }
+if (!html.includes('animCast:0') || !html.includes('u.animCast = 0.4')) {
+  throw new Error('Zauber-Wurfanimation (animCast) fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
@@ -752,4 +755,52 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  const caster = G.battle.player[0];
+  const target = G.battle.enemies[0];
+  const group = unitGroups.get(caster.id);
+  const hasModel = !!group.userData.model;
+  const hasArms = group.userData.limbs.length > 0;
+  caster.spellCd = 0;
+  caster.animAttack = 0;
+  caster.animCast = 0;
+  caster.hitFlash = 0;
+  target.grid.gx = caster.grid.gx + 0.5;
+  target.grid.gy = caster.grid.gy;
+  poseCharacter(caster, group, 1, 0.016, 1);
+  const idleModelY = hasModel ? group.userData.model.position.y : 0;
+  const idleArm = hasArms ? group.userData.limbs[0].rotation.x : 0;
+  const casted = castSpell(caster, target, G.battle);
+  globalThis.__castTimer = casted && caster.animCast > 0.35;
+  caster.animAttack = 0;
+  caster.animCast = 0.2;
+  poseCharacter(caster, group, 1, 0.016, 1);
+  const castModelY = hasModel ? group.userData.model.position.y : 0;
+  const castArm = hasArms ? group.userData.limbs[0].rotation.x : 0;
+  globalThis.__castPose = (hasModel ? castModelY > idleModelY + 0.1 : true) &&
+    (hasArms ? castArm < idleArm - 1 : true);
+  caster.animCast = 0.4;
+  tickUnit(caster, 0.1, G.battle);
+  globalThis.__castDecay = Math.abs(caster.animCast - 0.3) < 0.001;
+  caster.animCast = 0;
+  poseCharacter(caster, group, 1, 0.016, 1);
+  globalThis.__castReset = (hasModel ? Math.abs(group.userData.model.position.y - idleModelY) < 0.001 : true) &&
+    (hasArms ? Math.abs(group.userData.limbs[0].rotation.x - idleArm) < 0.001 : true);
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__castTimer', 'Zauber setzt keine eigene Wurf-Animation'],
+  ['__castPose', 'Zauber-Wurfanimation verändert die Pose nicht'],
+  ['__castDecay', 'Zauber-Wurfanimation läuft nicht ab'],
+  ['__castReset', 'Pose kehrt nach der Zauber-Animation nicht in den Idle-Zustand zurück'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls+zauber-wurf, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

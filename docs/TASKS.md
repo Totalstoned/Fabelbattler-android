@@ -125,3 +125,11 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
+
+- [x] **22. Eigene Wurf-Animation für Zauber** (v1.37)
+  `castSpell()` setzt `animCast = 0.4` und einen Partikelschauer in der Zauberfarbe am Zauberer.
+  `poseCharacter()` hebt bei Humanoiden beide Arme, bei Monstern richtet sich das Modell auf und
+  schwebt kurz; die Pose klingt über 0,4 s ab und wird bei `reviveTeam()` zurückgesetzt. Damit sind
+  Zauber im Kampf von Basisangriffen unterscheidbar, ohne das HUD oder die Kampfleiste zu vergrößern.
+  *Erledigt:* `check_runtime.js` prüft Timer, Posen-Unterschied, Abklingen und Idle-Rückkehr;
+  `check_data.py` und `check_js.py` bleiben unverändert grün.
