@@ -79,6 +79,10 @@ if (!html.includes('id="battleTimer"') || !html.includes('function updateBattleT
 if (!html.includes('id="bossBar"') || !html.includes('function updateBossBar')) {
   throw new Error('Boss-Lebensbalken in der Kampfleiste fehlt');
 }
+if (!html.includes('id="eliteAlert"') || !html.includes('id="eliteAlertCount"') ||
+    !html.includes('function updateEliteAlert')) {
+  throw new Error('Eliten-Anzeige in der Kampfleiste fehlt');
+}
 if (!html.includes('id="battleStatus"') || !html.includes('function updateBattleStatus') ||
     !html.includes('id="statusEnemies"') || !html.includes('id="statusHeroes"')) {
   throw new Error('Kampf-Status (Gegner/Helden) in der Kampfleiste fehlt');
@@ -96,7 +100,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'eliteAlert', 'eliteAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -374,6 +378,19 @@ vm.runInContext(`
   G.wave = 5;
   startBattle();
   globalThis.__eliteCheck = G.battle.enemyMobs.some(m => m.isElite) && !G.battle.enemyMobs.some(m => m.isBoss);
+  updateEliteAlert();
+  const eliteAlert = document.getElementById("eliteAlert");
+  const eliteTotal = G.battle.enemyMobs.filter(m => m.isElite && !m.isDead).length;
+  globalThis.__eliteAlertCheck = eliteAlert.classList.contains("show") &&
+    document.getElementById("eliteAlertCount").textContent === String(eliteTotal);
+  G.battle.enemyMobs.filter(m => m.isElite).slice(0,1).forEach(m => { m.isDead = true; });
+  updateEliteAlert();
+  globalThis.__eliteAlertLiveCheck = eliteAlert.classList.contains("show") &&
+    document.getElementById("eliteAlertCount").textContent === String(eliteTotal - 1);
+  G.phase = "menu";
+  G.battle = null;
+  updateEliteAlert();
+  globalThis.__eliteAlertHideCheck = !eliteAlert.classList.contains("show");
   beginRun();
   G.wave = 1;
   startBattle();
@@ -405,6 +422,15 @@ if (!vm.runInContext('globalThis.__bossGoldCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__eliteCheck', ctx)) {
   throw new Error('Elite-Welle ohne Boss fehlt');
+}
+if (!vm.runInContext('globalThis.__eliteAlertCheck', ctx)) {
+  throw new Error('Eliten-Anzeige zeigt nicht die lebenden Eliten zu Kampfbeginn');
+}
+if (!vm.runInContext('globalThis.__eliteAlertLiveCheck', ctx)) {
+  throw new Error('Eliten-Anzeige reagiert nicht auf den Tod eines Eliten-Mobs');
+}
+if (!vm.runInContext('globalThis.__eliteAlertHideCheck', ctx)) {
+  throw new Error('Eliten-Anzeige verschwindet nicht außerhalb des Kampfes');
 }
 if (!vm.runInContext('globalThis.__noTierCheck', ctx)) {
   throw new Error('Welle 1 enthält bereits Elite-/Boss-Mobs');
