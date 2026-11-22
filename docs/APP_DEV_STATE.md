@@ -1,0 +1,32 @@
+# APP_DEV_STATE
+
+Letztes Update: 2026-11-22
+
+## Engine / Sprache
+
+- **Web/JavaScript** mit **Three.js** (`app/src/main/assets/vendor/three.min.js`), kein TypeScript, kein Build-Step für die Spiellogik.
+- Android-Wrapper in **Kotlin** (`MainActivity.kt`); die WebView lädt `file:///android_asset/index3d.html`.
+- Kein Godot/Unity aktiv. UE5-Datenexport und C++-Gerüst sind nur vorbereitet (`docs/UNREAL_NOTES.md`).
+
+## Aktueller Stand
+
+- Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
+- Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
+- Aktive App: `app/src/main/assets/index3d.html`.
+- Version **1.15**, Build **16**; APK: `/root/projects/FABELBATTLER/fabelbattler-v1.15-b16.apk`.
+- Inhalt: **95 Einheiten, 10 Klassen, 7 Rassen, 50 Zauber**.
+- Rassen: Folklore, Kaiju, Fee, Zwerg, **Kryptozoologie**, Assassine, Alien. Barbar-Rasse wurde entfernt.
+- Kryptiden-Pack mit 12 Wesen; neue Fähigkeiten `schrecken` (Schreckensblick) und `schwarmruf` (Team-Buff).
+- Team-Buffs skalieren nach Anzahl: ein Stack pro weiterem Wesen mit gleicher Klasse/Rasse (max. 4) sowie +4 % HP/ATK pro zusätzlichem Duden ab dem dritten.
+- Kampf-Simulation: wellenbasiert, 4 gegen 4 (in Einstellungen 3–6), Sekunden-Timer, Statuseffekte, Auren, Cooldowns, Zielwahl.
+- UI: Kampfleiste mit Timer, HUD, Draft, Heilregen/Blitz, Touch-Fokus, Zoom, Einheiten-Info.
+- Fullscreen/Querformat: Manifest + `MainActivity` (Immersive-Sticky plus Legacy-Flags); auf dem Testgerät vom User bestätigt.
+- Checks: `scripts/check_js.py`, `scripts/check_data.py`, `scripts/check_runtime.js`; CI baut die APK. Letzter grüner Lauf: `44971742650`.
+- Offen: kein direkter Gerätezugriff in der Entwicklung; Fullscreen-Verhalten nur per User-Screenshot verifiziert.
+- GitHub-Issue #1 ist der Fortschrittskanal für den stündlichen Hintergrund-Agenten.
+
+## Entwicklungsregeln
+
+- Nach jeder App-Änderung `APP_VERSION_CODE` in `gradle.properties` erhöhen und alle drei Checks ausführen.
+- Pro Lauf genau ein kleines, abgeschlossenes Ziel; keine Engine-Wechsel ohne Rückfrage.
+- Die ersten Core-Loop-Mikro-Schritte stehen in `docs/TASKS.md`.
