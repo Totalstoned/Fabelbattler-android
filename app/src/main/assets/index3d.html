@@ -100,6 +100,11 @@
   .bossbar.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
   .bossbar.critical b{animation:bossWarn .7s ease-in-out infinite;}
   @keyframes bossWarn{50%{opacity:.3;}}
+  .elitebar{display:none;align-items:center;gap:6px;font-size:11px;color:#ffd166;padding:0 6px;white-space:nowrap;}
+  .elitebar.show{display:flex;}
+  .elitebar .track{width:64px;height:6px;background:#0b0e13;border:1px solid #7f6b2f;border-radius:4px;overflow:hidden;}
+  .elitebar .track i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#e08e2d,#ffe08a);transition:width .15s;}
+  .elitebar b{min-width:30px;text-align:right;}
   .teamhp{display:none;align-items:center;gap:6px;font-size:11px;color:#9ff0bd;padding:0 6px;white-space:nowrap;}
   .teamhp.show{display:flex;}
   .teamhp .track{width:84px;height:6px;background:#0b0e13;border:1px solid #2f6b47;border-radius:4px;overflow:hidden;}
@@ -235,6 +240,7 @@
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
+  <span class="elitebar" id="eliteBar" title="Lebende gegnerische Eliten und ihre restliche Gesamt-HP">✨ <b id="eliteCount">0/0</b> <span class="track"><i id="eliteFill"></i></span> <b id="elitePct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
@@ -2887,6 +2893,20 @@ function updateBossBar(){
   document.getElementById("bossBarFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("bossBarPct").textContent = Math.ceil(pct)+'%';
 }
+function updateEliteBar(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("eliteBar");
+  const elites = G.battle && G.battle.enemyMobs ? G.battle.enemyMobs.filter(m => m.isElite) : [];
+  const alive = elites.filter(m => !m.isDead && m.hp > 0);
+  if(G.phase !== "battle" || !G.battle || !alive.length){ bar.classList.remove("show"); return; }
+  const maxHp = elites.reduce((s,m) => s+m.maxHp,0);
+  const hp = alive.reduce((s,m) => s+Math.min(m.hp,m.maxHp),0);
+  const pct = maxHp > 0 ? clamp(hp/maxHp*100,0,100) : 0;
+  bar.classList.add("show");
+  document.getElementById("eliteCount").textContent = alive.length+'/'+elites.length;
+  document.getElementById("eliteFill").style.width = pct.toFixed(1)+'%';
+  document.getElementById("elitePct").textContent = Math.ceil(pct)+'%';
+}
 function updateBattleStatus(){
   if(SIM.headless) return;
   const bar = document.getElementById("battleStatus");
@@ -3241,6 +3261,7 @@ window.addEventListener("load", () => {
     updateManaBar();
     updateBattleTimer();
     updateBossBar();
+    updateEliteBar();
     updateBattleStatus();
     updateTeamHpBar();
     updateBattleManaBar();
