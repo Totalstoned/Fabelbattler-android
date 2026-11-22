@@ -22,6 +22,10 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Alle 5 Wellen erhalten einen Teil der Mobs den Tier `elite` (3,5× HP, 2,2× ATK, 1,7× Größe, goldfarben), alle 10 Wellen zusätzlich einen `boss` pro Seite (12× HP, 3,5× ATK, 2,6× Größe, rot, eigene Geometrie und Puls). `mobTierFor()` bestimmt das Tier pro Index; `MOB_TIERS` enthält die Multiplikatoren. Elite geben +2 Gold, Bosse +15 Gold. Toast/HUD zeigen die Begegnung an.
   *Erledigt:* `check_runtime.js` prüft Spawn auf beiden Seiten, stärkere Boss-Werte, Bonus-Gold, Elite-Welle ohne Boss und dass Welle 1 keine Tiere enthält.
 
+- [x] **7. Animationen** (v1.22)
+  Stack bleibt unverändert (Three.js, JavaScript, WebView). Neues `poseCharacter()` animiert alle Helden: Idle-Atmen und Gewichtverlagerung, Laufzyklus aus der tatsächlichen Bewegungsgeschwindigkeit (`walk`), Angriffs-Lunge/-Schwung, Treffer-Rückprallen und Todestaumeln mit anschließender Drehung. Humanoid-Einheiten schwingen Arme und Beine; Monster-Modelle atmen, zucken und kippen. `attackPulse()` normalisiert die Dauer (0,25 s Basisangriff, 0,3 s Zauber, 0,18 s Mobs) — keine negativen Schwünge mehr. Instanzierte Mobs erhalten zusätzlich einen scale-/rotationsbasierten Angriffs-Impuls.
+  *Erledigt:* `check_runtime.js` prüft Existenz von `poseCharacter`/`attackPulse`, die Animations-Felder im `userData` und dass ein Treffer die Pose tatsächlich verändert.}
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Letzte gebaute Version: v1.21-b22 (Commit 57f384d)
+Letzte gebaute Version: v1.22-b23 (Commit folgt)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -160,6 +160,17 @@ v1.21-b22 2026-11-22  (Elite-/Boss-Mobs)
   - check_runtime.js prueft Spawn, Werte, Bonus-Gold, Elite-Welle ohne Boss und Welle 1 ohne Tiere.
   - CI 45036756998 gruen, SHA-256 6ff6c8bfd80a483c3b2ffe7d3b5480d420581050f2f725133b93f54c88c4978e
 
+v1.22-b23 2026-11-22  (Animationen)
+  - User will Stack unveraendert lassen; nur Animationen ergaenzen (kein Unity/Godot/TS/C++).
+  - poseCharacter(): Idle-Atmen, Laufzyklus aus movement speed (walk), Angriffs-Schwung,
+    Treffer-Rueckprallen, Todestaumeln mit Drehung. Humanoid-Arme/-Beine schwingen,
+    Monster-Modelle atmen/zucken/kippen.
+  - attackPulse(u,dur) normalisiert Dauer: Basis 0,25s, Zauber 0,3s, Mobs 0,18s
+    (verhindert negative Schwuenge bei gemischten Dauern).
+  - updateMobVisuals(): zusaetzlicher scale/positions/rotations-Impuls bei m.animAttack.
+  - userData der Einheiten: model, modelScale, baseYaw, limbs, animPhase, walk.
+  - check_runtime.js prueft Funktionen, userData-Felder und Treffer-Reaktion; alle Checks gruen.
+
 Weitere wichtige Commits ohne Versionssprung:
   20870e8 Folklore-Einheiten + prozedurale Modelle
   2a8882b Rassen, Fernkampf-Zauber, Heiler-Reichweite 3
@@ -176,6 +187,7 @@ Core-Loop-Status:
   [x] 4. Mob-Schwarm auf beiden Seiten bis 500 (v1.18)
   [x] 5. Teamauswahl-Filter/Synergie + Kampf-Verbrauchsitems (v1.20)
   [x] 6. Elite-/Boss-Mobs (v1.21)
+  [x] 7. Animationen (v1.22)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

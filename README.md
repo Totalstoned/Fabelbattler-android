@@ -37,6 +37,7 @@ Die GitHub Action `.github/workflows/build-apk.yml` baut die APK und benennt sie
 - Team-Buffs: ab zwei Wesen mit gleicher Klasse/Rasse gilt ein Stack pro weiterem Duden (max. 4); zusätzlich gibt jeder weitere Dude dem ganzen Team +4 % HP/ATK
 - Mob-Schwarm: beide Seiten erhalten Mobs nach `mobWaveSize()`; Welle 1 = 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500 (Cap). Mobs werden als `InstancedMesh` gerendert und nutzen einen Front-/Ziel-Cache; das HUD zeigt `Mobs player/enemy`.
 - Mob-Tiere: alle 5 Wellen Elite-Mobs (golden, 3,5× HP), alle 10 Wellen ein Boss pro Seite (rot, 12× HP). Elite +2 Gold, Boss +15 Gold.
+- Animationen: Helden atmen im Idle, schwingen Arme/Beine beim Laufen, lungern beim Angriff, prallen bei Treffern zurück und stürzen beim Tod. Monster-Modelle atmen/zucken/kippen; instanzierte Mobs pulsieren beim Schlag. `attackPulse()` normalisiert die Dauer (Basis 0,25 s, Zauber 0,3 s, Mob 0,18 s).
 - Rassen: Folklore, Kaiju, Fee, Zwerg, Kryptozoologie, Assassine, Alien (die Barbar-Rasse wurde entfernt)
 
 ## Automatisierung

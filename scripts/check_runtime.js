@@ -163,13 +163,31 @@ vm.runInContext(`
   const big = createUnit("yeti",1,"player");
   globalThis.__stackCheck = big.maxHp > small.maxHp && big.atk > small.atk;
   G.team = cryptKeys.slice(0,4).map(k => createUnit(k,1,"player"));
-  G.team.forEach(u => makeCharacter(u));
+  const animated = G.team.map(u => makeCharacter(u));
+  globalThis.__animCheck =
+    typeof poseCharacter === "function" && typeof attackPulse === "function" &&
+    animated.every(g => g.userData && Array.isArray(g.userData.limbs) &&
+      typeof g.userData.animPhase === "number" && typeof g.userData.walk === "number") &&
+    attackPulse({animAttack:0.15},0.3) > 0 && attackPulse({animAttack:0},0.3) === 0 &&
+    (function(){
+      const u = createUnit("sensenmann",1,"player");
+      const g = makeCharacter(u);
+      const model = g.userData.model;
+      const before = model ? model.rotation.z : g.userData.limbs[0].rotation.x;
+      u.hitFlash = 0.15;
+      poseCharacter(u,g,1,0.016,1);
+      const after = model ? model.rotation.z : g.userData.limbs[0].rotation.x;
+      return before !== after;
+    })();
   G.phase = "draft";
   updateSynergies();
 `, ctx);
 
 if (!vm.runInContext('globalThis.__stackCheck', ctx)) {
   throw new Error('Team-Buffs skalieren nicht mit der Dudes-Anzahl');
+}
+if (!vm.runInContext('globalThis.__animCheck', ctx)) {
+  throw new Error('Animations-System (Idle/Angriff/Treffer) fehlt oder reagiert nicht');
 }
 
 vm.runInContext(`
