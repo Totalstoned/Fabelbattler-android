@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -263,6 +263,14 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
      durch Gold-auf-Kill-Effekte und der Stand fuer den kommenden Draft sichtbar.
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
+v1.37-b38 2026-11-22  (Eliten-Anzeige in der Kampfleiste)
+   - Alle 5 Wellen erscheinen Elite-Mobs (3,5x HP, 2,2x ATK, Bonus-Gold), die im
+     500er-Schwarm schwer zu verfolgen sind. Neue Anzeige (id eliteAlert,
+     eliteAlertCount) via updateEliteAlert(): "✨ Eliten N" zeigt die lebenden
+     gegnerischen Eliten und verschwindet nach dem letzten Elite bzw. ausserhalb
+     des Kampfes.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Welle 5, Elite-Tod,
+     Ausblenden bei 0 Eliten, ausserhalb des Kampfes und Welle 1 ohne Eliten.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -299,6 +307,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Eliten-Anzeige in der Kampfleiste (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

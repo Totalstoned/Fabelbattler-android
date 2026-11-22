@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'eliteAlert', 'eliteAlertCount', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -408,6 +408,48 @@ if (!vm.runInContext('globalThis.__eliteCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__noTierCheck', ctx)) {
   throw new Error('Welle 1 enthält bereits Elite-/Boss-Mobs');
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  const eliteBarAlert = document.getElementById("eliteAlert");
+  const eliteCountAlert = document.getElementById("eliteAlertCount");
+  const livingElitesAlert = G.battle.enemyMobs.filter(m => m.isElite && !m.isDead);
+  updateEliteAlert();
+  globalThis.__eliteAlertShow = livingElitesAlert.length > 0 && eliteBarAlert.classList.contains("show") &&
+    eliteCountAlert.textContent === String(livingElitesAlert.length);
+  livingElitesAlert[0].isDead = true;
+  updateEliteAlert();
+  globalThis.__eliteAlertLive = eliteBarAlert.classList.contains("show") &&
+    eliteCountAlert.textContent === String(livingElitesAlert.length - 1);
+  G.battle.enemyMobs.forEach(m => { m.isDead = true; });
+  updateEliteAlert();
+  globalThis.__eliteAlertCleared = !eliteBarAlert.classList.contains("show");
+  G.phase = "menu";
+  G.battle = null;
+  updateEliteAlert();
+  globalThis.__eliteAlertHide = !eliteBarAlert.classList.contains("show");
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  updateEliteAlert();
+  globalThis.__eliteAlertWave1 = !eliteBarAlert.classList.contains("show");
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__eliteAlertShow', 'Eliten-Anzeige zeigt lebende gegnerische Eliten nicht'],
+  ['__eliteAlertLive', 'Eliten-Anzeige reagiert nicht auf getötete Eliten'],
+  ['__eliteAlertCleared', 'Eliten-Anzeige bleibt nach dem letzten Elite sichtbar'],
+  ['__eliteAlertHide', 'Eliten-Anzeige verschwindet nicht außerhalb des Kampfes'],
+  ['__eliteAlertWave1', 'Eliten-Anzeige erscheint in Welle 1 ohne Eliten'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
 vm.runInContext(`
@@ -752,4 +794,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+eliten+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
