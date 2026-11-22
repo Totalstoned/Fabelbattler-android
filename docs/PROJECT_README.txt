@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Letzte gebaute Version: v1.22-b23 (Commit folgt)
+Letzte gebaute Version: v1.22-b23 (Commit 3305ed8)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -170,6 +170,7 @@ v1.22-b23 2026-11-22  (Animationen)
   - updateMobVisuals(): zusaetzlicher scale/positions/rotations-Impuls bei m.animAttack.
   - userData der Einheiten: model, modelScale, baseYaw, limbs, animPhase, walk.
   - check_runtime.js prueft Funktionen, userData-Felder und Treffer-Reaktion; alle Checks gruen.
+  - CI 45038192792 gruen, SHA-256 2742f779625bc5fedc8b994dc1a55100587e9ef551bb5f160cbc574cc0dee60c
 
 Weitere wichtige Commits ohne Versionssprung:
   20870e8 Folklore-Einheiten + prozedurale Modelle
