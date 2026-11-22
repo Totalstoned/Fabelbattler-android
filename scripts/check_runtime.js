@@ -131,4 +131,29 @@ if (!(maxBattleTime >= 1) || !/^Zeit \d+s$/.test(timerText)) {
   throw new Error(`Timer läuft nicht: max=${maxBattleTime}, text=${timerText}`);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, battle, draft, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  const cryptKeys = ["bigfoot","chupacabra","yeti","nessie","mothman","ogopogo","jerseydevil","skinwalker","thunderbird","kraken","batsquatch","megalodon"];
+  cryptKeys.forEach(k => {
+    if (!ROSTER[k] || ROSTER[k].race !== "Krypto") throw new Error("Kryptid fehlt: " + k);
+  });
+  if (Object.keys(ROSTER).some(k => ROSTER[k].race === "Barbar")) {
+    throw new Error("Barbar-Rasse ist noch im Roster");
+  }
+  G.team = cryptKeys.slice(0,4).map(k => createUnit(k,1,"player"));
+  const small = createUnit("yeti",1,"player");
+  G.team = cryptKeys.map(k => createUnit(k,1,"player"));
+  const big = createUnit("yeti",1,"player");
+  globalThis.__stackCheck = big.maxHp > small.maxHp && big.atk > small.atk;
+  G.team = cryptKeys.slice(0,4).map(k => createUnit(k,1,"player"));
+  G.team.forEach(u => makeCharacter(u));
+  G.phase = "draft";
+  updateSynergies();
+`, ctx);
+
+if (!vm.runInContext('globalThis.__stackCheck', ctx)) {
+  throw new Error('Team-Buffs skalieren nicht mit der Dudes-Anzahl');
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, battle, draft, krypto, stacks, timer ${timerText})`);

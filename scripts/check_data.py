@@ -129,8 +129,15 @@ for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block(
 problems = []
 if len(roster) != 95:
     problems.append('Einheiten: erwartet 95, gefunden ' + str(len(roster)))
-if len(spells) != 48:
-    problems.append('Zauber: erwartet 48, gefunden ' + str(len(spells)))
+if len(spells) != 50:
+    problems.append('Zauber: erwartet 50, gefunden ' + str(len(spells)))
+if any(u['race'] == 'Barbar' for u in roster.values()):
+    problems.append('Barbar-Rasse ist noch im Roster vorhanden')
+if sum(1 for u in roster.values() if u['race'] == 'Krypto') < 10:
+    problems.append('Kryptozoologie-Pack ist unvollständig')
+for key in ['schrecken', 'schwarmruf']:
+    if key not in descs or key not in innate or key not in ability_spell:
+        problems.append('Neue Fähigkeit unvollständig: ' + key)
 if len(roster) != len(set(roster)):
     problems.append('doppelte Einheitenschlüssel')
 

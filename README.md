@@ -30,6 +30,8 @@ Die GitHub Action `.github/workflows/build-apk.yml` baut die APK und benennt sie
 - Kampf: Auswahl, nächste Welle, Heilregen, Blitz, Fähigkeit, Vollbild aus
 - Kampfzeit läuft in Sekunden (Kampfleiste und HUD)
 - App startet immer im Querformat und immersive Fullscreen-Modus
+- Team-Buffs: ab zwei Wesen mit gleicher Klasse/Rasse gilt ein Stack pro weiterem Duden (max. 4); zusätzlich gibt jeder weitere Dude dem ganzen Team +4 % HP/ATK
+- Rassen: Folklore, Kaiju, Fee, Zwerg, Kryptozoologie, Assassine, Alien (die Barbar-Rasse wurde entfernt)
 
 ## Automatisierung
 

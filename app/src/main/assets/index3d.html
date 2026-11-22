@@ -123,6 +123,7 @@
     <div class="panel">
       <h2>Dein Team</h2>
       <div class="team" id="teamList"></div>
+      <div class="tiny" style="margin-top:6px">Team-Buffs: ab 2 gleichen Wesen · mehr Dudes = stärker</div>
       <div class="badges" id="synBadges"></div>
       <div style="display:flex;gap:8px;margin-top:10px">
         <button class="btn" id="btnBattle">Schlacht starten</button>
@@ -257,17 +258,19 @@ const RACE_PACKS = {
     ["zwergenminenhaupt","Minenhaupt","⛏️","TANK","Stahl","Dunkel",155,14,70,0.8,"erdbeben","dwarf"],
     ["zwergenrunenmeister","Runenmeister","🔮","HEALER","Magie","Stahl",92,8,115,0.86,"navigator","dwarf"]
   ],
-  Barbar:[
-    ["barbarenhaeuptling","Häuptling","🪓","TANK","Chaos","Tier",180,18,60,0.8,"mondraserei","barbar"],
-    ["barbarenrenner","Sturmrenner","🏃","DPS","Chaos","Tier",110,16,70,1.3,"schwingen","barbar"],
-    ["barbarenwerfer","Speerwerfer","🔱","DPS","Chaos","Stahl",105,17,120,1,"erdbeben","barbar"],
-    ["barbarenschamane","Schamane","🔥","HEALER","Wald","Magie",95,9,115,0.95,"wetter","barbar"],
-    ["barbarenbison","Bisonreiter","🦬","TANK","Wald","Tier",200,15,65,0.7,"erdbeben","barbar"],
-    ["barbarensaenger","Schlachtsänger","🎶","BUFFER","Chaos","Magie",110,10,105,0.95,"horden","barbar"],
-    ["barbarenfrost","Frostbarbar","🧊","DPS","Element","Wald",125,17,90,0.85,"frost","barbar"],
-    ["barbarenpirat","Pirat","⚔️","DPS","Chaos","Dunkel",120,18,75,1.05,"zehrfluch","barbar"],
-    ["barbarenwilde","Wildläuferin","🌪️","DPS","Chaos","Tier",100,19,80,1.25,"mondraserei","barbar"],
-    ["barbarenmoos","Mooskrieger","🌿","TANK","Wald","Stahl",175,13,65,0.78,"waldzauber","barbar"]
+  Krypto:[
+    ["bigfoot","Bigfoot","🦦","TANK","Wald","Tier",160,9,55,0.7,"erdbeben","bigfoot"],
+    ["chupacabra","Chupacabra","🦎","DPS","Dunkel","Tier",55,14,60,1.35,"schattenbiss","chupa"],
+    ["yeti","Yeti","🧊","TANK","Element","Wald",190,15,60,0.72,"schwarmruf","yeti"],
+    ["nessie","Nessie","🐍","TANK","Wald","Element",175,14,95,0.85,"wassersang","nessie"],
+    ["mothman","Mothman","🦋","DPS","Dunkel","Geist",95,19,100,1.15,"schrecken","mothman"],
+    ["ogopogo","Ogopogo","🐉","TANK","Element","Tier",185,16,90,0.8,"frost","ogopogo"],
+    ["jerseydevil","Jersey Devil","🐐","DPS","Chaos","Tier",110,18,65,1.25,"rissbiss","jersey"],
+    ["skinwalker","Skinwalker","🐺","DPS","Dunkel","Tier",100,20,70,1.3,"schrecken","skinwalker"],
+    ["thunderbird","Thunderbird","⚡","DPS","Element","Tier",120,20,110,1.1,"gewitter","thunderbird"],
+    ["kraken","Kraken","🐙","BUFFER","Magie","Tier",210,17,95,0.7,"schwarmruf","kraken"],
+    ["batsquatch","Batsquatch","🦇","DPS","Tier","Dunkel",105,19,85,1.25,"schwingen","batsquatch"],
+    ["megalodon","Megalodon","🦈","TANK","Tier","Element",205,19,70,0.85,"rissbiss","megalodon"]
   ],
   Assassine:[
     ["assassinenklinge","Klinge","🗡️","DPS","Dunkel","Stahl",85,22,70,1.35,"schattenbiss","assassin"],
@@ -320,7 +323,7 @@ const RACE_META = {
   Kaiju:{col:"#fb923c",label:"Kaiju",desc:"+20 % HP, +Splash"},
   Fee:{col:"#f9a8d4",label:"Fee",desc:"+Heilung und Schilde"},
   Zwerg:{col:"#fbbf24",label:"Zwerg",desc:"+Rüstung und Schilde"},
-  Barbar:{col:"#f87171",label:"Barbar",desc:"+HP und Wut"},
+  Krypto:{col:"#86efac",label:"Kryptozoologie",desc:"+HP, Schilde und Schwarm-Boni"},
   Assassine:{col:"#c084fc",label:"Assassine",desc:"+Kritik und Tempo"},
   Alien:{col:"#67e8f9",label:"Alien",desc:"+Splash und Brand"}
 };
@@ -329,7 +332,7 @@ const RACE_SYNERGY = {
   Kaiju:m=>{m.hp*=1.2;m.splash+=0.1;},
   Fee:m=>{m.heal+=0.04;m.shieldPct+=0.08;},
   Zwerg:m=>{m.dr+=0.1;m.shieldPct+=0.08;},
-  Barbar:m=>{m.hp*=1.15;m.rage+=0.2;},
+  Krypto:m=>{m.hp*=1.15;m.shieldPct+=0.06;m.rage+=0.1;},
   Assassine:m=>{m.crit+=0.15;m.spd*=1.12;},
   Alien:m=>{m.splash+=0.12;m.burn+=0.025;}
 };
@@ -384,7 +387,9 @@ const ABILITY_DESC = {
   rissbiss:"Rissbiss: Wut und Kritik",
   wassersang:"Wassersang: verirrt und verlangsamt",
   kroetenfluch:"Krötenfluch: Rüstung und Schwächung",
-  sensenstreich:"Sensenstreich: Kritik und ATK nach Kill"
+  sensenstreich:"Sensenstreich: Kritik und ATK nach Kill",
+  schrecken:"Schreckensblick: verwirrt und schwächt",
+  schwarmruf:"Schwarmruf: bufft und schützt das ganze Team"
 };
 const INNATE = {
   goldspinnen:{atk:1.05,gold:2,shieldPct:0.06},
@@ -426,7 +431,9 @@ const INNATE = {
   rissbiss:{atk:1.25,rage:0.4,crit:0.18},
   wassersang:{charm:0.3,slow:0.35,shieldPct:0.06},
   kroetenfluch:{hp:1.2,dr:0.15,curse:0.25},
-  sensenstreich:{atk:1.28,crit:0.3,killAtk:0.15}
+  sensenstreich:{atk:1.28,crit:0.3,killAtk:0.15},
+  schrecken:{atk:1.14,charm:0.25,curse:0.12},
+  schwarmruf:{hp:1.1,spd:1.1,shieldPct:0.08,crit:0.08}
 };
 function S(name,range,cd,o){ return Object.assign({name:name,range:range,cd:cd,dmg:0,color:"#e6edf5"},o||{}); }
 const SPELLS = {
@@ -477,7 +484,9 @@ const SPELLS = {
   raketensalve:S("Raketensalve",7,2.5,{dmg:1.45,splash:0.55,color:"#f87171"}),
   steinbild:S("Steinbild",6,2.5,{dmg:0.9,stun:0.55,weaken:0.25,color:"#a7f3d0"}),
   schattenstoss:S("Schattenstoß",4,1.9,{dmg:1.35,weaken:0.2,color:"#a78bfa"}),
-  mondbruch:S("Mondbruch",5.5,2.4,{dmg:1.3,rage:0.4,splash:0.25,color:"#ddd6fe"})
+  mondbruch:S("Mondbruch",5.5,2.4,{dmg:1.3,rage:0.4,splash:0.25,color:"#ddd6fe"}),
+  schrecken:S("Schreckensblick",4.8,2.4,{dmg:0.9,charm:0.35,weaken:0.2,color:"#f472b6"}),
+  schwarmruf:S("Schwarmruf",3.6,2.1,{dmg:0.4,buff:0.3,shield:0.14,color:"#a3e635"})
 };
 const ABILITY_SPELL = {
   goldspinnen:"goldspinnen",pfeffer:"pfeffer",schattenbiss:"schattenstoss",erdbeben:"erdbeben",atomatem:"atomatem",silksnare:"silksnare",
@@ -486,12 +495,13 @@ const ABILITY_SPELL = {
   horden:"horden",navigator:"navigator",multi_atom:"multi_atom",smoke:"smoke",emp:"emp",kristallbefehl:"kristallbefehl",
   schmelze:"schmelzstrahl",tarnung:"tarnung",raketen:"raketensalve",venom:"venom",plasmahorn:"plasmahorn",gewitter:"gewitter",
   frost:"frost",schwingen:"schwingen",schatz:"schatz",wortbindung:"wortbindung",zehrfluch:"zehrfluch",moosheilung:"moosheilung",
-  rissbiss:"rissbiss",wassersang:"wassersang",kroetenfluch:"kroetenfluch",sensenstreich:"sensenstreich"
+  rissbiss:"rissbiss",wassersang:"wassersang",kroetenfluch:"kroetenfluch",sensenstreich:"sensenstreich",
+  schrecken:"schrecken",schwarmruf:"schwarmruf"
 };
 const SPELL_OVERRIDE = {
   godzilla:"atomstrahl",burninggodzilla:"schmelzstrahl",shingodzilla:"multi_atom",godzillaearth:"multi_atom",mechagodzilla:"raketensalve",
   kingkong:"ansturm",scarking:"ansturm",medusa:"steinbild",fee:"feensegen",zwergenheiler:"moosheilung",alienpflanze:"waldzauber",
-  assassinenklinge:"schattenstoss",barbarenhaeuptling:"mondbruch",alienenergie:"gewitter",alienkristall:"frost"
+  assassinenklinge:"schattenstoss",alienenergie:"gewitter",alienkristall:"frost"
 };
 Object.keys(ROSTER).forEach(k => {
   const u = ROSTER[k];
@@ -504,7 +514,7 @@ const AURA_DEFS = {
   guard:{status:"defBuff",power:0.18,dur:3.2,radius:2.8,cd:6,label:"Schutzruf",emoji:"⛨",css:"#8fb5ff"}
 };
 const UNIT_TRAITS = {
-  bigfoot:{taunt:true},
+  bigfoot:{taunt:true,aura:"guard"},
   kingkong:{taunt:true,aura:"atk"},
   methuselah:{taunt:true,aura:"guard"},
   bagan:{taunt:true},
@@ -514,7 +524,8 @@ const UNIT_TRAITS = {
   heinzelmaennchen:{aura:"atk"},
   nixen:{aura:"guard"},
   moosweiblein:{aura:"guard"},
-  scarking:{aura:"atk"}
+  scarking:{aura:"atk"},
+  kraken:{aura:"atk"}
 };
 const UNIT_SIZE = {
   rumpelstilzchen:0.42,hotzenplotz:0.44,chupacabra:0.5,waldschrat:0.55,heinzelmaennchen:0.5,wichtel:0.52,sukubus:0.55,
@@ -522,7 +533,7 @@ const UNIT_SIZE = {
   hexe:0.78,fee:0.8,ruebezahl:0.78,hydra:0.85,dschinn:0.78,klabautermann:0.78,aufhocker:0.8,fernrisswolf:0.85,
   kroetenmoench:0.8,sensenmann:0.85,godzilla:1.15,kingkong:1.25,mothra:0.95,kingghidorah:1.25,shimo:1.2,burninggodzilla:1.2,
   methuselah:1.2,bagan:1.2,shimgodzilla:1.18,queenmuto:1.05,warbat:1.0,scarking:1.25,rodan:1.1,godzillaearth:1.3,
-  mechagodzilla:1.15,minilla:0.9,gojira:1.15
+  mechagodzilla:1.15,minilla:0.9,gojira:1.15,yeti:0.82,nessie:0.9,mothman:0.85,ogopogo:0.88,jerseydevil:0.72,skinwalker:0.76,thunderbird:0.95,kraken:0.9,batsquatch:0.92,megalodon:1.05
 };
 const SYNERGY = {
   Wald:m=>{m.hp*=1.2;},
@@ -939,12 +950,22 @@ const MONSTER_STYLE = {
   fernrisswolf:{type:"beast",variant:"fenris",body:0x3d4652,trim:0x8d9bab,plate:0x171c24,glow:0x7fe8ff,glowIntensity:1.05,scale:1.16,hpY:1.45,radius:0.56},
   nixen:{type:"mermaid",body:0x4ba7c9,trim:0xe3d6a8,plate:0x2b7fa8,glow:0x7fe8ff,glowIntensity:0.65,scale:0.95,hpY:1.4,radius:0.46},
   kroetenmoench:{type:"folk",variant:"kroetenmoench",body:0x4b5a35,trim:0x9caa70,plate:0x33291e,glow:0xd9e86a,glowIntensity:0.45,scale:0.98,hpY:1.48,radius:0.46},
-  sensenmann:{type:"reaper",body:0x211f2a,trim:0xd9dbe2,plate:0x0e0d14,glow:0x8fb5ff,glowIntensity:0.8,scale:1.06,hpY:1.6,radius:0.48}
+  sensenmann:{type:"reaper",body:0x211f2a,trim:0xd9dbe2,plate:0x0e0d14,glow:0x8fb5ff,glowIntensity:0.8,scale:1.06,hpY:1.6,radius:0.48},
+  yeti:{type:"folk",variant:"yeti",body:0xe7eff3,trim:0xc0d8e0,plate:0x8fb6c9,glow:0x9ce8ff,glowIntensity:0.5,scale:1.25,hpY:1.8,radius:0.58},
+  nessie:{type:"serpent",body:0x3f6f63,trim:0x9bc3a5,plate:0x27473f,glow:0x86efac,glowIntensity:0.4,scale:1.3,hpY:1.6,radius:0.62},
+  mothman:{type:"moth",body:0x3a2c3d,trim:0xd8b9c8,plate:0x6c3352,glow:0xff5c7a,glowIntensity:1.1,scale:1.05,hpY:1.6,radius:0.55},
+  ogopogo:{type:"serpent",body:0x2f6a72,trim:0xa9d7c6,plate:0x1f4a54,glow:0x67e8f9,glowIntensity:0.55,scale:1.25,hpY:1.5,radius:0.6},
+  jerseydevil:{type:"beast",variant:"chupa",body:0x5c3b2e,trim:0xb99570,plate:0x2e1e18,glow:0xfb923c,glowIntensity:0.45,scale:1,hpY:1.35,radius:0.48},
+  skinwalker:{type:"beast",variant:"werewolf",body:0x4a3a32,trim:0xb59b82,plate:0x241a16,glow:0xc084fc,glowIntensity:0.7,scale:1.05,hpY:1.4,radius:0.5},
+  thunderbird:{type:"pterosaur",body:0x6b4a3a,trim:0xe3b066,plate:0x8f2f2c,glow:0xfde68a,glowIntensity:0.9,scale:1.2,hpY:1.65,radius:0.68},
+  kraken:{type:"alien",variant:"cephalopod",body:0x4d3a6b,trim:0xc9b6e8,plate:0x2d2142,glow:0xa78bfa,glowIntensity:0.8,scale:1.2,hpY:1.75,radius:0.6},
+  batsquatch:{type:"pterosaur",body:0x3e2c46,trim:0xb9a5c9,plate:0x241a2b,glow:0xc084fc,glowIntensity:0.8,scale:1.15,hpY:1.6,radius:0.66},
+  megalodon:{type:"serpent",body:0x52646e,trim:0xc3d0d4,plate:0x2b3a43,glow:0x7dd3fc,glowIntensity:0.45,scale:1.35,hpY:1.5,radius:0.64}
 };
 const RACE_STYLE = {
   Fee:{type:"folk",body:0x8fd3ff,trim:0xffe4f2,plate:0xffb6e6,glow:0xf9a8d4,glowIntensity:0.85,scale:0.78,hpY:1.22,radius:0.35},
   Zwerg:{type:"folk",body:0x8b5a34,trim:0xd9b27c,plate:0x5d3b27,glow:0xfbbf24,glowIntensity:0.3,scale:0.82,hpY:1.18,radius:0.38},
-  Barbar:{type:"folk",body:0x8c4a36,trim:0xd9a878,plate:0x5d3025,glow:0xf87171,glowIntensity:0.3,scale:1.18,hpY:1.9,radius:0.56},
+  Krypto:{type:"beast",body:0x6b7164,trim:0xc7c9a8,plate:0x34443b,glow:0x86efac,glowIntensity:0.45,scale:1.02,hpY:1.45,radius:0.48},
   Assassine:{type:"folk",body:0x2f2638,trim:0x9b8ba8,plate:0x17121e,glow:0xc084fc,glowIntensity:0.65,scale:0.88,hpY:1.3,radius:0.36},
   Alien:{type:"alien",body:0x397c86,trim:0xb7f3ff,plate:0x1f4f6b,glow:0x67e8f9,glowIntensity:0.95,scale:0.98,hpY:1.5,radius:0.44}
 };
@@ -1723,6 +1744,14 @@ function raceCounts(list){
   (list || G.team).forEach(u => { if(u.race) counts[u.race] = (counts[u.race]||0)+1; });
   return counts;
 }
+const SYNERGY_MAX_STACKS = 4;
+function synergyStacks(count){ return clamp((count||0)-1,0,SYNERGY_MAX_STACKS); }
+function swarmStacks(count){ return clamp((count||0)-2,0,SYNERGY_MAX_STACKS); }
+function applyStackedSynergy(fn,m,count){
+  const stacks = synergyStacks(count);
+  for(let i=0;i<stacks;i++) fn(m);
+  return stacks;
+}
 function rebuildSynergyLinks(){
   clearGroup(synergyLayer);
   synergyLinks = [];
@@ -1761,10 +1790,12 @@ function recalcUnit(u){
   const list = u.side === "enemy" && G.battle ? G.battle.enemies : G.team;
   const counts = synergyCounts(list);
   [u.cls,u.cls2].filter(Boolean).forEach(c => {
-    if(counts[c] >= 2 && SYNERGY[c]) SYNERGY[c](m);
+    if(SYNERGY[c]) applyStackedSynergy(SYNERGY[c],m,counts[c]);
   });
   const races = raceCounts(list);
-  if(races[u.race] >= 2 && RACE_SYNERGY[u.race]) RACE_SYNERGY[u.race](m);
+  if(RACE_SYNERGY[u.race]) applyStackedSynergy(RACE_SYNERGY[u.race],m,races[u.race]);
+  const swarm = swarmStacks(list.length);
+  if(swarm > 0){ m.hp *= 1+0.04*swarm; m.atk *= 1+0.04*swarm; }
   u.modsEffective = m;
   u.maxHp = Math.round(u.baseHp*m.hp);
   u.atk = u.baseAtk*m.atk;
@@ -2448,19 +2479,28 @@ function updateTeamList(){
 function updateSynergies(){
   const badges = document.getElementById("synBadges");
   badges.innerHTML = '';
-  const addBadge = (key,meta,count) => {
-    if(count < 2 || !meta) return;
+  const addBadge = (key,meta,count,stacks) => {
+    if(!stacks || !meta) return;
     const badge = document.createElement("div");
     badge.className = 'badge hot';
-    badge.title = meta.desc;
+    badge.title = meta.desc+" · "+count+" Dudes → Stufe "+stacks;
     badge.style.borderColor = meta.col;
-    badge.innerHTML = `<span style="color:${meta.col}">●</span> ${meta.label} ${count}`;
+    badge.innerHTML = `<span style="color:${meta.col}">●</span> ${meta.label} ${count} <b style="color:${meta.col}">×${stacks}</b>`;
     badges.appendChild(badge);
   };
   const counts = synergyCounts();
-  for(const key in counts) addBadge(key,CLASS_META[key],counts[key]);
+  for(const key in counts) addBadge(key,CLASS_META[key],counts[key],synergyStacks(counts[key]));
   const races = raceCounts();
-  for(const key in races) addBadge(key,RACE_META[key],races[key]);
+  for(const key in races) addBadge(key,RACE_META[key],races[key],synergyStacks(races[key]));
+  const swarm = swarmStacks(G.team.length);
+  if(swarm > 0){
+    const badge = document.createElement("div");
+    badge.className = 'badge hot';
+    badge.title = "Jeder weitere Dude stärkt das ganze Team: +"+(swarm*4)+" % HP und ATK";
+    badge.style.borderColor = "#a3e635";
+    badge.innerHTML = `<span style="color:#a3e635">●</span> Dudes ${G.team.length} <b style="color:#a3e635">+${swarm*4}%</b>`;
+    badges.appendChild(badge);
+  }
   rebuildSynergyLinks();
 }
 function updateHud(){
