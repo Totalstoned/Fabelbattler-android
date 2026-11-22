@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Letzte gebaute Version: v1.20-b21 (Commit b1ebfbc)
+Letzte gebaute Version: v1.21-b22 (Commit 57f384d)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -149,6 +149,17 @@ v1.20-b21 2026-11-22  (Teamauswahl + Items)
   - Items wirken bewusst auf Helden, nicht auf Mobs (Hp/Schild-Suche).
   - CI 45034999915 gruen, SHA-256 d8d3074c82605a6b184028d41c96ee20ad37253609089ad89dbe489de9b9d06a
 
+v1.21-b22 2026-11-22  (Elite-/Boss-Mobs)
+  - User hat "Elite/Boss-Mobs" als naechsten Schritt gewaehlt.
+  - ELITE_EVERY = 5, BOSS_EVERY = 10, MOB_TIERS mit normal/elite/boss.
+  - elite: 3,5x HP, 2,2x ATK, 1,7x Groesse, goldfarben, Prefix "Elit-", Emoji ✨.
+  - boss: 12x HP, 3,5x ATK, 2,6x Groesse, rot, detailreichere Geometrie, Puls, "Boss-", 👑.
+  - mobTierFor() waehlt Tier pro Index; jeder 10. Welle 1 Boss pro Seite, dazu 2+ Eliten.
+  - Bonus-Gold: +2 pro Elite, +15 pro Boss; Toast/HUD zeigen Boss-Begegnung.
+  - Instanced-Meshes jetzt 2 Seiten x 3 Archetypen x 3 Tier = 18 Meshes (statt 6).
+  - check_runtime.js prueft Spawn, Werte, Bonus-Gold, Elite-Welle ohne Boss und Welle 1 ohne Tiere.
+  - CI 45036756998 gruen, SHA-256 6ff6c8bfd80a483c3b2ffe7d3b5480d420581050f2f725133b93f54c88c4978e
+
 Weitere wichtige Commits ohne Versionssprung:
   20870e8 Folklore-Einheiten + prozedurale Modelle
   2a8882b Rassen, Fernkampf-Zauber, Heiler-Reichweite 3
@@ -164,6 +175,7 @@ Core-Loop-Status:
   [x] 3. Einfacher Shop/Draft mit drei Karten + Reroll fuer 1 Gold (v1.19)
   [x] 4. Mob-Schwarm auf beiden Seiten bis 500 (v1.18)
   [x] 5. Teamauswahl-Filter/Synergie + Kampf-Verbrauchsitems (v1.20)
+  [x] 6. Elite-/Boss-Mobs (v1.21)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
