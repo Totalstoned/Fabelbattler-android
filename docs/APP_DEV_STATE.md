@@ -13,7 +13,7 @@ Letztes Update: 2026-11-22
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.31**, Build **32** (CI ausstehend); letzte APK: `/root/projects/FABELBATTLER/fabelbattler-v1.24-b25.apk`.
+- Version **1.31**, Build **32**; APK: `/root/projects/FABELBATTLER/fabelbattler-v1.31-b32.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
@@ -26,7 +26,8 @@ Letztes Update: 2026-11-22
 - Kampf-Simulation: wellenbasiert, Start 3 Helden + Mobs gegen 3 Helden + Mobs (später 3–6 Helden), Sekunden-Timer, Statuseffekte, Auren, Cooldowns, Zielwahl, Front-basierte Mob-KI.
 - UI: Kampfleiste mit Timer, HUD, Draft (3 Karten, Rollen-/Klassenfilter, Synergie-Hinweis, Reroll 1 Gold, Auswahl 2 Gold), Verbrauchsitems (Trank/Schild/Splitter), Heilregen/Blitz, Touch-Fokus, Zoom, Einheiten-Info.
 - Fullscreen/Querformat: Manifest + `MainActivity` (Immersive-Sticky plus Legacy-Flags); auf dem Testgerät vom User bestätigt.
-- Checks: `scripts/check_js.py`, `scripts/check_data.py`, `scripts/check_runtime.js`; CI baut die APK. Letzter grüner Lauf: `45038192792`.
+- Checks: `scripts/check_js.py`, `scripts/check_data.py`, `scripts/check_runtime.js`; CI baut die APK. Letzter grüner Lauf: `45049515223`.
+- GitHub-Issue #1 ist der Fortschrittskanal. Autonomer 10-Min-Loop lokal aktiv (PID 29059); Cloud-Cron wegen fehlendem OpenAI-Guthaben blockiert.
 - Chronologische Übergabe inkl. aller Versionen: `/root/projects/FABELBATTLER/readme.txt` (Kopie: `docs/PROJECT_README.txt`).
 - Offen: kein direkter Gerätezugriff in der Entwicklung; Fullscreen-Verhalten nur per User-Screenshot verifiziert.
 - Boss-Mobs zeigen in der Kampfleiste einen eigenen Lebensbalken inkl. Prozent (`updateBossBar()`, v1.23); unter 25 % HP pulsiert er rot als kritische Warnung (v1.24). Die Schwarm-Mobs haben keine Einzelbalken.
@@ -38,7 +39,7 @@ Letztes Update: 2026-11-22
 - Mob-Schwarm zeigt einen kurzen Treffer-Impuls (`mobHitPulse()`, v1.30): Getroffene Mobs wachsen kurz an und wackeln, damit Treffer im 500er-Schwarm sichtbar bleiben.
 - Kampfleiste zeigt die HP inkl. Schild des fokussierten Wesens (`updateFocusHp()`, v1.31): Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet; die ◀/▶-Fokusnavigation bleibt dadurch mit exakten Werten und Warnfarben lesbar.
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
-- GitHub-Issue #1 ist der Fortschrittskanal für den stündlichen Hintergrund-Agenten.
+- GitHub-Issue #1 ist der Fortschrittskanal für den 10-Minuten-Hintergrund-Agenten.
 
 ## Entwicklungsregeln
 

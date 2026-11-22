@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.31-b32
+Aktuelle Version: v1.31-b32 (Commit a1e658d)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -307,7 +307,7 @@ kein Spatial-Hash fuer Fernkampf-Splash (Hero-Splash nutzt die volle Zielliste).
 
 Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
   - User-Entscheidung "Beides kombinieren": lokaler Loop + GitHub-Cron.
-  - Lokaler Loop scripts/auto-improve.sh (PID 26927, Intervall 600 s).
+  - Lokaler Loop scripts/auto-improve.sh (PID 29059, Intervall 600 s).
     Worktree, ein autonomer Lauf, drei Checks, danach PR. Stopp-Datei:
     /root/projects/FABELBATTLER/auto-improve.stop. Details AUTO_IMPROVE.txt.
   - Der Loop hat 0dc39b3..a369e3b direkt nach main gepusht (v1.23..v1.31):
@@ -321,3 +321,9 @@ Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
     Modell openai/gpt-4o-mini, Action-Fehler behoben.
   - Cloud-Agent blockiert: OpenAI-Konto ohne Guthaben (insufficient_quota).
     Nach Aufladen laeuft der Cron ohne weitere Aenderung.
+  - a1e658d: Fokus-HP-Anzeige (updateFocusHp, v1.31) mit Check-Fixes
+    (classList-Mock, doppelte Variable hero, Start-Schild im Test).
+  - 2b61a3d: Agent arbeitet jetzt wirklich im Worktree (expliziter Pfad im
+    Prompt + Verwurf von Hauptcheckout-Aenderungen). Neuer PID 29059.
+  - CI 45049515223 gruen, SHA-256 f298718ebea938e2994aa20e3f9fe1c00759f6c33f3874385e57525b757b83a2
+    APK /root/projects/FABELBATTLER/fabelbattler-v1.31-b32.apk
