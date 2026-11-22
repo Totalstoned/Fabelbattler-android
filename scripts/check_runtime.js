@@ -93,10 +93,13 @@ if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar
 if (!html.includes('id="battleMana"') || !html.includes('function updateBattleManaBar')) {
   throw new Error('Mana-Anzeige in der Kampfleiste fehlt');
 }
+if (!html.includes('id="battleDudes"') || !html.includes('function updateBattleDudes')) {
+  throw new Error('Duden-Buff-Anzeige in der Kampfleiste fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -625,6 +628,38 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  const dudesBar = document.getElementById("battleDudes");
+  const dudesValue = document.getElementById("battleDudesValue");
+  updateBattleDudes();
+  globalThis.__dudesHidden = !dudesBar.classList.contains("show");
+  G.wave = 1;
+  startBattle();
+  updateBattleDudes();
+  const startStacks = swarmStacks(sideUnits(G.battle,"player").length);
+  globalThis.__dudesStart = dudesBar.classList.contains("show") &&
+    startStacks > 0 && dudesValue.textContent === "+"+(startStacks*4)+" %";
+  G.battle.playerMobs = [];
+  updateBattleDudes();
+  globalThis.__dudesLive = dudesValue.textContent === "+4 %";
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleDudes();
+  globalThis.__dudesHide = !dudesBar.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__dudesHidden', 'Duden-Buff-Anzeige erscheint außerhalb des Kampfes'],
+  ['__dudesStart', 'Duden-Buff-Anzeige zeigt den aktiven Schwarm-Buff nicht'],
+  ['__dudesLive', 'Duden-Buff-Anzeige reagiert nicht auf eine Änderung der Einheitenanzahl'],
+  ['__dudesHide', 'Duden-Buff-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   startBattle();
   initMobMeshes();
   const m = G.battle.enemyMobs[0];
@@ -752,4 +787,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+duden+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
