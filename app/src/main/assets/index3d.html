@@ -131,6 +131,8 @@
   .battle-info.focuscd{display:none;color:#8fb5ff;}
   .battle-info.focuscd.show{display:inline-block;}
   .battle-info.focuscd.ready{color:#9ff0bd;}
+  .battle-info.focusrole{display:none;font-weight:700;}
+  .battle-info.focusrole.show{display:inline-block;}
   .battle-info.focusbar .fx{font-size:10px;opacity:.85;margin-left:5px;}
   .battle-info.gold{display:none;color:var(--gold);}
   .battle-info.gold.show{display:inline-block;}
@@ -230,6 +232,7 @@
   <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll">◆ <b id="battleGoldValue">0</b></span>
   <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner) und eigene Helden">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b><span class="fx" id="focusStatus"></span></span>
+  <span class="battle-info focusrole" id="focusRole" title="Rolle des fokussierten Wesens (Tank/DPS/Heiler/Puffer)"></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
@@ -2976,6 +2979,20 @@ function updateFocusCooldown(){
   bar.classList.toggle("ready",cd <= 0);
   document.getElementById("focusCdValue").textContent = cd > 0 ? name+" "+cd.toFixed(1)+"s" : name+" bereit";
 }
+function updateFocusRole(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("focusRole");
+  bar.classList.remove("show");
+  bar.textContent = "";
+  bar.style.color = "";
+  if(G.phase !== "battle" || !G.battle) return;
+  const u = findUnitById(G.selectedUnitId);
+  const meta = u && !u.isDead ? ROLE_META[u.role] : null;
+  if(!meta) return;
+  bar.classList.add("show");
+  bar.textContent = meta.label;
+  bar.style.color = meta.col;
+}
 function updateButtons(){
   if(SIM.headless) return;
   const menu = G.phase === "menu";
@@ -3248,6 +3265,7 @@ window.addEventListener("load", () => {
     updateHeroAlert();
     updateFocusHp();
     updateFocusCooldown();
+    updateFocusRole();
     if(G.phase === "battle" && G.battle) updateBattle(dt);
     updateEffects(dt);
     uiTick += dt;

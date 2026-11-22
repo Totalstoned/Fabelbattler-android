@@ -122,6 +122,15 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar bleiben.
   *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert und Live-Updates;
   `check_data.py` prüft die UI-Tokens.
+
+- [x] **22. Fokus-Rolle in der Kampfleiste** (v1.37)
+  Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet. `updateFocusRole()` zeigt die
+  Rolle des per ◀/▶ fokussierten Wesens (id `focusRole`) in der Rollen-Farbe, damit Tank,
+  DPS, Heiler und Puffer sofort unterscheidbar bleiben. Bei totem Fokus und außerhalb des
+  Kampfes verschwindet die Anzeige.
+  *Erledigt:* `check_runtime.js` prüft Rolle, Farbcode, Aktualisierung nach `cycleFocus(1)`
+  sowie Ausblenden bei Tod und außerhalb des Kampfes; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
