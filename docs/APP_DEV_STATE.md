@@ -13,20 +13,21 @@ Letztes Update: 2026-11-22
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.17**, Build **18**; APK: `/root/projects/FABELBATTLER/fabelbattler-v1.17-b18.apk`.
+- Version **1.18**, Build **19**; APK: `/root/projects/FABELBATTLER/fabelbattler-v1.18-b19.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
+- Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
 - Inhalt: **95 Einheiten, 10 Klassen, 7 Rassen, 50 Zauber**.
 - Rassen: Folklore, Kaiju, Fee, Zwerg, **Kryptozoologie**, Assassine, Alien. Barbar-Rasse wurde entfernt.
 - Kryptiden-Pack mit 12 Wesen; neue Fähigkeiten `schrecken` (Schreckensblick) und `schwarmruf` (Team-Buff).
 - Team-Buffs skalieren nach Anzahl: ein Stack pro weiterem Wesen mit gleicher Klasse/Rasse (max. 4) sowie +4 % HP/ATK pro zusätzlichem Duden ab dem dritten.
-- Kampf-Simulation: wellenbasiert, Start 3 gegen 3 (später 3–6), Sekunden-Timer, Statuseffekte, Auren, Cooldowns, Zielwahl.
+- Kampf-Simulation: wellenbasiert, Start 3 Helden + Mobs gegen 3 Helden + Mobs (später 3–6 Helden), Sekunden-Timer, Statuseffekte, Auren, Cooldowns, Zielwahl, Front-basierte Mob-KI.
 - UI: Kampfleiste mit Timer, HUD, Draft, Heilregen/Blitz, Touch-Fokus, Zoom, Einheiten-Info.
 - Fullscreen/Querformat: Manifest + `MainActivity` (Immersive-Sticky plus Legacy-Flags); auf dem Testgerät vom User bestätigt.
 - Checks: `scripts/check_js.py`, `scripts/check_data.py`, `scripts/check_runtime.js`; CI baut die APK. Letzter grüner Lauf: `45023346370`.
 - Chronologische Übergabe inkl. aller Versionen: `/root/projects/FABELBATTLER/readme.txt` (Kopie: `docs/PROJECT_README.txt`).
 - Offen: kein direkter Gerätezugriff in der Entwicklung; Fullscreen-Verhalten nur per User-Screenshot verifiziert.
-- Offene Anforderung: Gegner-Mobs sollen zahlenmäßig größer als das Spielerteam sein, bis 500 zum Spielende. Entwurf steht in `readme.txt` Abschnitt 4; Interpretation „Spielerseite“ vor Umsetzung kurz klären.
+- Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - GitHub-Issue #1 ist der Fortschrittskanal für den stündlichen Hintergrund-Agenten.
 
 ## Entwicklungsregeln

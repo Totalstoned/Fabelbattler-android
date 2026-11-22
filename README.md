@@ -33,6 +33,7 @@ Die GitHub Action `.github/workflows/build-apk.yml` baut die APK und benennt sie
 - Kampfzeit läuft in Sekunden (Kampfleiste und HUD)
 - App startet immer im Querformat und immersive Fullscreen-Modus
 - Team-Buffs: ab zwei Wesen mit gleicher Klasse/Rasse gilt ein Stack pro weiterem Duden (max. 4); zusätzlich gibt jeder weitere Dude dem ganzen Team +4 % HP/ATK
+- Mob-Schwarm: beide Seiten erhalten Mobs nach `mobWaveSize()`; Welle 1 = 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500 (Cap). Mobs werden als `InstancedMesh` gerendert und nutzen einen Front-/Ziel-Cache; das HUD zeigt `Mobs player/enemy`.
 - Rassen: Folklore, Kaiju, Fee, Zwerg, Kryptozoologie, Assassine, Alien (die Barbar-Rasse wurde entfernt)
 
 ## Automatisierung

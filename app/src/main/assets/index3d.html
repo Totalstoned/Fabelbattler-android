@@ -105,6 +105,7 @@
     <div class="pill">Welle <b id="hudWave">1</b></div>
     <div class="pill">Gold <b id="hudGold">20</b></div>
     <div class="pill">Team <b id="hudTeam">0/6</b></div>
+    <div class="pill">Mobs <b id="hudMobs">0/0</b></div>
     <div class="pill">Wesen-Lvl <b id="hudLvl">1</b></div>
     <div class="pill">Zeit <b id="hudTime">0s</b></div>
   </div>
@@ -550,6 +551,17 @@ const SYNERGY = {
 const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,selectedUnitId:null};
 const SIM = {headless:false};
 const CORE_UNITS = ["bigfoot","chupacabra","fee"];
+const MOB_CAP = 500;
+const MOB_ARCHETYPES = {
+  kriecher:{name:"Kriecher",emoji:"🦠",hp:9,atk:2.2,spd:0.9,rng:40,color:0x8b5cf6,scale:0.42},
+  flieger:{name:"Fledermaus",emoji:"🦇",hp:6,atk:1.8,spd:1.25,rng:30,color:0x38bdf8,scale:0.36},
+  brute:{name:"Brute",emoji:"👹",hp:22,atk:4.5,spd:0.65,rng:55,color:0xef4444,scale:0.62}
+};
+function mobWaveSize(wave,side){
+  const raw = 4 + 3*(wave-1) + 0.6*(wave-1)*(wave-1);
+  const bonus = side === "enemy" ? 1 : 0;
+  return Math.min(MOB_CAP,Math.max(0,Math.round(raw)+bonus));
+}
 const GRID = {cols:8,rows:6};
 const TILE = 1.35;
 let arenaPulse = null;
@@ -605,12 +617,16 @@ fillLight.position.set(4,5,10);
 scene.add(fillLight);
 const arena = new THREE.Group();
 const unitLayer = new THREE.Group();
+const mobLayer = new THREE.Group();
 const fxLayer = new THREE.Group();
 const synergyLayer = new THREE.Group();
 scene.add(arena);
 scene.add(unitLayer);
+scene.add(mobLayer);
 scene.add(fxLayer);
 scene.add(synergyLayer);
+const mobMeshes = {};
+let mobFrame = 0;
 const moteGeo = new THREE.BufferGeometry();
 const motePos = new Float32Array(90*3);
 for(let i=0;i<90;i++){
@@ -1736,6 +1752,59 @@ function syncUnits(){
   });
   rebuildSynergyLinks();
 }
+function initMobMeshes(){
+  if(SIM.headless || Object.keys(mobMeshes).length) return;
+  Object.keys(MOB_ARCHETYPES).forEach(key => {
+    ["player","enemy"].forEach(side => {
+      const a = MOB_ARCHETYPES[key];
+      const color = side === "player" ? 0x67e8f9 : a.color;
+      const geo = new THREE.IcosahedronGeometry(0.5,0);
+      const mat = new THREE.MeshStandardMaterial({color:color,emissive:color,emissiveIntensity:0.35,roughness:0.6,metalness:0.1});
+      const mesh = new THREE.InstancedMesh(geo,mat,MOB_CAP);
+      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      mesh.count = 0;
+      mobLayer.add(mesh);
+      mobMeshes[side+":"+key] = mesh;
+    });
+  });
+}
+function syncMobs(){
+  if(SIM.headless || !G.battle) return;
+  initMobMeshes();
+  Object.keys(mobMeshes).forEach(k => { mobMeshes[k].count = 0; });
+}
+const mobDummy = new THREE.Object3D();
+function updateMobVisuals(time,dt){
+  if(SIM.headless) return;
+  if(!G.battle){
+    Object.keys(mobMeshes).forEach(k => { mobMeshes[k].count = 0; });
+    return;
+  }
+  if(++mobFrame % 3) return;
+  ["player","enemy"].forEach(side => {
+    const list = side === "player" ? G.battle.playerMobs : G.battle.enemyMobs;
+    Object.keys(MOB_ARCHETYPES).forEach(key => {
+      const mesh = mobMeshes[side+":"+key];
+      if(!mesh) return;
+      let n = 0;
+      list.forEach(m => {
+        if(m.archetype !== key) return;
+        if(m.isDead && m.deathTimer <= 0) return;
+        const p = worldPos(m.grid.gx,m.grid.gy);
+        const hp = clamp(m.hp/m.maxHp,0,1);
+        const size = m.scale*(m.isDead ? 0.2*clamp(m.deathTimer/0.6,0,1) : 0.75+0.25*hp);
+        mobDummy.position.set(p.x,0.3*size+Math.sin(time*3+m.id*0.4)*0.025,p.z);
+        mobDummy.scale.setScalar(size);
+        mobDummy.rotation.set(0,m.id*0.7,0);
+        mobDummy.updateMatrix();
+        mesh.setMatrixAt(n++,mobDummy.matrix);
+        if(m.isDead) m.deathTimer = Math.max(0,m.deathTimer-dt);
+      });
+      mesh.count = n;
+      mesh.instanceMatrix.needsUpdate = true;
+    });
+  });
+}
 function synergyCounts(list){
   const counts = {};
   (list || G.team).forEach(u => {
@@ -1798,7 +1867,8 @@ function recalcUnit(u){
   });
   const races = raceCounts(list);
   if(RACE_SYNERGY[u.race]) applyStackedSynergy(RACE_SYNERGY[u.race],m,races[u.race]);
-  const swarm = swarmStacks(list.length);
+  const total = G.battle ? sideUnits(G.battle,u.side).length : list.length;
+  const swarm = swarmStacks(total);
   if(swarm > 0){ m.hp *= 1+0.04*swarm; m.atk *= 1+0.04*swarm; }
   u.modsEffective = m;
   u.maxHp = Math.round(u.baseHp*m.hp);
@@ -1822,6 +1892,71 @@ function createUnit(key,lvl=1,side="player"){
   u.auraCd = u.aura ? u.aura.cd*0.5 : 0;
   return u;
 }
+function createMob(archetype,side,wave){
+  const a = MOB_ARCHETYPES[archetype];
+  const scale = 1+(wave-1)*0.035;
+  const total = G.team.length+mobWaveSize(wave,side);
+  const buff = 1+0.04*swarmStacks(total);
+  const m = {
+    id:++G.uid,key:"mob_"+archetype,name:a.name,emoji:a.emoji,role:"MOB",cls:null,cls2:null,race:null,
+    level:wave,side,ability:null,spell:null,isMob:true,archetype:archetype,color:a.color,scale:a.scale,
+    baseHp:a.hp*scale,baseAtk:a.atk*(1+(wave-1)*0.025),baseSpd:a.spd,
+    rng:a.rng,healRange:0,modsEffective:Object.assign({},DEFAULT_MODS),
+    maxHp:Math.round(a.hp*scale*buff),hp:0,atk:a.atk*(1+(wave-1)*0.025)*buff,spd:a.spd,shield:0,
+    grid:{gx:0,gy:0},target:null,attackCd:Math.random()*0.5,spellCd:999,hitFlash:0,animAttack:0,deathTimer:0.6,
+    statuses:{},statusPower:{},isDead:false,revived:false,auraCd:0,aura:null,trait:null
+  };
+  m.hp = m.maxHp;
+  return m;
+}
+function buildMobSwarm(side,wave){
+  const keys = Object.keys(MOB_ARCHETYPES);
+  const list = [];
+  const count = mobWaveSize(wave,side);
+  for(let i=0;i<count;i++){
+    const r = (i*7+wave*3)%10;
+    const key = r < 5 ? keys[0] : r < 8 ? keys[1] : keys[2];
+    const m = createMob(key,side,wave);
+    const lane = side === "player" ? 0.25+(i%3)*0.45 : GRID.cols-1-(i%3)*0.45;
+    m.grid.gx = clamp(lane,0,GRID.cols-1);
+    m.grid.gy = clamp(0.3+((i*5)%Math.round(GRID.rows*10))/10,0,GRID.rows-1);
+    m.attackCd = (i%7)*0.08;
+    list.push(m);
+  }
+  return list;
+}
+function refreshMobCache(b){
+  if(b.mobCache && b.time-b.mobCache.t < 0.2) return;
+  const build = side => {
+    const units = sideUnits(b,side).filter(u => !u.isDead);
+    const sample = units.length > 40 ? units.filter((_,i) => i%Math.ceil(units.length/40)===0) : units;
+    const gx = sample.reduce((s,u) => s+u.grid.gx,0)/Math.max(1,sample.length);
+    const gy = sample.reduce((s,u) => s+u.grid.gy,0)/Math.max(1,sample.length);
+    return {front:{gx:gx,gy:gy},targets:units.slice(0,40)};
+  };
+  b.mobCache = {t:b.time,player:build("player"),enemy:build("enemy")};
+}
+function mobAction(u,b,dt){
+  const foeSide = u.side === "player" ? "enemy" : "player";
+  const cache = b.mobCache[foeSide];
+  const front = cache.front;
+  if(hasStatus(u,"root") || hasStatus(u,"stun")) return;
+  const dx = front.gx-u.grid.gx, dy = front.gy-u.grid.gy;
+  const d = Math.hypot(dx,dy);
+  if(d > 0.9){
+    const step = Math.min((0.4+u.spd*0.5)*dt,d-0.85);
+    const drift = Math.sin(u.id*1.7+b.time*2)*0.12;
+    u.grid.gx = clamp(u.grid.gx+dx/d*step-drift*dy/Math.max(0.01,d),0,GRID.cols-1);
+    u.grid.gy = clamp(u.grid.gy+dy/d*step+drift*dx/Math.max(0.01,d),0,GRID.rows-1);
+    return;
+  }
+  if(u.attackCd > 0) return;
+  const targets = cache.targets.filter(t => !t.isDead);
+  if(!targets.length) return;
+  const target = targets[Math.floor(Math.random()*targets.length)];
+  applyDamage(target,u.atk,u,{number:false});
+  u.attackCd = 1/u.spd;
+}
 function clearStatuses(u){ u.statuses = {}; u.statusPower = {}; }
 function refreshTeamStats(){ G.team.forEach(recalcUnit); }
 function setUnitLevel(u,lvl){
@@ -1836,8 +1971,13 @@ function addStatus(u,key,dur,power){
   u.statuses[key] = Math.max(u.statuses[key]||0,dur);
   if(power !== undefined) u.statusPower[key] = Math.max(u.statusPower[key]||0,power);
 }
-function livingEnemiesOf(u,b){ return (u.side === "player" ? b.enemies : b.player).filter(t => !t.isDead); }
-function livingAlliesOf(u,b){ return (u.side === "player" ? b.player : b.enemies).filter(t => !t.isDead); }
+function sideUnits(b,side){
+  const heroes = side === "player" ? b.player : b.enemies;
+  const mobs = side === "player" ? (b.playerMobs||[]) : (b.enemyMobs||[]);
+  return [...heroes,...mobs];
+}
+function livingEnemiesOf(u,b){ return sideUnits(b,u.side === "player" ? "enemy" : "player").filter(t => !t.isDead); }
+function livingAlliesOf(u,b){ return sideUnits(b,u.side).filter(t => !t.isDead); }
 function castAura(u,b){
   if(!u.aura || !b) return;
   const a = u.aura;
@@ -1853,7 +1993,7 @@ function castAura(u,b){
   }
 }
 function pushEffect(u,text,color){
-  if(SIM.headless) return;
+  if(SIM.headless || !u || u.isMob) return;
   const sprite = makeTextSprite(text,color,0.7);
   const p = worldPos(u.grid.gx,u.grid.gy);
   sprite.position.set(p.x+(Math.random()-0.5)*0.28,1.6,p.z+(Math.random()-0.5)*0.28);
@@ -1864,7 +2004,7 @@ function pushEffect(u,text,color){
   G.effects.push(sprite);
 }
 function spawnBurst(u,color,count,strength){
-  if(SIM.headless) return;
+  if(SIM.headless || !u || u.isMob) return;
   const p = worldPos(u.grid.gx,u.grid.gy);
   const n = Math.max(3,count||8);
   const positions = new Float32Array(n*3);
@@ -1888,7 +2028,7 @@ function addShake(amount){
   cameraShake = Math.min(0.5,cameraShake+amount);
 }
 function spawnShockwave(u,color,strength){
-  if(SIM.headless) return;
+  if(SIM.headless || !u || u.isMob) return;
   const p = worldPos(u.grid.gx,u.grid.gy);
   const ring = new THREE.Mesh(
     new THREE.RingGeometry(0.28,0.4,32),
@@ -1967,8 +2107,10 @@ function killUnit(u,source){
   pushEffect(u,"☠","#e5484d");
   spawnBurst(u,"#e5484d",18,1.4);
   spawnShockwave(u,"#e5484d",1.3);
-  addShake(0.2);
-  showToast("☠ "+u.name+" fällt!");
+  if(!u.isMob){
+    addShake(0.2);
+    showToast("☠ "+u.name+" fällt!");
+  }
   if(source && source.side === "player" && source.modsEffective.gold > 0){
     G.gold += source.modsEffective.gold;
     updateHud();
@@ -1991,7 +2133,7 @@ function applyDamage(target,amount,source,opts={}){
   if(dmg > 0){
     target.hp -= dmg;
     target.hitFlash = 0.15;
-    addShake(clamp(dmg/Math.max(1,target.maxHp)*0.5,0.012,0.16));
+    if(!target.isMob) addShake(clamp(dmg/Math.max(1,target.maxHp)*0.5,0.012,0.16));
     if(opts.number !== false){
       pushEffect(target,(opts.crit ? "★ " : "")+"-"+Math.round(dmg),source && source.side === "enemy" ? "#ff8a8a" : "#ffd166");
       if(dmg > target.maxHp*0.06) spawnShockwave(target,opts.crit ? "#fff2a8" : "#ffb86b",0.75);
@@ -2188,10 +2330,12 @@ function updateBattle(dt){
   const b = G.battle;
   if(!b) return;
   b.time += dt;
-  [...b.player,...b.enemies].forEach(u => { if(!u.isDead) tickUnit(u,dt,b); });
-  const alive = [...b.player,...b.enemies].filter(u => !u.isDead);
-  alive.forEach(u => {
+  refreshMobCache(b);
+  const units = [...b.player,...b.enemies,...(b.playerMobs||[]),...(b.enemyMobs||[])];
+  units.forEach(u => { if(!u.isDead) tickUnit(u,dt,b); });
+  units.forEach(u => {
     if(u.isDead) return;
+    if(u.isMob){ mobAction(u,b,dt); return; }
     if(supportAction(u,b,dt)) return;
     const target = chooseTarget(u,b);
     u.target = target;
@@ -2206,10 +2350,8 @@ function updateBattle(dt){
 function checkBattleEnd(){
   const b = G.battle;
   if(!b || G.phase !== "battle") return;
-  const playersAlive = b.player.some(u => !u.isDead);
-  const enemiesAlive = b.enemies.some(u => !u.isDead);
-  if(!enemiesAlive) winBattle();
-  else if(!playersAlive) loseBattle();
+  if(!sideUnits(b,"enemy").some(u => !u.isDead)) winBattle();
+  else if(!sideUnits(b,"player").some(u => !u.isDead)) loseBattle();
 }
 function reviveTeam(){
   G.team.forEach(u => {
@@ -2296,12 +2438,16 @@ function startBattle(){
     recalcUnit(u);
   });
   const enemyTeam = buildEnemyTeam();
-  G.battle = {player:G.team,enemies:enemyTeam,time:0};
+  const playerMobs = buildMobSwarm("player",G.wave);
+  const enemyMobs = buildMobSwarm("enemy",G.wave);
+  G.battle = {player:G.team,enemies:enemyTeam,playerMobs:playerMobs,enemyMobs:enemyMobs,time:0,mobCache:null};
   if(!findUnitById(G.selectedUnitId)) G.selectedUnitId = G.team[0] ? G.team[0].id : null;
   enemyTeam.forEach(recalcUnit);
+  G.team.forEach(recalcUnit);
   G.mana = Math.min(G.maxMana,G.mana+10);
   syncUnits();
-  showToast("Welle "+G.wave+": "+G.team.length+" gegen "+enemyTeam.length);
+  syncMobs();
+  showToast("Welle "+G.wave+": "+G.team.length+"+"+playerMobs.length+" gegen "+enemyTeam.length+"+"+enemyMobs.length);
   updateHud();
   updateTeamList();
   updateSynergies();
@@ -2400,6 +2546,7 @@ function updateVisuals(time,dt){
       group.userData.statusRing.rotation.z -= dt*1.6;
     }
   });
+  updateMobVisuals(time,dt);
   updateParticles(dt);
   updateShockwaves(dt);
   renderer.render(scene,camera);
@@ -2525,6 +2672,9 @@ function updateHud(){
   document.getElementById("hudGold").textContent = G.gold;
   document.getElementById("hudWave").textContent = G.wave;
   document.getElementById("hudTeam").textContent = G.team.length+'/'+G.teamSize;
+  const pm = G.battle && G.battle.playerMobs ? G.battle.playerMobs.length : mobWaveSize(G.wave,"player");
+  const em = G.battle && G.battle.enemyMobs ? G.battle.enemyMobs.length : mobWaveSize(G.wave,"enemy");
+  document.getElementById("hudMobs").textContent = pm+'/'+em;
   const avg = G.team.length ? G.team.reduce((s,u) => s+u.level,0)/G.team.length : 1;
   document.getElementById("hudLvl").textContent = avg.toFixed(1).replace(/\.0$/,'');
   const focus = findUnitById(G.selectedUnitId);

@@ -13,3 +13,7 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
 - [ ] **3. Einfacher Shop/Draft mit drei Karten**
   Den vorhandenen Draft auf drei zufällige, verschiedene Karten und einen `Reroll` für 1 Gold erweitern. Die Auswahl bleibt bei 2 Gold pro Wesen; das Gegnerteam wird wie bisher angepasst.
   *Fertig, wenn:* `draftKeys()` stets drei verschiedene Keys liefert, Reroll genau 1 Gold abzieht und die drei Checks plus der APK-Build grün sind.
+
+- [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
+  `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
+  *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

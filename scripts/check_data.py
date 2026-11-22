@@ -146,6 +146,12 @@ core_roles = {'bigfoot': 'TANK', 'chupacabra': 'DPS', 'fee': 'HEALER'}
 for key, role in core_roles.items():
     if key not in roster or roster[key]['role'] != role:
         problems.append('CORE_UNITS: ' + key + ' ist kein ' + role)
+mob_cap = re.search(r'const MOB_CAP = (\d+);', src)
+if not mob_cap or int(mob_cap.group(1)) != 500:
+    problems.append('MOB_CAP: erwartet 500')
+for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'updateMobVisuals', 'hudMobs']:
+    if token not in src:
+        problems.append('Mob-System fehlt: ' + token)
 if len(roster) != len(set(roster)):
     problems.append('doppelte Einheitenschlüssel')
 

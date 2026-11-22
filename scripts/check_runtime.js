@@ -186,4 +186,38 @@ if (!vm.runInContext('globalThis.__coreBattleCheck', ctx)) {
   throw new Error('3-gegen-3-Kampf mit dem Basis-Trio startet nicht');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, draft, krypto, stacks, timer ${timerText})`);
+vm.runInContext(`
+  const w1 = mobWaveSize(1,"enemy"), w20 = mobWaveSize(20,"enemy"), w40 = mobWaveSize(40,"enemy");
+  globalThis.__mobSizeCheck = w1 >= 4 && w20 > w1 && w40 === 500 && mobWaveSize(40,"player") === 500;
+  G.phase = "menu";
+  G.battle = null;
+  G.teamSize = 3;
+  G.team = ["bigfoot","chupacabra","fee"].map(k => createUnit(k,1,"player"));
+  beginRun();
+  G.wave = 40;
+  startBattle();
+  globalThis.__mobBattleCheck = G.battle.playerMobs.length === mobWaveSize(40,"player") &&
+    G.battle.enemyMobs.length === mobWaveSize(40,"enemy") &&
+    G.battle.enemyMobs.length > G.team.length &&
+    G.battle.playerMobs.length > G.team.length;
+  let mobDamaged = false;
+  for (let f = 0; f < 600 && G.battle; f++) {
+    simulateBattle(0.016);
+    if (G.battle.playerMobs.some(m => m.isDead) || G.battle.enemyMobs.some(m => m.isDead)) mobDamaged = true;
+  }
+  globalThis.__mobAfterCheck = mobDamaged && !SIM.headless;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__mobSizeCheck', ctx)) {
+  throw new Error('Mob-Wellenformel oder 500er-Cap falsch');
+}
+if (!vm.runInContext('globalThis.__mobBattleCheck', ctx)) {
+  throw new Error('Mobs werden nicht auf beiden Seiten bis 500 gespawnt');
+}
+if (!vm.runInContext('globalThis.__mobAfterCheck', ctx)) {
+  throw new Error('Mob-Kampf-Simulation mit 500 Mobs pro Seite läuft nicht');
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, draft, krypto, stacks, timer ${timerText})`);
