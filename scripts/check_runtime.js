@@ -93,6 +93,9 @@ if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar
 if (!html.includes('id="battleMana"') || !html.includes('function updateBattleManaBar')) {
   throw new Error('Mana-Anzeige in der Kampfleiste fehlt');
 }
+if (!html.includes('function isSpecialMob')) {
+  throw new Error('Kampf-Feedback für Elite-/Boss-Mobs fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
@@ -752,4 +755,46 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  const mkMob = (tier) => ({
+    isMob:true, tier:tier, isElite:tier === "elite", isBoss:tier === "boss",
+    grid:{gx:1,gy:1}, hp:50, maxHp:100, isDead:false, hitFlash:0,
+    modsEffective:Object.assign({},DEFAULT_MODS), statuses:{}
+  });
+  const normalMob = mkMob("normal"), eliteMob = mkMob("elite"), bossMob = mkMob("boss");
+  globalThis.__specialMobHelper = !isSpecialMob(null) && !isSpecialMob(normalMob) &&
+    isSpecialMob(eliteMob) && isSpecialMob(bossMob);
+  const effBefore = G.effects.length, partBefore = G.particles.length, waveBefore = G.shockwaves.length;
+  pushEffect(normalMob,"-1","#fff");
+  spawnBurst(normalMob,"#fff",8,1);
+  spawnShockwave(normalMob,"#fff",1);
+  globalThis.__normalMobNoFx = G.effects.length === effBefore &&
+    G.particles.length === partBefore && G.shockwaves.length === waveBefore;
+  pushEffect(bossMob,"-1","#fff");
+  spawnBurst(bossMob,"#fff",8,1);
+  spawnShockwave(bossMob,"#fff",1);
+  globalThis.__bossMobFx = G.effects.length === effBefore+1 &&
+    G.particles.length === partBefore+1 && G.shockwaves.length === waveBefore+1;
+  pushEffect(eliteMob,"-1","#fff");
+  globalThis.__eliteMobFx = G.effects.length === effBefore+2;
+  const deathEffects = G.effects.length;
+  killUnit(bossMob,null);
+  globalThis.__bossDeathFx = bossMob.isDead && G.effects.length === deathEffects+1 &&
+    G.particles.length === partBefore+2 && G.shockwaves.length === waveBefore+2;
+  G.effects.forEach(s => { fxLayer.remove(s); disposeObject(s); });
+  G.particles.forEach(p => { fxLayer.remove(p.obj); disposeObject(p.obj); });
+  G.shockwaves.forEach(w => { fxLayer.remove(w.obj); disposeObject(w.obj); });
+  G.effects = []; G.particles = []; G.shockwaves = [];
+`, ctx);
+
+for (const [flag, message] of [
+  ['__specialMobHelper', 'Elite-/Boss-Mobs werden nicht als spezielle Mobs erkannt'],
+  ['__normalMobNoFx', 'Gewöhnliche Mobs erzeugen ungewollt Effekte'],
+  ['__bossMobFx', 'Boss-Mobs zeigen keine Schadenszahl, Partikel und Schockwelle'],
+  ['__eliteMobFx', 'Elite-Mobs zeigen keine Schadenszahl'],
+  ['__bossDeathFx', 'Boss-Tod zeigt keinen Todeseffekt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls+elite/boss-effekte, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

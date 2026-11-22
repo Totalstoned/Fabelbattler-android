@@ -176,6 +176,10 @@ for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
 for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:
     if token not in src:
         problems.append('Treffer-Impuls für Mobs fehlt: ' + token)
+
+for token in ['function isSpecialMob', 'u.isElite || u.isBoss', 'pushEffect(u,"☠"', 'spawnShockwave(u,"#e5484d"']:
+    if token not in src:
+        problems.append('Kampf-Feedback für Elite-/Boss-Mobs fehlt: ' + token)
 if len(roster) != len(set(roster)):
     problems.append('doppelte Einheitenschlüssel')
 
