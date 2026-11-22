@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'battleSwarm', 'battleSwarmValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -625,6 +625,51 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  const swarmBar = document.getElementById("battleSwarm");
+  const swarmValue = document.getElementById("battleSwarmValue");
+  updateBattleSwarm();
+  globalThis.__swarmHidden = !swarmBar.classList.contains("show");
+  G.wave = 1;
+  startBattle();
+  const mobs = G.battle.playerMobs;
+  updateBattleSwarm();
+  globalThis.__swarmShow = swarmBar.classList.contains("show") &&
+    swarmValue.textContent === "+"+swarmStacks(sideUnits(G.battle,"player").length)*4+"%" &&
+    swarmValue.textContent === "+16%";
+  G.battle.playerMobs = [];
+  updateBattleSwarm();
+  globalThis.__swarmLive = swarmBar.classList.contains("show") && swarmValue.textContent === "+4%";
+  G.battle.playerMobs = mobs;
+  updateBattleSwarm();
+  globalThis.__swarmRestore = swarmValue.textContent === "+16%";
+  G.phase = "prep";
+  G.battle = null;
+  G.wave = 28;
+  startBattle();
+  updateBattleSwarm();
+  globalThis.__swarmCap = G.battle.playerMobs.length >= 500 &&
+    swarmBar.classList.contains("show") && swarmValue.textContent === "+16%";
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleSwarm();
+  globalThis.__swarmHide = !swarmBar.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__swarmHidden', 'Schwarm-Bonus erscheint außerhalb des Kampfes'],
+  ['__swarmShow', 'Schwarm-Bonus zeigt den aktiven Wert nicht an'],
+  ['__swarmLive', 'Schwarm-Bonus reagiert nicht auf die Anzahl der Wesen'],
+  ['__swarmRestore', 'Schwarm-Bonus stellt den Wert nach Entfernen der Mobs nicht wieder her'],
+  ['__swarmCap', 'Schwarm-Bonus ist bei 500 Mobs nicht korrekt gedeckelt'],
+  ['__swarmHide', 'Schwarm-Bonus verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   startBattle();
   initMobMeshes();
   const m = G.battle.enemyMobs[0];
@@ -752,4 +797,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+schwarmBonus+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
