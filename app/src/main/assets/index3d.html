@@ -90,6 +90,11 @@
        gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:96vw;
        background:rgba(17,22,30,.94);border:1px solid var(--line);border-radius:14px;padding:8px;}
   .battle-info{font-size:11px;color:var(--gold);padding:0 6px;white-space:nowrap;}
+  .bossbar{display:none;align-items:center;gap:6px;font-size:11px;color:#ffd166;padding:0 6px;white-space:nowrap;}
+  .bossbar.show{display:flex;}
+  .bossbar .track{width:84px;height:6px;background:#0b0e13;border:1px solid #7f3b3b;border-radius:4px;overflow:hidden;}
+  .bossbar .track i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ff6b6b,#ffb86b);transition:width .15s;}
+  .bossbar b{min-width:30px;text-align:right;}
   .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
   body.battle-mode .battle-bar{display:flex;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
@@ -182,6 +187,7 @@
 <div class="battle-bar" id="battleBar">
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
+  <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
@@ -2819,6 +2825,16 @@ function updateBattleTimer(){
   document.getElementById("battleTimer").textContent = 'Zeit '+text;
   document.getElementById("hudTime").textContent = text;
 }
+function updateBossBar(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("bossBar");
+  const boss = G.battle && G.battle.enemyMobs ? G.battle.enemyMobs.find(m => m.isBoss && !m.isDead) : null;
+  if(!boss){ bar.classList.remove("show"); return; }
+  bar.classList.add("show");
+  const pct = clamp(boss.hp/boss.maxHp*100,0,100);
+  document.getElementById("bossBarFill").style.width = pct.toFixed(1)+'%';
+  document.getElementById("bossBarPct").textContent = Math.ceil(pct)+'%';
+}
 function updateButtons(){
   if(SIM.headless) return;
   const menu = G.phase === "menu";
@@ -3083,6 +3099,7 @@ window.addEventListener("load", () => {
     G.mana = Math.min(G.maxMana,G.mana+dt*(G.phase === "battle" ? 12 : 7));
     updateManaBar();
     updateBattleTimer();
+    updateBossBar();
     if(G.phase === "battle" && G.battle) updateBattle(dt);
     updateEffects(dt);
     uiTick += dt;

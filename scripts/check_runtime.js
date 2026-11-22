@@ -67,6 +67,9 @@ if (!/body\.battle-mode\s+\.battle-bar\s*\{[^}]*display:\s*flex/.test(html)) {
 if (!html.includes('id="battleTimer"') || !html.includes('function updateBattleTimer')) {
   throw new Error('Kampf-Timer fehlt');
 }
+if (!html.includes('id="bossBar"') || !html.includes('function updateBossBar')) {
+  throw new Error('Boss-Lebensbalken in der Kampfleiste fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
@@ -326,6 +329,10 @@ vm.runInContext(`
     em.filter(m => m.isElite).length > 0;
   const boss = em.find(m => m.isBoss), normal = em.find(m => !m.isElite && !m.isBoss);
   globalThis.__bossStatsCheck = boss.maxHp > normal.maxHp*3 && boss.atk > normal.atk && boss.scale > normal.scale;
+  boss.hp = boss.maxHp * 0.5;
+  updateBossBar();
+  globalThis.__bossBarCheck = parseFloat(document.getElementById("bossBarFill").style.width) === 50 &&
+    document.getElementById("bossBarPct").textContent === "50%";
   const bossGoldBefore = G.gold;
   const eliteCount = em.filter(m => m.isElite).length;
   winBattle();
@@ -348,6 +355,9 @@ if (!vm.runInContext('globalThis.__bossCheck', ctx)) {
 if (!vm.runInContext('globalThis.__bossStatsCheck', ctx)) {
   throw new Error('Boss-Werte sind nicht stärker als normale Mobs');
 }
+if (!vm.runInContext('globalThis.__bossBarCheck', ctx)) {
+  throw new Error('Boss-Lebensbalken zeigt nicht die aktuelle Boss-HP');
+}
 if (!vm.runInContext('globalThis.__bossGoldCheck', ctx)) {
   throw new Error('Boss/Elite geben keinen Bonus-Gold');
 }
@@ -358,4 +368,4 @@ if (!vm.runInContext('globalThis.__noTierCheck', ctx)) {
   throw new Error('Welle 1 enthält bereits Elite-/Boss-Mobs');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss, draft3+reroll+filter, items, krypto, stacks, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, draft3+reroll+filter, items, krypto, stacks, timer ${timerText})`);

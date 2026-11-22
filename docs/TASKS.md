@@ -26,6 +26,11 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Stack bleibt unverändert (Three.js, JavaScript, WebView). Neues `poseCharacter()` animiert alle Helden: Idle-Atmen und Gewichtverlagerung, Laufzyklus aus der tatsächlichen Bewegungsgeschwindigkeit (`walk`), Angriffs-Lunge/-Schwung, Treffer-Rückprallen und Todestaumeln mit anschließender Drehung. Humanoid-Einheiten schwingen Arme und Beine; Monster-Modelle atmen, zucken und kippen. `attackPulse()` normalisiert die Dauer (0,25 s Basisangriff, 0,3 s Zauber, 0,18 s Mobs) — keine negativen Schwünge mehr. Instanzierte Mobs erhalten zusätzlich einen scale-/rotationsbasierten Angriffs-Impuls.
   *Erledigt:* `check_runtime.js` prüft Existenz von `poseCharacter`/`attackPulse`, die Animations-Felder im `userData` und dass ein Treffer die Pose tatsächlich verändert.}
 
+- [x] **8. Boss-Lebensbalken in der Kampfleiste** (v1.23)
+  Gegnerische Bosse (12× HP) haben als Schwarm-Mobs keine eigenen HP-Balken. `updateBossBar()`
+  blendet in der Kampfleiste einen roten Balken mit Prozentwert ein, solange ein Boss lebt.
+  *Erledigt:* `check_runtime.js` prüft die UI-Tokens und dass der Balken bei 50 % Boss-HP genau 50 anzeigt.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
