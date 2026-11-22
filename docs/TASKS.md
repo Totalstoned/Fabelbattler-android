@@ -122,6 +122,15 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar bleiben.
   *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert und Live-Updates;
   `check_data.py` prüft die UI-Tokens.
+
+- [x] **22. Gegner in der Fokus-Anzeige kennzeichnen** (v1.37)
+  Per 3D-Tap lässt sich auch ein gegnerisches Wesen fokussieren. `updateFocusHp()` setzt
+  jetzt die Klasse `foe` (rote Farbe) und stellt dem Namen „⚔“ voran, damit die HP eines
+  Gegners nicht mit der der eigenen Helden verwechselt wird. Eigene Helden sind unverändert;
+  Warn- (≤ 50 %) und Kritikfarben (≤ 25 %) überschreiben die Gegnerfarbe. Außerhalb des
+  Kampfes und bei Fokuswechsel wird die Kennzeichnung zurückgesetzt.
+  *Erledigt:* `check_data.py` prüft die CSS-/JS-Tokens; `check_runtime.js` prüft Freund,
+  Gegner, Fokuswechsel und Reset.
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

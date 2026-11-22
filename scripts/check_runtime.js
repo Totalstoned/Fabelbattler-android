@@ -99,6 +99,9 @@ if (!html.includes('renderer.setSize(w,h);')) {
 for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
+if (!html.includes('.battle-info.focusbar.foe')) {
+  throw new Error('Fokus-Anzeige kennzeichnet Gegner nicht farblich (focusbar.foe fehlt)');
+}
 const gameJs = match[1];
 vm.runInContext(fs.readFileSync(threePath, 'utf8'), ctx, {filename: 'three.min.js'});
 vm.runInContext('var THREE = globalThis.THREE;', ctx);
@@ -752,4 +755,43 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  const foeFocusBar = document.getElementById("focusHp");
+  const foeFocusName = document.getElementById("focusName");
+  const friendHero = G.battle.player[0];
+  const enemyHero = G.battle.enemies[0];
+  G.selectedUnitId = friendHero.id;
+  updateFocusHp();
+  globalThis.__focusFriend = foeFocusBar.classList.contains("show") && !foeFocusBar.classList.contains("foe") &&
+    foeFocusName.textContent === friendHero.emoji+" "+friendHero.name;
+  G.selectedUnitId = enemyHero.id;
+  updateFocusHp();
+  const foeShield = enemyHero.shield > 0 ? " ⛨"+Math.ceil(enemyHero.shield) : "";
+  globalThis.__focusFoe = foeFocusBar.classList.contains("show") && foeFocusBar.classList.contains("foe") &&
+    foeFocusName.textContent === "⚔ "+enemyHero.emoji+" "+enemyHero.name &&
+    document.getElementById("focusHpValue").textContent === Math.ceil(enemyHero.hp)+"/"+Math.ceil(enemyHero.maxHp)+foeShield;
+  G.selectedUnitId = friendHero.id;
+  updateFocusHp();
+  globalThis.__focusFoeCleared = !foeFocusBar.classList.contains("foe") &&
+    foeFocusName.textContent === friendHero.emoji+" "+friendHero.name;
+  G.phase = "menu";
+  G.battle = null;
+  updateFocusHp();
+  globalThis.__focusFoeReset = !foeFocusBar.classList.contains("foe") && foeFocusName.textContent === "Fokus";
+`, ctx);
+
+for (const [flag, message] of [
+  ['__focusFriend', 'Fokus-Anzeige markiert eigene Helden fälschlich als Gegner'],
+  ['__focusFoe', 'Fokus-Anzeige kennzeichnet gegnerische Einheiten nicht'],
+  ['__focusFoeCleared', 'Gegner-Kennzeichnung bleibt nach Fokuswechsel stehen'],
+  ['__focusFoeReset', 'Gegner-Kennzeichnung wird außerhalb des Kampfes nicht zurückgesetzt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusGegner, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

@@ -170,6 +170,9 @@ for token in ['focusHp', 'focusName', 'focusHpValue', 'function updateFocusHp']:
 for token in ['focusStatus', 'function updateFocusHp', 'activeStatusKeys(u).map']:
     if token not in src:
         problems.append('Fokus-Statusanzeige in der Kampfleiste fehlt: ' + token)
+for token in ['.battle-info.focusbar.foe', 'bar.classList.toggle("foe"', 'isFoe ? "⚔ " : ""']:
+    if token not in src:
+        problems.append('Gegner-Kennzeichnung in der Fokus-Anzeige fehlt: ' + token)
 for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
     if token not in src:
         problems.append('Fokus-Zauber-Cooldown in der Kampfleiste fehlt: ' + token)
