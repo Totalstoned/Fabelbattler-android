@@ -34,7 +34,7 @@ cd "$REPO" || exit 1
 log(){ echo "$(date -u +%FT%TZ) $*" >> "$LOG"; }
 
 run_iteration(){
-  local START_TS TS WT BRANCH COMMITS ELAPSED SLEEP_T
+  local START_TS TS WT BRANCH BASE COMMITS ELAPSED SLEEP_T
   START_TS=$(date +%s)
   TS=$(date -u +%Y%m%d-%H%M%S)
   WT=/tmp/opencode/fabel-improve-$TS
@@ -45,7 +45,8 @@ run_iteration(){
     log "Worktree konnte nicht angelegt werden – übersprungen"
     return 1
   fi
-  log "Run $TS gestartet (Worktree $WT)"
+  BASE=$(cd "$WT" && git rev-parse HEAD)
+  log "Run $TS gestartet (Worktree $WT, Basis $BASE)"
 
   local PROMPT
   PROMPT=$(cat <<'EOF'
@@ -58,6 +59,8 @@ Regeln:
 - Bei jeder Änderung an index3d.html: APP_VERSION_CODE in gradle.properties um 1 erhöhen und APP_VERSION_NAME passend aktualisieren (aktuelle Version steht in docs/APP_DEV_STATE.md).
 - Validiere mit: python3 scripts/check_js.py app/src/main/assets/index3d.html && python3 scripts/check_data.py app/src/main/assets/index3d.html && node scripts/check_runtime.js app/src/main/assets/index3d.html
 - Wenn ein Check fehlschlägt: beheben oder die Änderung verwerfen. Never commit a broken build.
+- Bleibe auf dem aktuellen Branch (auto-improve/*). Wechsle NICHT zu main und erstelle keinen neuen Branch.
+- Bei einer Änderung an index3d.html: APP_VERSION_CODE in gradle.properties um GENAU 1 erhöhen (nie mehr), ausgehend vom dortigen Wert.
 - Erstelle einen Commit mit kurzer deutscher Nachricht. Pushe NICHT und erstelle KEinen PR – das macht das umgebende Skript.
 - Falls nichts Sicheres zu tun ist: keine Änderung, kein Commit.
 
@@ -71,9 +74,9 @@ EOF
     if (cd "$WT" && python3 scripts/check_js.py app/src/main/assets/index3d.html \
          && python3 scripts/check_data.py app/src/main/assets/index3d.html \
          && node scripts/check_runtime.js app/src/main/assets/index3d.html) >>"$LOG" 2>&1; then
-      COMMITS=$(cd "$WT" && git rev-list --count main..HEAD 2>/dev/null || echo 0)
+      COMMITS=$(cd "$WT" && git rev-list --count "$BASE..HEAD" 2>/dev/null || echo 0)
       if [ "$COMMITS" -gt 0 ]; then
-        if (cd "$WT" && git -c url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf=git@github.com: push -q origin "$BRANCH") >>"$LOG" 2>&1; then
+        if (cd "$WT" && git -c url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf=git@github.com: push -q origin "HEAD:$BRANCH") >>"$LOG" 2>&1; then
           local SUBJ
           SUBJ=$(cd "$WT" && git log -1 --pretty=%s)
           if "$GH_BIN" pr create --repo "$GH_REPO" --base main --head "$BRANCH" \
