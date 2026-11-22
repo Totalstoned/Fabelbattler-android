@@ -128,6 +128,9 @@
   .battle-info.focusbar.warn{color:#ffb86b;}
   .battle-info.focusbar.critical{color:#ff6b6b;}
   .battle-info.focusbar.critical b{animation:bossWarn .7s ease-in-out infinite;}
+  .battle-info.focuscd{display:none;color:#8fb5ff;}
+  .battle-info.focuscd.show{display:inline-block;}
+  .battle-info.focuscd.ready{color:#9ff0bd;}
   .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
   body.battle-mode .battle-bar{display:flex;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
@@ -222,6 +225,7 @@
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
   <span class="battle-info status" id="battleStatus" title="Lebende Gegner, Schwarm-Mobs (Spieler/Gegner) und Helden">Gegner <b id="statusEnemies">0</b> · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
   <span class="battle-info focusbar" id="focusHp" title="HP und Schild des fokussierten Wesens">♥ Fokus <b id="focusHpValue">0/0</b></span>
+  <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
@@ -2938,6 +2942,20 @@ function updateFocusHp(){
   const shield = u.shield > 0 ? " ⛨"+Math.ceil(u.shield) : "";
   document.getElementById("focusHpValue").textContent = Math.ceil(Math.max(0,u.hp))+"/"+Math.ceil(u.maxHp)+shield;
 }
+function updateFocusCooldown(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("focusCd");
+  bar.classList.remove("show");
+  bar.classList.remove("ready");
+  if(G.phase !== "battle" || !G.battle) return;
+  const u = findUnitById(G.selectedUnitId);
+  if(!u || u.isDead) return;
+  const name = (SPELLS[u.spell]||{}).name || "Zauber";
+  const cd = Math.max(0,u.spellCd||0);
+  bar.classList.add("show");
+  bar.classList.toggle("ready",cd <= 0);
+  document.getElementById("focusCdValue").textContent = cd > 0 ? name+" "+cd.toFixed(1)+"s" : name+" bereit";
+}
 function updateButtons(){
   if(SIM.headless) return;
   const menu = G.phase === "menu";
@@ -3208,6 +3226,7 @@ window.addEventListener("load", () => {
     updateBattleManaBar();
     updateHeroAlert();
     updateFocusHp();
+    updateFocusCooldown();
     if(G.phase === "battle" && G.battle) updateBattle(dt);
     updateEffects(dt);
     uiTick += dt;
