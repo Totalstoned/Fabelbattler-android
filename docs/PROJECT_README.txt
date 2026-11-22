@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -264,6 +264,14 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
 
+v1.37-b38 2026-11-22  (Mana-Kosten an Kampf-Zauberbuttons)
+    - Im Kampfmodus ist das HUD mit den Kosten-Hinweisen ausgeblendet; die deaktivierten
+      Zauberbuttons in der Kampfleiste gaben keinen Grund. btnBattleHeal und btnBattleNova
+      zeigen jetzt "Heilregen (40)" und "Blitz (70)" inklusive Mana-Tooltip; updateButtons()
+      setzt die Beschriftung neben der Deaktivierung.
+    - check_data.py prueft Button-Texte/Tooltips; check_runtime.js prueft Beschriftung
+      und Freigabe bei 0/40/70 Mana.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung)" unten.
@@ -299,6 +307,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Mana-Kosten an Kampf-Zauberbuttons (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

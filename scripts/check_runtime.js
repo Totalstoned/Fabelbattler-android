@@ -594,6 +594,35 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  startBattle();
+  const healBtn = document.getElementById("btnBattleHeal");
+  const novaBtn = document.getElementById("btnBattleNova");
+  G.mana = 0;
+  updateButtons();
+  globalThis.__manaCostLabels = healBtn.textContent === "Heilregen (40)" &&
+    novaBtn.textContent === "Blitz (70)" && healBtn.disabled && novaBtn.disabled;
+  G.mana = 40;
+  updateButtons();
+  globalThis.__manaCostHealReady = !healBtn.disabled && novaBtn.disabled;
+  G.mana = 70;
+  updateButtons();
+  globalThis.__manaCostNovaReady = !healBtn.disabled && !novaBtn.disabled;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__manaCostLabels', 'Kampfleisten-Zauberbuttons zeigen die Mana-Kosten nicht'],
+  ['__manaCostHealReady', 'Heilregen-Button wird bei 40 Mana nicht freigegeben'],
+  ['__manaCostNovaReady', 'Blitz-Button wird bei 70 Mana nicht freigegeben'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   const goldBar = document.getElementById("battleGold");
   const goldValue = document.getElementById("battleGoldValue");
   updateBattleGold();
@@ -752,4 +781,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+manaKosten+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
