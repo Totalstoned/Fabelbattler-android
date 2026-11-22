@@ -135,6 +135,9 @@
   .battle-info.gold{display:none;color:var(--gold);}
   .battle-info.gold.show{display:inline-block;}
   .battle-info.gold b{color:#fff3c4;}
+  .battle-info.elite{display:none;color:#ffd166;}
+  .battle-info.elite.show{display:inline-block;}
+  .battle-info.elite b{color:#fff3c4;}
   .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
   body.battle-mode .battle-bar{display:flex;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
@@ -235,6 +238,7 @@
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
+  <span class="battle-info elite" id="eliteAlert" title="Lebende Elite-Mobs der Gegner">✨ Eliten <b id="eliteAlertCount">0</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
@@ -2887,6 +2891,14 @@ function updateBossBar(){
   document.getElementById("bossBarFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("bossBarPct").textContent = Math.ceil(pct)+'%';
 }
+function updateEliteAlert(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("eliteAlert");
+  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  const elites = (G.battle.enemyMobs||[]).filter(m => m.isElite && !m.isDead).length;
+  bar.classList.toggle("show",elites > 0);
+  if(elites) document.getElementById("eliteAlertCount").textContent = String(elites);
+}
 function updateBattleStatus(){
   if(SIM.headless) return;
   const bar = document.getElementById("battleStatus");
@@ -3241,6 +3253,7 @@ window.addEventListener("load", () => {
     updateManaBar();
     updateBattleTimer();
     updateBossBar();
+    updateEliteAlert();
     updateBattleStatus();
     updateTeamHpBar();
     updateBattleManaBar();
