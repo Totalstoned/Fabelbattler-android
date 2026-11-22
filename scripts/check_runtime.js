@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'foeHpBar', 'foeHpFill', 'foeHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -549,6 +549,56 @@ for (const [flag, message] of [
   ['__teamHpCritical', 'Team-HP-Balken zeigt keine kritische Gesamt-HP'],
   ['__teamHpDead', 'Team-HP-Balken zählt tote Helden falsch'],
   ['__teamHpHide', 'Team-HP-Balken verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  const foes = G.battle.enemies;
+  foes.forEach(u => { u.hp = u.maxHp; u.shield = 0; });
+  const foeBar = document.getElementById("foeHpBar");
+  const foeFill = document.getElementById("foeHpFill");
+  const foePct = document.getElementById("foeHpPct");
+  updateFoeHpBar();
+  globalThis.__foeHpStart = foeBar.classList.contains("show") && foePct.textContent === "100%" &&
+    parseFloat(foeFill.style.width) === 100 && !foeBar.classList.contains("critical");
+  const foeMax = foes.reduce((s,u) => s+u.maxHp, 0);
+  foes[0].hp = foes[0].maxHp * 0.5;
+  const foeExpected = (foeMax - foes[0].maxHp * 0.5) / foeMax * 100;
+  updateFoeHpBar();
+  globalThis.__foeHpDamage = Math.abs(parseFloat(foeFill.style.width) - foeExpected) < 0.2;
+  foes[0].shield = foes[0].maxHp * 0.5;
+  updateFoeHpBar();
+  globalThis.__foeHpShield = parseFloat(foeFill.style.width) === 100 && foePct.textContent === "100%";
+  foes.forEach(u => { u.shield = 0; u.hp = u.maxHp * 0.1; });
+  updateFoeHpBar();
+  globalThis.__foeHpCritical = foeBar.classList.contains("critical") &&
+    parseFloat(foeFill.style.width) <= 25 && parseFloat(foePct.textContent) <= 25;
+  foes[0].isDead = true;
+  foes[0].hp = 0;
+  foes.slice(1).forEach(u => { u.hp = u.maxHp; });
+  updateFoeHpBar();
+  const foeDeadExpected = (foeMax - foes[0].maxHp) / foeMax * 100;
+  globalThis.__foeHpDead = Math.abs(parseFloat(foeFill.style.width) - foeDeadExpected) < 0.2 &&
+    foeBar.classList.contains("critical") === (foeDeadExpected <= 25);
+  G.phase = "menu";
+  G.battle = null;
+  updateFoeHpBar();
+  globalThis.__foeHpHide = !foeBar.classList.contains("show") && !foeBar.classList.contains("critical");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__foeHpStart', 'Gegner-HP-Balken startet nicht bei 100 %'],
+  ['__foeHpDamage', 'Gegner-HP-Balken reagiert nicht auf Schaden'],
+  ['__foeHpShield', 'Gegner-HP-Balken berücksichtigt Schilde nicht'],
+  ['__foeHpCritical', 'Gegner-HP-Balken zeigt keine kritische Gesamt-HP'],
+  ['__foeHpDead', 'Gegner-HP-Balken zählt tote Gegner-Helden falsch'],
+  ['__foeHpHide', 'Gegner-HP-Balken verschwindet nicht außerhalb des Kampfes'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }

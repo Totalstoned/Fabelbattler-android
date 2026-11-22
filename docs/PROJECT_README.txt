@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -263,6 +263,14 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
      durch Gold-auf-Kill-Effekte und der Stand fuer den kommenden Draft sichtbar.
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
+v1.37-b38 2026-11-22  (Gegner-HP-Balken in der Kampfleiste)
+   - Gegenstueck zum Team-HP-Balken: updateFoeHpBar() zeigt die Summe aus HP+Schild
+     der gegnerischen Helden (pro Held auf max. HP gedeckelt) als roten Balken mit
+     Prozentwert. Im Kampfmodus ist das HUD ausgeblendet, und im 500er-Schwarm sind
+     die kleinen 3D-Balken der Gegner-Helden kaum lesbar.
+   - Rot und pulsierend ab 25 %, verschwindet ausserhalb des Kampfes.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Start, Schaden,
+     Schild, kritische HP, tote Gegner-Helden und Ausblenden.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -299,6 +307,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Gegner-HP-Balken in der Kampfleiste (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
