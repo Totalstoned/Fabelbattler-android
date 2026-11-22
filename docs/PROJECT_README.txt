@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-22
-Aktuelle Version: v1.32-b33
+Aktuelle Version: v1.35-b36
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -249,6 +249,14 @@ v1.34-b35 2026-11-22  (Fokus-Statuseffekte)
    - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige,
      Filtern unbekannter Effekte und Loschen nach Ablauf/Fokusverlust.
 
+v1.35-b36 2026-11-22  (Fokusname in der Kampfleiste)
+   - Neues UI-Element "focusName" direkt neben der Fokus-HP-Anzeige: updateFocusHp()
+     zeigt den Namen des per ◀/▶ fokussierten Wesens und setzt ihn außerhalb des
+     Kampfes zurück. Bisher aktualisierte nur updateHud() den Fokusnamen im
+     battleInfo, was nach der Fokusnavigation veraltet sein konnte.
+   - check_runtime.js prueft Namen, cycleFocus(1)-Aktualisierung und Reset;
+     check_data.py prueft den UI-Token.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Lokaler Loop scripts/auto-improve.sh laeuft (PID 9841), siehe AUTO_IMPROVE.txt.
@@ -285,6 +293,7 @@ Core-Loop-Status:
   [x] 17. Fokus-Zauber-Cooldown in der Kampfleiste (v1.32)
   [x] 18. Gegner-Helden im Kampfstatus (v1.33)
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
+  [x] 20. Fokusname live in der Kampfleiste (v1.35)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

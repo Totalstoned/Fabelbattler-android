@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'focusHp', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -637,6 +637,7 @@ vm.runInContext(`
   const cdBar = document.getElementById("focusCd");
   const cdValue = document.getElementById("focusCdValue");
   const fx = document.getElementById("focusStatus");
+  const name = document.getElementById("focusName");
   const focusHero = G.battle.player[0];
   const spellName = (SPELLS[focusHero.spell]||{}).name || "Zauber";
   G.selectedUnitId = focusHero.id;
@@ -657,6 +658,14 @@ vm.runInContext(`
   globalThis.__focusCdReady = cdBar.classList.contains("show") &&
     cdBar.classList.contains("ready") &&
     cdValue.textContent === spellName+" bereit";
+  globalThis.__focusName = name.textContent === focusHero.emoji+" "+focusHero.name;
+  cycleFocus(1);
+  const nextFocus = findUnitById(G.selectedUnitId);
+  updateFocusHp();
+  globalThis.__focusNameCycle = !!nextFocus && nextFocus.id !== focusHero.id &&
+    bar.classList.contains("show") && name.textContent === nextFocus.emoji+" "+nextFocus.name;
+  G.selectedUnitId = focusHero.id;
+  updateFocusHp();
   focusHero.hp = focusHero.maxHp * 0.4;
   focusHero.shield = 0;
   updateFocusHp();
@@ -689,12 +698,16 @@ vm.runInContext(`
     !bar.classList.contains("critical") && fx.textContent === "";
   updateFocusCooldown();
   globalThis.__focusCdHide = !cdBar.classList.contains("show") && !cdBar.classList.contains("ready");
+  globalThis.__focusNameReset = name.textContent === "Fokus";
 `, ctx);
 
 for (const [flag, message] of [
   ['__focusStart', 'Fokus-HP-Anzeige zeigt zu Kampfbeginn keine volle HP'],
   ['__focusCdStart', 'Fokus-Cooldown zeigt den Zauber und die Restzeit nicht'],
   ['__focusCdReady', 'Fokus-Cooldown zeigt keinen bereiten Zauber an'],
+  ['__focusName', 'Fokus-HP-Anzeige zeigt nicht den Namen des fokussierten Wesens'],
+  ['__focusNameCycle', 'Fokusname aktualisiert sich nicht nach der ◀/▶-Navigation'],
+  ['__focusNameReset', 'Fokusname wird außerhalb des Kampfes nicht zurückgesetzt'],
   ['__focusDamage', 'Fokus-HP-Anzeige reagiert nicht auf Schaden'],
   ['__focusShield', 'Fokus-HP-Anzeige zeigt den Schild nicht'],
   ['__focusStatus', 'Fokus-Anzeige zeigt aktive Statuseffekte nicht'],
@@ -708,4 +721,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+fokusHp+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

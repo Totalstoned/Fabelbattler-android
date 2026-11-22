@@ -13,7 +13,7 @@ Letztes Update: 2026-11-22
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.34**, Build **35** (CI ausstehend); letzte gebaute APK: `/root/projects/FABELBATTLER/fabelbattler-v1.31-b32.apk`.
+- Version **1.35**, Build **36** (CI ausstehend); letzte gebaute APK: `/root/projects/FABELBATTLER/fabelbattler-v1.31-b32.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
@@ -40,6 +40,7 @@ Letztes Update: 2026-11-22
 - Kampfleiste zeigt zusätzlich Zauber und restliche Abklingzeit des fokussierten Wesens (`updateFocusCooldown()`, v1.32): „bereit" in Grün oder die Restzeit in Sekunden; bei totem Fokus und außerhalb des Kampfes ausgeblendet.
 - Kampfstatus trennt seit v1.33 die lebenden gegnerischen Helden (`statusFoeHeroes`) von der Gesamtzahl inkl. Schwarm, damit die Mobs nicht doppelt gezählt wirken.
 - Fokus-Anzeige ergänzt seit v1.34 aktive Statuseffekte mit Emoji und Restzeit (`focusStatus`): Buffs/Debuffs des fokussierten Wesens bleiben im Kampfmodus sichtbar, obwohl das Einheiten-Panel ausgeblendet ist.
+- Fokus-Anzeige zeigt seit v1.35 live den Namen des fokussierten Wesens (`focusName`): `updateFocusHp()` läuft pro Frame, damit ◀/▶ sofort den richtigen Namen anzeigt und außerhalb des Kampfes zurücksetzt.
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 10-Minuten-Hintergrund-Agenten.
 

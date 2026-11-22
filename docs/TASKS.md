@@ -108,6 +108,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Effekte werden ausgeblendet.
   *Erledigt:* `check_runtime.js` prüft Anzeige, Filter und Löschen der Statuseffekte;
   `check_data.py` prüft die UI-Tokens.
+
+- [x] **20. Fokusname live in der Kampfleiste** (v1.35)
+  `updateFocusHp()` zeigt neben HP und Schild auch den Namen des per ◀/▶ fokussierten Wesens.
+  Das Battle-Info (`updateHud()`) wird nur bei bestimmten Ereignissen aktualisiert und konnte nach der
+  Fokusnavigation einen veralteten Namen zeigen; die neue Anzeige wird pro Frame aktualisiert.
+  *Erledigt:* `check_runtime.js` prüft Namen, Aktualisierung nach `cycleFocus(1)` und Zurücksetzen
+  außerhalb des Kampfes; `check_data.py` prüft den UI-Token.
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
