@@ -15,8 +15,8 @@ function makeElement() {
     style: {},
     classList: {
       contains: (name) => classes.has(name),
-      add: (name) => classes.add(name),
-      remove: (name) => classes.delete(name),
+      add: (...names) => names.forEach(name => classes.add(name)),
+      remove: (...names) => names.forEach(name => classes.delete(name)),
       toggle: (name, on) => {
         if (on === undefined) on = !classes.has(name);
         if (on) classes.add(name); else classes.delete(name);
@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusSide', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -669,6 +669,7 @@ vm.runInContext(`
   const cdValue = document.getElementById("focusCdValue");
   const fx = document.getElementById("focusStatus");
   const name = document.getElementById("focusName");
+  const side = document.getElementById("focusSide");
   const focusHero = G.battle.player[0];
   const spellName = (SPELLS[focusHero.spell]||{}).name || "Zauber";
   G.selectedUnitId = focusHero.id;
@@ -679,6 +680,15 @@ vm.runInContext(`
     value.textContent === Math.ceil(focusHero.hp)+"/"+Math.ceil(focusHero.maxHp)+startShield &&
     fx.textContent === "" &&
     !bar.classList.contains("warn") && !bar.classList.contains("critical");
+  globalThis.__focusSideAlly = side.classList.contains("ally") && !side.classList.contains("foe") &&
+    side.textContent === "Held · "+((ROLE_META[focusHero.role]||{}).label||focusHero.role);
+  const focusFoe = G.battle.enemies[0];
+  G.selectedUnitId = focusFoe.id;
+  updateFocusHp();
+  globalThis.__focusSideFoe = side.classList.contains("foe") && !side.classList.contains("ally") &&
+    side.textContent === "Feind · "+((ROLE_META[focusFoe.role]||{}).label||focusFoe.role);
+  G.selectedUnitId = focusHero.id;
+  updateFocusHp();
   focusHero.spellCd = 2.5;
   updateFocusCooldown();
   globalThis.__focusCdStart = cdBar.classList.contains("show") &&
@@ -719,6 +729,7 @@ vm.runInContext(`
   focusHero.isDead = true;
   updateFocusHp();
   globalThis.__focusDeadHidden = !bar.classList.contains("show") && fx.textContent === "";
+  globalThis.__focusSideDead = side.textContent === "–" && !side.classList.contains("ally") && !side.classList.contains("foe");
   updateFocusCooldown();
   globalThis.__focusCdDeadHidden = !cdBar.classList.contains("show");
   focusHero.isDead = false;
@@ -730,6 +741,7 @@ vm.runInContext(`
   updateFocusCooldown();
   globalThis.__focusCdHide = !cdBar.classList.contains("show") && !cdBar.classList.contains("ready");
   globalThis.__focusNameReset = name.textContent === "Fokus";
+  globalThis.__focusSideHide = side.textContent === "–" && !side.classList.contains("ally") && !side.classList.contains("foe");
 `, ctx);
 
 for (const [flag, message] of [
@@ -737,6 +749,10 @@ for (const [flag, message] of [
   ['__focusCdStart', 'Fokus-Cooldown zeigt den Zauber und die Restzeit nicht'],
   ['__focusCdReady', 'Fokus-Cooldown zeigt keinen bereiten Zauber an'],
   ['__focusName', 'Fokus-HP-Anzeige zeigt nicht den Namen des fokussierten Wesens'],
+  ['__focusSideAlly', 'Fokus-Anzeige markiert verbündete Wesen nicht als Held'],
+  ['__focusSideFoe', 'Fokus-Anzeige markiert gegnerische Wesen nicht als Feind'],
+  ['__focusSideDead', 'Fokus-Zugehörigkeit bleibt bei einem toten Fokus sichtbar'],
+  ['__focusSideHide', 'Fokus-Zugehörigkeit wird außerhalb des Kampfes nicht zurückgesetzt'],
   ['__focusNameCycle', 'Fokusname aktualisiert sich nicht nach der ◀/▶-Navigation'],
   ['__focusNameReset', 'Fokusname wird außerhalb des Kampfes nicht zurückgesetzt'],
   ['__focusDamage', 'Fokus-HP-Anzeige reagiert nicht auf Schaden'],
@@ -752,4 +768,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusSide+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
