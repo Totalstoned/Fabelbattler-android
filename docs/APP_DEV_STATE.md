@@ -20,11 +20,13 @@ Letztes Update: 2026-11-22
 - Rassen: Folklore, Kaiju, Fee, Zwerg, **Kryptozoologie**, Assassine, Alien. Barbar-Rasse wurde entfernt.
 - Kryptiden-Pack mit 12 Wesen; neue Fähigkeiten `schrecken` (Schreckensblick) und `schwarmruf` (Team-Buff).
 - Team-Buffs skalieren nach Anzahl: ein Stack pro weiterem Wesen mit gleicher Klasse/Rasse (max. 4) sowie +4 % HP/ATK pro zusätzlichem Duden ab dem dritten.
-- Kampf-Simulation: wellenbasiert, 4 gegen 4 (in Einstellungen 3–6), Sekunden-Timer, Statuseffekte, Auren, Cooldowns, Zielwahl.
+- Kampf-Simulation: wellenbasiert, Start 3 gegen 3 (später 3–6), Sekunden-Timer, Statuseffekte, Auren, Cooldowns, Zielwahl.
 - UI: Kampfleiste mit Timer, HUD, Draft, Heilregen/Blitz, Touch-Fokus, Zoom, Einheiten-Info.
 - Fullscreen/Querformat: Manifest + `MainActivity` (Immersive-Sticky plus Legacy-Flags); auf dem Testgerät vom User bestätigt.
-- Checks: `scripts/check_js.py`, `scripts/check_data.py`, `scripts/check_runtime.js`; CI baut die APK. Letzter grüner Lauf: `44971742650`.
+- Checks: `scripts/check_js.py`, `scripts/check_data.py`, `scripts/check_runtime.js`; CI baut die APK. Letzter grüner Lauf: `45023346370`.
+- Chronologische Übergabe inkl. aller Versionen: `/root/projects/FABELBATTLER/readme.txt` (Kopie: `docs/PROJECT_README.txt`).
 - Offen: kein direkter Gerätezugriff in der Entwicklung; Fullscreen-Verhalten nur per User-Screenshot verifiziert.
+- Offene Anforderung: Gegner-Mobs sollen zahlenmäßig größer als das Spielerteam sein, bis 500 zum Spielende. Entwurf steht in `readme.txt` Abschnitt 4; Interpretation „Spielerseite“ vor Umsetzung kurz klären.
 - GitHub-Issue #1 ist der Fortschrittskanal für den stündlichen Hintergrund-Agenten.
 
 ## Entwicklungsregeln
