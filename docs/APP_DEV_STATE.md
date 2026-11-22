@@ -13,7 +13,7 @@ Letztes Update: 2026-11-22
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.31**, Build **32**; APK: `/root/projects/FABELBATTLER/fabelbattler-v1.31-b32.apk`.
+- Version **1.32**, Build **33**; APK: `/root/projects/FABELBATTLER/fabelbattler-v1.32-b33.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
@@ -38,6 +38,7 @@ Letztes Update: 2026-11-22
 - Kampfleiste zeigt im Kampf eine kompakte Mana-Anzeige mit Balken und Wert (`battleMana`, v1.29), da das HUD mit dem Mana-Balken im Kampfmodus ausgeblendet ist; außerhalb des Kampfes ausgeblendet.
 - Mob-Schwarm zeigt einen kurzen Treffer-Impuls (`mobHitPulse()`, v1.30): Getroffene Mobs wachsen kurz an und wackeln, damit Treffer im 500er-Schwarm sichtbar bleiben.
 - Kampfleiste zeigt die HP inkl. Schild des fokussierten Wesens (`updateFocusHp()`, v1.31): Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet; die ◀/▶-Fokusnavigation bleibt dadurch mit exakten Werten und Warnfarben lesbar.
+- Fokus-Anzeige zeigt zusätzlich live den Namen des fokussierten Wesens (`focusName`, v1.32): `updateFocusHp()` läuft pro Frame, damit ◀/▶ sofort den richtigen Namen anzeigt und außerhalb des Kampfes zurücksetzt.
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 10-Minuten-Hintergrund-Agenten.
 
