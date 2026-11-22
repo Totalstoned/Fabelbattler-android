@@ -87,28 +87,36 @@ ctx.THREE.WebGLRenderer = function () {
 vm.runInContext(gameJs, ctx, {filename: path.basename(htmlPath)});
 
 vm.runInContext(`
-  if (typeof startBattle !== 'function' || typeof updateVisuals !== 'function') {
+  if (typeof startBattle !== 'function' || typeof simulateBattle !== 'function' || typeof updateVisuals !== 'function') {
     throw new Error('Game API missing');
   }
   // Important: startBattle() only runs while in menu phase. Setting phase to
   // "battle" here would skip syncUnits() and hide unit-group runtime errors.
-  G.phase = "menu";
-  G.battle = null;
-  G.team = [];
-  G.teamSize = 4;
-  for (let i = 0; i < 4; i++) G.team.push(createUnit("hotzenplotz", 1, "player"));
-  startBattle();
   globalThis.__maxBattleTime = 0;
   globalThis.__timerText = "";
-  for (let f = 0; f < 600; f++) {
-    updateVisuals(f * 0.016, 0.016);
-    updateBattle(0.016);
-    updateBattleTimer();
-    if (G.battle) {
-      globalThis.__maxBattleTime = Math.max(globalThis.__maxBattleTime, G.battle.time);
-      globalThis.__timerText = document.getElementById("battleTimer").textContent;
+  globalThis.__simTicks = 0;
+  globalThis.__simOutcomes = {wins: 0, losses: 0};
+  for (let round = 0; round < 5; round++) {
+    G.phase = "menu";
+    G.battle = null;
+    G.team = [];
+    G.teamSize = 4;
+    for (let i = 0; i < 4; i++) G.team.push(createUnit("sensenmann", 1, "player"));
+    startBattle();
+    for (let f = 0; f < 600 && G.battle && G.phase === "battle"; f++) {
+      updateVisuals(f * 0.016, 0.016);
+      simulateBattle(0.016);
+      updateBattleTimer();
+      globalThis.__simTicks++;
+      if (G.battle) {
+        globalThis.__maxBattleTime = Math.max(globalThis.__maxBattleTime, G.battle.time);
+        globalThis.__timerText = document.getElementById("battleTimer").textContent;
+      }
     }
+    if (G.phase === "prep") globalThis.__simOutcomes.wins++;
+    else if (G.phase === "defeat") globalThis.__simOutcomes.losses++;
   }
+  if (SIM.headless) throw new Error('simulateBattle() hat den Headless-Modus nicht zurückgesetzt');
 
   G.phase = "menu";
   G.battle = null;
@@ -127,8 +135,13 @@ vm.runInContext(`
 
 const maxBattleTime = vm.runInContext('globalThis.__maxBattleTime', ctx);
 const timerText = vm.runInContext('globalThis.__timerText', ctx);
+const simTicks = vm.runInContext('globalThis.__simTicks', ctx);
+const simOutcomes = vm.runInContext('globalThis.__simOutcomes', ctx);
 if (!(maxBattleTime >= 1) || !/^Zeit \d+s$/.test(timerText)) {
   throw new Error(`Timer läuft nicht: max=${maxBattleTime}, text=${timerText}`);
+}
+if (!(simTicks >= 1) || simOutcomes.wins + simOutcomes.losses < 1) {
+  throw new Error(`Kampf-Simulation endet nicht: ticks=${simTicks}, outcomes=${JSON.stringify(simOutcomes)}`);
 }
 
 vm.runInContext(`
@@ -156,4 +169,4 @@ if (!vm.runInContext('globalThis.__stackCheck', ctx)) {
   throw new Error('Team-Buffs skalieren nicht mit der Dudes-Anzahl');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, battle, draft, krypto, stacks, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, draft, krypto, stacks, timer ${timerText})`);

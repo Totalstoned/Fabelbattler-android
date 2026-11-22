@@ -548,6 +548,7 @@ const SYNERGY = {
   Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
 const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,selectedUnitId:null};
+const SIM = {headless:false};
 const GRID = {cols:8,rows:6};
 const TILE = 1.35;
 let arenaPulse = null;
@@ -1716,6 +1717,7 @@ function makeCharacter(u){
   return group;
 }
 function syncUnits(){
+  if(SIM.headless) return;
   clearGroup(unitLayer);
   unitGroups.clear();
   const units = G.battle ? [...G.battle.player,...G.battle.enemies] : G.team;
@@ -1849,6 +1851,7 @@ function castAura(u,b){
   }
 }
 function pushEffect(u,text,color){
+  if(SIM.headless) return;
   const sprite = makeTextSprite(text,color,0.7);
   const p = worldPos(u.grid.gx,u.grid.gy);
   sprite.position.set(p.x+(Math.random()-0.5)*0.28,1.6,p.z+(Math.random()-0.5)*0.28);
@@ -1859,6 +1862,7 @@ function pushEffect(u,text,color){
   G.effects.push(sprite);
 }
 function spawnBurst(u,color,count,strength){
+  if(SIM.headless) return;
   const p = worldPos(u.grid.gx,u.grid.gy);
   const n = Math.max(3,count||8);
   const positions = new Float32Array(n*3);
@@ -1878,9 +1882,11 @@ function spawnBurst(u,color,count,strength){
   G.particles.push({obj:points,vel:velocities,life:0.7,max:0.7});
 }
 function addShake(amount){
+  if(SIM.headless) return;
   cameraShake = Math.min(0.5,cameraShake+amount);
 }
 function spawnShockwave(u,color,strength){
+  if(SIM.headless) return;
   const p = worldPos(u.grid.gx,u.grid.gy);
   const ring = new THREE.Mesh(
     new THREE.RingGeometry(0.28,0.4,32),
@@ -2161,6 +2167,7 @@ function updateEffects(dt){
   G.effects = G.effects.filter(s => s.userData.life > 0);
 }
 function clearEffects(){
+  if(SIM.headless) return;
   G.effects.forEach(s => { fxLayer.remove(s); disposeObject(s); });
   G.effects = [];
   G.particles.forEach(p => { fxLayer.remove(p.obj); disposeObject(p.obj); });
@@ -2168,6 +2175,12 @@ function clearEffects(){
   G.shockwaves.forEach(w => { fxLayer.remove(w.obj); disposeObject(w.obj); });
   G.shockwaves = [];
   cameraShake = 0;
+}
+function simulateBattle(dt){
+  const previous = SIM.headless;
+  SIM.headless = true;
+  try { updateBattle(dt); }
+  finally { SIM.headless = previous; }
 }
 function updateBattle(dt){
   const b = G.battle;
@@ -2455,6 +2468,7 @@ function cycleFocus(dir){
   selectUnit(alive[(base+dir+alive.length)%alive.length]);
 }
 function updateTeamList(){
+  if(SIM.headless) return;
   const tl = document.getElementById("teamList");
   tl.innerHTML = '';
   if(!G.team.length){
@@ -2477,6 +2491,7 @@ function updateTeamList(){
   document.getElementById("hudTeam").textContent = G.team.length+'/'+G.teamSize;
 }
 function updateSynergies(){
+  if(SIM.headless) return;
   const badges = document.getElementById("synBadges");
   badges.innerHTML = '';
   const addBadge = (key,meta,count,stacks) => {
@@ -2504,6 +2519,7 @@ function updateSynergies(){
   rebuildSynergyLinks();
 }
 function updateHud(){
+  if(SIM.headless) return;
   document.getElementById("hudGold").textContent = G.gold;
   document.getElementById("hudWave").textContent = G.wave;
   document.getElementById("hudTeam").textContent = G.team.length+'/'+G.teamSize;
@@ -2524,6 +2540,7 @@ function updateBattleTimer(){
   document.getElementById("hudTime").textContent = text;
 }
 function updateButtons(){
+  if(SIM.headless) return;
   const menu = G.phase === "menu";
   const inBattle = G.phase === "battle" && !!G.battle;
   const drafting = G.phase === "draft";
@@ -2625,6 +2642,7 @@ function closeDraft(){
   updateButtons();
 }
 function showToast(msg){
+  if(SIM.headless) return;
   const t = document.createElement("div");
   t.className = "toast";
   t.textContent = msg;

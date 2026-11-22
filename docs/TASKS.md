@@ -2,9 +2,9 @@
 
 Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfolge.
 
-- [ ] **1. Kampf-Simulation entkoppeln**
-  Die KampfLogik aus `updateBattle(dt)` in eine reine Funktion `simulateBattle(dt)` überführen, die ohne DOM und ohne Three.js läuft. Sie soll den bestehenden Zustand `G.battle` nutzen und `updateVisuals` unberührt lassen.
-  *Fertig, wenn:* `scripts/check_runtime.js` die Simulation 600 Ticks ohne Fehler durchlaufen lässt und Sieg/Niederlage weiterhin ausgelöst werden.
+- [x] **1. Kampf-Simulation entkoppeln** (v1.16)
+  `simulateBattle(dt)` führt die Kampf-Logik mit `SIM.headless` aus; Effekte, Toasts, HUD, Teamliste, Synergien, Buttons und `syncUnits` werden dabei übersprungen. `updateBattle(dt)` und `updateVisuals(dt)` bleiben für den normalen Renderloop unverändert.
+  *Erledigt:* `scripts/check_runtime.js` simuliert fünf Runden à maximal 600 Ticks und prüft, dass Sieg/Niederlage ausgelöst werden und der Headless-Modus danach zurückgesetzt ist.
 
 - [ ] **2. Drei Basis-Einheiten als Startteam**
   Ein festes Basis-Trio definieren: `bigfoot` (Tank), `chupacabra` (DPS), `fee` (Heiler). `beginRun()` soll dieses Trio als Startteam setzen, statt mit leerer Auswahl zu beginnen.

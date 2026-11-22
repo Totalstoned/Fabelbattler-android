@@ -20,6 +20,8 @@ node scripts/check_runtime.js app/src/main/assets/index3d.html
 # Version in gradle.properties erhöhen, dann committen/pushen
 ```
 
+`simulateBattle(dt)` nutzt `SIM.headless`, um Kämpfe ohne Effekte, HUD oder Three.js zu simulieren; der Renderloop verwendet weiterhin `updateBattle`/`updateVisuals`.
+
 Die GitHub Action `.github/workflows/build-apk.yml` baut die APK und benennt sie `fabelbattler-v<name>-b<code>.apk`. `scripts/download-apk.sh <run-id>` lädt nur neue Versionen nach `/root/projects/FABELBATTLER/`.
 
 ## Bedienung
