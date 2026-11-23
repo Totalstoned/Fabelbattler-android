@@ -2103,8 +2103,11 @@ function castAura(u,b){
     spawnShockwave(u,a.css,0.6);
   }
 }
+// Elite- und Boss-Mobs sind einzelne, wichtige Ziele und bekommen dieselben
+// Schadenszahlen/Partikel wie Helden; der normale Schwarm bleibt effektfrei.
+function showUnitFx(u){ return !!u && (!u.isMob || !!u.isElite || !!u.isBoss); }
 function pushEffect(u,text,color){
-  if(SIM.headless || !u || u.isMob) return;
+  if(SIM.headless || !showUnitFx(u)) return;
   const sprite = makeTextSprite(text,color,0.7);
   const p = worldPos(u.grid.gx,u.grid.gy);
   sprite.position.set(p.x+(Math.random()-0.5)*0.28,1.6,p.z+(Math.random()-0.5)*0.28);
@@ -2115,7 +2118,7 @@ function pushEffect(u,text,color){
   G.effects.push(sprite);
 }
 function spawnBurst(u,color,count,strength){
-  if(SIM.headless || !u || u.isMob) return;
+  if(SIM.headless || !showUnitFx(u)) return;
   const p = worldPos(u.grid.gx,u.grid.gy);
   const n = Math.max(3,count||8);
   const positions = new Float32Array(n*3);
@@ -2139,7 +2142,7 @@ function addShake(amount){
   cameraShake = Math.min(0.5,cameraShake+amount);
 }
 function spawnShockwave(u,color,strength){
-  if(SIM.headless || !u || u.isMob) return;
+  if(SIM.headless || !showUnitFx(u)) return;
   const p = worldPos(u.grid.gx,u.grid.gy);
   const ring = new THREE.Mesh(
     new THREE.RingGeometry(0.28,0.4,32),

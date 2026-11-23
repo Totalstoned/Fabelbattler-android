@@ -752,4 +752,54 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  SIM.headless = false;
+  clearEffects();
+  const normalMob = createMob("kriecher","enemy",1,"normal");
+  const eliteMob = createMob("kriecher","enemy",5,"elite");
+  const bossMob = createMob("brute","enemy",10,"boss");
+  const e0 = G.effects.length, p0 = G.particles.length, s0 = G.shockwaves.length;
+  pushEffect(normalMob,"-1","#fff");
+  spawnBurst(normalMob,"#fff",4,1);
+  spawnShockwave(normalMob,"#fff",1);
+  globalThis.__fxNormalSilent = G.effects.length === e0 && G.particles.length === p0 && G.shockwaves.length === s0;
+  pushEffect(eliteMob,"-5","#fff");
+  globalThis.__fxElite = G.effects.length === e0+1;
+  pushEffect(bossMob,"-12","#fff");
+  globalThis.__fxBoss = G.effects.length === e0+2;
+  spawnBurst(bossMob,"#fff",4,1);
+  spawnShockwave(bossMob,"#fff",1);
+  globalThis.__fxBossBurst = G.particles.length === p0+1 && G.shockwaves.length === s0+1;
+  SIM.headless = true;
+  const eHead = G.effects.length;
+  pushEffect(bossMob,"-1","#fff");
+  globalThis.__fxHeadless = G.effects.length === eHead;
+  SIM.headless = false;
+  clearEffects();
+  const e1 = G.effects.length;
+  applyDamage(normalMob,1,null,{});
+  globalThis.__fxNormalDamageSilent = G.effects.length === e1;
+  applyDamage(bossMob,1,null,{});
+  globalThis.__fxBossDamage = G.effects.length === e1+1;
+  const p1 = G.particles.length, s1 = G.shockwaves.length;
+  killUnit(bossMob,null);
+  globalThis.__fxBossDeath = G.effects.length === e1+2 && G.particles.length === p1+1 && G.shockwaves.length === s1+1;
+  clearEffects();
+`, ctx);
+
+for (const [flag, message] of [
+  ['__fxNormalSilent', 'Normale Schwarm-Mobs erzeugen unerwünscht Kampf-Effekte'],
+  ['__fxElite', 'Elite-Mobs zeigen keine Schadenszahl'],
+  ['__fxBoss', 'Boss-Mobs zeigen keine Schadenszahl'],
+  ['__fxBossBurst', 'Boss-Mobs erzeugen keine Partikel/Schockwelle'],
+  ['__fxHeadless', 'Headless-Modus unterdrückt Effekte für Boss-Mobs nicht'],
+  ['__fxNormalDamageSilent', 'Schaden auf normale Mobs erzeugt unerwünscht Effekte'],
+  ['__fxBossDamage', 'Schaden auf einen Boss erzeugt keine Schadenszahl'],
+  ['__fxBossDeath', 'Boss-Tod erzeugt keinen Sterbe-Effekt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, elite/boss-effekte, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
