@@ -126,6 +126,9 @@
   .battle-info.status{display:none;color:var(--txt);}
   .battle-info.status.show{display:inline-block;}
   .battle-info.status b{color:var(--gold);}
+  .battle-info.kills{display:none;color:#ff8a8a;}
+  .battle-info.kills.show{display:inline-block;}
+  .battle-info.kills b{color:#ffd166;}
   .battle-info.danger{display:none;color:#ff6b6b;}
   .battle-info.danger.show{display:inline-block;}
   .battle-info.danger b{animation:bossWarn .7s ease-in-out infinite;}
@@ -246,6 +249,7 @@
   <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll">◆ <b id="battleGoldValue">0</b></span>
   <span class="battle-info dudes" id="battleDudes" title="Aktiver Duden-Bonus: mehr HP und ATK für alle Spieler-Einheiten">● Duden <b id="battleDudesValue">+0 %</b></span>
   <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner) und eigene Helden">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
+  <span class="battle-info kills" id="battleKills" title="In dieser Welle besiegte Gegner inklusive Schwarm">☠ <b id="battleKillsValue">0/0</b></span>
   <span class="battle-info focusmeta" id="focusMeta" title="Level und Rolle des fokussierten Wesens">Lv – · –</span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild, Angriff, Level, Rolle und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b> · ⚔ <b id="focusAtkValue">0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
@@ -2274,6 +2278,7 @@ function killUnit(u,source){
     return;
   }
   u.isDead = true;
+  if(G.battle && u.side === "enemy") G.battle.kills++;
   u.hp = 0;
   u.target = null;
   u.deathTimer = 0.6;
@@ -2637,7 +2642,8 @@ function startBattle(){
   const enemyTeam = buildEnemyTeam();
   const playerMobs = buildMobSwarm("player",G.wave);
   const enemyMobs = buildMobSwarm("enemy",G.wave);
-  G.battle = {player:G.team,enemies:enemyTeam,playerMobs:playerMobs,enemyMobs:enemyMobs,time:0,mobCache:null};
+  G.battle = {player:G.team,enemies:enemyTeam,playerMobs:playerMobs,enemyMobs:enemyMobs,time:0,mobCache:null,
+    kills:0,killsTotal:enemyTeam.length+enemyMobs.length};
   if(!findUnitById(G.selectedUnitId)) G.selectedUnitId = G.team[0] ? G.team[0].id : null;
   enemyTeam.forEach(recalcUnit);
   G.team.forEach(recalcUnit);
@@ -2963,6 +2969,13 @@ function updateBattleStatus(){
   document.getElementById("statusFoeHeroes").textContent = foeHeroes+'/'+G.battle.enemies.length;
   document.getElementById("statusMobs").textContent = mobsPlayer+'/'+mobsEnemy;
   document.getElementById("statusHeroes").textContent = heroes+'/'+G.battle.player.length;
+}
+function updateBattleKills(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("battleKills");
+  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  bar.classList.add("show");
+  document.getElementById("battleKillsValue").textContent = (G.battle.kills||0)+'/'+(G.battle.killsTotal||0);
 }
 function updateTeamHpBar(){
   if(SIM.headless) return;
@@ -3356,6 +3369,7 @@ window.addEventListener("load", () => {
     updateBossBar();
     updatePlayerBossBar();
     updateBattleStatus();
+    updateBattleKills();
     updateTeamHpBar();
     updateBattleManaBar();
     updateBattleGold();

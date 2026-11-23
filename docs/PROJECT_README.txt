@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.45-b46
+Aktuelle Version: v1.51-b52
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -347,6 +347,15 @@ v1.50-b51 2026-11-23  (Gegner-Wesen)
    - check_data.py: 98 Einheiten / 51 Zauber, Biss-Tokens; check_runtime.js prueft,
      dass die drei Wesen im Gegnerpool liegen und nie im Draft auftauchen.
    - Version 1.50/b51 bewusst gewaehlt: v1.49/b50 ist bereits durch PR #125 belegt.
+
+v1.51-b52 2026-11-23  (Besiegte Gegner in der Kampfleiste)
+   - Neue kompakte Anzeige (id battleKills, battleKillsValue) via
+     updateBattleKills(): "☠ besiegt/gesamt" fuer die laufende Welle. killUnit()
+     zaehlt nur gegnerische Helden und Mobs; startBattle() setzt killsTotal aus
+     Gegnerteam und Schwarm. Damit bleibt der Wellenfortschritt auch bei 500 Mobs
+     pro Seite ablesbar; ausserhalb des Kampfes ist die Anzeige ausgeblendet.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Startwert, Zaehlung
+     von Held und Mob, Ignorieren gefallener Helden und Ausblenden.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".

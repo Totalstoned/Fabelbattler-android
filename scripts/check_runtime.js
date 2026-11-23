@@ -105,7 +105,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -498,6 +498,42 @@ if (!vm.runInContext('globalThis.__statusLiveCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__statusHideCheck', ctx)) {
   throw new Error('Kampf-Status verschwindet nicht außerhalb des Kampfes');
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  const killBar = document.getElementById("battleKills");
+  const killValue = document.getElementById("battleKillsValue");
+  updateBattleKills();
+  globalThis.__killsHidden = !killBar.classList.contains("show");
+  G.wave = 1;
+  startBattle();
+  const killsTotal = G.battle.enemies.length + G.battle.enemyMobs.length;
+  updateBattleKills();
+  globalThis.__killsStart = killBar.classList.contains("show") && killValue.textContent === "0/"+killsTotal;
+  killUnit(G.battle.enemies[0], null);
+  killUnit(G.battle.enemyMobs[0], null);
+  updateBattleKills();
+  globalThis.__killsLive = killValue.textContent === "2/"+killsTotal;
+  killUnit(G.battle.player[0], null);
+  updateBattleKills();
+  globalThis.__killsAllyIgnored = killValue.textContent === "2/"+killsTotal;
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleKills();
+  globalThis.__killsHide = !killBar.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__killsHidden', 'Besiegte-Gegner-Anzeige erscheint außerhalb des Kampfes'],
+  ['__killsStart', 'Besiegte-Gegner-Anzeige zeigt nicht den Startwert 0/Gesamt'],
+  ['__killsLive', 'Besiegte-Gegner-Anzeige zählt besiegte Gegner nicht'],
+  ['__killsAllyIgnored', 'Besiegte-Gegner-Anzeige zählt gefallene Helden fälschlich mit'],
+  ['__killsHide', 'Besiegte-Gegner-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
 vm.runInContext(`
@@ -1055,4 +1091,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+besiegteGegner+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
