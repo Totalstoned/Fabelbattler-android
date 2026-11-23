@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.37-b38
+Aktuelle Version: v1.44-b45
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -432,3 +432,12 @@ Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung):
     dieser Ziele erneut umsetzen.
   - Der Loop ist vorerst gestoppt: ueber 100 offene PRs (#21-#120), fast alle
     Duplikate. Entscheidung zum Aufraeumen/Integrieren steht aus.
+
+2026-11-23 15:45 UTC – 8 Unique-PRs integriert, 112 Duplikate geschlossen:
+  - v1.37 Fokus-Level/-Rolle, v1.38 Manakosten auf Buttons, v1.39 Sieges-Toast,
+    v1.40 eigener Boss-Balken, v1.41 Fokus-ATK, v1.42 Fokus-Auto-Wechsel,
+    v1.43 Zauber-Bereitschaft, v1.44 Duden-Bonus. Stand v1.44-b45 (3615e17).
+  - PR #120 war inzwischen direkt gemergt; die restlichen 7 Commits wurden
+    sauber darauf rebast. Alle 112 verbleibenden PRs als Duplikate geschlossen,
+    0 offen. Externe Quelle synchronisiert, alle Checks gruen.
+  - CI und APK fuer v1.44-b45 folgen.
