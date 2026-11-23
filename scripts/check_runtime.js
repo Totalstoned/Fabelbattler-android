@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'battleDudesBonus', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -625,6 +625,47 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  const dudesBar = document.getElementById("battleDudes");
+  const dudesValue = document.getElementById("battleDudesValue");
+  const dudesBonus = document.getElementById("battleDudesBonus");
+  updateBattleDudes();
+  globalThis.__dudesHidden = !dudesBar.classList.contains("show");
+  G.wave = 1;
+  startBattle();
+  const allMobs = G.battle.playerMobs;
+  const total = G.battle.player.length + allMobs.length;
+  updateBattleDudes();
+  globalThis.__dudesShow = dudesBar.classList.contains("show") &&
+    dudesValue.textContent === String(total) && dudesBonus.textContent === "+16%";
+  G.battle.playerMobs = [];
+  updateBattleDudes();
+  globalThis.__dudesHeroesOnly = dudesValue.textContent === String(G.battle.player.length) &&
+    dudesBonus.textContent === "+4%";
+  G.battle.playerMobs = allMobs.slice(0,1);
+  updateBattleDudes();
+  globalThis.__dudesScaled = dudesValue.textContent === String(G.battle.player.length+1) &&
+    dudesBonus.textContent === "+8%";
+  G.battle.playerMobs = allMobs;
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleDudes();
+  globalThis.__dudesHide = !dudesBar.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__dudesHidden', 'Duden-Buff-Anzeige erscheint außerhalb des Kampfes'],
+  ['__dudesShow', 'Duden-Buff-Anzeige zeigt Helden, Mobs und den gedeckelten Bonus nicht'],
+  ['__dudesHeroesOnly', 'Duden-Buff-Anzeige skaliert nicht mit der Heldenanzahl'],
+  ['__dudesScaled', 'Duden-Buff-Anzeige reagiert nicht auf zusätzliche Mobs'],
+  ['__dudesHide', 'Duden-Buff-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   startBattle();
   initMobMeshes();
   const m = G.battle.enemyMobs[0];
@@ -752,4 +793,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+dudes+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
