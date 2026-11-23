@@ -338,6 +338,16 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
 
+v1.54-b55 2026-11-23  (Support-Cooldown gegen Stillstand)
+   - Ursache fuer nie endende Kaempfe: supportAction() schildete bei jedem
+     Zyklus, sobald ein Verbündeter unter 78 % HP+Schild lag. Durch den
+     Stahl-Buff (shieldPct) taten das beide Seiten dauerhaft statt anzugreifen.
+   - Fix: neuer u.supportCd (4 s), in tickUnit() dekrementiert; Support nur
+     noch alle 4 s, dazwischen normaler Angriff/Zauber. Harness vorher
+     12/12 Timeouts, nachher 12/12 Siege (Welle 3), 5/5 Siege Welle 5/10
+     und gegen Panzer/Kampftruppe/Feuerwehr (Oe 10-14 s).
+   - check_runtime.js bleibt zusaetzlich deterministisch geseedet (Seed 1).
+
 v1.53-b54 2026-11-23  (Zivile Gegner + Fahrzeuge)
    - Gegner-Helden kommen jetzt ausschliesslich aus ENEMY_ONLY (18 Keys),
      nie mehr aus dem Monster-Pool des Spielers. enemyKeyFor() greift nur noch

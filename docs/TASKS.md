@@ -203,4 +203,15 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_data.py` prüft 113 Einheiten/51 Zauber und alle 18 Keys;
   `check_runtime.js` prüft Draft-Sperre und dass 80 `enemyKeyFor()`-Ziehung
   ausschließlich Gegner-Wesen liefern. Balance der Fahrzeug-Reichweiten so
-  angepasst, dass Kämpfe terminiieren.
+  angepasst, dass Kämpfe terminieren.
+
+- [x] **32. Support-Cooldown gegen Kampf-Stillstand** (v1.54)
+  `supportAction()` griff früher bei jedem Zyklus ein, sobald ein Verbündeter
+  unter 78 % HP+Schild lag – besonders durch den Stahl-Klassen-Buff
+  (`shieldPct`) schildeten beide Seiten dauerhaft statt anzugreifen. Kämpfe
+  endeten dadurch gar nicht (Harness: 12/12 Timeouts). Neuer `supportCd`
+  (4 s, in `tickUnit()` dekrementiert) erlaubt nur noch einen Support pro
+  4 Sekunden; dazwischen wird normal angegriffen und gezaubert.
+  *Erledigt:* Harness 12/12 Siege statt Timeouts (Welle 3), 5/5 Siege bei
+  Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
+  `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
