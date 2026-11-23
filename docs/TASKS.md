@@ -140,7 +140,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
 - [x] **24. Eigener Boss-Lebensbalken** (v1.40)
   `updatePlayerBossBar()` zeigt in der Kampfleiste die HP des Spieler-Boss (türkis, rot/pulsierend unter 25 %), der bisher nur auf Gegnerseite sichtbar war. Die Balken sind als „Gegner“/„Team“ beschriftet; nach Boss-Tod verschwindet die Anzeige.
   *Erledigt:* `check_runtime.js` prüft Anzeige, 50 %/20 % HP und Ausblenden; `check_data.py` prüft die UI-Tokens.
-
+- [x] **25. Fokus-Angriffswert in der Kampfleiste** (v1.41)
+  Die Fokus-Anzeige ergänzt den live Angriffswert (`focusAtkValue`) des per ◀/▶
+  fokussierten Wesens. Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet;
+  der ATK-Wert bestimmt die Schadenswirkung und ändert sich durch Buffs (z. B. `killAtk`).
+  `updateFocusHp()` aktualisiert den Wert pro Frame und setzt ihn bei totem Fokus
+  sowie außerhalb des Kampfes zurück.
+  *Erledigt:* `check_runtime.js` prüft Startwert, Live-Update nach ATK-Änderung,
+  totes Fokus und Zurücksetzen; `check_data.py` prüft die UI-Tokens.
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

@@ -271,14 +271,14 @@ v1.37-b38 2026-11-23  (Fokus-Level und -Rolle in der Kampfleiste)
     - check_data.py prueft die Tokens; check_runtime.js prueft Startwert,
       Aktualisierung nach cycleFocus(1), toten Fokus und Ausblenden.
 
-v1.37-b38 2026-11-23  (Sieges-Zusammenfassung)
+v1.39-b40 2026-11-23  (Sieges-Zusammenfassung)
    - winBattle() erzeugte zwei fast identische "Welle X besiegt!"-Toasts; der zweite
      nannte statisch teamSize gegen teamSize. Jetzt genau ein Toast mit Gold-Belohnung
      (inkl. Boss-/Elite-Bonus), Kampfdauer in Sekunden und ueberlebenden Helden
      ("Helden A/B"). Weniger Toast-Spam, mehr Infos auf einen Blick.
    - check_runtime.js prueft genau einen Sieges-Toast mit Gold, Dauer und Helden-Zahl.
 
-v1.37-b38 2026-11-23  (Eigener Boss-Lebensbalken)
+v1.40-b41 2026-11-23  (Eigener Boss-Lebensbalken)
     - Bosse spawnen auf beiden Seiten, aber die Kampfleiste zeigte nur den
       gegnerischen Boss. Neuer Balken playerBossBar (tuerkis, ids
       playerBossBarFill/playerBossBarPct) via updatePlayerBossBar(): zeigt die HP
@@ -286,6 +286,15 @@ v1.37-b38 2026-11-23  (Eigener Boss-Lebensbalken)
       dem Tod. Beide Boss-Balken sind jetzt mit "Gegner"/"Team" beschriftet.
     - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige, 50 %/20 %
       HP und Ausblenden nach dem Boss-Tod.
+v1.41-b42 2026-11-23  (Fokus-Angriffswert in der Kampfleiste)
+   - Die Fokus-Anzeige zeigt jetzt den live Angriffswert (id focusAtkValue)
+     des per ◀/▶ fokussierten Wesens. Im Kampfmodus sind HUD und Einheiten-Panel
+     ausgeblendet; der ATK-Wert war dort bisher nicht ablesbar, obwohl er die
+     Schadenswirkung bestimmt und sich durch Buffs (killAtk, Auren) aendert.
+   - updateFocusHp() aktualisiert den Wert pro Frame und setzt ihn bei totem
+     Fokus sowie ausserhalb des Kampfes zurueck.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Startwert,
+     Live-Update nach ATK-Aenderung, toten Fokus und Zuruecksetzen.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -325,6 +334,7 @@ Core-Loop-Status:
   [x] 22. Fokus-Level und -Rolle in der Kampfleiste (v1.37)
   [x] 23. Sieges-Zusammenfassung als ein Toast (v1.39)
   [x] 24. Eigener Boss-Lebensbalken (v1.40)
+  [x] 25. Fokus-Angriffswert in der Kampfleiste (v1.41)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

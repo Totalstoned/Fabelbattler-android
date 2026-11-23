@@ -170,6 +170,9 @@ for token in ['playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'functio
 for token in ['focusHp', 'focusName', 'focusHpValue', 'function updateFocusHp']:
     if token not in src:
         problems.append('Fokus-HP-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['focusAtkValue', 'Math.round(u.atk)']:
+    if token not in src:
+        problems.append('Fokus-Angriffsanzeige in der Kampfleiste fehlt: ' + token)
 for token in ['focusStatus', 'function updateFocusHp', 'activeStatusKeys(u).map']:
     if token not in src:
         problems.append('Fokus-Statusanzeige in der Kampfleiste fehlt: ' + token)
