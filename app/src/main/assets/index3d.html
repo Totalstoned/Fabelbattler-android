@@ -115,6 +115,15 @@
   .teamhp.critical .track{border-color:#ff6b6b;}
   .teamhp.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
   .teamhp.critical b{animation:bossWarn .7s ease-in-out infinite;}
+  .enemyhp{display:none;align-items:center;gap:6px;font-size:11px;color:#ff9f7a;padding:0 6px;white-space:nowrap;}
+  .enemyhp.show{display:flex;}
+  .enemyhp .track{width:84px;height:6px;background:#0b0e13;border:1px solid #7f4a3b;border-radius:4px;overflow:hidden;}
+  .enemyhp .track i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#e05a45,#ffb86b);transition:width .15s;}
+  .enemyhp b{min-width:30px;text-align:right;}
+  .enemyhp.closing{color:#9ff0bd;}
+  .enemyhp.closing .track{border-color:#2f6b47;}
+  .enemyhp.closing .track i{background:linear-gradient(90deg,#2f9e60,#4ade80);}
+  .enemyhp.closing b{animation:bossWarn .7s ease-in-out infinite;}
   .battle-mana{display:none;align-items:center;gap:6px;font-size:11px;color:#8fb5ff;padding:0 6px;white-space:nowrap;}
   .battle-mana.show{display:flex;}
   .battle-mana .track{width:84px;height:6px;background:#0b0e13;border:1px solid #2f4a8f;border-radius:4px;overflow:hidden;}
@@ -126,6 +135,11 @@
   .battle-info.status{display:none;color:var(--txt);}
   .battle-info.status.show{display:inline-block;}
   .battle-info.status b{color:var(--gold);}
+  .battle-info.status .elites{display:none;color:#ffd166;}
+  .battle-info.status .elites.show{display:inline;}
+  .battle-info.kills{display:none;color:#ff8a8a;}
+  .battle-info.kills.show{display:inline-block;}
+  .battle-info.kills b{color:#ffd166;}
   .battle-info.danger{display:none;color:#ff6b6b;}
   .battle-info.danger.show{display:inline-block;}
   .battle-info.danger b{animation:bossWarn .7s ease-in-out infinite;}
@@ -143,10 +157,11 @@
   .battle-info.focustarget.critical b{color:#ff6b6b;animation:bossWarn .7s ease-in-out infinite;}
   .battle-info.focusmeta{display:none;color:#c9b6ff;}
   .battle-info.focusmeta.show{display:inline-block;}
-  .battle-info.focusbar .fx{font-size:10px;opacity:.85;margin-left:5px;}
+  .battle-info.focusbar .fx,.battle-info.focustarget .fx{font-size:10px;opacity:.85;margin-left:5px;}
   .battle-info.gold{display:none;color:var(--gold);}
   .battle-info.gold.show{display:inline-block;}
   .battle-info.gold b{color:#fff3c4;}
+  .battle-info.gold b.gain{margin-left:4px;font-size:10px;color:#d9f99d;opacity:0;transition:opacity .2s;text-shadow:0 0 8px #a3e635;}
   .battle-info.dudes{display:none;color:#a3e635;}
   .battle-info.dudes.show{display:inline-block;}
   .battle-info.dudes b{color:#d9f99d;}
@@ -243,14 +258,16 @@
 <div class="battle-bar" id="battleBar">
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
-  <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll">◆ <b id="battleGoldValue">0</b></span>
+  <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll; +N zeigt gerade erhaltenes Gold">◆ <b id="battleGoldValue">0</b><b class="gain" id="battleGoldGain"></b></span>
   <span class="battle-info dudes" id="battleDudes" title="Aktiver Duden-Bonus: mehr HP und ATK für alle Spieler-Einheiten">● Duden <b id="battleDudesValue">+0 %</b></span>
-  <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner) und eigene Helden">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
+  <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner), eigene Helden und gegnerische Eliten">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b><span class="elites" id="eliteInfo" title="Lebende gegnerische Elit-Mobs"> · ✨ Elite <b id="statusElites">0/0</b></span></span>
+  <span class="battle-info kills" id="battleKills" title="In dieser Welle besiegte Gegner inklusive Schwarm">☠ <b id="battleKillsValue">0/0</b></span>
   <span class="battle-info focusmeta" id="focusMeta" title="Level und Rolle des fokussierten Wesens">Lv – · –</span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild, Angriff, Level, Rolle und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b> · ⚔ <b id="focusAtkValue">0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
-  <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Rest-HP und Schild">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetHp">0/0</b></span>
+  <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Rest-HP, Schild, Angriff und Statuseffekten">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetHp">0/0</b> · ⚔ <b id="focusTargetAtk">0</b><span class="fx" id="focusTargetStatus"></span></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
+  <span class="enemyhp" id="enemyHpBar" title="Verbleibende HP und Schilde aller Gegner inklusive Schwarm; grün, wenn der Sieg nah ist">☠ <span class="track"><i id="enemyHpFill"></i></span> <b id="enemyHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b> <span class="spell-ready" id="manaHealReady" title="Heilregen ab 40 Mana verfügbar">✚40</span> <span class="spell-ready" id="manaNovaReady" title="Fabel-Blitz ab 70 Mana verfügbar">✺70</span></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 Gegner <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
@@ -2304,6 +2321,7 @@ function killUnit(u,source){
     return;
   }
   u.isDead = true;
+  if(G.battle && u.side === "enemy") G.battle.kills++;
   u.hp = 0;
   u.target = null;
   u.deathTimer = 0.6;
@@ -2335,7 +2353,15 @@ function applyDamage(target,amount,source,opts={}){
     const absorbed = Math.min(target.shield,dmg);
     target.shield -= absorbed;
     dmg -= absorbed;
-    if(absorbed > 1 && opts.number !== false) pushEffect(target,"⛨ "+Math.round(absorbed),"#8fb5ff");
+    if(absorbed > 1 && opts.number !== false){
+      pushEffect(target,"⛨ "+Math.round(absorbed),"#8fb5ff");
+      // Komplett blockierte Treffer bekommen einen eigenen blauen Impuls,
+      // sonst sieht ein absorbierter Schlag wie ein ausbleibender Treffer aus.
+      if(dmg <= 0){
+        target.hitFlash = 0.15;
+        spawnBurst(target,"#8fb5ff",6,0.7);
+      }
+    }
   }
   if(dmg > 0){
     target.hp -= dmg;
@@ -2662,7 +2688,8 @@ function startBattle(){
   const enemyTeam = buildEnemyTeam();
   const playerMobs = buildMobSwarm("player",G.wave);
   const enemyMobs = buildMobSwarm("enemy",G.wave);
-  G.battle = {player:G.team,enemies:enemyTeam,playerMobs:playerMobs,enemyMobs:enemyMobs,time:0,mobCache:null};
+  G.battle = {player:G.team,enemies:enemyTeam,playerMobs:playerMobs,enemyMobs:enemyMobs,time:0,mobCache:null,
+    kills:0,killsTotal:enemyTeam.length+enemyMobs.length};
   if(!findUnitById(G.selectedUnitId)) G.selectedUnitId = G.team[0] ? G.team[0].id : null;
   enemyTeam.forEach(recalcUnit);
   G.team.forEach(recalcUnit);
@@ -2865,7 +2892,9 @@ function updateUnitInfo(){
 function selectUnit(u){
   G.selectedUnitId = u.id;
   updateTeamList();
-  showToast("Info: "+u.emoji+" "+u.name);
+  // Im Kampf zeigt die Fokus-Anzeige alle Details live; ein Toast pro ◀/▶ oder Tap
+  // würde sonst die Kampfleiste und andere Meldungen überdecken.
+  if(G.phase !== "battle" || !G.battle) showToast("Info: "+u.emoji+" "+u.name);
 }
 function cycleFocus(dir){
   const list = G.battle ? G.battle.player : G.team;
@@ -2977,17 +3006,34 @@ function updatePlayerBossBar(){
 function updateBattleStatus(){
   if(SIM.headless) return;
   const bar = document.getElementById("battleStatus");
-  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  const eliteInfo = document.getElementById("eliteInfo");
+  if(G.phase !== "battle" || !G.battle){
+    bar.classList.remove("show");
+    eliteInfo.classList.remove("show");
+    return;
+  }
   bar.classList.add("show");
   const foes = sideUnits(G.battle,"enemy").filter(u => !u.isDead).length;
   const foeHeroes = G.battle.enemies.filter(u => !u.isDead).length;
   const heroes = G.battle.player.filter(u => !u.isDead).length;
   const mobsPlayer = (G.battle.playerMobs||[]).filter(u => !u.isDead).length;
-  const mobsEnemy = (G.battle.enemyMobs||[]).filter(u => !u.isDead).length;
+  const enemyMobs = G.battle.enemyMobs||[];
+  const mobsEnemy = enemyMobs.filter(u => !u.isDead).length;
+  const elitesTotal = enemyMobs.filter(m => m.isElite).length;
+  const elitesAlive = enemyMobs.filter(m => m.isElite && !m.isDead).length;
   document.getElementById("statusEnemies").textContent = String(foes);
   document.getElementById("statusFoeHeroes").textContent = foeHeroes+'/'+G.battle.enemies.length;
   document.getElementById("statusMobs").textContent = mobsPlayer+'/'+mobsEnemy;
   document.getElementById("statusHeroes").textContent = heroes+'/'+G.battle.player.length;
+  eliteInfo.classList.toggle("show",elitesTotal > 0);
+  document.getElementById("statusElites").textContent = elitesAlive+'/'+elitesTotal;
+}
+function updateBattleKills(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("battleKills");
+  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  bar.classList.add("show");
+  document.getElementById("battleKillsValue").textContent = (G.battle.kills||0)+'/'+(G.battle.killsTotal||0);
 }
 function updateTeamHpBar(){
   if(SIM.headless) return;
@@ -3002,6 +3048,24 @@ function updateTeamHpBar(){
   bar.classList.toggle("critical",pct <= 25);
   document.getElementById("teamHpFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("teamHpPct").textContent = Math.ceil(pct)+'%';
+}
+// Gegner-Stärke inklusive Schwarm: zeigt, wie nah der Sieg ist (grün ab ≤ 25 % Rest-HP).
+function updateEnemyHpBar(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("enemyHpBar");
+  if(G.phase !== "battle" || !G.battle){
+    bar.classList.remove("show");
+    bar.classList.remove("closing");
+    return;
+  }
+  const foes = sideUnits(G.battle,"enemy");
+  const maxHp = foes.reduce((s,u) => s+u.maxHp,0);
+  const current = foes.reduce((s,u) => s+(u.isDead ? 0 : Math.min(u.hp+(u.shield||0),u.maxHp)),0);
+  const pct = maxHp > 0 ? clamp(current/maxHp*100,0,100) : 0;
+  bar.classList.add("show");
+  bar.classList.toggle("closing",pct <= 25);
+  document.getElementById("enemyHpFill").style.width = pct.toFixed(1)+'%';
+  document.getElementById("enemyHpPct").textContent = Math.ceil(pct)+'%';
 }
 function updateBattleManaBar(){
   if(SIM.headless) return;
@@ -3021,11 +3085,27 @@ function updateBattleManaBar(){
   healReady.classList.toggle("ready-heal",G.mana >= 40);
   novaReady.classList.toggle("ready-nova",G.mana >= 70);
 }
+let lastBattleGold = null;
+let battleGoldGainUntil = 0;
 function updateBattleGold(){
   if(SIM.headless) return;
   const bar = document.getElementById("battleGold");
-  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  const gain = document.getElementById("battleGoldGain");
+  const now = performance.now();
+  if(G.phase !== "battle" || !G.battle){
+    bar.classList.remove("show");
+    gain.textContent = "";
+    gain.style.opacity = "0";
+    lastBattleGold = null;
+    return;
+  }
   bar.classList.add("show");
+  if(lastBattleGold !== null && G.gold > lastBattleGold){
+    gain.textContent = "+"+(G.gold-lastBattleGold);
+    battleGoldGainUntil = now+900;
+  }
+  gain.style.opacity = now < battleGoldGainUntil ? "1" : "0";
+  lastBattleGold = G.gold;
   document.getElementById("battleGoldValue").textContent = String(G.gold);
 }
 function updateBattleDudes(){
@@ -3099,10 +3179,14 @@ function updateFocusTarget(){
   const bar = document.getElementById("focusTarget");
   const name = document.getElementById("focusTargetName");
   const value = document.getElementById("focusTargetHp");
+  const fx = document.getElementById("focusTargetStatus");
+  const atk = document.getElementById("focusTargetAtk");
   bar.classList.remove("show");
   bar.classList.remove("critical");
   name.textContent = "–";
   value.textContent = "0/0";
+  fx.textContent = "";
+  atk.textContent = "0";
   if(G.phase !== "battle" || !G.battle) return;
   const u = findUnitById(G.selectedUnitId);
   if(!u || u.isDead || !u.target || u.target.isDead) return;
@@ -3113,6 +3197,8 @@ function updateFocusTarget(){
   name.textContent = (target.emoji ? target.emoji+" " : "")+target.name;
   value.textContent = Math.ceil(Math.max(0,target.hp))+"/"+Math.ceil(target.maxHp)+
     (target.shield > 0 ? " ⛨"+Math.ceil(target.shield) : "");
+  fx.textContent = activeStatusKeys(target).map(k => STATUS_META[k].emoji+Math.ceil(target.statuses[k])+"s").join(" ");
+  atk.textContent = String(Math.round(target.atk || 0));
 }
 function updateButtons(){
   if(SIM.headless) return;
@@ -3225,6 +3311,18 @@ function rerollDraft(){
   showToast("Draft neu gewürfelt (−1 Gold)");
   return true;
 }
+function draftPickLevel(){
+  if(!G.team.length) return 1;
+  return Math.max.apply(null,G.team.map(u => u.level));
+}
+function draftPreviewStats(key,lvl){
+  const base = ROSTER[key];
+  if(!base) return null;
+  return {
+    hp:Math.round(base.hp*(1+(lvl-1)*0.3)),
+    atk:Math.round(base.atk*(1+(lvl-1)*0.25)*10)/10
+  };
+}
 function renderDraftCards(){
   renderDraftFilters();
   document.getElementById("mdTitle").textContent = "Wähle dein Team";
@@ -3238,8 +3336,10 @@ function renderDraftCards(){
   reroll.textContent = "Reroll 1 Gold";
   const draft = document.getElementById("mdDraft");
   draft.innerHTML = '';
+  const previewLevel = draftPickLevel();
   draftKeys().forEach(key => {
     const unit = ROSTER[key];
+    const preview = draftPreviewStats(key,previewLevel);
     const classes = [unit.cls,unit.cls2].filter(Boolean).map(c => CLASS_META[c]).filter(Boolean);
     const race = RACE_META[unit.race];
     const spell = SPELLS[unit.spell];
@@ -3253,14 +3353,14 @@ function renderDraftCards(){
           <div class="rl">${ROLE_META[unit.role].label} · ${race ? race.label : unit.race} · ${classes.map(c => c.label).join(" / ")}</div>
         </div>
       </div>
-      <div class="stats">HP ${unit.hp} · ATK ${unit.atk} · ${ABILITY_DESC[unit.ability]}</div>
+      <div class="stats">Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk} · ${ABILITY_DESC[unit.ability]}</div>
       <div class="abil" style="color:${spell ? spell.color : "#e6edf5"}">${spell ? spell.name+" · "+spell.range+" Felder" : "—"}${unit.role === "HEALER" ? " · heilt bis "+unit.healRange+" Felder" : ""} · ${classes.map(c => c.label+": "+c.desc).join(" · ")}</div>
     `;
     card.onclick = () => {
       if(G.team.length >= G.teamSize){ showToast("Team ist bereits voll"); return; }
       if(G.gold < 2){ showToast("Zu wenig Gold – Wesen nicht verfügbar"); return; }
       G.gold -= 2;
-      const pickLevel = G.team.length ? Math.max.apply(null,G.team.map(u => u.level)) : 1;
+      const pickLevel = draftPickLevel();
       G.team.push(createUnit(key,pickLevel,"player"));
       G.selectedUnitId = G.team[G.team.length-1].id;
       refreshTeamStats();
@@ -3381,7 +3481,9 @@ window.addEventListener("load", () => {
     updateBossBar();
     updatePlayerBossBar();
     updateBattleStatus();
+    updateBattleKills();
     updateTeamHpBar();
+    updateEnemyHpBar();
     updateBattleManaBar();
     updateBattleGold();
     updateBattleDudes();

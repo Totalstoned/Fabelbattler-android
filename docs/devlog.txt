@@ -5,6 +5,20 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-23 23:35  v1.55-b56  (PRs #125-#133 integriert)
+  - Neun offene Loop-PRs per Cherry-Pick in separatem Worktree zusammengefuehrt.
+    Die PRs basierten auf v1.49/v1.51/v1.52 und kollidierten mit dem Stand v1.54;
+    mein erster Durchlauf hatte Konfliktmarker in die Commits gestaged. Reset auf
+    main und saubere Union-Aufloesung: ein Integrations-Commit statt neun
+    kaputter Zwischencommits.
+  - Features: Eliten-Zaehler, blauer Schildblock-Impuls, Fokus-Ziel-Statuseffekte
+    UND Angriffswert, Draft-Level-Vorschau, Fokuswechsel ohne Toast-Spam,
+    Gold-Gewinn +N, Gegner-Staerkebalken inkl. Schwarm, Besiegte-Gegner-Zaehler.
+  - check_data.py/check_runtime.js pruefen jetzt alle neuen Tokens; alle drei
+    Checks in Repo- und externer Kopie gruen.
+  - Naechster Schritt: CI/APK, PRs schliessen, User-Meldung zu "Flaeche ohne
+    Trennstrich / Einheiten zueinander laufen" umsetzen.
+
 2026-11-23 21:36  v1.54-b55  (Support-Cooldown)
   - Root-Cause fuer Kampf-Stillstand gefunden: supportAction() liess Einheiten
     mit shieldPct (Stahl-Buff) bei jedem Zyklus schilden statt anzugreifen,

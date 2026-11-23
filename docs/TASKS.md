@@ -179,14 +179,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
 - [x] **29. Toasts im Kampf oben** (v1.45)
   Die Toasts lagen mit `bottom:14px` und `z-index:99` direkt über der Kampfleiste und verdeckten Timer, Kampfstatus, Fokus- und Mana-Anzeige. `body.battle-mode .toasts` setzt sie auf `top:14px` (`bottom:auto`, `pointer-events:none`); außerhalb des Kampfes bleibt die alte Position.
   *Erledigt:* `check_runtime.js` prüft die CSS-Regel; `check_data.py` und die Kampf-Simulation bleiben grün.
-- [x] **30. Fokus-Ziel in der Kampfleiste** (v1.46)
-  `updateFocusTarget()` zeigt ➤ Ziel mit Namen, Rest-HP und Schild des Wesens, das der
-  per ◀/▶ fokussierte Held aktuell angreift. Bei kritischem Ziel (≤ 25 %) pulsiert der
-  Wert rot; ohne Ziel, bei totem Ziel/Fokus und außerhalb des Kampfes ist die Anzeige
-  ausgeblendet. Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet, daher war
-  bisher nicht ablesbar, gegen wen der Fokus kämpft und wie nah der Kill ist.
-  *Erledigt:* `check_runtime.js` prüft Anzeige, HP/Schild, kritische HP, totes Ziel,
-  toten Fokus und Ausblenden; `check_data.py` prüft die UI-Tokens.
+- [x] **30. Fokus-Ziel in der Kampfleiste** (v1.46, erweitert v1.51)
+  `updateFocusTarget()` zeigt ➤ Ziel mit Namen, Rest-HP, Schild und Angriffswert des
+  Wesens, das der per ◀/▶ fokussierte Held aktuell angreift. Bei kritischem Ziel
+  (≤ 25 %) pulsiert der Wert rot; ohne Ziel, bei totem Ziel/Fokus und außerhalb des
+  Kampfes ist die Anzeige ausgeblendet. Im Kampfmodus sind HUD und Einheiten-Panel
+  ausgeblendet; der live ATK-Wert zeigt die Bedrohung des Ziels direkt an.
+  *Erledigt:* `check_runtime.js` prüft Anzeige, HP/Schild/ATK, kritische HP, totes
+  Ziel, toten Fokus und Ausblenden; `check_data.py` prüft die UI-Tokens.
 
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
@@ -215,3 +215,18 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* Harness 12/12 Siege statt Timeouts (Welle 3), 5/5 Siege bei
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
+
+- [x] **33. Neun Loop-PRs (#125–#133) als Union integriert** (v1.55)
+  PRs #125 (Eliten-Zähler), #126 (blauer Schildblock-Impuls), #127
+  (Fokus-Ziel-Statuseffekte), #128 (Draft-Level-Vorschau), #129 (Fokuswechsel
+  ohne Toast-Spam), #130 (Gold-Gewinn `+N`), #131 (Gegner-Stärkebalken),
+  #132 (besiegte Gegner) und #133 (Fokus-Ziel-Angriffswert) wurden per
+  Cherry-Pick in einem separaten Worktree zusammengeführt. Da alle PRs auf
+  älteren Versionen (v1.49/v1.51/v1.52) basierten, gab es Konflikte in
+  `index3d.html`, `check_data.py`, `check_runtime.js` und den Docs; diese wurden
+  als **Union** aufgelöst, sodass alle Features und alle Token-Prüfungen
+  erhalten bleiben. Ein sauberer Integrations-Commit statt neun kaputter
+  Zwischencommits.
+  *Erledigt:* alle drei Checks in Repo- und externer Kopie grün; `check_runtime.js`
+  prüft jetzt zusätzlich `focusQuiet`/`focusToastInPrep`, alle neuen IDs und
+  den kombinierten Status-String.

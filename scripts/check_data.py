@@ -161,18 +161,27 @@ if not mob_cap or int(mob_cap.group(1)) != 500:
 for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'updateMobVisuals', 'hudMobs', 'mdReroll', 'rerollDraft', 'slice(0,3)', 'mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'draftFilterRole', 'draftSynergyText', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'function useItem', 'ELITE_EVERY', 'BOSS_EVERY', 'MOB_TIERS', 'mobTierFor', 'isBoss', 'isElite', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'function updateBattleStatus']:
     if token not in src:
         problems.append('Mob-System fehlt: ' + token)
+for token in ['battleKills', 'battleKillsValue', 'function updateBattleKills', 'killsTotal', 'G.battle.kills++']:
+    if token not in src:
+        problems.append('Besiegte-Gegner-Anzeige in der Kampfleiste fehlt: ' + token)
 for token in ['heroAlert', 'heroAlertCount', 'function updateHeroAlert']:
     if token not in src:
         problems.append('Kritische-Helden-Warnung fehlt: ' + token)
 for token in ['teamHpBar', 'teamHpFill', 'teamHpPct', 'function updateTeamHpBar']:
     if token not in src:
         problems.append('Team-HP-Balken fehlt: ' + token)
+for token in ['enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'function updateEnemyHpBar', 'enemyhp.closing']:
+    if token not in src:
+        problems.append('Gegner-Stärkebalken fehlt: ' + token)
 for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'ready-heal', 'ready-nova', 'function updateBattleManaBar']:
     if token not in src:
         problems.append('Mana-Anzeige in der Kampfleiste fehlt: ' + token)
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['id="battleGoldGain"', 'battleGoldGainUntil', 'battle-info.gold b.gain']:
+    if token not in src:
+        problems.append('Gold-Gewinn-Feedback in der Kampfleiste fehlt: ' + token)
 for token in ['playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'function updatePlayerBossBar']:
     if token not in src:
         problems.append('Eigener Boss-Lebensbalken fehlt: ' + token)
@@ -198,15 +207,21 @@ for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
 for token in ['id="focusMeta"', 'function updateFocusMeta']:
     if token not in src:
         problems.append('Fokus-Level/Rolle in der Kampfleiste fehlt: ' + token)
-for token in ['focusTarget', 'focusTargetName', 'focusTargetHp', 'function updateFocusTarget']:
+for token in ['focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'function updateFocusTarget', 'activeStatusKeys(target).map']:
     if token not in src:
         problems.append('Fokus-Ziel in der Kampfleiste fehlt: ' + token)
+for token in ['eliteInfo', 'statusElites', 'enemyMobs.filter(m => m.isElite)', 'battle-info.status .elites.show']:
+    if token not in src:
+        problems.append('Eliten-Zähler im Kampfstatus fehlt: ' + token)
 for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:
     if token not in src:
         problems.append('Treffer-Impuls für Mobs fehlt: ' + token)
 for token in ['function hasDamageFx', 'hasDamageFx(u)', 'u.isElite', 'u.isBoss']:
     if token not in src:
         problems.append('Treffer-Feedback für Elite-/Boss-Mobs fehlt: ' + token)
+for token in ['function draftPickLevel', 'function draftPreviewStats', 'const previewLevel = draftPickLevel()', 'Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk}', 'const pickLevel = draftPickLevel()']:
+    if token not in src:
+        problems.append('Level-Vorschau im Draft fehlt: ' + token)
 if len(roster) != len(set(roster)):
     problems.append('doppelte Einheitenschlüssel')
 

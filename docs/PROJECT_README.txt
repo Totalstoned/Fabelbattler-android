@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.45-b46
+Aktuelle Version: v1.55-b56
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -338,6 +338,22 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
 
+v1.55-b56 2026-11-23  (9 Loop-PRs #125-#133 integriert)
+   - Eliten-Zaehler im Kampfstatus (✨ Elite x/y, eliteInfo/statusElites).
+   - Blauer Trefferimpuls bei vollstaendig absorbierten Schlaegen (hitFlash +
+     spawnBurst "#8fb5ff"), damit Blocken nicht wie ein ausbleibender Treffer wirkt.
+   - Statuseffekte im Fokus-Ziel (focusTargetStatus, activeStatusKeys(target).map).
+   - Draft-Karten mit Level-Vorschau (draftPickLevel/draftPreviewStats: Lv/HP/ATK).
+   - Fokuswechsel im Kampf ohne Toast-Spam; ausserhalb des Kampfes bleibt der
+     Info-Toast (showToast nur wenn phase !== "battle").
+   - Gold-Gewinn-Feedback "+N" in der Kampfleiste (battleGoldGain).
+   - Gegner-Staerkebalken inklusive Schwarm (enemyHpBar/Fill/Pct, gruen ab <=25 %).
+   - Besiegte Gegner in der Kampfleiste (battleKills/battleKillsValue,
+     G.battle.kills/killsTotal).
+   - Fokus-Ziel zeigt zusaetzlich den Angriffswert (focusTargetAtk, live).
+   - Alle Konflikte als Union aufgeloest: check_data.py und check_runtime.js
+     pruefen jetzt ALLE neuen UI-Tokens, drei Checks in beiden Dateikopien gruen.
+
 v1.54-b55 2026-11-23  (Support-Cooldown gegen Stillstand)
    - Ursache fuer nie endende Kaempfe: supportAction() schildete bei jedem
      Zyklus, sobald ein Verbündeter unter 78 % HP+Schild lag. Durch den
@@ -425,6 +441,7 @@ Core-Loop-Status:
   [x] 29. Toasts im Kampf oben (v1.45)
   [x] 30. Fokus-Ziel in der Kampfleiste (v1.46)
   [x] 29. Niederlage-Zusammenfassung im Toast (v1.45)
+  [x] 31. Eliten-Zaehler im Kampfstatus (v1.49)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
@@ -524,3 +541,6 @@ Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung):
   - v1.48 Niederlage-Toast mit Kampfbilanz (Dauer, Helden, Gegner uebrig).
   - PRs #121-#124 geschlossen, 0 offen. Externe Quelle synchronisiert.
   - CI und APK fuer v1.48-b49 folgen.
+
+[Hinweis: Der Eliten-Zaehler aus PR #125 wurde nicht als eigenes v1.49 ausgeliefert,
+sondern mit den uebrigen Loop-PRs zusammen in v1.55-b56 integriert.]

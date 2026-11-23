@@ -116,7 +116,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -318,6 +318,29 @@ if (vm.runInContext('globalThis.__foeDraftLeak', ctx)) {
 }
 if (vm.runInContext('globalThis.__foeMonsterLeak', ctx)) {
   throw new Error('Gegnerteams enthalten noch Monster aus dem Spielerpool');
+}
+
+if (!html.includes('Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk}')) {
+  throw new Error('Draft-Karten zeigen kein Level und keine skalierten Werte');
+}
+vm.runInContext(`
+  G.phase = "draft";
+  G.team = [createUnit("bigfoot",3,"player"), createUnit("fee",2,"player")];
+  const lvl = draftPickLevel();
+  const low = draftPreviewStats("bigfoot",1);
+  const high = draftPreviewStats("bigfoot",lvl);
+  renderDraftCards();
+  globalThis.__draftLevelCheck = lvl === 3 && low.hp === ROSTER.bigfoot.hp &&
+    high.hp === Math.round(ROSTER.bigfoot.hp*1.6) && high.hp > low.hp && high.atk > low.atk;
+  G.team = [];
+  globalThis.__draftLevelReset = draftPickLevel() === 1;
+  G.phase = "menu";
+`, ctx);
+if (!vm.runInContext('globalThis.__draftLevelCheck', ctx)) {
+  throw new Error('Draft-Vorschau skaliert nicht mit dem Teamlevel');
+}
+if (!vm.runInContext('globalThis.__draftLevelReset', ctx)) {
+  throw new Error('Draft-Picklevel fällt ohne Team nicht auf 1 zurück');
 }
 
 vm.runInContext(`
@@ -528,6 +551,85 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  const killBar = document.getElementById("battleKills");
+  const killValue = document.getElementById("battleKillsValue");
+  updateBattleKills();
+  globalThis.__killsHidden = !killBar.classList.contains("show");
+  G.wave = 1;
+  startBattle();
+  const killsTotal = G.battle.enemies.length + G.battle.enemyMobs.length;
+  updateBattleKills();
+  globalThis.__killsStart = killBar.classList.contains("show") && killValue.textContent === "0/"+killsTotal;
+  killUnit(G.battle.enemies[0], null);
+  killUnit(G.battle.enemyMobs[0], null);
+  updateBattleKills();
+  globalThis.__killsLive = killValue.textContent === "2/"+killsTotal;
+  killUnit(G.battle.player[0], null);
+  updateBattleKills();
+  globalThis.__killsAllyIgnored = killValue.textContent === "2/"+killsTotal;
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleKills();
+  globalThis.__killsHide = !killBar.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__killsHidden', 'Besiegte-Gegner-Anzeige erscheint außerhalb des Kampfes'],
+  ['__killsStart', 'Besiegte-Gegner-Anzeige zeigt nicht den Startwert 0/Gesamt'],
+  ['__killsLive', 'Besiegte-Gegner-Anzeige zählt besiegte Gegner nicht'],
+  ['__killsAllyIgnored', 'Besiegte-Gegner-Anzeige zählt gefallene Helden fälschlich mit'],
+  ['__killsHide', 'Besiegte-Gegner-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  updateBattleStatus();
+  const eliteInfo = document.getElementById("eliteInfo");
+  globalThis.__eliteHiddenWave1 = !eliteInfo.classList.contains("show") &&
+    document.getElementById("statusElites").textContent === "0/0";
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  const elites = G.battle.enemyMobs.filter(m => m.isElite);
+  updateBattleStatus();
+  const eliteTotal = elites.length;
+  globalThis.__eliteShow = eliteTotal > 0 && eliteInfo.classList.contains("show") &&
+    document.getElementById("statusElites").textContent === eliteTotal+'/'+eliteTotal;
+  elites[0].isDead = true;
+  updateBattleStatus();
+  globalThis.__eliteLive = document.getElementById("statusElites").textContent === (eliteTotal-1)+'/'+eliteTotal &&
+    eliteInfo.classList.contains("show");
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleStatus();
+  globalThis.__eliteHide = !eliteInfo.classList.contains("show");
+`, ctx);
+
+if (!vm.runInContext('globalThis.__eliteHiddenWave1', ctx)) {
+  throw new Error('Eliten-Zähler erscheint in Welle 1 ohne Eliten');
+}
+if (!vm.runInContext('globalThis.__eliteShow', ctx)) {
+  throw new Error('Eliten-Zähler zeigt die gegnerischen Eliten nicht');
+}
+if (!vm.runInContext('globalThis.__eliteLive', ctx)) {
+  throw new Error('Eliten-Zähler reagiert nicht auf getötete Eliten');
+}
+if (!vm.runInContext('globalThis.__eliteHide', ctx)) {
+  throw new Error('Eliten-Zähler verschwindet nicht außerhalb des Kampfes');
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   G.wave = 1;
   startBattle();
   const alert = document.getElementById("heroAlert");
@@ -631,6 +733,62 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  const enemyHpBar = document.getElementById("enemyHpBar");
+  const enemyHpFill = document.getElementById("enemyHpFill");
+  const enemyHpPct = document.getElementById("enemyHpPct");
+  updateEnemyHpBar();
+  globalThis.__enemyHpHidden = !enemyHpBar.classList.contains("show") &&
+    !enemyHpBar.classList.contains("closing");
+  G.wave = 1;
+  startBattle();
+  const foes = sideUnits(G.battle, "enemy");
+  foes.forEach(u => { u.hp = u.maxHp; u.shield = 0; u.isDead = false; });
+  updateEnemyHpBar();
+  globalThis.__enemyHpFull = enemyHpBar.classList.contains("show") &&
+    parseFloat(enemyHpFill.style.width) === 100 && enemyHpPct.textContent === "100%" &&
+    !enemyHpBar.classList.contains("closing");
+  const enemyTotalMax = foes.reduce((s,u) => s+u.maxHp, 0);
+  foes[0].hp = foes[0].maxHp * 0.5;
+  updateEnemyHpBar();
+  globalThis.__enemyHpDamage = Math.abs(parseFloat(enemyHpFill.style.width) -
+    (enemyTotalMax - foes[0].maxHp * 0.5) / enemyTotalMax * 100) < 0.2;
+  foes[0].shield = foes[0].maxHp * 0.5;
+  updateEnemyHpBar();
+  globalThis.__enemyHpShield = parseFloat(enemyHpFill.style.width) === 100 &&
+    enemyHpPct.textContent === "100%";
+  foes[0].shield = 0;
+  foes.forEach(u => { u.hp = u.maxHp * 0.1; u.shield = 0; });
+  updateEnemyHpBar();
+  globalThis.__enemyHpClosing = enemyHpBar.classList.contains("closing") &&
+    parseFloat(enemyHpPct.textContent) <= 25;
+  foes[0].isDead = true;
+  foes.slice(1).forEach(u => { u.hp = u.maxHp; u.shield = 0; });
+  updateEnemyHpBar();
+  globalThis.__enemyHpDead = !enemyHpBar.classList.contains("closing") &&
+    parseFloat(enemyHpFill.style.width) > 25;
+  G.phase = "menu";
+  G.battle = null;
+  updateEnemyHpBar();
+  globalThis.__enemyHpHide = !enemyHpBar.classList.contains("show") &&
+    !enemyHpBar.classList.contains("closing");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__enemyHpHidden', 'Gegner-Stärkebalken erscheint außerhalb des Kampfes'],
+  ['__enemyHpFull', 'Gegner-Stärkebalken startet nicht bei 100 %'],
+  ['__enemyHpDamage', 'Gegner-Stärkebalken reagiert nicht auf Schaden'],
+  ['__enemyHpShield', 'Gegner-Stärkebalken berücksichtigt Schilde nicht'],
+  ['__enemyHpClosing', 'Gegner-Stärkebalken zeigt nahen Sieg nicht grün an'],
+  ['__enemyHpDead', 'Gegner-Stärkebalken zählt tote Gegner falsch'],
+  ['__enemyHpHide', 'Gegner-Stärkebalken verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   const mana = document.getElementById("battleMana");
   const manaFill = document.getElementById("battleManaFill");
   const manaValue = document.getElementById("battleManaValue");
@@ -687,26 +845,31 @@ vm.runInContext(`
   beginRun();
   const goldBar = document.getElementById("battleGold");
   const goldValue = document.getElementById("battleGoldValue");
+  const goldGain = document.getElementById("battleGoldGain");
   updateBattleGold();
-  globalThis.__goldHidden = !goldBar.classList.contains("show");
+  globalThis.__goldHidden = !goldBar.classList.contains("show") && goldGain.textContent === "";
   G.wave = 1;
   startBattle();
   G.gold = 20;
   updateBattleGold();
-  globalThis.__goldShow = goldBar.classList.contains("show") && goldValue.textContent === "20";
+  globalThis.__goldShow = goldBar.classList.contains("show") && goldValue.textContent === "20" &&
+    goldGain.textContent === "";
   G.gold = 47;
   updateBattleGold();
   globalThis.__goldLive = goldBar.classList.contains("show") && goldValue.textContent === "47";
+  globalThis.__goldGain = goldGain.textContent === "+27" && goldGain.style.opacity === "1";
   G.phase = "menu";
   G.battle = null;
   updateBattleGold();
-  globalThis.__goldHide = !goldBar.classList.contains("show");
+  globalThis.__goldHide = !goldBar.classList.contains("show") && goldGain.textContent === "" &&
+    goldGain.style.opacity === "0";
 `, ctx);
 
 for (const [flag, message] of [
   ['__goldHidden', 'Gold-Anzeige erscheint außerhalb des Kampfes'],
   ['__goldShow', 'Gold-Anzeige zeigt den Startwert nicht an'],
   ['__goldLive', 'Gold-Anzeige reagiert nicht auf Gold-Änderungen'],
+  ['__goldGain', 'Gold-Gewinn wird nicht als +N in der Kampfleiste hervorgehoben'],
   ['__goldHide', 'Gold-Anzeige verschwindet nicht außerhalb des Kampfes'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
@@ -830,6 +993,43 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
+  clearEffects();
+  beginRun();
+  startBattle();
+  const sbBlocked = G.battle.player[0];
+  const sbEffectsBefore = G.effects.length, sbParticlesBefore = G.particles.length;
+  sbBlocked.hp = sbBlocked.maxHp;
+  sbBlocked.shield = sbBlocked.maxHp * 0.5;
+  sbBlocked.hitFlash = 0;
+  const sbHpBefore = sbBlocked.hp, sbShieldBefore = sbBlocked.shield;
+  applyDamage(sbBlocked, sbBlocked.maxHp * 0.1, null, {});
+  globalThis.__shieldHitFeedback = sbBlocked.hp === sbHpBefore &&
+    sbBlocked.shield < sbShieldBefore && sbBlocked.hitFlash > 0 &&
+    G.effects.length > sbEffectsBefore && G.particles.length > sbParticlesBefore;
+  // Schadenspunkte ohne Zahlen (DoT/Splash) bleiben auch bei Schild still.
+  const sbQuiet = G.battle.player[1];
+  sbQuiet.hp = sbQuiet.maxHp;
+  sbQuiet.shield = sbQuiet.maxHp * 0.5;
+  sbQuiet.hitFlash = 0;
+  const sbQuietEffects = G.effects.length, sbQuietParticles = G.particles.length;
+  applyDamage(sbQuiet, sbQuiet.maxHp * 0.1, null, {number:false});
+  globalThis.__quietShieldCheck = sbQuiet.hp === sbQuiet.maxHp && sbQuiet.hitFlash === 0 &&
+    G.effects.length === sbQuietEffects && G.particles.length === sbQuietParticles;
+  clearEffects();
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__shieldHitFeedback', 'Komplett blockierte Treffer zeigen keinen blauen Impuls'],
+  ['__quietShieldCheck', 'Stille Schild-Treffer erzeugen ungewolltes Feedback'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
   beginRun();
   startBattle();
   const bar = document.getElementById("focusHp");
@@ -932,15 +1132,19 @@ vm.runInContext(`
   const targetBar = document.getElementById("focusTarget");
   const targetName = document.getElementById("focusTargetName");
   const targetValue = document.getElementById("focusTargetHp");
+  const targetFx = document.getElementById("focusTargetStatus");
+  const targetAtk = document.getElementById("focusTargetAtk");
   targetHero.target = null;
   updateFocusTarget();
-  globalThis.__targetNone = !targetBar.classList.contains("show") && targetName.textContent === "–";
+  globalThis.__targetNone = !targetBar.classList.contains("show") && targetName.textContent === "–" &&
+    targetFx.textContent === "" && targetAtk.textContent === "0";
   targetHero.target = targetFoe;
   targetFoe.shield = 0;
   updateFocusTarget();
   globalThis.__targetShow = targetBar.classList.contains("show") &&
     targetName.textContent === targetFoe.emoji+" "+targetFoe.name &&
     targetValue.textContent === Math.ceil(targetFoe.hp)+"/"+Math.ceil(targetFoe.maxHp) &&
+    targetAtk.textContent === String(Math.round(targetFoe.atk)) &&
     !targetBar.classList.contains("critical");
   targetFoe.hp = targetFoe.maxHp*0.2;
   updateFocusTarget();
@@ -949,6 +1153,15 @@ vm.runInContext(`
   targetFoe.shield = targetFoe.maxHp*0.1;
   updateFocusTarget();
   globalThis.__targetShield = targetValue.textContent.indexOf(" ⛨") >= 0;
+  targetFoe.statuses = {burn:3, stun:1, unknown:9};
+  updateFocusTarget();
+  globalThis.__targetStatus = targetFx.textContent === "🔥3s 💫1s";
+  targetFoe.statuses = {};
+  updateFocusTarget();
+  globalThis.__targetStatusClear = targetFx.textContent === "";
+  targetFoe.atk += 7;
+  updateFocusTarget();
+  globalThis.__targetAtkLive = targetAtk.textContent === String(Math.round(targetFoe.atk));
   targetFoe.isDead = true;
   updateFocusTarget();
   globalThis.__targetDead = !targetBar.classList.contains("show") && targetName.textContent === "–";
@@ -961,7 +1174,8 @@ vm.runInContext(`
   G.battle = null;
   updateFocusTarget();
   globalThis.__targetHide = !targetBar.classList.contains("show") &&
-    !targetBar.classList.contains("critical") && targetName.textContent === "–" && targetValue.textContent === "0/0";
+    !targetBar.classList.contains("critical") && targetName.textContent === "–" && targetValue.textContent === "0/0" &&
+    targetFx.textContent === "" && targetAtk.textContent === "0";
 `, ctx);
 
 vm.runInContext(`
@@ -1004,9 +1218,12 @@ for (const [flag, message] of [
   ['__focusHide', 'Fokus-HP-Anzeige verschwindet nicht außerhalb des Kampfes'],
   ['__focusCdHide', 'Fokus-Cooldown verschwindet nicht außerhalb des Kampfes'],
   ['__targetNone', 'Fokus-Ziel erscheint ohne Ziel'],
-  ['__targetShow', 'Fokus-Ziel zeigt Namen und Rest-HP nicht'],
+  ['__targetShow', 'Fokus-Ziel zeigt Namen, Rest-HP und Angriff nicht'],
   ['__targetCritical', 'Fokus-Ziel markiert kritische HP nicht'],
   ['__targetShield', 'Fokus-Ziel zeigt den Schild nicht'],
+  ['__targetStatus', 'Fokus-Ziel zeigt aktive Statuseffekte nicht'],
+  ['__targetStatusClear', 'Fokus-Ziel löscht abgelaufene Statuseffekte nicht'],
+  ['__targetAtkLive', 'Fokus-Ziel zeigt den Angriffswert nicht live'],
   ['__targetDead', 'Fokus-Ziel bleibt nach dem Tod des Ziels sichtbar'],
   ['__targetFocusDead', 'Fokus-Ziel bleibt bei einem toten Fokus sichtbar'],
   ['__targetHide', 'Fokus-Ziel verschwindet nicht außerhalb des Kampfes'],
@@ -1079,4 +1296,33 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  const focusToasts = [];
+  const origFocusToast = showToast;
+  showToast = function(msg){ focusToasts.push(msg); };
+  const firstFocus = G.battle.player[0];
+  G.selectedUnitId = firstFocus.id;
+  cycleFocus(1);
+  const cycledId = G.selectedUnitId;
+  selectUnit(firstFocus);
+  globalThis.__focusQuietInBattle = focusToasts.length === 0 && cycledId !== firstFocus.id;
+  G.phase = "prep";
+  G.battle = null;
+  selectUnit(firstFocus);
+  showToast = origFocusToast;
+  globalThis.__focusToastInPrep = focusToasts.length === 1 &&
+    focusToasts[0] === "Info: "+firstFocus.emoji+" "+firstFocus.name;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__focusQuietInBattle', 'Fokuswechsel im Kampf erzeugt Toast-Spam trotz Fokus-Anzeige'],
+  ['__focusToastInPrep', 'Fokus-Auswahl außerhalb des Kampfes zeigt keinen Info-Toast mehr'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
