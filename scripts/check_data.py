@@ -164,6 +164,12 @@ for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'function updat
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['MANA_COST', 'MANA_COST.heal', 'MANA_COST.nova', 'btnBattleHeal', 'btnBattleNova']:
+    if token not in src:
+        problems.append('Mana-Kosten an den Kampf-Buttons fehlen: ' + token)
+for token in ['id="btnBattleHeal">Heilregen (40)<', 'id="btnBattleNova">Blitz (70)<']:
+    if token not in src:
+        problems.append('Kampf-Button zeigt die Mana-Kosten nicht: ' + token)
 for token in ['focusHp', 'focusName', 'focusHpValue', 'function updateFocusHp']:
     if token not in src:
         problems.append('Fokus-HP-Anzeige in der Kampfleiste fehlt: ' + token)
