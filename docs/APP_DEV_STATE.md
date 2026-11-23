@@ -13,7 +13,7 @@ Letztes Update: 2026-11-23
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.48**, Build **49**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.44-b45.apk`).
+- Version **1.51**, Build **52**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.44-b45.apk`).
 - Letztes geprüftes APK: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
@@ -49,7 +49,7 @@ Letztes Update: 2026-11-23
 - Kampfleiste zeigt seit v1.40 zusätzlich den HP-Balken des eigenen Boss (`updatePlayerBossBar()`, `playerBossBar`): Bosse spawnen auf beiden Seiten, bisher war aber nur der Gegner-Boss sichtbar. Der Balken ist türkis, bei ≤ 25 % HP rot/pulsierend und verschwindet nach dem Tod; beide Balken tragen jetzt die Labels „Gegner“/„Team“.
 - Fokus-Anzeige zeigt seit v1.41 den live Angriffswert (`focusAtkValue` in `updateFocusHp()`): Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet, daher war der ATK-Wert trotz Name/HP/Status/Zauber nicht ablesbar; Buffs wie `killAtk` wirken sofort, bei totem Fokus und außerhalb des Kampfes wird der Wert zurückgesetzt.
 - Stirbt der fokussierte Held im Kampf, springt der Fokus seit v1.42 automatisch auf den nächsten lebenden Helden (`killUnit()`), damit Fokus-HP, Zauber-Cooldown und Statuseffekte ohne manuelles Umschalten weiter nutzbar bleiben.
-- Fokus-Anzeige zeigt seit v1.45 das aktuelle Ziel des fokussierten Wesens mit Namen, Rest-HP und Schild (`focusTarget`, `updateFocusTarget()`); bei totem Ziel/Fokus und außerhalb des Kampfes ausgeblendet.
+- Fokus-Anzeige zeigt seit v1.51 das aktuelle Ziel des fokussierten Wesens mit Namen, Rest-HP, Schild und Angriff (`focusTarget`, `focusTargetAtk`, `updateFocusTarget()`); bei totem Ziel/Fokus und außerhalb des Kampfes ausgeblendet.
 - Mana-Anzeige markiert seit v1.37 die Zauber-Bereitschaft (`manaHealReady`/`manaNovaReady`): Während des Kampfes leuchten `✚40` und `✺70` auf, sobald Heilregen (40) bzw. Fabel-Blitz (70) bezahlbar sind. Die Mana regeneriert laufend; die Marker machen den Zeitpunkt des nächsten Zaubers direkt an der Kampfleiste ablesbar. Außerhalb des Kampfes ausgeblendet.
 - Kampfleiste zeigt seit v1.37 den aktiven Duden-Bonus (`battleDudes`, `updateBattleDudes()`): +4 % HP/ATK pro Stack aus der Spielerseite; ohne Bonus und außerhalb des Kampfes ausgeblendet.
 - Elite- und Boss-Mobs zeigen seit v1.45 Trefferzahlen, Partikel und Schockwellen im 3D-Feld (`hasDamageFx()`); die normalen Schwarm-Mobs bleiben zugunsten der Performance effektfrei.

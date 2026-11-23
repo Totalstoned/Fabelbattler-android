@@ -105,7 +105,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -908,15 +908,17 @@ vm.runInContext(`
   const targetBar = document.getElementById("focusTarget");
   const targetName = document.getElementById("focusTargetName");
   const targetValue = document.getElementById("focusTargetHp");
+  const targetAtk = document.getElementById("focusTargetAtk");
   targetHero.target = null;
   updateFocusTarget();
-  globalThis.__targetNone = !targetBar.classList.contains("show") && targetName.textContent === "–";
+  globalThis.__targetNone = !targetBar.classList.contains("show") && targetName.textContent === "–" && targetAtk.textContent === "0";
   targetHero.target = targetFoe;
   targetFoe.shield = 0;
   updateFocusTarget();
   globalThis.__targetShow = targetBar.classList.contains("show") &&
     targetName.textContent === targetFoe.emoji+" "+targetFoe.name &&
     targetValue.textContent === Math.ceil(targetFoe.hp)+"/"+Math.ceil(targetFoe.maxHp) &&
+    targetAtk.textContent === String(Math.round(targetFoe.atk)) &&
     !targetBar.classList.contains("critical");
   targetFoe.hp = targetFoe.maxHp*0.2;
   updateFocusTarget();
@@ -925,6 +927,9 @@ vm.runInContext(`
   targetFoe.shield = targetFoe.maxHp*0.1;
   updateFocusTarget();
   globalThis.__targetShield = targetValue.textContent.indexOf(" ⛨") >= 0;
+  targetFoe.atk += 7;
+  updateFocusTarget();
+  globalThis.__targetAtkLive = targetAtk.textContent === String(Math.round(targetFoe.atk));
   targetFoe.isDead = true;
   updateFocusTarget();
   globalThis.__targetDead = !targetBar.classList.contains("show") && targetName.textContent === "–";
@@ -937,7 +942,7 @@ vm.runInContext(`
   G.battle = null;
   updateFocusTarget();
   globalThis.__targetHide = !targetBar.classList.contains("show") &&
-    !targetBar.classList.contains("critical") && targetName.textContent === "–" && targetValue.textContent === "0/0";
+    !targetBar.classList.contains("critical") && targetName.textContent === "–" && targetValue.textContent === "0/0" && targetAtk.textContent === "0";
 `, ctx);
 
 vm.runInContext(`
@@ -980,9 +985,10 @@ for (const [flag, message] of [
   ['__focusHide', 'Fokus-HP-Anzeige verschwindet nicht außerhalb des Kampfes'],
   ['__focusCdHide', 'Fokus-Cooldown verschwindet nicht außerhalb des Kampfes'],
   ['__targetNone', 'Fokus-Ziel erscheint ohne Ziel'],
-  ['__targetShow', 'Fokus-Ziel zeigt Namen und Rest-HP nicht'],
+  ['__targetShow', 'Fokus-Ziel zeigt Namen, Rest-HP und Angriff nicht'],
   ['__targetCritical', 'Fokus-Ziel markiert kritische HP nicht'],
   ['__targetShield', 'Fokus-Ziel zeigt den Schild nicht'],
+  ['__targetAtkLive', 'Fokus-Ziel zeigt den Angriffswert nicht live'],
   ['__targetDead', 'Fokus-Ziel bleibt nach dem Tod des Ziels sichtbar'],
   ['__targetFocusDead', 'Fokus-Ziel bleibt bei einem toten Fokus sichtbar'],
   ['__targetHide', 'Fokus-Ziel verschwindet nicht außerhalb des Kampfes'],
