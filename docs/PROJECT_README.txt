@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.45-b46
+Aktuelle Version: v1.51-b52
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -347,6 +347,15 @@ v1.50-b51 2026-11-23  (Gegner-Wesen)
    - check_data.py: 98 Einheiten / 51 Zauber, Biss-Tokens; check_runtime.js prueft,
      dass die drei Wesen im Gegnerpool liegen und nie im Draft auftauchen.
    - Version 1.50/b51 bewusst gewaehlt: v1.49/b50 ist bereits durch PR #125 belegt.
+
+v1.51-b52 2026-11-23  (Statuseffekte des Fokus-Ziels)
+   - Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet. Die Fokus-Ziel-Anzeige
+     (id focusTargetStatus) zeigt jetzt aktive Buffs/Debuffs des angegriffenen Wesens
+     als Emoji mit Restzeit (z. B. 🔥3s, 💫1s), damit Betäubung, Brand oder Stärkung
+     des Ziels direkt an der Kampfleiste ablesbar sind.
+   - updateFocusTarget() filtert unbekannte Effekte und leert die Anzeige bei fehlendem,
+     totem Ziel, totem Fokus und außerhalb des Kampfes.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige, Filter und Reset.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".

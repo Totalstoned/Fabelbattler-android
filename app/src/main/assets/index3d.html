@@ -143,7 +143,7 @@
   .battle-info.focustarget.critical b{color:#ff6b6b;animation:bossWarn .7s ease-in-out infinite;}
   .battle-info.focusmeta{display:none;color:#c9b6ff;}
   .battle-info.focusmeta.show{display:inline-block;}
-  .battle-info.focusbar .fx{font-size:10px;opacity:.85;margin-left:5px;}
+  .battle-info.focusbar .fx,.battle-info.focustarget .fx{font-size:10px;opacity:.85;margin-left:5px;}
   .battle-info.gold{display:none;color:var(--gold);}
   .battle-info.gold.show{display:inline-block;}
   .battle-info.gold b{color:#fff3c4;}
@@ -249,7 +249,7 @@
   <span class="battle-info focusmeta" id="focusMeta" title="Level und Rolle des fokussierten Wesens">Lv – · –</span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild, Angriff, Level, Rolle und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b> · ⚔ <b id="focusAtkValue">0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
-  <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Rest-HP und Schild">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetHp">0/0</b></span>
+  <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Rest-HP, Schild und Statuseffekten">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetHp">0/0</b><span class="fx" id="focusTargetStatus"></span></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b> <span class="spell-ready" id="manaHealReady" title="Heilregen ab 40 Mana verfügbar">✚40</span> <span class="spell-ready" id="manaNovaReady" title="Fabel-Blitz ab 70 Mana verfügbar">✺70</span></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
@@ -3074,10 +3074,12 @@ function updateFocusTarget(){
   const bar = document.getElementById("focusTarget");
   const name = document.getElementById("focusTargetName");
   const value = document.getElementById("focusTargetHp");
+  const fx = document.getElementById("focusTargetStatus");
   bar.classList.remove("show");
   bar.classList.remove("critical");
   name.textContent = "–";
   value.textContent = "0/0";
+  fx.textContent = "";
   if(G.phase !== "battle" || !G.battle) return;
   const u = findUnitById(G.selectedUnitId);
   if(!u || u.isDead || !u.target || u.target.isDead) return;
@@ -3088,6 +3090,7 @@ function updateFocusTarget(){
   name.textContent = (target.emoji ? target.emoji+" " : "")+target.name;
   value.textContent = Math.ceil(Math.max(0,target.hp))+"/"+Math.ceil(target.maxHp)+
     (target.shield > 0 ? " ⛨"+Math.ceil(target.shield) : "");
+  fx.textContent = activeStatusKeys(target).map(k => STATUS_META[k].emoji+Math.ceil(target.statuses[k])+"s").join(" ");
 }
 function updateButtons(){
   if(SIM.headless) return;
