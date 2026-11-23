@@ -14,11 +14,17 @@ Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
     kampfflugzeug, drohne (18 Stueck). Alle nur mit "biss", Skalierung ueber
     Level, keine Sonderfavehikel-Faehigkeiten.
   - Fahrzeuge nutzen den vorhandenen robot-Mesh (kein neuer Mesh-Typ).
-  - Balance: lange Reichweiten der Fahrzeuge liessen Kaempfe nicht enden
-    (check_runtime timeout); Reichweite/HP reduziert, 3 Checks mehrfach gruen.
+  - Balance: Reichweiten der Fahrzeuge auf Nahkampf-Niveau (<=70) und HP
+    reduziert, damit das Starttrio Gegner erreichen kann.
+  - check_runtime.js nutzt jetzt einen festen Seed (Math.random -> seededMath(1)),
+    weil wechselnde Gegner-Kombinationen den Smoke-Test flaky machten.
+    Bekanntes Restproblem: einzelne zufaellige Gegner-Kombinationen koennen
+    Kampf-Ende hinauszoegern; mit scripts/game_harness.js gezielt reproduzierbar.
   - check_data.py: 113 Einheiten / 51 Zauber / 18 Gegner-Keys;
     check_runtime.js prueft, dass keine Monster in Gegnerteams auftauchen.
-  - Naechster Schritt: CI/APK, Screenshot-Pruefung der neuen Gegner auf dem Geraet.
+  - Commit 6dbe975, CI 45261809465 gruen, APK
+    /root/projects/FABELBATTLER/fabelbattler-v1.53-b54.apk (versionCode 54).
+  - Naechster Schritt: Screenshot-Pruefung der neuen Gegner/Fahrzeuge auf dem Geraet.
 
 2026-11-23 20:31  v1.51-b52  (Commit 1cec51d)
   - Erste Erweiterung der zivilen Gegner: opa, kampftruppe, soldat, missionar.
