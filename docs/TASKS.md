@@ -122,6 +122,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar bleiben.
   *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert und Live-Updates;
   `check_data.py` prüft die UI-Tokens.
+
+- [x] **22. Live-Tier-Anzeige in der Kampfleiste** (v1.37)
+  `updateBattleTiers()` zeigt während des Kampfes „👑 Boss" und „✨ Elite N" für die noch
+  lebenden gegnerischen Boss-/Elite-Mobs. Der bisherige Boss-Hinweis in `battleInfo` war
+  statisch und blieb nach dem Boss-Tod stehen; er wurde entfernt. Außerhalb des Kampfes
+  ist die Anzeige leer und ausgeblendet.
+  *Erledigt:* `check_runtime.js` prüft Eliten in Welle 5, Boss+Eliten in Welle 10,
+  das Verschwinden nach Toden und außerhalb des Kampfes; `check_data.py` prüft die UI-Tokens.
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
