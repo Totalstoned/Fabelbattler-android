@@ -266,7 +266,7 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
-  - Details im Abschnitt "Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung)" unten.
+  - Details im Abschnitt "Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung)" unten.
 
 Weitere wichtige Commits ohne Versionssprung:
   20870e8 Folklore-Einheiten + prozedurale Modelle
@@ -347,9 +347,9 @@ einzelnen HP-Balken pro Mob, kein Reserve-Nachschub innerhalb einer Welle,
 kein Spatial-Hash fuer Fernkampf-Splash (Hero-Splash nutzt die volle Zielliste).
 
 
-Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
+Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung):
   - User-Entscheidung "Beides kombinieren": lokaler Loop + GitHub-Cron.
-  - Lokaler Loop scripts/auto-improve.sh (Intervall 600 s; PID/Aktualisierung
+  - Lokaler Loop scripts/auto-improve.sh (Intervall 900 s; PID/Aktualisierung
     in AUTO_IMPROVE.txt). Worktree, ein autonomer Lauf, drei Checks, danach PR.
     Stopp-Datei:
     /root/projects/FABELBATTLER/auto-improve.stop. Details AUTO_IMPROVE.txt.
@@ -359,7 +359,7 @@ Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
   - Fix 1a03252: Branch-Erkennung ueber Basis-Commit statt main..HEAD,
     Push auf HEAD:$BRANCH, Prompt verbietet Branch-Wechsel und begrenzt
     Versionsbumpen auf genau +1.
-  - GitHub-Cron .github/workflows/autonomous-app.yml: */10 * * * *,
+  - GitHub-Cron .github/workflows/autonomous-app.yml: */15 * * * *,
     OpenAI-Projekt-Key als OPENCODE_API_KEY + OPENAI_API_KEY hinterlegt,
     Modell openai/gpt-4o-mini, Action-Fehler behoben.
   - Cloud-Agent blockiert: OpenAI-Konto ohne Guthaben (insufficient_quota).
@@ -372,3 +372,11 @@ Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung):
     SHA-256 88f2bd7bcf1ad5d6e60c0caa7bc9dc03c56d134988b43458411fb718469f8821
   - Externe Quelle /root/fabelbattler/index3d.html synchronisiert; alle drei
     Checks dort und in der WebView-Datei gruen.
+
+2026-11-23 15:20 UTC – Takt auf 15 Minuten umgestellt:
+  - scripts/auto-improve.sh: INTERVAL=900, PR-Text "15-Minuten-Lauf".
+  - GitHub-Cron: */15 * * * *, Agent-Zeitbudget im Prompt auf 12 min.
+  - Duplikat-Schutz: Der Agent bekommt die Liste offener PRs und soll keines
+    dieser Ziele erneut umsetzen.
+  - Der Loop ist vorerst gestoppt: ueber 100 offene PRs (#21-#120), fast alle
+    Duplikate. Entscheidung zum Aufraeumen/Integrieren steht aus.

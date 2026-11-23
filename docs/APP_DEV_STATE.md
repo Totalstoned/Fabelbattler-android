@@ -43,7 +43,7 @@ Letztes Update: 2026-11-22
 - Fokus-Anzeige zeigt seit v1.35 live den Namen des fokussierten Wesens (`focusName`): `updateFocusHp()` läuft pro Frame, damit ◀/▶ sofort den richtigen Namen anzeigt und außerhalb des Kampfes zurücksetzt.
 - Kampfleiste zeigt seit v1.36 das aktuelle Gold (`updateBattleGold()`): Das HUD ist im Kampfmodus ausgeblendet, daher bleiben Gold-Gewinne durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar; außerhalb des Kampfes ausgeblendet.
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
-- GitHub-Issue #1 ist der Fortschrittskanal für den 10-Minuten-Hintergrund-Agenten.
+- GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
 
 ## Entwicklungsregeln
 

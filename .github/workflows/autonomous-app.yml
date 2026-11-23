@@ -2,7 +2,7 @@ name: Fabelbattler Autonomous Agent
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 concurrency:
@@ -62,7 +62,7 @@ jobs:
             - UE5-Daten und C++-Gerüst liegen außerhalb dieses Repos nur als spätere Option.
 
             Regeln:
-            - Der Workflow läuft alle 10 Minuten; bleibe daher strikt unter 8 Minuten und wähle wirklich nur ein kleines Ziel.
+            - Der Workflow läuft alle 15 Minuten; bleibe daher strikt unter 12 Minuten und wähle wirklich nur ein kleines Ziel.
             - Pro Lauf nur ein abgeschlossenes, kleines Ziel.
             - Keine Engine-Installation, keine großen Dependency-Neuerungen, keine Secrets oder Tokens in Dateien.
             - Kein Wechsel der Engine; Three.js/WebView bleibt der aktive Pfad.

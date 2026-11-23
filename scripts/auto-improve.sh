@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fabelbattler: alle 10 Minuten eine kleine, isolierte Verbesserung.
+# Fabelbattler: alle 15 Minuten eine kleine, isolierte Verbesserung.
 # Stopp:  touch /root/projects/FABELBATTLER/auto-improve.stop
 # Log:    /root/projects/FABELBATTLER/auto-improve.log
 set -uo pipefail
@@ -11,7 +11,7 @@ STOP="$OUT/auto-improve.stop"
 LOCK=/tmp/opencode/fabel-improve.lock
 GH_BIN=/tmp/opencode/gh/gh_2.104.0_linux_arm64/bin/gh
 GH_REPO=Totalstoned/Fabelbattler-android
-INTERVAL=600
+INTERVAL=900
 MODEL=opencode/big-pickle
 ONCE=0
 [ "${1:-}" = "once" ] && ONCE=1
@@ -67,6 +67,16 @@ Regeln:
 Antworte am Ende mit einer einzeiligen Zusammenfassung: Ziel, Ergebnis, nächster Schritt.
 EOF
 )
+  local OPEN_PRS
+  OPEN_PRS=$("$GH_BIN" pr list --repo "$GH_REPO" --state open --limit 50 \
+      --json number,title --jq '.[] | "#\(.number) \(.title)"' 2>/dev/null || true)
+  if [ -n "$OPEN_PRS" ]; then
+    PROMPT="$PROMPT
+
+Offene PRs – waehle KEINES dieser Ziele erneut, sonst entstehen Duplikate:
+$OPEN_PRS"
+  fi
+
   PROMPT="$PROMPT
 
 WICHTIG – Arbeitsverzeichnis: $WT
@@ -91,7 +101,7 @@ Der Hauptcheckout /root/fabelbattler/android ist tabu und darf nicht veraendert 
           local SUBJ
           SUBJ=$(cd "$WT" && git log -1 --pretty=%s)
           if "$GH_BIN" pr create --repo "$GH_REPO" --base main --head "$BRANCH" \
-               --title "$SUBJ" --body "Autonomer 10-Minuten-Lauf $TS. Alle Checks im Worktree grün. Bitte prüfen und mergen." >>"$LOG" 2>&1; then
+               --title "$SUBJ" --body "Autonomer 15-Minuten-Lauf $TS. Alle Checks im Worktree grün. Bitte prüfen und mergen." >>"$LOG" 2>&1; then
             log "PR für $BRANCH erstellt"
           else
             log "PR für $BRANCH fehlgeschlagen – Branch bleibt gepusht"
