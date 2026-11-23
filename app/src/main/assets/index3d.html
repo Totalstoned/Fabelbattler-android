@@ -709,7 +709,6 @@ function mobWaveSize(wave,side){
 }
 const GRID = {cols:8,rows:6};
 const TILE = 1.35;
-let arenaPulse = null;
 let synergyLinks = [];
 let draftTimer = null;
 let draftReturnPhase = "prep";
@@ -957,9 +956,8 @@ function buildArena(){
       arena.add(tile);
     }
   }
-  addGroundRect(-2.9,0,2.25,GRID.rows*TILE,0xa78bfa,0.06,0.012);
-  addGroundRect(2.9,0,2.25,GRID.rows*TILE,0xe5484d,0.06,0.012);
-  arenaPulse = addGroundRect(0,0,0.22,GRID.rows*TILE,0xf2c14e,0.5,0.02);
+  // Keine Trennlinie und keine farblichen Haelften: das Feld ist eine
+  // durchgehende Flaeche, auf der sich beide Seiten frei begegnen koennen.
   const ringGeo = new THREE.RingGeometry(0.36,0.44,32);
   const ringMat = new THREE.MeshBasicMaterial({color:0x2b3442,transparent:true,opacity:0.8,side:THREE.DoubleSide});
   [[-2.9,-2.7],[-2.9,2.7],[2.9,-2.7],[2.9,2.7]].forEach(pos => {
@@ -2741,7 +2739,6 @@ function updateVisuals(time,dt){
     resize();
   }
   motes.rotation.y = time*0.02;
-  if(arenaPulse) arenaPulse.material.opacity = 0.3+Math.sin(time*2.4)*0.14;
   const focusUnit = findUnitById(G.selectedUnitId);
   const focusGroup = focusUnit && !focusUnit.isDead ? unitGroups.get(focusUnit.id) : null;
   if(focusGroup){

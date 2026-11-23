@@ -216,6 +216,18 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **34. Kampffläche ohne Trennstrich** (v1.56)
+  User-Wunsch: „die Fläche soll ohne Trennstrich sein und die Einheiten können
+  zueinander [hin]laufen". `buildArena()` erzeugte einen goldenen Mittelstreifen
+  (`arenaPulse`) sowie zwei farbliche Seitenflächen – beides entfernt, inklusive
+  der Puls-Animation in `updateVisuals()`. Die Bewegung war bereits frei
+  (`moveUnit()` clampet auf `0..GRID.cols-1`, `collisionAt()` prüft nur
+  Einheitskollisionen, keine Seitenbindung).
+  *Erledigt:* `check_data.py` verbietet die Trennlinien-Tokens und verlangt das
+  vollständige Grid-Clamping; `check_runtime.js` misst während der Simulation
+  die minimale Distanz zwischen Helden und Gegnern (0,99 Felder < 2) und bricht
+  ab, wenn Einheiten auf ihren Seiten stehen bleiben.
+
 - [x] **33. Neun Loop-PRs (#125–#133) als Union integriert** (v1.55)
   PRs #125 (Eliten-Zähler), #126 (blauer Schildblock-Impuls), #127
   (Fokus-Ziel-Statuseffekte), #128 (Draft-Level-Vorschau), #129 (Fokuswechsel

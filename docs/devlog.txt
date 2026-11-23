@@ -5,6 +5,18 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-23 23:50  v1.56-b57  (Feld ohne Trennstrich)
+  - User: "die Fläche soll ohne trennstrich sein und die Einheiten können
+    zueinander kaufen" -> ich lese "kaufen" als "laufen" (zueinander hinlaufen).
+    Goldener Mittelstreifen (arenaPulse) und die zwei farblichen Seitenflaechen
+    aus buildArena() entfernt, inklusive Puls-Animation. Feld ist jetzt eine
+    durchgehende Flaeche; Eck-Ringe bleiben.
+  - Bewegung war schon seitenunabhaengig; jetzt per Check abgesichert:
+    check_data.py verbietet die Trennlinien-Tokens, check_runtime.js misst die
+    minimale Held-Gegner-Distanz waehrend der Simulation (0.99 Felder < 2).
+  - PRs #125-#133 wurden nach v1.55/CI gruen geschlossen, 0 offen.
+  - Naechster Schritt: CI/APK, User-Screenshot zum neuen Aussehen.
+
 2026-11-23 23:35  v1.55-b56  (PRs #125-#133 integriert)
   - Neun offene Loop-PRs per Cherry-Pick in separatem Worktree zusammengefuehrt.
     Die PRs basierten auf v1.49/v1.51/v1.52 und kollidierten mit dem Stand v1.54;

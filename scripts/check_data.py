@@ -266,6 +266,16 @@ for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block(
     if not status or status.group(1) not in statuses:
         problems.append('AURA_DEFS: ' + key + ' hat unbekannten Status ' + (status.group(1) if status else '?'))
 
+# Kampffläche: eine durchgehende Fläche ohne Mittelstreifen oder Seitenfarben.
+# moveUnit() clamping muss das komplette GRID erlauben, damit sich beide Seiten
+# in der Mitte begegnen können (keine Trennung nach u.side).
+for token in ['addGroundRect(0,0,0.22', 'addGroundRect(-2.9', 'addGroundRect(2.9', 'arenaPulse']:
+    if token in src:
+        problems.append('Trennlinie/seitliche Einfärbung in der Kampffläche vorhanden: ' + token)
+for token in ['function moveToward', 'gx = clamp(gx,0,GRID.cols-1)', 'gy = clamp(gy,0,GRID.rows-1)']:
+    if token not in src:
+        problems.append('Freie Bewegung über das ganze Kampffeld fehlt: ' + token)
+
 if problems:
     for p in problems[:30]:
         print('FEHLER:', p)

@@ -145,6 +145,7 @@ vm.runInContext(`
   globalThis.__timerText = "";
   globalThis.__simTicks = 0;
   globalThis.__simOutcomes = {wins: 0, losses: 0};
+  globalThis.__minMeetDist = 99;
   for (let round = 0; round < 5; round++) {
     G.phase = "menu";
     G.battle = null;
@@ -160,12 +161,23 @@ vm.runInContext(`
       if (G.battle) {
         globalThis.__maxBattleTime = Math.max(globalThis.__maxBattleTime, G.battle.time);
         globalThis.__timerText = document.getElementById("battleTimer").textContent;
+        // Begegnungs-Check: Helden und Gegner duerfen nicht auf ihren Seiten
+        // stehen bleiben, sondern muessen sich auf dem Feld annaehern.
+        for (const p of G.battle.player.filter(u => !u.isDead)) {
+          for (const e of G.battle.enemies.filter(u => !u.isDead)) {
+            const d = Math.hypot(p.grid.gx-e.grid.gx, p.grid.gy-e.grid.gy);
+            if (d < globalThis.__minMeetDist) globalThis.__minMeetDist = d;
+          }
+        }
       }
     }
     if (G.phase === "prep") globalThis.__simOutcomes.wins++;
     else if (G.phase === "defeat") globalThis.__simOutcomes.losses++;
   }
   if (SIM.headless) throw new Error('simulateBattle() hat den Headless-Modus nicht zurückgesetzt');
+  if (!(globalThis.__minMeetDist < 2)) {
+    throw new Error('Einheiten begegnen sich nicht auf dem Feld: minDist='+globalThis.__minMeetDist);
+  }
 
   G.phase = "menu";
   G.battle = null;
@@ -1325,4 +1337,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)})`);

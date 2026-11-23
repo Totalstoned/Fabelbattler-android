@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.55-b56
+Aktuelle Version: v1.56-b57
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,18 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.56-b57 2026-11-23  (Feld ohne Trennstrich)
+   - User-Wunsch: "Flaeche ohne Trennstrich" und die Einheiten sollen sich
+     begegnen ("zueinander laufen"). Der goldene Mittelstreifen (arenaPulse)
+     und die beiden farblichen Seitenflaechen wurden aus buildArena()
+     entfernt; die Eck-Ringe bleiben. Das Feld ist jetzt eine durchgehende
+     Flaeche ohne Seitenmarkierung.
+   - Bewegung war bereits seitenunabhaengig (moveUnit() clamp auf 0..GRID.cols-1,
+     collisionAt() prueft nur Einheiten, keine Seite). Neue Checks sichern das:
+     check_data.py verbietet die Trennlinien-Tokens und verlangt das volle
+     Grid-Clamping; check_runtime.js misst die minimale Distanz zwischen
+     Helden und Gegnern waehrend der Simulation (aktuell 0.99 Felder < 2).
 
 v1.55-b56 2026-11-23  (9 Loop-PRs #125-#133 integriert)
    - Eliten-Zaehler im Kampfstatus (✨ Elite x/y, eliteInfo/statusElites).
