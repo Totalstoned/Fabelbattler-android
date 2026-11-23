@@ -2508,6 +2508,9 @@ function winBattle(){
   const b = G.battle;
   const eliteGold = b && b.enemyMobs ? b.enemyMobs.filter(m => m.isElite).length*2 : 0;
   const bossGold = b && b.enemyMobs ? b.enemyMobs.filter(m => m.isBoss).length*15 : 0;
+  const duration = b ? Math.floor(b.time) : 0;
+  const survivors = b ? b.player.filter(u => !u.isDead).length : 0;
+  const heroTotal = b ? b.player.length : G.team.length;
   G.phase = "prep";
   G.battle = null;
   clearEffects();
@@ -2524,14 +2527,13 @@ function winBattle(){
     showToast("Team-Level-Up! Mindestlevel: "+minLvl);
   }
   G.wave++;
-  showToast("Welle "+cleared+" besiegt! +"+reward+" Gold"+(bossGold ? " (Boss +"+bossGold+")" : eliteGold ? " (Elite +"+eliteGold+")" : ""));
+  showToast("Welle "+cleared+" besiegt! +"+reward+" Gold"+(bossGold ? " (Boss +"+bossGold+")" : eliteGold ? " (Elite +"+eliteGold+")" : "")+" · "+duration+"s · Helden "+survivors+"/"+heroTotal);
   syncUnits();
   updateHud();
   updateTeamList();
   updateSynergies();
   updateButtons();
   if(draftTimer){ clearTimeout(draftTimer); draftTimer = null; }
-  showToast("Welle "+cleared+" besiegt! "+G.teamSize+" gegen "+G.teamSize+" · nächste Welle bereit");
 }
 function loseBattle(){
   G.phase = "defeat";

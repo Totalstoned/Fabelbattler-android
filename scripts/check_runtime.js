@@ -752,4 +752,35 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  const winToasts = [];
+  const origToast = showToast;
+  showToast = function(msg){ winToasts.push(msg); };
+  G.battle.time = 12.7;
+  G.battle.player[0].isDead = true;
+  winBattle();
+  showToast = origToast;
+  const summary = winToasts.filter(t => t.indexOf("besiegt") >= 0);
+  globalThis.__winToastSingle = summary.length === 1;
+  globalThis.__winToastSummary = summary.length === 1 &&
+    summary[0].indexOf("Welle 1 besiegt!") === 0 &&
+    summary[0].indexOf("+7 Gold") >= 0 &&
+    summary[0].indexOf("12s") >= 0 &&
+    summary[0].indexOf("Helden 2/3") >= 0;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__winToastSingle', 'Sieg erzeugt mehrere doppelte Sieges-Toasts'],
+  ['__winToastSummary', 'Sieges-Toast zeigt nicht Gold, Kampfdauer und überlebende Helden'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, timer ${timerText})`);
