@@ -123,6 +123,9 @@
   .battle-info.danger{display:none;color:#ff6b6b;}
   .battle-info.danger.show{display:inline-block;}
   .battle-info.danger b{animation:bossWarn .7s ease-in-out infinite;}
+  .battle-info.elitebar{display:none;color:#fbbf24;}
+  .battle-info.elitebar.show{display:inline-block;}
+  .battle-info.elitebar b{color:#fff3c4;}
   .battle-info.focusbar{display:none;color:#9ff0bd;}
   .battle-info.focusbar.show{display:inline-block;}
   .battle-info.focusbar.warn{color:#ffb86b;}
@@ -234,6 +237,7 @@
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
+  <span class="battle-info elitebar" id="eliteAlert" title="Lebende gegnerische Eliten (im Schwarm schwer erkennbar)">✨ Eliten <b id="eliteAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
@@ -2940,6 +2944,14 @@ function updateHeroAlert(){
   bar.classList.toggle("show",critical > 0);
   if(critical) document.getElementById("heroAlertCount").textContent = String(critical);
 }
+function updateEliteAlert(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("eliteAlert");
+  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  const elites = (G.battle.enemyMobs||[]).filter(u => u.isElite && !u.isBoss && !u.isDead).length;
+  bar.classList.toggle("show",elites > 0);
+  if(elites) document.getElementById("eliteAlertCount").textContent = String(elites);
+}
 function updateFocusHp(){
   if(SIM.headless) return;
   const bar = document.getElementById("focusHp");
@@ -3241,6 +3253,7 @@ window.addEventListener("load", () => {
     updateManaBar();
     updateBattleTimer();
     updateBossBar();
+    updateEliteAlert();
     updateBattleStatus();
     updateTeamHpBar();
     updateBattleManaBar();
