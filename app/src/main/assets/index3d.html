@@ -135,6 +135,9 @@
   .battle-info.gold{display:none;color:var(--gold);}
   .battle-info.gold.show{display:inline-block;}
   .battle-info.gold b{color:#fff3c4;}
+  .battle-info.elite{display:none;color:#fbbf24;}
+  .battle-info.elite.show{display:inline-block;}
+  .battle-info.elite b{color:#fff3c4;}
   .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
   body.battle-mode .battle-bar{display:flex;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
@@ -229,6 +232,7 @@
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
   <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll">◆ <b id="battleGoldValue">0</b></span>
   <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner) und eigene Helden">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
+  <span class="battle-info elite" id="eliteInfo" title="Lebende gegnerische Elite-Mobs">✨ <b id="statusElites">0/0</b></span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
@@ -2890,7 +2894,12 @@ function updateBossBar(){
 function updateBattleStatus(){
   if(SIM.headless) return;
   const bar = document.getElementById("battleStatus");
-  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  const eliteInfo = document.getElementById("eliteInfo");
+  if(G.phase !== "battle" || !G.battle){
+    bar.classList.remove("show");
+    eliteInfo.classList.remove("show");
+    return;
+  }
   bar.classList.add("show");
   const foes = sideUnits(G.battle,"enemy").filter(u => !u.isDead).length;
   const foeHeroes = G.battle.enemies.filter(u => !u.isDead).length;
@@ -2901,6 +2910,9 @@ function updateBattleStatus(){
   document.getElementById("statusFoeHeroes").textContent = foeHeroes+'/'+G.battle.enemies.length;
   document.getElementById("statusMobs").textContent = mobsPlayer+'/'+mobsEnemy;
   document.getElementById("statusHeroes").textContent = heroes+'/'+G.battle.player.length;
+  const elites = (G.battle.enemyMobs||[]).filter(u => u.isElite);
+  eliteInfo.classList.toggle("show",elites.length > 0);
+  if(elites.length) document.getElementById("statusElites").textContent = elites.filter(u => !u.isDead).length+'/'+elites.length;
 }
 function updateTeamHpBar(){
   if(SIM.headless) return;
