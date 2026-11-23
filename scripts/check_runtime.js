@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusSide', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -669,6 +669,7 @@ vm.runInContext(`
   const cdValue = document.getElementById("focusCdValue");
   const fx = document.getElementById("focusStatus");
   const name = document.getElementById("focusName");
+  const side = document.getElementById("focusSide");
   const focusHero = G.battle.player[0];
   const spellName = (SPELLS[focusHero.spell]||{}).name || "Zauber";
   G.selectedUnitId = focusHero.id;
@@ -690,6 +691,14 @@ vm.runInContext(`
     cdBar.classList.contains("ready") &&
     cdValue.textContent === spellName+" bereit";
   globalThis.__focusName = name.textContent === focusHero.emoji+" "+focusHero.name;
+  globalThis.__focusSideAlly = side.textContent === "Held" && !bar.classList.contains("foe");
+  const foeHero = G.battle.enemies[0];
+  G.selectedUnitId = foeHero.id;
+  updateFocusHp();
+  globalThis.__focusSideFoe = side.textContent === "Gegner" && bar.classList.contains("foe") &&
+    name.textContent === foeHero.emoji+" "+foeHero.name;
+  G.selectedUnitId = focusHero.id;
+  updateFocusHp();
   cycleFocus(1);
   const nextFocus = findUnitById(G.selectedUnitId);
   updateFocusHp();
@@ -718,7 +727,8 @@ vm.runInContext(`
   globalThis.__focusCritical = bar.classList.contains("critical") && !bar.classList.contains("warn");
   focusHero.isDead = true;
   updateFocusHp();
-  globalThis.__focusDeadHidden = !bar.classList.contains("show") && fx.textContent === "";
+  globalThis.__focusDeadHidden = !bar.classList.contains("show") && fx.textContent === "" &&
+    side.textContent === "Held" && !bar.classList.contains("foe");
   updateFocusCooldown();
   globalThis.__focusCdDeadHidden = !cdBar.classList.contains("show");
   focusHero.isDead = false;
@@ -726,7 +736,8 @@ vm.runInContext(`
   G.battle = null;
   updateFocusHp();
   globalThis.__focusHide = !bar.classList.contains("show") && !bar.classList.contains("warn") &&
-    !bar.classList.contains("critical") && fx.textContent === "";
+    !bar.classList.contains("critical") && !bar.classList.contains("foe") && fx.textContent === "" &&
+    side.textContent === "Held";
   updateFocusCooldown();
   globalThis.__focusCdHide = !cdBar.classList.contains("show") && !cdBar.classList.contains("ready");
   globalThis.__focusNameReset = name.textContent === "Fokus";
@@ -739,6 +750,8 @@ for (const [flag, message] of [
   ['__focusName', 'Fokus-HP-Anzeige zeigt nicht den Namen des fokussierten Wesens'],
   ['__focusNameCycle', 'Fokusname aktualisiert sich nicht nach der ◀/▶-Navigation'],
   ['__focusNameReset', 'Fokusname wird außerhalb des Kampfes nicht zurückgesetzt'],
+  ['__focusSideAlly', 'Fokus-Anzeige kennzeichnet eigene Wesen nicht als Held'],
+  ['__focusSideFoe', 'Fokus-Anzeige kennzeichnet fokussierte Gegner nicht'],
   ['__focusDamage', 'Fokus-HP-Anzeige reagiert nicht auf Schaden'],
   ['__focusShield', 'Fokus-HP-Anzeige zeigt den Schild nicht'],
   ['__focusStatus', 'Fokus-Anzeige zeigt aktive Statuseffekte nicht'],
