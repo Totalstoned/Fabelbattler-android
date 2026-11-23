@@ -93,6 +93,9 @@ if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar
 if (!html.includes('id="battleMana"') || !html.includes('function updateBattleManaBar')) {
   throw new Error('Mana-Anzeige in der Kampfleiste fehlt');
 }
+if (!html.includes('function mobFxVisible')) {
+  throw new Error('Trefferfeedback für Elite-/Boss-Mobs fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
@@ -662,6 +665,55 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  G.wave = 10;
+  startBattle();
+  const tierMobs = G.battle.enemyMobs;
+  const eliteMob = tierMobs.find(m => m.isElite);
+  const bossMob = tierMobs.find(m => m.isBoss);
+  const normalMob = tierMobs.find(m => !m.isElite && !m.isBoss);
+  const fxBefore = G.effects.length;
+  applyDamage(normalMob, 1, null, {});
+  globalThis.__mobFxNormal = G.effects.length === fxBefore;
+  applyDamage(eliteMob, 1, null, {});
+  globalThis.__mobFxElite = G.effects.length === fxBefore + 1;
+  applyDamage(bossMob, 1, null, {});
+  globalThis.__mobFxBoss = G.effects.length === fxBefore + 2;
+  const burstBefore = G.particles.length;
+  spawnBurst(eliteMob, "#fbbf24", 8, 1);
+  const eliteBurst = G.particles.length === burstBefore + 1;
+  spawnBurst(normalMob, "#fbbf24", 8, 1);
+  globalThis.__mobFxParticles = eliteBurst && G.particles.length === burstBefore + 1;
+  const waveBefore = G.shockwaves.length;
+  spawnShockwave(bossMob, "#ff2d55", 1.2);
+  const bossWave = G.shockwaves.length === waveBefore + 1;
+  spawnShockwave(normalMob, "#ff2d55", 1.2);
+  globalThis.__mobFxShockwave = bossWave && G.shockwaves.length === waveBefore + 1;
+  const toastLog = [];
+  const originalToast = showToast;
+  showToast = (msg) => toastLog.push(msg);
+  killUnit(bossMob, null);
+  globalThis.__mobFxBossToast = bossMob.isDead && toastLog.some(m => m.indexOf("Boss") >= 0);
+  showToast = originalToast;
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+`, ctx);
+
+for (const [flag, message] of [
+  ['__mobFxNormal', 'Normale Mobs erzeugen weiterhin Treffer-Effekte (Schwarm-Performance)'],
+  ['__mobFxElite', 'Elite-Mobs zeigen keine Schadenszahlen'],
+  ['__mobFxBoss', 'Boss-Mobs zeigen keine Schadenszahlen'],
+  ['__mobFxParticles', 'Elite-Mobs zeigen keine Partikel, normale Mobs aber schon'],
+  ['__mobFxShockwave', 'Boss-Mobs zeigen keine Schockwelle, normale Mobs aber schon'],
+  ['__mobFxBossToast', 'Boss-Tod wird nicht per Toast gemeldet'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   startBattle();
   const bar = document.getElementById("focusHp");
   const value = document.getElementById("focusHpValue");
@@ -752,4 +804,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+fx, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
