@@ -132,6 +132,7 @@
   .battle-info.focuscd.show{display:inline-block;}
   .battle-info.focuscd.ready{color:#9ff0bd;}
   .battle-info.focusbar .fx{font-size:10px;opacity:.85;margin-left:5px;}
+  .battle-info.focusbar .meta{font-size:10px;opacity:.8;margin-left:5px;color:var(--dim);}
   .battle-info.gold{display:none;color:var(--gold);}
   .battle-info.gold.show{display:inline-block;}
   .battle-info.gold b{color:#fff3c4;}
@@ -229,7 +230,7 @@
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
   <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll">◆ <b id="battleGoldValue">0</b></span>
   <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner) und eigene Helden">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
-  <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b><span class="fx" id="focusStatus"></span></span>
+  <span class="battle-info focusbar" id="focusHp" title="Name, Rolle, Rasse, Klasse, HP, Schild und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b><span class="meta" id="focusMeta"></span><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
@@ -2944,7 +2945,9 @@ function updateFocusHp(){
   if(SIM.headless) return;
   const bar = document.getElementById("focusHp");
   const fx = document.getElementById("focusStatus");
+  const meta = document.getElementById("focusMeta");
   fx.textContent = "";
+  meta.textContent = "";
   const name = document.getElementById("focusName");
   name.textContent = "Fokus";
   bar.classList.remove("show");
@@ -2958,6 +2961,10 @@ function updateFocusHp(){
   bar.classList.toggle("warn",ratio <= 0.5 && ratio > 0.25);
   bar.classList.toggle("critical",ratio <= 0.25);
   name.textContent = u.emoji+" "+u.name;
+  const role = ROLE_META[u.role] ? ROLE_META[u.role].label : u.role;
+  const race = RACE_META[u.race] ? RACE_META[u.race].label : u.race;
+  const cls = CLASS_META[u.cls] ? CLASS_META[u.cls].label : u.cls;
+  meta.textContent = [role,race,cls].filter(Boolean).join(" · ");
   const shield = u.shield > 0 ? " ⛨"+Math.ceil(u.shield) : "";
   document.getElementById("focusHpValue").textContent = Math.ceil(Math.max(0,u.hp))+"/"+Math.ceil(u.maxHp)+shield;
   fx.textContent = activeStatusKeys(u).map(k => STATUS_META[k].emoji+Math.ceil(u.statuses[k])+"s").join(" ");
