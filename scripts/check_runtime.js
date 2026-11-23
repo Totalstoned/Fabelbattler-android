@@ -105,7 +105,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -663,26 +663,31 @@ vm.runInContext(`
   beginRun();
   const goldBar = document.getElementById("battleGold");
   const goldValue = document.getElementById("battleGoldValue");
+  const goldGain = document.getElementById("battleGoldGain");
   updateBattleGold();
-  globalThis.__goldHidden = !goldBar.classList.contains("show");
+  globalThis.__goldHidden = !goldBar.classList.contains("show") && goldGain.textContent === "";
   G.wave = 1;
   startBattle();
   G.gold = 20;
   updateBattleGold();
-  globalThis.__goldShow = goldBar.classList.contains("show") && goldValue.textContent === "20";
+  globalThis.__goldShow = goldBar.classList.contains("show") && goldValue.textContent === "20" &&
+    goldGain.textContent === "";
   G.gold = 47;
   updateBattleGold();
   globalThis.__goldLive = goldBar.classList.contains("show") && goldValue.textContent === "47";
+  globalThis.__goldGain = goldGain.textContent === "+27" && goldGain.style.opacity === "1";
   G.phase = "menu";
   G.battle = null;
   updateBattleGold();
-  globalThis.__goldHide = !goldBar.classList.contains("show");
+  globalThis.__goldHide = !goldBar.classList.contains("show") && goldGain.textContent === "" &&
+    goldGain.style.opacity === "0";
 `, ctx);
 
 for (const [flag, message] of [
   ['__goldHidden', 'Gold-Anzeige erscheint außerhalb des Kampfes'],
   ['__goldShow', 'Gold-Anzeige zeigt den Startwert nicht an'],
   ['__goldLive', 'Gold-Anzeige reagiert nicht auf Gold-Änderungen'],
+  ['__goldGain', 'Gold-Gewinn wird nicht als +N in der Kampfleiste hervorgehoben'],
   ['__goldHide', 'Gold-Anzeige verschwindet nicht außerhalb des Kampfes'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
@@ -1055,4 +1060,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);

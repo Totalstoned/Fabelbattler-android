@@ -147,6 +147,7 @@
   .battle-info.gold{display:none;color:var(--gold);}
   .battle-info.gold.show{display:inline-block;}
   .battle-info.gold b{color:#fff3c4;}
+  .battle-info.gold b.gain{margin-left:4px;font-size:10px;color:#d9f99d;opacity:0;transition:opacity .2s;text-shadow:0 0 8px #a3e635;}
   .battle-info.dudes{display:none;color:#a3e635;}
   .battle-info.dudes.show{display:inline-block;}
   .battle-info.dudes b{color:#d9f99d;}
@@ -243,7 +244,7 @@
 <div class="battle-bar" id="battleBar">
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
-  <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll">◆ <b id="battleGoldValue">0</b></span>
+  <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll; +N zeigt gerade erhaltenes Gold">◆ <b id="battleGoldValue">0</b><b class="gain" id="battleGoldGain"></b></span>
   <span class="battle-info dudes" id="battleDudes" title="Aktiver Duden-Bonus: mehr HP und ATK für alle Spieler-Einheiten">● Duden <b id="battleDudesValue">+0 %</b></span>
   <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner) und eigene Helden">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
   <span class="battle-info focusmeta" id="focusMeta" title="Level und Rolle des fokussierten Wesens">Lv – · –</span>
@@ -2996,11 +2997,27 @@ function updateBattleManaBar(){
   healReady.classList.toggle("ready-heal",G.mana >= 40);
   novaReady.classList.toggle("ready-nova",G.mana >= 70);
 }
+let lastBattleGold = null;
+let battleGoldGainUntil = 0;
 function updateBattleGold(){
   if(SIM.headless) return;
   const bar = document.getElementById("battleGold");
-  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  const gain = document.getElementById("battleGoldGain");
+  const now = performance.now();
+  if(G.phase !== "battle" || !G.battle){
+    bar.classList.remove("show");
+    gain.textContent = "";
+    gain.style.opacity = "0";
+    lastBattleGold = null;
+    return;
+  }
   bar.classList.add("show");
+  if(lastBattleGold !== null && G.gold > lastBattleGold){
+    gain.textContent = "+"+(G.gold-lastBattleGold);
+    battleGoldGainUntil = now+900;
+  }
+  gain.style.opacity = now < battleGoldGainUntil ? "1" : "0";
+  lastBattleGold = G.gold;
   document.getElementById("battleGoldValue").textContent = String(G.gold);
 }
 function updateBattleDudes(){

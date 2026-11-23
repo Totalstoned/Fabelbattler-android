@@ -188,6 +188,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Anzeige, HP/Schild, kritische HP, totes Ziel,
   toten Fokus und Ausblenden; `check_data.py` prüft die UI-Tokens.
 
+- [x] **31. Gold-Gewinn-Feedback in der Kampfleiste** (v1.51)
+  `updateBattleGold()` zeigt neben dem aktuellen Gold kurz „+N“ an, sobald im Kampf Gold
+  dazukommt (z. B. durch `gold`-Effekte bei Kills). Das HUD ist im Kampfmodus ausgeblendet;
+  ohne die Hervorhebung war ein Gold-Bonus nur an der langsam ändernden Summe erkennbar.
+  Nach ~0,9 s blendet der Gewinn aus, außerhalb des Kampfes wird er zurückgesetzt.
+  *Erledigt:* `check_data.py` prüft die Tokens; `check_runtime.js` prüft Anzeige, Betrag
+  und Zurücksetzen; die Kampf-Simulation bleibt grün.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

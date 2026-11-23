@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.45-b46
+Aktuelle Version: v1.51-b52
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -347,6 +347,14 @@ v1.50-b51 2026-11-23  (Gegner-Wesen)
    - check_data.py: 98 Einheiten / 51 Zauber, Biss-Tokens; check_runtime.js prueft,
      dass die drei Wesen im Gegnerpool liegen und nie im Draft auftauchen.
    - Version 1.50/b51 bewusst gewaehlt: v1.49/b50 ist bereits durch PR #125 belegt.
+
+v1.51-b52 2026-11-23  (Gold-Gewinn-Feedback in der Kampfleiste)
+   - updateBattleGold() zeigt neben dem Goldstand kurz gruen "+N" an, sobald im Kampf
+     Gold dazukommt (z. B. gold-Effekte bei Kills). Bisher war der Bonus nur an der
+     langsam aendernden Summe sichtbar, weil das HUD im Kampf ausgeblendet ist.
+   - Der Gewinn blendet nach ~0,9 s aus und wird ausserhalb des Kampfes zurueckgesetzt.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Betrag, Ein-/Ausblenden
+     und Reset; alle drei Checks gruen.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".

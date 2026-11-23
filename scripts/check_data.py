@@ -170,6 +170,9 @@ for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady'
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['id="battleGoldGain"', 'battleGoldGainUntil', 'battle-info.gold b.gain']:
+    if token not in src:
+        problems.append('Gold-Gewinn-Feedback in der Kampfleiste fehlt: ' + token)
 for token in ['playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'function updatePlayerBossBar']:
     if token not in src:
         problems.append('Eigener Boss-Lebensbalken fehlt: ' + token)
