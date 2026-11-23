@@ -560,20 +560,29 @@ vm.runInContext(`
   const mana = document.getElementById("battleMana");
   const manaFill = document.getElementById("battleManaFill");
   const manaValue = document.getElementById("battleManaValue");
+  const healBtn = document.getElementById("btnBattleHeal");
+  const novaBtn = document.getElementById("btnBattleNova");
   updateBattleManaBar();
   globalThis.__manaHidden = !mana.classList.contains("show");
   G.wave = 1;
   startBattle();
   G.mana = 40;
   updateBattleManaBar();
+  updateButtons();
   globalThis.__manaShow = mana.classList.contains("show") &&
     parseFloat(manaFill.style.width) === 40 && manaValue.textContent === "40/100";
+  globalThis.__manaCostLabels = healBtn.textContent === "Heilregen (40)" &&
+    novaBtn.textContent === "Blitz (70)" && !healBtn.disabled && novaBtn.disabled;
   G.mana = 70;
   updateBattleManaBar();
+  updateButtons();
   globalThis.__manaLive = parseFloat(manaFill.style.width) === 70 && manaValue.textContent === "70/100";
+  globalThis.__manaCostNovaReady = !novaBtn.disabled;
   G.mana = 0;
   updateBattleManaBar();
+  updateButtons();
   globalThis.__manaEmpty = parseFloat(manaFill.style.width) === 0 && manaValue.textContent === "0/100";
+  globalThis.__manaCostDisabled = healBtn.disabled && novaBtn.disabled;
   G.phase = "menu";
   G.battle = null;
   updateBattleManaBar();
@@ -585,6 +594,9 @@ for (const [flag, message] of [
   ['__manaShow', 'Mana-Anzeige zeigt Startwert nicht an'],
   ['__manaLive', 'Mana-Anzeige reagiert nicht auf Mana-Änderungen'],
   ['__manaEmpty', 'Mana-Anzeige zeigt 0 nicht korrekt an'],
+  ['__manaCostLabels', 'Kampf-Zauberbuttons zeigen ihre Manakosten nicht oder sperren falsch'],
+  ['__manaCostNovaReady', 'Blitz-Button bleibt trotz genug Mana gesperrt'],
+  ['__manaCostDisabled', 'Kampf-Zauberbuttons werden bei 0 Mana nicht gesperrt'],
   ['__manaHideCheck', 'Mana-Anzeige verschwindet nicht außerhalb des Kampfes'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
@@ -752,4 +764,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+manaKosten+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
