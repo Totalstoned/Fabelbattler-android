@@ -663,6 +663,56 @@ vm.runInContext(`
   G.battle = null;
   beginRun();
   startBattle();
+  const critHero = G.battle.player[0];
+  critHero.hp = critHero.maxHp;
+  critHero.shield = 0;
+  const critGroup = unitGroups.get(critHero.id);
+  const critRing = critGroup && critGroup.userData.criticalRing;
+  if (!critRing) throw new Error('Kritischer-Helden-Ring fehlt im 3D-Modell');
+  updateVisuals(1,0.016);
+  globalThis.__critHidden = !critRing.visible;
+  critHero.hp = critHero.maxHp * 0.2;
+  updateVisuals(1,0.016);
+  const critScaleA = critRing.scale.x, critOpacityA = critRing.material.opacity;
+  globalThis.__critShow = critRing.visible && isCriticalHero(critHero);
+  updateVisuals(1.25,0.016);
+  globalThis.__critPulse = Math.abs(critRing.scale.x-critScaleA) > 0.001 ||
+    Math.abs(critRing.material.opacity-critOpacityA) > 0.001;
+  critHero.shield = critHero.maxHp * 0.2;
+  updateVisuals(1,0.016);
+  globalThis.__critShield = !critRing.visible && !isCriticalHero(critHero);
+  critHero.shield = 0;
+  critHero.hp = critHero.maxHp * 0.1;
+  critHero.isDead = true;
+  updateVisuals(1,0.016);
+  globalThis.__critDead = !critRing.visible && !isCriticalHero(critHero);
+  critHero.isDead = false;
+  const critFoe = G.battle.enemies[0];
+  critFoe.hp = critFoe.maxHp * 0.1;
+  globalThis.__critEnemy = !isCriticalHero(critFoe);
+  G.phase = "menu";
+  G.battle = null;
+  updateVisuals(1,0.016);
+  globalThis.__critHide = !critRing.visible;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__critHidden', 'Kritischer-Helden-Ring erscheint bei voller HP'],
+  ['__critShow', 'Kritischer-Helden-Ring zeigt keine kritischen Helden'],
+  ['__critPulse', 'Kritischer-Helden-Ring pulsiert nicht'],
+  ['__critShield', 'Schild wird beim kritischen-Helden-Ring ignoriert'],
+  ['__critDead', 'Kritischer-Helden-Ring bleibt bei toten Helden sichtbar'],
+  ['__critEnemy', 'Kritischer-Helden-Ring gilt auch für Gegner'],
+  ['__critHide', 'Kritischer-Helden-Ring verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
   const bar = document.getElementById("focusHp");
   const value = document.getElementById("focusHpValue");
   const cdBar = document.getElementById("focusCd");
@@ -752,4 +802,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls+krit-ring, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

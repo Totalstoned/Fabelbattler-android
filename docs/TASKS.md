@@ -122,6 +122,15 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar bleiben.
   *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert und Live-Updates;
   `check_data.py` prüft die UI-Tokens.
+
+- [x] **22. Pulsierender Ring für kritische Helden im 3D-Feld** (v1.37)
+  `isCriticalHero()` prüft HP+Schild ≤ 25 % für lebende Spieler-Helden; `criticalRing` in
+  `makeCharacter()` wird in `updateVisuals()` pro Frame pulsierend ein-/ ausgeblendet.
+  Damit ist der verwundete Held auch im 500er-Schwarm direkt am Modell erkennbar, nicht
+  nur als Zahl in der Kampfleiste.
+  *Erledigt:* `check_runtime.js` prüft Startzustand, Anzeige, Puls, Schildausgleich, tote
+  Helden, Gegner und Ausblenden; `check_data.py` prüft die Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

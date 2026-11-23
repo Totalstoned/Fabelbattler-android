@@ -176,6 +176,9 @@ for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
 for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:
     if token not in src:
         problems.append('Treffer-Impuls für Mobs fehlt: ' + token)
+for token in ['criticalRing', 'function isCriticalHero', 'criticalRing.visible']:
+    if token not in src:
+        problems.append('Kritischer-Helden-Ring fehlt: ' + token)
 if len(roster) != len(set(roster)):
     problems.append('doppelte Einheitenschlüssel')
 

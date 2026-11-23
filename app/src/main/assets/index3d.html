@@ -1730,6 +1730,14 @@ function makeCharacter(u){
   selectGlow.position.y = 0.95;
   selectGlow.visible = false;
   group.add(selectGlow);
+  const criticalRing = new THREE.Mesh(
+    new THREE.TorusGeometry(shadowRadius+0.22,0.03,8,32),
+    new THREE.MeshBasicMaterial({color:0xff4d4d,transparent:true,opacity:0.9,blending:THREE.AdditiveBlending,depthWrite:false})
+  );
+  criticalRing.rotation.x = Math.PI/2;
+  criticalRing.position.y = 0.065;
+  criticalRing.visible = false;
+  group.add(criticalRing);
   const statusRing = new THREE.Mesh(
     new THREE.TorusGeometry(shadowRadius+0.45,0.022,8,28),
     new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending,depthWrite:false})
@@ -1827,7 +1835,7 @@ function makeCharacter(u){
   const label = makeTextSprite(u.name+" L"+u.level,u.side === "player" ? "#e6edf5" : "#ff9a9a",0.8);
   label.position.y = hpY+0.43;
   group.add(label);
-  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,animPhase:Math.random()*Math.PI*2,walk:0};
+  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,criticalRing:criticalRing,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,animPhase:Math.random()*Math.PI*2,walk:0};
   return group;
 }
 function syncUnits(){
@@ -2632,6 +2640,10 @@ function poseCharacter(u,group,time,dt,deathT){
     else limb.rotation.x = -swing-recoil*0.25;
   });
 }
+function isCriticalHero(u){
+  return !!(u && u.side === "player" && !u.isDead && u.maxHp > 0 &&
+    (u.hp+(u.shield||0))/u.maxHp <= 0.25);
+}
 function updateVisuals(time,dt){
   if(Math.abs(cameraView-targetView) > 0.005){
     cameraView += (targetView-cameraView)*Math.min(1,dt*7);
@@ -2696,6 +2708,14 @@ function updateVisuals(time,dt){
     group.userData.shieldFill.position.x = -(1-shieldRatio)*0.43;
     group.userData.shieldRing.visible = u.shield > 0;
     if(u.shield > 0) group.userData.shieldRing.rotation.z += dt*0.8;
+    const critical = G.phase === "battle" && !!G.battle && isCriticalHero(u);
+    group.userData.criticalRing.visible = !!critical;
+    if(critical){
+      const pulse = 0.5+Math.sin(time*6+u.id)*0.5;
+      group.userData.criticalRing.scale.setScalar(1+0.12*pulse);
+      group.userData.criticalRing.material.opacity = 0.45+0.5*pulse;
+      group.userData.criticalRing.rotation.z += dt*1.2;
+    }
     group.userData.hp.quaternion.copy(camera.quaternion);
     const flash = u.hitFlash > 0 ? u.hitFlash*5 : 0;
     group.userData.bodyMat.emissive.copy(group.userData.baseEmissive);
