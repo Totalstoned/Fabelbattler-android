@@ -122,6 +122,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar bleiben.
   *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert und Live-Updates;
   `check_data.py` prüft die UI-Tokens.
+
+- [x] **22. Automatischer Fokuswechsel bei Helden-Tod** (v1.37)
+  `ensureLiveFocus()` wählt nach dem Tod des fokussierten Helden automatisch den nächsten
+  lebenden Helden. Die Fokus-Anzeige mit Name, HP, Statuseffekten und Cooldown bleibt dadurch
+  im Kampf lesbar, statt bis zur manuellen ◀/▶-Navigation leer zu sein.
+  *Erledigt:* `check_runtime.js` prüft Sichtbarkeit, Wechsel auf einen lebenden Helden und
+  dass der Wechsel im Headless-Modus, ohne lebenden Helden und außerhalb des Kampfes ausbleibt;
+  `check_data.py` prüft die Tokens.
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

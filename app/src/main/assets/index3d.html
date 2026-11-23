@@ -2485,6 +2485,7 @@ function updateBattle(dt){
     else tryAttack(u,target,b);
   });
   separate([...b.player,...b.enemies].filter(u => !u.isDead),dt);
+  ensureLiveFocus();
   checkBattleEnd();
 }
 function checkBattleEnd(){
@@ -2798,6 +2799,15 @@ function cycleFocus(dir){
   const idx = alive.findIndex(u => u.id === G.selectedUnitId);
   const base = idx < 0 ? (dir > 0 ? -1 : 0) : idx;
   selectUnit(alive[(base+dir+alive.length)%alive.length]);
+}
+// Stirbt der fokussierte Held, bleibt die Fokus-Anzeige sonst leer, bis der User ◀/▶ drückt.
+function ensureLiveFocus(){
+  if(SIM.headless || G.phase !== "battle" || !G.battle) return;
+  const current = findUnitById(G.selectedUnitId);
+  if(current && !current.isDead) return;
+  if(!G.battle.player.some(u => u.id === G.selectedUnitId)) return;
+  const next = G.battle.player.find(u => !u.isDead);
+  if(next) selectUnit(next);
 }
 function updateTeamList(){
   if(SIM.headless) return;

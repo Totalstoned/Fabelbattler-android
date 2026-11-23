@@ -752,4 +752,57 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  {
+    G.phase = "menu";
+    G.battle = null;
+    beginRun();
+    G.wave = 1;
+    startBattle();
+    const heroes = G.battle.player;
+    const fallenHero = heroes[0];
+    const focusBar = document.getElementById("focusHp");
+    const focusName = document.getElementById("focusName");
+    G.selectedUnitId = fallenHero.id;
+    updateFocusHp();
+    globalThis.__autoFocusStart = focusBar.classList.contains("show") &&
+      focusName.textContent === fallenHero.emoji+" "+fallenHero.name;
+    fallenHero.isDead = true;
+    ensureLiveFocus();
+    const nextHero = findUnitById(G.selectedUnitId);
+    updateFocusHp();
+    globalThis.__autoFocusSwitch = !!nextHero && nextHero.id !== fallenHero.id && !nextHero.isDead &&
+      focusBar.classList.contains("show") &&
+      focusName.textContent === nextHero.emoji+" "+nextHero.name;
+    const beforeHeadless = G.selectedUnitId;
+    try {
+      SIM.headless = true;
+      ensureLiveFocus();
+    } finally {
+      SIM.headless = false;
+    }
+    globalThis.__autoFocusHeadless = G.selectedUnitId === beforeHeadless;
+    heroes.forEach(u => { u.isDead = true; });
+    const noLiveId = G.selectedUnitId;
+    ensureLiveFocus();
+    globalThis.__autoFocusEmpty = G.selectedUnitId === noLiveId;
+    G.phase = "menu";
+    G.battle = null;
+    G.selectedUnitId = fallenHero.id;
+    ensureLiveFocus();
+    globalThis.__autoFocusOutside = G.selectedUnitId === fallenHero.id;
+    G.selectedUnitId = null;
+  }
+`, ctx);
+
+for (const [flag, message] of [
+  ['__autoFocusStart', 'Automatischer Fokuswechsel: Fokusanzeige startet nicht sichtbar'],
+  ['__autoFocusSwitch', 'Fokus wechselt nicht automatisch auf einen lebenden Helden nach dem Tod'],
+  ['__autoFocusHeadless', 'Automatischer Fokuswechsel verändert die Auswahl im Headless-Modus'],
+  ['__autoFocusEmpty', 'Automatischer Fokuswechsel reagiert auf einen komplett toten Team'],
+  ['__autoFocusOutside', 'Automatischer Fokuswechsel greift außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokus-auto, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
