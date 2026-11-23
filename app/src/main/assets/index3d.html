@@ -2251,6 +2251,10 @@ function killUnit(u,source){
   u.hp = 0;
   u.target = null;
   u.deathTimer = 0.6;
+  if(G.selectedUnitId === u.id && u.side === "player" && G.battle){
+    const next = G.battle.player.find(x => !x.isDead);
+    if(next) G.selectedUnitId = next.id;
+  }
   pushEffect(u,"☠","#e5484d");
   spawnBurst(u,"#e5484d",18,1.4);
   spawnShockwave(u,"#e5484d",1.3);

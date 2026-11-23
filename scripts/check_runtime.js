@@ -784,6 +784,21 @@ vm.runInContext(`
   globalThis.__focusAtkReset = atk.textContent === "0";
 `, ctx);
 
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  const fa = G.battle.player[0];
+  const fb = G.battle.player[1];
+  G.selectedUnitId = fa.id;
+  killUnit(fa, fb);
+  globalThis.__focusAutoSwitch = G.selectedUnitId === fb.id;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+
 for (const [flag, message] of [
   ['__focusStart', 'Fokus-HP-Anzeige zeigt zu Kampfbeginn keine volle HP'],
   ['__focusCdStart', 'Fokus-Cooldown zeigt den Zauber und die Restzeit nicht'],
@@ -808,6 +823,7 @@ for (const [flag, message] of [
   ['__focusCdDeadHidden', 'Fokus-Cooldown bleibt bei einem toten Fokus sichtbar'],
   ['__focusHide', 'Fokus-HP-Anzeige verschwindet nicht außerhalb des Kampfes'],
   ['__focusCdHide', 'Fokus-Cooldown verschwindet nicht außerhalb des Kampfes'],
+  ['__focusAutoSwitch', 'Fokus springt bei Tod des fokussierten Helden nicht auf einen lebenden Helden'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }

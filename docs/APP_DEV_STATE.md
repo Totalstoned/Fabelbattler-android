@@ -13,7 +13,7 @@ Letztes Update: 2026-11-23
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.41**, Build **42**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`).
+- Version **1.42**, Build **43**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`).
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
@@ -46,6 +46,7 @@ Letztes Update: 2026-11-23
 - Sieg-Feedback ist seit v1.39 ein einziger Zusammenfassungs-Toast: `winBattle()` zeigt Gold-Belohnung (inkl. Boss-/Elite-Bonus), Kampfdauer in Sekunden und überlebende Helden („Helden A/B“). Der zweite, redundante Toast („… gegen … · nächste Welle bereit“) entfällt; `check_runtime.js` prüft genau einen Sieges-Toast mit allen Angaben.
 - Kampfleiste zeigt seit v1.40 zusätzlich den HP-Balken des eigenen Boss (`updatePlayerBossBar()`, `playerBossBar`): Bosse spawnen auf beiden Seiten, bisher war aber nur der Gegner-Boss sichtbar. Der Balken ist türkis, bei ≤ 25 % HP rot/pulsierend und verschwindet nach dem Tod; beide Balken tragen jetzt die Labels „Gegner“/„Team“.
 - Fokus-Anzeige zeigt seit v1.41 den live Angriffswert (`focusAtkValue` in `updateFocusHp()`): Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet, daher war der ATK-Wert trotz Name/HP/Status/Zauber nicht ablesbar; Buffs wie `killAtk` wirken sofort, bei totem Fokus und außerhalb des Kampfes wird der Wert zurückgesetzt.
+- Stirbt der fokussierte Held im Kampf, springt der Fokus seit v1.42 automatisch auf den nächsten lebenden Helden (`killUnit()`), damit Fokus-HP, Zauber-Cooldown und Statuseffekte ohne manuelles Umschalten weiter nutzbar bleiben.
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
 
