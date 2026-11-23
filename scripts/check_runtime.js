@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'battleLevel', 'battleLevelValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -625,6 +625,39 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  const levelBar = document.getElementById("battleLevel");
+  const levelValue = document.getElementById("battleLevelValue");
+  updateBattleLevel();
+  globalThis.__levelHidden = !levelBar.classList.contains("show");
+  startBattle();
+  updateBattleLevel();
+  globalThis.__levelStart = levelBar.classList.contains("show") && levelValue.textContent === "1";
+  G.team[0].level = 4;
+  updateBattleLevel();
+  globalThis.__levelLive = levelValue.textContent === "2";
+  G.team[1].level = 2;
+  updateBattleLevel();
+  globalThis.__levelFraction = levelValue.textContent === "2.3";
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleLevel();
+  globalThis.__levelHideCheck = !levelBar.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__levelHidden', 'Team-Level-Anzeige erscheint außerhalb des Kampfes'],
+  ['__levelStart', 'Team-Level-Anzeige zeigt den Startwert nicht an'],
+  ['__levelLive', 'Team-Level-Anzeige reagiert nicht auf Level-Up'],
+  ['__levelFraction', 'Team-Level-Anzeige rundet Nachkommastellen falsch'],
+  ['__levelHideCheck', 'Team-Level-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   startBattle();
   initMobMeshes();
   const m = G.battle.enemyMobs[0];
@@ -752,4 +785,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+teamLevel+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
