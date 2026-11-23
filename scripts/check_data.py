@@ -173,6 +173,9 @@ for token in ['focusStatus', 'function updateFocusHp', 'activeStatusKeys(u).map'
 for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
     if token not in src:
         problems.append('Fokus-Zauber-Cooldown in der Kampfleiste fehlt: ' + token)
+for token in ['SPELL_MANA_COST', 'battleSpellButtons', 'id="btnBattleHeal">Heilregen (40)', 'id="btnBattleNova">Blitz (70)']:
+    if token not in src:
+        problems.append('Mana-Kosten an den Kampf-Buttons fehlen: ' + token)
 for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:
     if token not in src:
         problems.append('Treffer-Impuls für Mobs fehlt: ' + token)

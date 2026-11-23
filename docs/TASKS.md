@@ -125,3 +125,10 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
+
+- [x] **22. Mana-Kosten an den Kampf-Buttons** (v1.37)
+  Das Panel mit den Zauber-Kosten ist im Kampfmodus ausgeblendet. Die Kampfleisten-Buttons
+  zeigen jetzt „Heilregen (40)“ und „Blitz (70)“; `SPELL_MANA_COST` steuert Label,
+  Button-Freigabe und Mana-Verbrauch aus einer Quelle.
+  *Erledigt:* `check_data.py` prüft die Kosten-Tokens und statischen Labels;
+  `check_runtime.js` prüft Labels, Freigabe bei 0/40/70 Mana und das Ausblenden außerhalb des Kampfes.
