@@ -173,6 +173,9 @@ for token in ['focusStatus', 'function updateFocusHp', 'activeStatusKeys(u).map'
 for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
     if token not in src:
         problems.append('Fokus-Zauber-Cooldown in der Kampfleiste fehlt: ' + token)
+for token in ['function cycleFocus', '[...G.battle.player,...G.battle.enemies]', 'u.side === "enemy" ? "⚔ "']:
+    if token not in src:
+        problems.append('Fokus-Navigation auf Gegner fehlt: ' + token)
 for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:
     if token not in src:
         problems.append('Treffer-Impuls für Mobs fehlt: ' + token)

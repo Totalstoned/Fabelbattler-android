@@ -695,6 +695,16 @@ vm.runInContext(`
   updateFocusHp();
   globalThis.__focusNameCycle = !!nextFocus && nextFocus.id !== focusHero.id &&
     bar.classList.contains("show") && name.textContent === nextFocus.emoji+" "+nextFocus.name;
+  let focusGuard = 0;
+  while((findUnitById(G.selectedUnitId)||{}).side !== "enemy" && focusGuard++ < 12) cycleFocus(1);
+  const foeFocus = findUnitById(G.selectedUnitId);
+  updateFocusHp();
+  updateFocusCooldown();
+  const foeShield = foeFocus && foeFocus.shield > 0 ? " ⛨"+Math.ceil(foeFocus.shield) : "";
+  globalThis.__focusFoeCycle = !!foeFocus && foeFocus.side === "enemy" &&
+    bar.classList.contains("show") && cdBar.classList.contains("show") &&
+    name.textContent === "⚔ "+foeFocus.emoji+" "+foeFocus.name &&
+    value.textContent === Math.ceil(foeFocus.hp)+"/"+Math.ceil(foeFocus.maxHp)+foeShield;
   G.selectedUnitId = focusHero.id;
   updateFocusHp();
   focusHero.hp = focusHero.maxHp * 0.4;
@@ -738,6 +748,7 @@ for (const [flag, message] of [
   ['__focusCdReady', 'Fokus-Cooldown zeigt keinen bereiten Zauber an'],
   ['__focusName', 'Fokus-HP-Anzeige zeigt nicht den Namen des fokussierten Wesens'],
   ['__focusNameCycle', 'Fokusname aktualisiert sich nicht nach der ◀/▶-Navigation'],
+  ['__focusFoeCycle', '◀/▶ erreicht gegnerische Helden nicht oder kennzeichnet sie nicht'],
   ['__focusNameReset', 'Fokusname wird außerhalb des Kampfes nicht zurückgesetzt'],
   ['__focusDamage', 'Fokus-HP-Anzeige reagiert nicht auf Schaden'],
   ['__focusShield', 'Fokus-HP-Anzeige zeigt den Schild nicht'],
@@ -752,4 +763,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd+gegnerfokus, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
