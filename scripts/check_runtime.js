@@ -93,6 +93,9 @@ if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar
 if (!html.includes('id="battleMana"') || !html.includes('function updateBattleManaBar')) {
   throw new Error('Mana-Anzeige in der Kampfleiste fehlt');
 }
+if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includes('id="btnBattleNova">Blitz (70)</button>')) {
+  throw new Error('Kampf-Buttons zeigen Manakosten nicht an');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
