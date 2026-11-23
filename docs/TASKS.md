@@ -188,6 +188,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Anzeige, HP/Schild, kritische HP, totes Ziel,
   toten Fokus und Ausblenden; `check_data.py` prüft die UI-Tokens.
 
+- [x] **31. Blauer Impuls bei blockierten Schild-Treffern** (v1.51)
+   Ein komplett vom Schild absorbierter Schlag zeigte bisher nur die Zahl „⛨ N“, aber
+   keine Reaktion der Einheit. `applyDamage()` setzt jetzt `hitFlash` und spawnt einen
+   kleinen blauen Partikelstoß; Schadenspunkte ohne Zahlen (DoT/Splash, `number:false`)
+   bleiben bewusst still.
+   *Erledigt:* `check_runtime.js` prüft HP-Erhalt, Schildabzug, Impuls und Partikel
+   sowie das Ausbleiben von Feedback bei stillen Treffern.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

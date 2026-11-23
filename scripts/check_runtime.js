@@ -806,6 +806,43 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
+  clearEffects();
+  beginRun();
+  startBattle();
+  const sbBlocked = G.battle.player[0];
+  const sbEffectsBefore = G.effects.length, sbParticlesBefore = G.particles.length;
+  sbBlocked.hp = sbBlocked.maxHp;
+  sbBlocked.shield = sbBlocked.maxHp * 0.5;
+  sbBlocked.hitFlash = 0;
+  const sbHpBefore = sbBlocked.hp, sbShieldBefore = sbBlocked.shield;
+  applyDamage(sbBlocked, sbBlocked.maxHp * 0.1, null, {});
+  globalThis.__shieldHitFeedback = sbBlocked.hp === sbHpBefore &&
+    sbBlocked.shield < sbShieldBefore && sbBlocked.hitFlash > 0 &&
+    G.effects.length > sbEffectsBefore && G.particles.length > sbParticlesBefore;
+  // Schadenspunkte ohne Zahlen (DoT/Splash) bleiben auch bei Schild still.
+  const sbQuiet = G.battle.player[1];
+  sbQuiet.hp = sbQuiet.maxHp;
+  sbQuiet.shield = sbQuiet.maxHp * 0.5;
+  sbQuiet.hitFlash = 0;
+  const sbQuietEffects = G.effects.length, sbQuietParticles = G.particles.length;
+  applyDamage(sbQuiet, sbQuiet.maxHp * 0.1, null, {number:false});
+  globalThis.__quietShieldCheck = sbQuiet.hp === sbQuiet.maxHp && sbQuiet.hitFlash === 0 &&
+    G.effects.length === sbQuietEffects && G.particles.length === sbQuietParticles;
+  clearEffects();
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__shieldHitFeedback', 'Komplett blockierte Treffer zeigen keinen blauen Impuls'],
+  ['__quietShieldCheck', 'Stille Schild-Treffer erzeugen ungewolltes Feedback'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
   beginRun();
   startBattle();
   const bar = document.getElementById("focusHp");

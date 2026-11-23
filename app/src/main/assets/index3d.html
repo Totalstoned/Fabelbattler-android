@@ -2305,7 +2305,15 @@ function applyDamage(target,amount,source,opts={}){
     const absorbed = Math.min(target.shield,dmg);
     target.shield -= absorbed;
     dmg -= absorbed;
-    if(absorbed > 1 && opts.number !== false) pushEffect(target,"⛨ "+Math.round(absorbed),"#8fb5ff");
+    if(absorbed > 1 && opts.number !== false){
+      pushEffect(target,"⛨ "+Math.round(absorbed),"#8fb5ff");
+      // Komplett blockierte Treffer bekommen einen eigenen blauen Impuls,
+      // sonst sieht ein absorbierter Schlag wie ein ausbleibender Treffer aus.
+      if(dmg <= 0){
+        target.hitFlash = 0.15;
+        spawnBurst(target,"#8fb5ff",6,0.7);
+      }
+    }
   }
   if(dmg > 0){
     target.hp -= dmg;

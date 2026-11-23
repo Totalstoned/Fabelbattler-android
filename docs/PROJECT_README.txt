@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.45-b46
+Aktuelle Version: v1.51-b52
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -347,6 +347,14 @@ v1.50-b51 2026-11-23  (Gegner-Wesen)
    - check_data.py: 98 Einheiten / 51 Zauber, Biss-Tokens; check_runtime.js prueft,
      dass die drei Wesen im Gegnerpool liegen und nie im Draft auftauchen.
    - Version 1.50/b51 bewusst gewaehlt: v1.49/b50 ist bereits durch PR #125 belegt.
+
+v1.51-b52 2026-11-23  (Blauer Impuls fuer blockierte Schild-Treffer)
+   - Ein komplett vom Schild absorbierter Schlag zeigte nur "⛨ N", aber keine
+     Reaktion der Einheit. applyDamage() setzt jetzt hitFlash und spawnt einen
+     kleinen blauen Partikelstoss. Stille Treffer (number:false, z. B. DoT/Splash)
+     bleiben ohne Feedback, damit der Dauer-Schaden nicht dauerhaft zuckt.
+   - check_runtime.js prueft HP-Erhalt, Schildabzug, Impuls/Partikel und das
+     Ausbleiben von Feedback bei stillen Treffern; alle drei Checks gruen.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
