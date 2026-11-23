@@ -338,6 +338,16 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
 
+v1.50-b51 2026-11-23  (Gegner-Wesen)
+   - Neue gegner-exklusive Einheiten: oma (Oma mit Stock), feuerwehr, teddy.
+   - Einzige Fähigkeit "biss" (Biss, 1.6/1.1, dmg 0.75, ohne Statuswirkung);
+     keine Spezialfahrzeuge, keine Sonderfähigkeiten. Werte skalieren ueber Level.
+   - ENEMY_ONLY/FOE_KEYS halten die Wesen aus dem Draft heraus; enemyKeyFor()
+     waehlt sie mit ~50 % Chance als Gegner-Helden. ALL_KEYS bleibt der Spielerpool.
+   - check_data.py: 98 Einheiten / 51 Zauber, Biss-Tokens; check_runtime.js prueft,
+     dass die drei Wesen im Gegnerpool liegen und nie im Draft auftauchen.
+   - Version 1.50/b51 bewusst gewaehlt: v1.49/b50 ist bereits durch PR #125 belegt.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung)" unten.

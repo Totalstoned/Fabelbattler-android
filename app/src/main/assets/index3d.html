@@ -318,7 +318,10 @@ const ROSTER = {
   fernrisswolf:{name:"Fernrisswolf",emoji:"🐺",role:"DPS",cls:"Wald",cls2:"Tier",hp:140,atk:19,rng:65,spd:1.3,ability:"rissbiss"},
   nixen:{name:"Nixen",emoji:"🧜‍♀️",role:"BUFFER",cls:"Magie",cls2:"Element",hp:100,atk:10,rng:110,spd:1.05,ability:"wassersang"},
   kroetenmoench:{name:"Krötenmönch",emoji:"🐸",role:"TANK",cls:"Wald",cls2:"Geist",hp:175,atk:12,rng:65,spd:0.7,ability:"kroetenfluch"},
-  sensenmann:{name:"Sensenmann",emoji:"💀",role:"DPS",cls:"Geist",cls2:"Dunkel",hp:105,atk:21,rng:95,spd:0.95,ability:"sensenstreich"}
+  sensenmann:{name:"Sensenmann",emoji:"💀",role:"DPS",cls:"Geist",cls2:"Dunkel",hp:105,atk:21,rng:95,spd:0.95,ability:"sensenstreich"},
+  oma:{name:"Oma mit Stock",emoji:"👵",role:"DPS",cls:"Chaos",cls2:"Stahl",hp:78,atk:10,rng:58,spd:0.95,ability:"biss"},
+  feuerwehr:{name:"Feuerwehr",emoji:"👨‍🚒",role:"TANK",cls:"Stahl",cls2:"Wald",hp:135,atk:11,rng:62,spd:0.88,ability:"biss"},
+  teddy:{name:"Teddy",emoji:"🧸",role:"DPS",cls:"Tier",cls2:"Wald",hp:95,atk:12,rng:52,spd:0.92,ability:"biss"}
 };
 const RACE_PACKS = {
   Fee:[
@@ -390,7 +393,9 @@ Object.entries(RACE_PACKS).forEach(([race,list]) => {
     ROSTER[e[0]] = {name:e[1],emoji:e[2],role:e[3],cls:e[4],cls2:e[5],hp:e[6],atk:e[7],rng:e[8],spd:e[9],ability:e[10],race:race,variant:e[11]};
   });
 });
-const ALL_KEYS = Object.keys(ROSTER);
+const ENEMY_ONLY = {oma:1,feuerwehr:1,teddy:1};
+const FOE_KEYS = Object.keys(ROSTER).filter(k => ENEMY_ONLY[k]);
+const ALL_KEYS = Object.keys(ROSTER).filter(k => !ENEMY_ONLY[k]);
 const ROLE_META = {TANK:{col:"#6ea8fe",label:"Tank"},DPS:{col:"#e5484d",label:"DPS"},HEALER:{col:"#4ade80",label:"Heiler"},BUFFER:{col:"#a78bfa",label:"Puffer"}};
 const ROLES = Object.keys(ROLE_META);
 const CLASS_META = {
@@ -476,7 +481,8 @@ const ABILITY_DESC = {
   kroetenfluch:"Krötenfluch: Rüstung und Schwächung",
   sensenstreich:"Sensenstreich: Kritik und ATK nach Kill",
   schrecken:"Schreckensblick: verwirrt und schwächt",
-  schwarmruf:"Schwarmruf: bufft und schützt das ganze Team"
+  schwarmruf:"Schwarmruf: bufft und schützt das ganze Team",
+  biss:"Biss: einfacher Nahkampf, keine Sonderwirkung"
 };
 const INNATE = {
   goldspinnen:{atk:1.05,gold:2,shieldPct:0.06},
@@ -520,7 +526,8 @@ const INNATE = {
   kroetenfluch:{hp:1.2,dr:0.15,curse:0.25},
   sensenstreich:{atk:1.28,crit:0.3,killAtk:0.15},
   schrecken:{atk:1.14,charm:0.25,curse:0.12},
-  schwarmruf:{hp:1.1,spd:1.1,shieldPct:0.08,crit:0.08}
+  schwarmruf:{hp:1.1,spd:1.1,shieldPct:0.08,crit:0.08},
+  biss:{}
 };
 function S(name,range,cd,o){ return Object.assign({name:name,range:range,cd:cd,dmg:0,color:"#e6edf5"},o||{}); }
 const SPELLS = {
@@ -573,7 +580,8 @@ const SPELLS = {
   schattenstoss:S("Schattenstoß",4,1.9,{dmg:1.35,weaken:0.2,color:"#a78bfa"}),
   mondbruch:S("Mondbruch",5.5,2.4,{dmg:1.3,rage:0.4,splash:0.25,color:"#ddd6fe"}),
   schrecken:S("Schreckensblick",4.8,2.4,{dmg:0.9,charm:0.35,weaken:0.2,color:"#f472b6"}),
-  schwarmruf:S("Schwarmruf",3.6,2.1,{dmg:0.4,buff:0.3,shield:0.14,color:"#a3e635"})
+  schwarmruf:S("Schwarmruf",3.6,2.1,{dmg:0.4,buff:0.3,shield:0.14,color:"#a3e635"}),
+  biss:S("Biss",1.6,1.1,{dmg:0.75,color:"#d9a066"})
 };
 const ABILITY_SPELL = {
   goldspinnen:"goldspinnen",pfeffer:"pfeffer",schattenbiss:"schattenstoss",erdbeben:"erdbeben",atomatem:"atomatem",silksnare:"silksnare",
@@ -1088,7 +1096,10 @@ const MONSTER_STYLE = {
   thunderbird:{type:"pterosaur",body:0x6b4a3a,trim:0xe3b066,plate:0x8f2f2c,glow:0xfde68a,glowIntensity:0.9,scale:1.2,hpY:1.65,radius:0.68},
   kraken:{type:"alien",variant:"cephalopod",body:0x4d3a6b,trim:0xc9b6e8,plate:0x2d2142,glow:0xa78bfa,glowIntensity:0.8,scale:1.2,hpY:1.75,radius:0.6},
   batsquatch:{type:"pterosaur",body:0x3e2c46,trim:0xb9a5c9,plate:0x241a2b,glow:0xc084fc,glowIntensity:0.8,scale:1.15,hpY:1.6,radius:0.66},
-  megalodon:{type:"serpent",body:0x52646e,trim:0xc3d0d4,plate:0x2b3a43,glow:0x7dd3fc,glowIntensity:0.45,scale:1.35,hpY:1.5,radius:0.64}
+  megalodon:{type:"serpent",body:0x52646e,trim:0xc3d0d4,plate:0x2b3a43,glow:0x7dd3fc,glowIntensity:0.45,scale:1.35,hpY:1.5,radius:0.64},
+  oma:{type:"folk",variant:"oma",body:0x7a5a72,trim:0xe6c9a8,plate:0x4a3546,glow:0xf0b6d8,glowIntensity:0.18,scale:0.86,hpY:1.35,radius:0.36},
+  feuerwehr:{type:"folk",variant:"feuerwehr",body:0xb23a2e,trim:0xf2d9a8,plate:0x3d2a26,glow:0xff8a4d,glowIntensity:0.35,scale:0.98,hpY:1.52,radius:0.44},
+  teddy:{type:"beast",variant:"teddy",body:0x9a6a43,trim:0xd9b98a,plate:0x5a3b28,glow:0xf2c14e,glowIntensity:0.12,scale:0.72,hpY:1.05,radius:0.36}
 };
 const RACE_STYLE = {
   Fee:{type:"folk",body:0x8fd3ff,trim:0xffe4f2,plate:0xffb6e6,glow:0xf9a8d4,glowIntensity:0.85,scale:0.78,hpY:1.22,radius:0.35},
@@ -2579,6 +2590,13 @@ function loseBattle(){
 }
 function enemyKeyFor(unit,used,preferRole){
   const wanted = [unit.race,unit.cls,unit.cls2].filter(Boolean);
+  const mundane = FOE_KEYS.filter(k => !used[k] && ROSTER[k].role === preferRole);
+  const mundanePool = mundane.length ? mundane : FOE_KEYS.filter(k => !used[k]);
+  if (mundanePool.length && Math.random() < 0.5) {
+    const key = mundanePool[Math.floor(Math.random()*mundanePool.length)];
+    used[key] = true;
+    return key;
+  }
   let pool = ALL_KEYS.filter(k => !used[k] && ROSTER[k].race === unit.race && ROSTER[k].role === preferRole);
   if(!pool.length) pool = ALL_KEYS.filter(k => !used[k] && wanted.some(c => ROSTER[k].race === c || ROSTER[k].cls === c || ROSTER[k].cls2 === c));
   if(!pool.length) pool = ALL_KEYS.filter(k => !used[k] && ROSTER[k].role === preferRole);

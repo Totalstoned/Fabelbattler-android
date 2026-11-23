@@ -56,6 +56,7 @@ Letztes Update: 2026-11-23
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - Toasts erscheinen seit v1.45 im Kampfmodus oben statt unten (`body.battle-mode .toasts`): Die Kampfleiste mit Timer, Status, Fokus, Mana und Boss-Balken wird dadurch nicht mehr von Wellen-, Tod- und Sieges-Meldungen verdeckt; Toasts sind dort zusätzlich klick-transparent.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
+- Gegner-exklusive Wesen (v1.50): `oma` (Oma mit Stock), `feuerwehr`, `teddy` – einzige Fähigkeit `biss` (einfacher Nahkampf, keine Sonderwirkung), keine Spezialfahrzeuge. Sie liegen in `ENEMY_ONLY`/`FOE_KEYS`, werden nicht gedraftet und erscheinen mit ~50 % Chance unter den Gegner-Helden (`enemyKeyFor()`). Werte skalieren wie alle Einheiten über `createUnit(key,level)`.
 
 ## Entwicklungsregeln
 

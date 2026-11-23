@@ -127,10 +127,16 @@ for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block(
     traits[key] = m.group(1) if m else None
 
 problems = []
-if len(roster) != 95:
-    problems.append('Einheiten: erwartet 95, gefunden ' + str(len(roster)))
-if len(spells) != 50:
-    problems.append('Zauber: erwartet 50, gefunden ' + str(len(spells)))
+if len(roster) != 98:
+    problems.append('Einheiten: erwartet 98, gefunden ' + str(len(roster)))
+if len(spells) != 51:
+    problems.append('Zauber: erwartet 51, gefunden ' + str(len(spells)))
+for key in ['oma', 'feuerwehr', 'teddy']:
+    if key not in roster or roster[key]['ability'] != 'biss':
+        problems.append('Gegner-Wesen fehlt oder hat keine Biss-Fähigkeit: ' + key)
+for token in ['ENEMY_ONLY', 'FOE_KEYS', 'const ALL_KEYS = Object.keys(ROSTER).filter', 'biss:S("Biss"']:
+    if token not in src:
+        problems.append('Gegner-exkluse Wesen fehlen: ' + token)
 if any(u['race'] == 'Barbar' for u in roster.values()):
     problems.append('Barbar-Rasse ist noch im Roster vorhanden')
 if sum(1 for u in roster.values() if u['race'] == 'Krypto') < 10:

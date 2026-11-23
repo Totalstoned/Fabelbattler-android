@@ -262,6 +262,15 @@ vm.runInContext(`
   draftFilterClass = "ALL";
   draftOffer = [];
   globalThis.__synergyTextCheck = typeof draftSynergyText === "function" && draftSynergyText().indexOf("Lücken:") === 0;
+  globalThis.__foeOnlyCheck = Object.keys(ENEMY_ONLY).length === 3 &&
+    Object.keys(ENEMY_ONLY).every(k => ROSTER[k] && ROSTER[k].ability === "biss" &&
+      FOE_KEYS.includes(k) && !ALL_KEYS.includes(k));
+  let foeLeak = false;
+  for (let i = 0; i < 20; i++) {
+    draftOffer = [];
+    if (draftKeys().some(k => ENEMY_ONLY[k])) foeLeak = true;
+  }
+  globalThis.__foeDraftLeak = foeLeak;
   G.phase = "menu";
 `, ctx);
 
@@ -279,6 +288,12 @@ if (!vm.runInContext('globalThis.__filterClassCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__synergyTextCheck', ctx)) {
   throw new Error('Synergie-Hinweis im Draft fehlt');
+}
+if (!vm.runInContext('globalThis.__foeOnlyCheck', ctx)) {
+  throw new Error('Gegner-Wesen (oma/feuerwehr/teddy) fehlen oder liegen im Spielerpool');
+}
+if (vm.runInContext('globalThis.__foeDraftLeak', ctx)) {
+  throw new Error('Gegner-Wesen tauchen im Draft auf');
 }
 
 vm.runInContext(`
