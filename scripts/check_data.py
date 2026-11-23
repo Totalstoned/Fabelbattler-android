@@ -167,6 +167,9 @@ for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
 for token in ['focusHp', 'focusName', 'focusHpValue', 'function updateFocusHp']:
     if token not in src:
         problems.append('Fokus-HP-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['focusMeta', 'ROLE_META[u.role]', 'function updateFocusHp']:
+    if token not in src:
+        problems.append('Rollen-/Level-Anzeige des Fokus fehlt: ' + token)
 for token in ['focusStatus', 'function updateFocusHp', 'activeStatusKeys(u).map']:
     if token not in src:
         problems.append('Fokus-Statusanzeige in der Kampfleiste fehlt: ' + token)
