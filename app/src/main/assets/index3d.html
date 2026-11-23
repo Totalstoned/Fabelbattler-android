@@ -94,6 +94,7 @@
   .bossbar.show{display:flex;}
   .bossbar .track{width:84px;height:6px;background:#0b0e13;border:1px solid #7f3b3b;border-radius:4px;overflow:hidden;}
   .bossbar .track i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ff6b6b,#ffb86b);transition:width .15s;}
+  .bossbar #bossBarName{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .bossbar b{min-width:30px;text-align:right;}
   .bossbar.critical{color:#ff6b6b;}
   .bossbar.critical .track{border-color:#ff6b6b;}
@@ -234,7 +235,7 @@
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
-  <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
+  <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <b id="bossBarName">Boss</b> <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
@@ -2879,11 +2880,13 @@ function updateBattleTimer(){
 function updateBossBar(){
   if(SIM.headless) return;
   const bar = document.getElementById("bossBar");
+  const name = document.getElementById("bossBarName");
   const boss = G.battle && G.battle.enemyMobs ? G.battle.enemyMobs.find(m => m.isBoss && !m.isDead) : null;
-  if(!boss){ bar.classList.remove("show"); bar.classList.remove("critical"); return; }
+  if(!boss){ bar.classList.remove("show"); bar.classList.remove("critical"); if(name) name.textContent = "Boss"; return; }
   bar.classList.add("show");
   const pct = clamp(boss.hp/boss.maxHp*100,0,100);
   bar.classList.toggle("critical",pct <= 25);
+  if(name) name.textContent = (boss.emoji ? boss.emoji+" " : "") + (boss.name || "Boss");
   document.getElementById("bossBarFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("bossBarPct").textContent = Math.ceil(pct)+'%';
 }

@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'bossBarName']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -357,6 +357,7 @@ vm.runInContext(`
   globalThis.__bossBarCheck = parseFloat(document.getElementById("bossBarFill").style.width) === 50 &&
     document.getElementById("bossBarPct").textContent === "50%";
   const bossBar = document.getElementById("bossBar");
+  globalThis.__bossBarNameCheck = document.getElementById("bossBarName").textContent.indexOf(boss.name) !== -1;
   globalThis.__bossBarShowCheck = bossBar.classList.contains("show") && !bossBar.classList.contains("critical");
   boss.hp = boss.maxHp * 0.2;
   updateBossBar();
@@ -365,7 +366,8 @@ vm.runInContext(`
     document.getElementById("bossBarPct").textContent === "20%";
   boss.isDead = true;
   updateBossBar();
-  globalThis.__bossBarHideCheck = !bossBar.classList.contains("show") && !bossBar.classList.contains("critical");
+  globalThis.__bossBarHideCheck = !bossBar.classList.contains("show") && !bossBar.classList.contains("critical") &&
+    document.getElementById("bossBarName").textContent === "Boss";
   const bossGoldBefore = G.gold;
   const eliteCount = em.filter(m => m.isElite).length;
   winBattle();
@@ -390,6 +392,9 @@ if (!vm.runInContext('globalThis.__bossStatsCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__bossBarCheck', ctx)) {
   throw new Error('Boss-Lebensbalken zeigt nicht die aktuelle Boss-HP');
+}
+if (!vm.runInContext('globalThis.__bossBarNameCheck', ctx)) {
+  throw new Error('Boss-Lebensbalken zeigt nicht den Bossnamen');
 }
 if (!vm.runInContext('globalThis.__bossBarShowCheck', ctx)) {
   throw new Error('Boss-Lebensbalken wird bei sicherer HP nicht normal angezeigt');

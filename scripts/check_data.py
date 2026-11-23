@@ -155,6 +155,9 @@ for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'up
 for token in ['heroAlert', 'heroAlertCount', 'function updateHeroAlert']:
     if token not in src:
         problems.append('Kritische-Helden-Warnung fehlt: ' + token)
+for token in ['bossBarName']:
+    if token not in src:
+        problems.append('Boss-Lebensbalken fehlt: ' + token)
 for token in ['teamHpBar', 'teamHpFill', 'teamHpPct', 'function updateTeamHpBar']:
     if token not in src:
         problems.append('Team-HP-Balken fehlt: ' + token)
