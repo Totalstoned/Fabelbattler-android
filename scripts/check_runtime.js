@@ -626,6 +626,47 @@ vm.runInContext(`
   G.battle = null;
   beginRun();
   startBattle();
+  const healBtn = document.getElementById("btnBattleHeal");
+  const novaBtn = document.getElementById("btnBattleNova");
+  globalThis.__manaCostLabels = healBtn.textContent.indexOf("40") >= 0 &&
+    novaBtn.textContent.indexOf("70") >= 0 &&
+    MANA_COSTS.heal === 40 && MANA_COSTS.nova === 70;
+  G.mana = 0;
+  updateButtons();
+  globalThis.__manaCostLocked = healBtn.disabled && novaBtn.disabled &&
+    !healBtn.classList.contains("mana-ready") && !novaBtn.classList.contains("mana-ready") &&
+    healBtn.textContent.indexOf("40") >= 0 && novaBtn.textContent.indexOf("70") >= 0;
+  G.mana = 100;
+  updateButtons();
+  globalThis.__manaCostReady = !healBtn.disabled && !novaBtn.disabled &&
+    healBtn.classList.contains("mana-ready") && novaBtn.classList.contains("mana-ready");
+  G.mana = MANA_COSTS.heal;
+  globalThis.__manaCostHealSpend = castHeal() === true && G.mana === 0;
+  G.mana = MANA_COSTS.nova;
+  globalThis.__manaCostNovaSpend = castNova() === true && G.mana === 0;
+  G.phase = "menu";
+  G.battle = null;
+  updateButtons();
+  globalThis.__manaCostOutside = healBtn.disabled && novaBtn.disabled &&
+    !healBtn.classList.contains("mana-ready") && !novaBtn.classList.contains("mana-ready");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__manaCostLabels', 'Mana-Kosten fehlen in der Kampfleiste'],
+  ['__manaCostLocked', 'Zauber-Buttons zeigen fehlendes Mana nicht an'],
+  ['__manaCostReady', 'Zauber-Buttons zeigen verfügbare Zauber nicht hervor'],
+  ['__manaCostHealSpend', 'Heilregen zieht nicht die angezeigten 40 Mana ab'],
+  ['__manaCostNovaSpend', 'Blitz zieht nicht die angezeigten 70 Mana ab'],
+  ['__manaCostOutside', 'Zauber-Buttons bleiben außerhalb des Kampfes hervorgehoben'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
   initMobMeshes();
   const m = G.battle.enemyMobs[0];
   const tier = m.tier || "normal";

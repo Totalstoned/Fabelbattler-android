@@ -136,6 +136,7 @@
   .battle-info.gold.show{display:inline-block;}
   .battle-info.gold b{color:#fff3c4;}
   .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
+  .battle-bar .btn.mana-ready{box-shadow:inset 0 0 0 1px rgba(143,181,255,.75);}
   body.battle-mode .battle-bar{display:flex;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
   body.battle-mode h1,body.battle-mode .hud,body.battle-mode .panel,
@@ -238,8 +239,8 @@
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
-  <button class="btn heal" id="btnBattleHeal">Heilregen</button>
-  <button class="btn nova" id="btnBattleNova">Blitz</button>
+  <button class="btn heal" id="btnBattleHeal" title="Heilregen: 40 Mana">Heilregen ✦40</button>
+  <button class="btn nova" id="btnBattleNova" title="Fabel-Blitz: 70 Mana">Blitz ✦70</button>
   <button class="btn heal" id="btnItemHeal">Trank</button>
   <button class="btn" id="btnItemShield">Schild</button>
   <button class="btn nova" id="btnItemNova">Splitter</button>
@@ -617,6 +618,7 @@ const SYNERGY = {
 const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null};
 const SIM = {headless:false};
 const CORE_UNITS = ["bigfoot","chupacabra","fee"];
+const MANA_COSTS = {heal:40,nova:70};
 const MOB_CAP = 500;
 const MOB_ARCHETYPES = {
   kriecher:{name:"Kriecher",emoji:"🦠",hp:9,atk:2.2,spd:0.9,rng:40,color:0x8b5cf6,scale:0.42},
@@ -2976,6 +2978,27 @@ function updateFocusCooldown(){
   bar.classList.toggle("ready",cd <= 0);
   document.getElementById("focusCdValue").textContent = cd > 0 ? name+" "+cd.toFixed(1)+"s" : name+" bereit";
 }
+function castHeal(){
+  if(G.mana < MANA_COSTS.heal || !G.battle || G.phase !== "battle") return false;
+  G.mana -= MANA_COSTS.heal;
+  G.battle.player.filter(u => !u.isDead).forEach(u => healUnit(u,u.maxHp*0.25));
+  showToast("Heilregen ☔");
+  updateButtons();
+  return true;
+}
+function castNova(){
+  if(G.mana < MANA_COSTS.nova || !G.battle || G.phase !== "battle") return false;
+  const targets = G.battle.enemies.filter(u => !u.isDead);
+  if(!targets.length) return false;
+  G.mana -= MANA_COSTS.nova;
+  const target = targets[Math.floor(Math.random()*targets.length)];
+  applyDamage(target,target.maxHp*0.35,null,{});
+  spawnShockwave(target,"#fde68a",1.5);
+  addShake(0.25);
+  showToast("Fabel-Blitz ✺");
+  updateButtons();
+  return true;
+}
 function updateButtons(){
   if(SIM.headless) return;
   const menu = G.phase === "menu";
@@ -2986,13 +3009,19 @@ function updateButtons(){
   battleBtn.disabled = menu || inBattle || drafting || !full;
   battleBtn.textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
   document.getElementById("btnDraft").disabled = menu || inBattle || drafting || full;
-  document.getElementById("btnHeal").disabled = menu || !inBattle || G.mana < 40;
-  document.getElementById("btnNova").disabled = menu || !inBattle || G.mana < 70;
+  document.getElementById("btnHeal").disabled = menu || !inBattle || G.mana < MANA_COSTS.heal;
+  document.getElementById("btnNova").disabled = menu || !inBattle || G.mana < MANA_COSTS.nova;
   document.getElementById("btnBattleSelect").disabled = menu || drafting || full;
   document.getElementById("btnBattleNext").disabled = menu || inBattle || drafting || !full;
   document.getElementById("btnBattleNext").textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
-  document.getElementById("btnBattleHeal").disabled = !inBattle || G.mana < 40;
-  document.getElementById("btnBattleNova").disabled = !inBattle || G.mana < 70;
+  const healBtn = document.getElementById("btnBattleHeal");
+  const novaBtn = document.getElementById("btnBattleNova");
+  healBtn.textContent = "Heilregen ✦"+MANA_COSTS.heal;
+  novaBtn.textContent = "Blitz ✦"+MANA_COSTS.nova;
+  healBtn.disabled = !inBattle || G.mana < MANA_COSTS.heal;
+  novaBtn.disabled = !inBattle || G.mana < MANA_COSTS.nova;
+  healBtn.classList.toggle("mana-ready",!healBtn.disabled);
+  novaBtn.classList.toggle("mana-ready",!novaBtn.disabled);
   const itemBtns = {btnItemHeal:"heal",btnItemShield:"shield",btnItemNova:"nova"};
   const itemLabels = {heal:"Trank",shield:"Schild",nova:"Splitter"};
   Object.keys(itemBtns).forEach(id => {
@@ -3213,25 +3242,8 @@ window.addEventListener("load", () => {
     if(!u){ showToast("Kein Wesen verfügbar"); return; }
     openInfo(u.name+" · Fähigkeit", abilityInfoHtml(u), "");
   };
-  document.getElementById("btnHeal").onclick = () => {
-    if(G.mana < 40 || !G.battle || G.phase !== "battle") return;
-    G.mana -= 40;
-    G.battle.player.filter(u => !u.isDead).forEach(u => healUnit(u,u.maxHp*0.25));
-    showToast("Heilregen ☔");
-    updateButtons();
-  };
-  document.getElementById("btnNova").onclick = () => {
-    if(G.mana < 70 || !G.battle || G.phase !== "battle") return;
-    const targets = G.battle.enemies.filter(u => !u.isDead);
-    if(!targets.length) return;
-    G.mana -= 70;
-    const target = targets[Math.floor(Math.random()*targets.length)];
-    applyDamage(target,target.maxHp*0.35,null,{});
-    spawnShockwave(target,"#fde68a",1.5);
-    addShake(0.25);
-    showToast("Fabel-Blitz ✺");
-    updateButtons();
-  };
+  document.getElementById("btnHeal").onclick = castHeal;
+  document.getElementById("btnNova").onclick = castNova;
   let last = performance.now();
   let uiTick = 0;
   function frame(now){

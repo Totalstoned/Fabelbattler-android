@@ -164,6 +164,13 @@ for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'function updat
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)
+mana_costs = re.search(r'const MANA_COSTS = \{heal:(\d+),nova:(\d+)\};', src)
+if not mana_costs or (int(mana_costs.group(1)), int(mana_costs.group(2))) != (40, 70):
+    problems.append('MANA_COSTS: erwartet heal:40, nova:70')
+for token in ['mana-ready', 'btnBattleHeal', 'btnBattleNova', 'Heilregen ✦', 'Blitz ✦',
+              'function castHeal', 'function castNova']:
+    if token not in src:
+        problems.append('Mana-Kosten in der Kampfleiste fehlen: ' + token)
 for token in ['focusHp', 'focusName', 'focusHpValue', 'function updateFocusHp']:
     if token not in src:
         problems.append('Fokus-HP-Anzeige in der Kampfleiste fehlt: ' + token)
