@@ -317,6 +317,14 @@ v1.45-b46 2026-11-23  (Toasts im Kampf oben)
       verschiebt Meldungen im Kampf nach oben und macht sie klick-transparent.
       Ausserhalb des Kampfes bleibt die Position unten unveraendert.
     - check_runtime.js prueft die CSS-Regel; alle drei Checks gruen.
+v1.46-b47 2026-11-23  (Fokus-Ziel in der Kampfleiste)
+    - Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet. Neue kompakte Anzeige
+      (id focusTarget, focusTargetName, focusTargetHp) via updateFocusTarget(): zeigt
+      Namen und Rest-HP inkl. Schild des Ziels, das der fokussierte Held angreift.
+    - Bei kritischem Ziel (<= 25 %) pulsiert der Wert rot; ohne Ziel, bei totem
+      Ziel/Fokus und ausserhalb des Kampfes bleibt die Anzeige ausgeblendet.
+    - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige, HP/Schild,
+      kritische HP, totes Ziel, toten Fokus und Ausblenden.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -360,6 +368,7 @@ Core-Loop-Status:
   [x] 27. Zauber-Bereitschaft an der Mana-Anzeige (v1.43)
   [x] 28. Duden-Bonus in der Kampfleiste (v1.44)
   [x] 29. Toasts im Kampf oben (v1.45)
+  [x] 30. Fokus-Ziel in der Kampfleiste (v1.46)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

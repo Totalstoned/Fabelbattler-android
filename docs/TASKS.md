@@ -172,6 +172,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
 - [x] **29. Toasts im Kampf oben** (v1.45)
   Die Toasts lagen mit `bottom:14px` und `z-index:99` direkt über der Kampfleiste und verdeckten Timer, Kampfstatus, Fokus- und Mana-Anzeige. `body.battle-mode .toasts` setzt sie auf `top:14px` (`bottom:auto`, `pointer-events:none`); außerhalb des Kampfes bleibt die alte Position.
   *Erledigt:* `check_runtime.js` prüft die CSS-Regel; `check_data.py` und die Kampf-Simulation bleiben grün.
+- [x] **30. Fokus-Ziel in der Kampfleiste** (v1.46)
+  `updateFocusTarget()` zeigt ➤ Ziel mit Namen, Rest-HP und Schild des Wesens, das der
+  per ◀/▶ fokussierte Held aktuell angreift. Bei kritischem Ziel (≤ 25 %) pulsiert der
+  Wert rot; ohne Ziel, bei totem Ziel/Fokus und außerhalb des Kampfes ist die Anzeige
+  ausgeblendet. Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet, daher war
+  bisher nicht ablesbar, gegen wen der Fokus kämpft und wie nah der Kill ist.
+  *Erledigt:* `check_runtime.js` prüft Anzeige, HP/Schild, kritische HP, totes Ziel,
+  toten Fokus und Ausblenden; `check_data.py` prüft die UI-Tokens.
 
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.

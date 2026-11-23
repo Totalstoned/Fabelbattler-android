@@ -186,6 +186,9 @@ for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
 for token in ['id="focusMeta"', 'function updateFocusMeta']:
     if token not in src:
         problems.append('Fokus-Level/Rolle in der Kampfleiste fehlt: ' + token)
+for token in ['focusTarget', 'focusTargetName', 'focusTargetHp', 'function updateFocusTarget']:
+    if token not in src:
+        problems.append('Fokus-Ziel in der Kampfleiste fehlt: ' + token)
 for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:
     if token not in src:
         problems.append('Treffer-Impuls für Mobs fehlt: ' + token)
