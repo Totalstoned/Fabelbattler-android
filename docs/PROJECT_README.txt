@@ -309,6 +309,12 @@ v1.44-b45 2026-11-23  (Duden-Bonus in der Kampfleiste)
    - Ohne Bonus und ausserhalb des Kampfes bleibt die Anzeige ausgeblendet.
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Bonuswert und Reaktion auf die Einheitenanzahl.
+v1.45-b46 2026-11-23  (Treffer-Feedback fuer Elite-/Boss-Mobs)
+   - hasDamageFx() erlaubt Trefferzahlen, Partikel und Schockwellen fuer Elite-
+     und Boss-Mobs im 3D-Feld. Normale Schwarm-Mobs bleiben effektfrei, damit
+     die 500er-Schwaerme performant bleiben.
+   - check_data.py prueft die Tokens; check_runtime.js prueft, dass nur Elite/
+     Boss Effekte erzeugen und Helden weiterhin Feedback zeigen.
 
 v1.45-b46 2026-11-23  (Toasts im Kampf oben)
     - Toasts lagen mit bottom:14px/z-index:99 direkt auf der Kampfleiste und
