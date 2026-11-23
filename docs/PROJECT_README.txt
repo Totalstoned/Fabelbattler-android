@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Stand: 2026-11-23
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -264,6 +264,14 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
 
+v1.37-b38 2026-11-23  (Team-Level in der Kampfleiste)
+   - Das HUD mit hudLvl ist im Kampfmodus ausgeblendet, obwohl das Level die
+     HP/ATK-Skalierung bestimmt und alle drei Wellen steigt. Neue kompakte Anzeige
+     (id battleLvl, battleLvlValue) via updateBattleLvl(): Durchschnittslevel der
+     Helden waehrend des Kampfes, ausgeblendet ausserhalb davon.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
+     Startwert, Level-Up und gerundeten Durchschnitt.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung)" unten.
@@ -299,6 +307,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Team-Level in der Kampfleiste (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
