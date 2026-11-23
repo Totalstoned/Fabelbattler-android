@@ -204,6 +204,24 @@ vm.runInContext(`
       poseCharacter(u,g,1,0.016,1);
       const after = model ? model.rotation.z : g.userData.limbs[0].rotation.x;
       return before !== after;
+    })() &&
+    (function(){
+      const u = createUnit("sensenmann",1,"player");
+      const g = makeCharacter(u);
+      g.userData.animPhase = 0;
+      const model = g.userData.model;
+      const read = () => model ? model.rotation.z : g.userData.limbs[0].rotation.x;
+      u.hitFlash = 0; u.animAttack = 0;
+      u.hp = u.maxHp;
+      poseCharacter(u,g,1,0.016,1);
+      const healthy = read();
+      u.hp = u.maxHp*0.1;
+      poseCharacter(u,g,1,0.016,1);
+      const wounded = read();
+      u.hp = u.maxHp*0.5;
+      poseCharacter(u,g,1,0.016,1);
+      const mid = read();
+      return wounded !== healthy && mid === healthy;
     })();
   G.phase = "draft";
   updateSynergies();
