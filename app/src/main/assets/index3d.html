@@ -137,6 +137,10 @@
   .battle-info.focuscd{display:none;color:#8fb5ff;}
   .battle-info.focuscd.show{display:inline-block;}
   .battle-info.focuscd.ready{color:#9ff0bd;}
+  .battle-info.focustarget{display:none;color:#ffb86b;}
+  .battle-info.focustarget.show{display:inline-block;}
+  .battle-info.focustarget b{color:#ffd166;}
+  .battle-info.focustarget.critical b{color:#ff6b6b;animation:bossWarn .7s ease-in-out infinite;}
   .battle-info.focusmeta{display:none;color:#c9b6ff;}
   .battle-info.focusmeta.show{display:inline-block;}
   .battle-info.focusbar .fx{font-size:10px;opacity:.85;margin-left:5px;}
@@ -244,6 +248,7 @@
   <span class="battle-info focusmeta" id="focusMeta" title="Level und Rolle des fokussierten Wesens">Lv – · –</span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild, Angriff, Level, Rolle und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b> · ⚔ <b id="focusAtkValue">0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
+  <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Rest-HP und Schild">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetHp">0/0</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b> <span class="spell-ready" id="manaHealReady" title="Heilregen ab 40 Mana verfügbar">✚40</span> <span class="spell-ready" id="manaNovaReady" title="Fabel-Blitz ab 70 Mana verfügbar">✺70</span></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
@@ -3038,6 +3043,26 @@ function updateFocusMeta(){
   bar.classList.add("show");
   bar.textContent = "Lv "+u.level+" · "+role;
 }
+function updateFocusTarget(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("focusTarget");
+  const name = document.getElementById("focusTargetName");
+  const value = document.getElementById("focusTargetHp");
+  bar.classList.remove("show");
+  bar.classList.remove("critical");
+  name.textContent = "–";
+  value.textContent = "0/0";
+  if(G.phase !== "battle" || !G.battle) return;
+  const u = findUnitById(G.selectedUnitId);
+  if(!u || u.isDead || !u.target || u.target.isDead) return;
+  const target = u.target;
+  const ratio = clamp((target.hp+(target.shield||0))/target.maxHp,0,1);
+  bar.classList.add("show");
+  bar.classList.toggle("critical",ratio <= 0.25);
+  name.textContent = (target.emoji ? target.emoji+" " : "")+target.name;
+  value.textContent = Math.ceil(Math.max(0,target.hp))+"/"+Math.ceil(target.maxHp)+
+    (target.shield > 0 ? " ⛨"+Math.ceil(target.shield) : "");
+}
 function updateButtons(){
   if(SIM.headless) return;
   const menu = G.phase === "menu";
@@ -3313,6 +3338,7 @@ window.addEventListener("load", () => {
     updateFocusHp();
     updateFocusCooldown();
     updateFocusMeta();
+    updateFocusTarget();
     if(G.phase === "battle" && G.battle) updateBattle(dt);
     updateEffects(dt);
     uiTick += dt;

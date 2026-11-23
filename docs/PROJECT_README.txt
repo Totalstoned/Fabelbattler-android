@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.44-b45
+Aktuelle Version: v1.45-b46
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -310,6 +310,15 @@ v1.44-b45 2026-11-23  (Duden-Bonus in der Kampfleiste)
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Bonuswert und Reaktion auf die Einheitenanzahl.
 
+v1.45-b46 2026-11-23  (Fokus-Ziel in der Kampfleiste)
+    - Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet. Neue kompakte Anzeige
+      (id focusTarget, focusTargetName, focusTargetHp) via updateFocusTarget(): zeigt
+      Namen und Rest-HP inkl. Schild des Ziels, das der fokussierte Held angreift.
+    - Bei kritischem Ziel (<= 25 %) pulsiert der Wert rot; ohne Ziel, bei totem
+      Ziel/Fokus und ausserhalb des Kampfes bleibt die Anzeige ausgeblendet.
+    - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige, HP/Schild,
+      kritische HP, totes Ziel, toten Fokus und Ausblenden.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung)" unten.
@@ -351,6 +360,7 @@ Core-Loop-Status:
   [x] 25. Fokus-Angriffswert in der Kampfleiste (v1.41)
   [x] 27. Zauber-Bereitschaft an der Mana-Anzeige (v1.43)
   [x] 28. Duden-Bonus in der Kampfleiste (v1.44)
+  [x] 29. Fokus-Ziel in der Kampfleiste (v1.45)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

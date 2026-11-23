@@ -169,6 +169,15 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Ein-/Ausblenden, Bonuswert und Reaktion auf die
   Einheitenanzahl; `check_data.py` prüft die UI-Tokens.
 
+- [x] **29. Fokus-Ziel in der Kampfleiste** (v1.45)
+  `updateFocusTarget()` zeigt ➤ Ziel mit Namen, Rest-HP und Schild des Wesens, das der
+  per ◀/▶ fokussierte Held aktuell angreift. Bei kritischem Ziel (≤ 25 %) pulsiert der
+  Wert rot; ohne Ziel, bei totem Ziel/Fokus und außerhalb des Kampfes ist die Anzeige
+  ausgeblendet. Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet, daher war
+  bisher nicht ablesbar, gegen wen der Fokus kämpft und wie nah der Kill ist.
+  *Erledigt:* `check_runtime.js` prüft Anzeige, HP/Schild, kritische HP, totes Ziel,
+  toten Fokus und Ausblenden; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
