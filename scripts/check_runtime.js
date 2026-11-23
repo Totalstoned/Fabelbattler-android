@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusMeta', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -669,12 +669,14 @@ vm.runInContext(`
   const cdValue = document.getElementById("focusCdValue");
   const fx = document.getElementById("focusStatus");
   const name = document.getElementById("focusName");
+  const meta = document.getElementById("focusMeta");
   const focusHero = G.battle.player[0];
   const spellName = (SPELLS[focusHero.spell]||{}).name || "Zauber";
   G.selectedUnitId = focusHero.id;
   updateFocusHp();
   updateFocusCooldown();
   const startShield = focusHero.shield > 0 ? " ⛨"+Math.ceil(focusHero.shield) : "";
+  globalThis.__focusMeta = meta.textContent === "L"+focusHero.level+" · "+ROLE_META[focusHero.role].label;
   globalThis.__focusStart = bar.classList.contains("show") &&
     value.textContent === Math.ceil(focusHero.hp)+"/"+Math.ceil(focusHero.maxHp)+startShield &&
     fx.textContent === "" &&
@@ -695,6 +697,8 @@ vm.runInContext(`
   updateFocusHp();
   globalThis.__focusNameCycle = !!nextFocus && nextFocus.id !== focusHero.id &&
     bar.classList.contains("show") && name.textContent === nextFocus.emoji+" "+nextFocus.name;
+  globalThis.__focusMetaCycle = !!nextFocus &&
+    meta.textContent === "L"+nextFocus.level+" · "+ROLE_META[nextFocus.role].label;
   G.selectedUnitId = focusHero.id;
   updateFocusHp();
   focusHero.hp = focusHero.maxHp * 0.4;
@@ -719,6 +723,7 @@ vm.runInContext(`
   focusHero.isDead = true;
   updateFocusHp();
   globalThis.__focusDeadHidden = !bar.classList.contains("show") && fx.textContent === "";
+  globalThis.__focusMetaDead = meta.textContent === "";
   updateFocusCooldown();
   globalThis.__focusCdDeadHidden = !cdBar.classList.contains("show");
   focusHero.isDead = false;
@@ -730,6 +735,7 @@ vm.runInContext(`
   updateFocusCooldown();
   globalThis.__focusCdHide = !cdBar.classList.contains("show") && !cdBar.classList.contains("ready");
   globalThis.__focusNameReset = name.textContent === "Fokus";
+  globalThis.__focusMetaReset = meta.textContent === "";
 `, ctx);
 
 for (const [flag, message] of [
@@ -739,6 +745,10 @@ for (const [flag, message] of [
   ['__focusName', 'Fokus-HP-Anzeige zeigt nicht den Namen des fokussierten Wesens'],
   ['__focusNameCycle', 'Fokusname aktualisiert sich nicht nach der ◀/▶-Navigation'],
   ['__focusNameReset', 'Fokusname wird außerhalb des Kampfes nicht zurückgesetzt'],
+  ['__focusMeta', 'Fokus-Anzeige zeigt Rolle und Level nicht'],
+  ['__focusMetaCycle', 'Fokus-Rolle und -Level aktualisieren sich nicht nach der ◀/▶-Navigation'],
+  ['__focusMetaDead', 'Fokus-Rolle und -Level bleiben bei totem Fokus sichtbar'],
+  ['__focusMetaReset', 'Fokus-Rolle und -Level werden außerhalb des Kampfes nicht zurückgesetzt'],
   ['__focusDamage', 'Fokus-HP-Anzeige reagiert nicht auf Schaden'],
   ['__focusShield', 'Fokus-HP-Anzeige zeigt den Schild nicht'],
   ['__focusStatus', 'Fokus-Anzeige zeigt aktive Statuseffekte nicht'],
@@ -752,4 +762,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusRolle+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
