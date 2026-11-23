@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdFill', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -666,6 +666,7 @@ vm.runInContext(`
   const bar = document.getElementById("focusHp");
   const value = document.getElementById("focusHpValue");
   const cdBar = document.getElementById("focusCd");
+  const cdFill = document.getElementById("focusCdFill");
   const cdValue = document.getElementById("focusCdValue");
   const fx = document.getElementById("focusStatus");
   const name = document.getElementById("focusName");
@@ -684,10 +685,16 @@ vm.runInContext(`
   globalThis.__focusCdStart = cdBar.classList.contains("show") &&
     !cdBar.classList.contains("ready") &&
     cdValue.textContent === spellName+" 2.5s";
+  const spellDef = SPELLS[focusHero.spell];
+  const cdTotal = spellDef && spellDef.cd ? spellDef.cd/Math.max(0.7,focusHero.spd) : 0;
+  focusHero.spellCd = cdTotal*0.5;
+  updateFocusCooldown();
+  globalThis.__focusCdFillRun = cdTotal > 0 && Math.abs(parseFloat(cdFill.style.width)-50) < 0.1;
   focusHero.spellCd = 0;
   updateFocusCooldown();
   globalThis.__focusCdReady = cdBar.classList.contains("show") &&
     cdBar.classList.contains("ready") &&
+    parseFloat(cdFill.style.width) === 100 &&
     cdValue.textContent === spellName+" bereit";
   globalThis.__focusName = name.textContent === focusHero.emoji+" "+focusHero.name;
   cycleFocus(1);
@@ -720,7 +727,7 @@ vm.runInContext(`
   updateFocusHp();
   globalThis.__focusDeadHidden = !bar.classList.contains("show") && fx.textContent === "";
   updateFocusCooldown();
-  globalThis.__focusCdDeadHidden = !cdBar.classList.contains("show");
+  globalThis.__focusCdDeadHidden = !cdBar.classList.contains("show") && parseFloat(cdFill.style.width) === 0;
   focusHero.isDead = false;
   G.phase = "menu";
   G.battle = null;
@@ -728,13 +735,15 @@ vm.runInContext(`
   globalThis.__focusHide = !bar.classList.contains("show") && !bar.classList.contains("warn") &&
     !bar.classList.contains("critical") && fx.textContent === "";
   updateFocusCooldown();
-  globalThis.__focusCdHide = !cdBar.classList.contains("show") && !cdBar.classList.contains("ready");
+  globalThis.__focusCdHide = !cdBar.classList.contains("show") && !cdBar.classList.contains("ready") &&
+    parseFloat(cdFill.style.width) === 0;
   globalThis.__focusNameReset = name.textContent === "Fokus";
 `, ctx);
 
 for (const [flag, message] of [
   ['__focusStart', 'Fokus-HP-Anzeige zeigt zu Kampfbeginn keine volle HP'],
   ['__focusCdStart', 'Fokus-Cooldown zeigt den Zauber und die Restzeit nicht'],
+  ['__focusCdFillRun', 'Fokus-Cooldown-Balken zeigt keinen Fortschritt an'],
   ['__focusCdReady', 'Fokus-Cooldown zeigt keinen bereiten Zauber an'],
   ['__focusName', 'Fokus-HP-Anzeige zeigt nicht den Namen des fokussierten Wesens'],
   ['__focusNameCycle', 'Fokusname aktualisiert sich nicht nach der ◀/▶-Navigation'],
@@ -752,4 +761,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd+cd-balken, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
