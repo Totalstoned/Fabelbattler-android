@@ -79,6 +79,9 @@ if (!html.includes('id="battleTimer"') || !html.includes('function updateBattleT
 if (!html.includes('id="bossBar"') || !html.includes('function updateBossBar')) {
   throw new Error('Boss-Lebensbalken in der Kampfleiste fehlt');
 }
+if (!html.includes('id="playerBossBar"') || !html.includes('function updatePlayerBossBar')) {
+  throw new Error('Eigener Boss-Lebensbalken in der Kampfleiste fehlt');
+}
 if (!html.includes('id="battleStatus"') || !html.includes('function updateBattleStatus') ||
     !html.includes('id="statusEnemies"') || !html.includes('id="statusHeroes"')) {
   throw new Error('Kampf-Status (Gegner/Helden) in der Kampfleiste fehlt');
@@ -96,7 +99,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -366,6 +369,20 @@ vm.runInContext(`
   boss.isDead = true;
   updateBossBar();
   globalThis.__bossBarHideCheck = !bossBar.classList.contains("show") && !bossBar.classList.contains("critical");
+  const ownBoss = pm.find(m => m.isBoss);
+  const ownBossBar = document.getElementById("playerBossBar");
+  ownBoss.hp = ownBoss.maxHp * 0.5;
+  updatePlayerBossBar();
+  globalThis.__ownBossBarCheck = parseFloat(document.getElementById("playerBossBarFill").style.width) === 50 &&
+    document.getElementById("playerBossBarPct").textContent === "50%";
+  globalThis.__ownBossBarShowCheck = ownBossBar.classList.contains("show") && !ownBossBar.classList.contains("critical");
+  ownBoss.hp = ownBoss.maxHp * 0.2;
+  updatePlayerBossBar();
+  globalThis.__ownBossBarCriticalCheck = ownBossBar.classList.contains("critical") &&
+    parseFloat(document.getElementById("playerBossBarFill").style.width) === 20;
+  ownBoss.isDead = true;
+  updatePlayerBossBar();
+  globalThis.__ownBossBarHideCheck = !ownBossBar.classList.contains("show") && !ownBossBar.classList.contains("critical");
   const bossGoldBefore = G.gold;
   const eliteCount = em.filter(m => m.isElite).length;
   winBattle();
@@ -399,6 +416,18 @@ if (!vm.runInContext('globalThis.__bossBarCriticalCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__bossBarHideCheck', ctx)) {
   throw new Error('Boss-Lebensbalken verschwindet nicht nach dem Boss-Tod');
+}
+if (!vm.runInContext('globalThis.__ownBossBarCheck', ctx)) {
+  throw new Error('Eigener Boss-Lebensbalken zeigt nicht die aktuelle Boss-HP');
+}
+if (!vm.runInContext('globalThis.__ownBossBarShowCheck', ctx)) {
+  throw new Error('Eigener Boss-Lebensbalken wird bei sicherer HP nicht normal angezeigt');
+}
+if (!vm.runInContext('globalThis.__ownBossBarCriticalCheck', ctx)) {
+  throw new Error('Eigener Boss-Lebensbalken zeigt keine kritische HP unter 25 %');
+}
+if (!vm.runInContext('globalThis.__ownBossBarHideCheck', ctx)) {
+  throw new Error('Eigener Boss-Lebensbalken verschwindet nicht nach dem Boss-Tod');
 }
 if (!vm.runInContext('globalThis.__bossGoldCheck', ctx)) {
   throw new Error('Boss/Elite geben keinen Bonus-Gold');
@@ -752,4 +781,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

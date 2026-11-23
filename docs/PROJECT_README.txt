@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Stand: 2026-11-23
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -264,6 +264,15 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
 
+v1.37-b38 2026-11-23  (Eigener Boss-Lebensbalken)
+    - Bosse spawnen auf beiden Seiten, aber die Kampfleiste zeigte nur den
+      gegnerischen Boss. Neuer Balken playerBossBar (tuerkis, ids
+      playerBossBarFill/playerBossBarPct) via updatePlayerBossBar(): zeigt die HP
+      des eigenen Boss live, wird unter 25 % rot/pulsierend und verschwindet nach
+      dem Tod. Beide Boss-Balken sind jetzt mit "Gegner"/"Team" beschriftet.
+    - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige, 50 %/20 %
+      HP und Ausblenden nach dem Boss-Tod.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung)" unten.
@@ -299,6 +308,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Eigener Boss-Lebensbalken (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
