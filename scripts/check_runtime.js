@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusElites', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -414,25 +414,31 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
-  G.wave = 1;
+  G.wave = 5; // Elite-Welle
   startBattle();
   updateBattleStatus();
   const status = document.getElementById("battleStatus");
+  const elites = document.getElementById("statusElites");
   const foesStart = parseInt(document.getElementById("statusEnemies").textContent, 10);
   const mobsPlayerStart = G.battle.playerMobs.length;
   const mobsEnemyStart = G.battle.enemyMobs.length;
+  const elitesPlayerStart = G.battle.playerMobs.filter(m => m.isElite).length;
+  const elitesEnemyStart = G.battle.enemyMobs.filter(m => m.isElite).length;
   globalThis.__statusShowCheck = status.classList.contains("show") &&
     foesStart === sideUnits(G.battle, "enemy").length &&
     document.getElementById("statusFoeHeroes").textContent === G.battle.enemies.length+'/'+G.battle.enemies.length &&
     document.getElementById("statusMobs").textContent === mobsPlayerStart+'/'+mobsEnemyStart &&
+    elites.textContent === elitesPlayerStart+'/'+elitesEnemyStart && elitesEnemyStart > 0 &&
     document.getElementById("statusHeroes").textContent === "3/3";
-  G.battle.enemyMobs[0].isDead = true;
+  const eliteFoe = G.battle.enemyMobs.find(m => m.isElite);
+  eliteFoe.isDead = true;
   G.battle.enemies[0].isDead = true;
   G.battle.player[0].isDead = true;
   updateBattleStatus();
   globalThis.__statusLiveCheck = parseInt(document.getElementById("statusEnemies").textContent, 10) === foesStart - 2 &&
     document.getElementById("statusFoeHeroes").textContent === (G.battle.enemies.length-1)+'/'+G.battle.enemies.length &&
     document.getElementById("statusMobs").textContent === mobsPlayerStart+'/'+(mobsEnemyStart-1) &&
+    elites.textContent === elitesPlayerStart+'/'+(elitesEnemyStart-1) &&
     document.getElementById("statusHeroes").textContent === "2/3";
   G.phase = "menu";
   G.battle = null;
@@ -441,10 +447,10 @@ vm.runInContext(`
 `, ctx);
 
 if (!vm.runInContext('globalThis.__statusShowCheck', ctx)) {
-  throw new Error('Kampf-Status zeigt nicht Gegner, Gegner-Helden, Mobs und Helden zu Kampfbeginn');
+  throw new Error('Kampf-Status zeigt nicht Gegner, Gegner-Helden, Mobs, Eliten und Helden zu Kampfbeginn');
 }
 if (!vm.runInContext('globalThis.__statusLiveCheck', ctx)) {
-  throw new Error('Kampf-Status reagiert nicht auf Tod von Gegner-Helden, Mobs oder Helden');
+  throw new Error('Kampf-Status reagiert nicht auf Tod von Gegner-Helden, Mobs, Eliten oder Helden');
 }
 if (!vm.runInContext('globalThis.__statusHideCheck', ctx)) {
   throw new Error('Kampf-Status verschwindet nicht außerhalb des Kampfes');
@@ -752,4 +758,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+eliten+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
