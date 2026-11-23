@@ -262,7 +262,7 @@ vm.runInContext(`
   draftFilterClass = "ALL";
   draftOffer = [];
   globalThis.__synergyTextCheck = typeof draftSynergyText === "function" && draftSynergyText().indexOf("Lücken:") === 0;
-  globalThis.__foeOnlyCheck = Object.keys(ENEMY_ONLY).length === 3 &&
+  globalThis.__foeOnlyCheck = Object.keys(ENEMY_ONLY).length === 7 &&
     Object.keys(ENEMY_ONLY).every(k => ROSTER[k] && ROSTER[k].ability === "biss" &&
       FOE_KEYS.includes(k) && !ALL_KEYS.includes(k));
   let foeLeak = false;
@@ -271,6 +271,16 @@ vm.runInContext(`
     if (draftKeys().some(k => ENEMY_ONLY[k])) foeLeak = true;
   }
   globalThis.__foeDraftLeak = foeLeak;
+  let monsterLeak = false;
+  for (let i = 0; i < 20; i++) {
+    const used = {};
+    const roles = ["TANK", "DPS", "BUFFER", "HEALER"];
+    for (let j = 0; j < roles.length; j++) {
+      const key = enemyKeyFor({race: "Kaiju", cls: "Kaiju", cls2: "Element"}, used, roles[j]);
+      if (!ENEMY_ONLY[key]) monsterLeak = true;
+    }
+  }
+  globalThis.__foeMonsterLeak = monsterLeak;
   G.phase = "menu";
 `, ctx);
 
@@ -290,10 +300,13 @@ if (!vm.runInContext('globalThis.__synergyTextCheck', ctx)) {
   throw new Error('Synergie-Hinweis im Draft fehlt');
 }
 if (!vm.runInContext('globalThis.__foeOnlyCheck', ctx)) {
-  throw new Error('Gegner-Wesen (oma/feuerwehr/teddy) fehlen oder liegen im Spielerpool');
+  throw new Error('Zivile Gegner-Wesen fehlen oder liegen im Spielerpool');
 }
 if (vm.runInContext('globalThis.__foeDraftLeak', ctx)) {
   throw new Error('Gegner-Wesen tauchen im Draft auf');
+}
+if (vm.runInContext('globalThis.__foeMonsterLeak', ctx)) {
+  throw new Error('Gegnerteams enthalten noch Monster aus dem Spielerpool');
 }
 
 vm.runInContext(`

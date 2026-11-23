@@ -320,7 +320,11 @@ const ROSTER = {
   kroetenmoench:{name:"Krötenmönch",emoji:"🐸",role:"TANK",cls:"Wald",cls2:"Geist",hp:175,atk:12,rng:65,spd:0.7,ability:"kroetenfluch"},
   sensenmann:{name:"Sensenmann",emoji:"💀",role:"DPS",cls:"Geist",cls2:"Dunkel",hp:105,atk:21,rng:95,spd:0.95,ability:"sensenstreich"},
   oma:{name:"Oma mit Stock",emoji:"👵",role:"DPS",cls:"Chaos",cls2:"Stahl",hp:78,atk:10,rng:58,spd:0.95,ability:"biss"},
+  opa:{name:"Opa mit Zeitung",emoji:"👴",role:"DPS",cls:"Chaos",cls2:"Stahl",hp:85,atk:11,rng:58,spd:0.9,ability:"biss"},
   feuerwehr:{name:"Feuerwehr",emoji:"👨‍🚒",role:"TANK",cls:"Stahl",cls2:"Wald",hp:135,atk:11,rng:62,spd:0.88,ability:"biss"},
+  kampftruppe:{name:"Kampftruppe",emoji:"🪖",role:"TANK",cls:"Stahl",cls2:"Chaos",hp:150,atk:13,rng:70,spd:0.85,ability:"biss"},
+  soldat:{name:"Soldat",emoji:"🎖️",role:"DPS",cls:"Stahl",cls2:"Chaos",hp:110,atk:14,rng:75,spd:0.95,ability:"biss"},
+  missionar:{name:"Missionar",emoji:"⛪",role:"HEALER",cls:"Magie",cls2:"Stahl",hp:90,atk:9,rng:65,spd:0.85,ability:"biss"},
   teddy:{name:"Teddy",emoji:"🧸",role:"DPS",cls:"Tier",cls2:"Wald",hp:95,atk:12,rng:52,spd:0.92,ability:"biss"}
 };
 const RACE_PACKS = {
@@ -393,7 +397,7 @@ Object.entries(RACE_PACKS).forEach(([race,list]) => {
     ROSTER[e[0]] = {name:e[1],emoji:e[2],role:e[3],cls:e[4],cls2:e[5],hp:e[6],atk:e[7],rng:e[8],spd:e[9],ability:e[10],race:race,variant:e[11]};
   });
 });
-const ENEMY_ONLY = {oma:1,feuerwehr:1,teddy:1};
+const ENEMY_ONLY = {oma:1,opa:1,feuerwehr:1,kampftruppe:1,soldat:1,missionar:1,teddy:1};
 const FOE_KEYS = Object.keys(ROSTER).filter(k => ENEMY_ONLY[k]);
 const ALL_KEYS = Object.keys(ROSTER).filter(k => !ENEMY_ONLY[k]);
 const ROLE_META = {TANK:{col:"#6ea8fe",label:"Tank"},DPS:{col:"#e5484d",label:"DPS"},HEALER:{col:"#4ade80",label:"Heiler"},BUFFER:{col:"#a78bfa",label:"Puffer"}};
@@ -1098,7 +1102,11 @@ const MONSTER_STYLE = {
   batsquatch:{type:"pterosaur",body:0x3e2c46,trim:0xb9a5c9,plate:0x241a2b,glow:0xc084fc,glowIntensity:0.8,scale:1.15,hpY:1.6,radius:0.66},
   megalodon:{type:"serpent",body:0x52646e,trim:0xc3d0d4,plate:0x2b3a43,glow:0x7dd3fc,glowIntensity:0.45,scale:1.35,hpY:1.5,radius:0.64},
   oma:{type:"folk",variant:"oma",body:0x7a5a72,trim:0xe6c9a8,plate:0x4a3546,glow:0xf0b6d8,glowIntensity:0.18,scale:0.86,hpY:1.35,radius:0.36},
+  opa:{type:"folk",variant:"opa",body:0x5d6470,trim:0xd9d2c4,plate:0x3a404a,glow:0xbcd0e8,glowIntensity:0.18,scale:0.9,hpY:1.4,radius:0.38},
   feuerwehr:{type:"folk",variant:"feuerwehr",body:0xb23a2e,trim:0xf2d9a8,plate:0x3d2a26,glow:0xff8a4d,glowIntensity:0.35,scale:0.98,hpY:1.52,radius:0.44},
+  kampftruppe:{type:"folk",variant:"kampftruppe",body:0x4a5638,trim:0xb9c49a,plate:0x2b3323,glow:0xa3e635,glowIntensity:0.22,scale:1.04,hpY:1.55,radius:0.46},
+  soldat:{type:"folk",variant:"soldat",body:0x5b6142,trim:0xc7c9a8,plate:0x333a29,glow:0xfde68a,glowIntensity:0.2,scale:1.0,hpY:1.5,radius:0.44},
+  missionar:{type:"folk",variant:"missionar",body:0x3f3a5c,trim:0xe6e0f2,plate:0x272239,glow:0xc4b5fd,glowIntensity:0.28,scale:0.92,hpY:1.42,radius:0.38},
   teddy:{type:"beast",variant:"teddy",body:0x9a6a43,trim:0xd9b98a,plate:0x5a3b28,glow:0xf2c14e,glowIntensity:0.12,scale:0.72,hpY:1.05,radius:0.36}
 };
 const RACE_STYLE = {
@@ -2589,19 +2597,11 @@ function loseBattle(){
   updateButtons();
 }
 function enemyKeyFor(unit,used,preferRole){
-  const wanted = [unit.race,unit.cls,unit.cls2].filter(Boolean);
-  const mundane = FOE_KEYS.filter(k => !used[k] && ROSTER[k].role === preferRole);
-  const mundanePool = mundane.length ? mundane : FOE_KEYS.filter(k => !used[k]);
-  if (mundanePool.length && Math.random() < 0.5) {
-    const key = mundanePool[Math.floor(Math.random()*mundanePool.length)];
-    used[key] = true;
-    return key;
-  }
-  let pool = ALL_KEYS.filter(k => !used[k] && ROSTER[k].race === unit.race && ROSTER[k].role === preferRole);
-  if(!pool.length) pool = ALL_KEYS.filter(k => !used[k] && wanted.some(c => ROSTER[k].race === c || ROSTER[k].cls === c || ROSTER[k].cls2 === c));
-  if(!pool.length) pool = ALL_KEYS.filter(k => !used[k] && ROSTER[k].role === preferRole);
-  if(!pool.length) pool = ALL_KEYS.filter(k => !used[k]);
-  const key = pool[Math.floor(Math.random()*pool.length)] || ALL_KEYS[0];
+  // Gegner sind immer zivile Wesen – nie die Monster aus dem Spieler-Pool.
+  let pool = FOE_KEYS.filter(k => !used[k] && ROSTER[k].role === preferRole);
+  if(!pool.length) pool = FOE_KEYS.filter(k => !used[k]);
+  if(!pool.length) pool = FOE_KEYS.slice();
+  const key = pool[Math.floor(Math.random()*pool.length)] || FOE_KEYS[0];
   used[key] = true;
   return key;
 }
