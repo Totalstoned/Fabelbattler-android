@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.45-b46
+Aktuelle Version: v1.51-b52
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -347,6 +347,14 @@ v1.50-b51 2026-11-23  (Gegner-Wesen)
    - check_data.py: 98 Einheiten / 51 Zauber, Biss-Tokens; check_runtime.js prueft,
      dass die drei Wesen im Gegnerpool liegen und nie im Draft auftauchen.
    - Version 1.50/b51 bewusst gewaehlt: v1.49/b50 ist bereits durch PR #125 belegt.
+
+v1.51-b52 2026-11-23  (Fokus-Navigation ohne Toast-Spam)
+   - selectUnit() zeigt den "Info: ..."-Toast nur noch ausserhalb des Kampfes.
+     Im Kampfmodus zeigen ◀/▶ und 3D-Taps keinen Toast mehr, weil die
+     Fokus-Anzeige Name, HP, Schild, ATK, Zauber und Statuseffekte live enthaelt.
+     Wellen-, Tod- und Siegesmeldungen werden dadurch nicht mehr zugedeckt.
+   - check_runtime.js prueft stille Fokuswechsel im Kampf und den Info-Toast
+     in der Vorbereitung; alle drei Checks gruen.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".

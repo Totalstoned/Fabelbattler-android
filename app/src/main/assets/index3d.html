@@ -2840,7 +2840,9 @@ function updateUnitInfo(){
 function selectUnit(u){
   G.selectedUnitId = u.id;
   updateTeamList();
-  showToast("Info: "+u.emoji+" "+u.name);
+  // Im Kampf zeigt die Fokus-Anzeige alle Details live; ein Toast pro ◀/▶ oder Tap
+  // würde sonst die Kampfleiste und andere Meldungen überdecken.
+  if(G.phase !== "battle" || !G.battle) showToast("Info: "+u.emoji+" "+u.name);
 }
 function cycleFocus(dir){
   const list = G.battle ? G.battle.player : G.team;

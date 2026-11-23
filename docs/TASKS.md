@@ -188,6 +188,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Anzeige, HP/Schild, kritische HP, totes Ziel,
   toten Fokus und Ausblenden; `check_data.py` prüft die UI-Tokens.
 
+- [x] **31. Fokus-Navigation ohne Toast-Spam** (v1.51)
+  `selectUnit()` unterdrückt den Info-Toast im Kampfmodus. Die Fokus-Anzeige in der
+  Kampfleiste zeigt Name, HP, Schild, ATK, Zauber und Statuseffekte ohnehin live;
+  ◀/▶ und 3D-Taps überdecken seither keine Wellen-, Tod- und Siegesmeldungen mehr.
+  Außerhalb des Kampfes bleibt der Info-Toast erhalten.
+  *Erledigt:* `check_runtime.js` prüft, dass Fokuswechsel und Auswahl im Kampf keine
+  Toasts erzeugen und der Info-Toast in der Vorbereitung weiterhin erscheint.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

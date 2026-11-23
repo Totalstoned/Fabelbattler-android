@@ -1055,4 +1055,33 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  const focusToasts = [];
+  const origFocusToast = showToast;
+  showToast = function(msg){ focusToasts.push(msg); };
+  const firstFocus = G.battle.player[0];
+  G.selectedUnitId = firstFocus.id;
+  cycleFocus(1);
+  const cycledId = G.selectedUnitId;
+  selectUnit(firstFocus);
+  globalThis.__focusQuietInBattle = focusToasts.length === 0 && cycledId !== firstFocus.id;
+  G.phase = "prep";
+  G.battle = null;
+  selectUnit(firstFocus);
+  showToast = origFocusToast;
+  globalThis.__focusToastInPrep = focusToasts.length === 1 &&
+    focusToasts[0] === "Info: "+firstFocus.emoji+" "+firstFocus.name;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__focusQuietInBattle', 'Fokuswechsel im Kampf erzeugt Toast-Spam trotz Fokus-Anzeige'],
+  ['__focusToastInPrep', 'Fokus-Auswahl außerhalb des Kampfes zeigt keinen Info-Toast mehr'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
