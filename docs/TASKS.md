@@ -122,6 +122,15 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar bleiben.
   *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert und Live-Updates;
   `check_data.py` prüft die UI-Tokens.
+
+- [x] **22. Eliten-Anzeige in der Kampfleiste** (v1.37)
+  `updateEliteCount()` zeigt die lebenden Elite-Mobs beider Seiten als „✨ Eliten P/G"
+  (id `eliteCount`). Eliten haben anders als Bosse keinen eigenen Balken; im 500er-Schwarm
+  bleibt ihre Anzahl im Kampfmodus sichtbar. Die Anzeige erscheint nur in Eliten-Wellen und
+  verschwindet nach dem Tod aller Eliten sowie außerhalb des Kampfes.
+  *Erledigt:* `check_runtime.js` prüft Welle 1, Zählung beider Seiten, Tod von Eliten und
+  Ausblenden; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

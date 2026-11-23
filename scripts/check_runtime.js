@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'eliteCount', 'eliteCountValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -456,6 +456,50 @@ vm.runInContext(`
   beginRun();
   G.wave = 1;
   startBattle();
+  const eliteBar = document.getElementById("eliteCount");
+  const eliteValue = document.getElementById("eliteCountValue");
+  updateEliteCount();
+  globalThis.__eliteCountHidden = !eliteBar.classList.contains("show");
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  const playerElites = G.battle.playerMobs.filter(m => m.isElite).length;
+  const enemyElites = G.battle.enemyMobs.filter(m => m.isElite).length;
+  updateEliteCount();
+  globalThis.__eliteCountShow = playerElites > 0 && enemyElites > 0 &&
+    eliteBar.classList.contains("show") &&
+    eliteValue.textContent === playerElites+'/'+enemyElites;
+  G.battle.playerMobs.find(m => m.isElite).isDead = true;
+  updateEliteCount();
+  globalThis.__eliteCountLive = eliteBar.classList.contains("show") &&
+    eliteValue.textContent === (playerElites-1)+'/'+enemyElites;
+  [...G.battle.playerMobs, ...G.battle.enemyMobs].filter(m => m.isElite).forEach(m => { m.isDead = true; });
+  updateEliteCount();
+  globalThis.__eliteCountGone = !eliteBar.classList.contains("show");
+  G.phase = "menu";
+  G.battle = null;
+  updateEliteCount();
+  globalThis.__eliteCountHide = !eliteBar.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__eliteCountHidden', 'Eliten-Anzeige erscheint in Welle 1 ohne Eliten'],
+  ['__eliteCountShow', 'Eliten-Anzeige zeigt die lebenden Eliten beider Seiten nicht'],
+  ['__eliteCountLive', 'Eliten-Anzeige reagiert nicht auf tote Eliten'],
+  ['__eliteCountGone', 'Eliten-Anzeige bleibt nach dem Tod aller Eliten sichtbar'],
+  ['__eliteCountHide', 'Eliten-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
   const alert = document.getElementById("heroAlert");
   const count = document.getElementById("heroAlertCount");
   updateHeroAlert();
@@ -752,4 +796,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+eliten+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
