@@ -27,7 +27,7 @@ Letztes Update: 2026-11-23
 - Kampf-Simulation: wellenbasiert, Start 3 Helden + Mobs gegen 3 Helden + Mobs (später 3–6 Helden), Sekunden-Timer, Statuseffekte, Auren, Cooldowns, Zielwahl, Front-basierte Mob-KI.
 - UI: Kampfleiste mit Timer, HUD, Draft (3 Karten, Rollen-/Klassenfilter, Synergie-Hinweis, Reroll 1 Gold, Auswahl 2 Gold), Verbrauchsitems (Trank/Schild/Splitter), Heilregen/Blitz, Touch-Fokus, Zoom, Einheiten-Info.
 - Fullscreen/Querformat: Manifest + `MainActivity` (Immersive-Sticky plus Legacy-Flags); auf dem Testgerät vom User bestätigt.
-- Checks: `scripts/check_js.py`, `scripts/check_data.py`, `scripts/check_runtime.js`; CI baut die APK. Letzter grüner Lauf: `45207657533`.
+- Checks: `scripts/check_js.py`, `scripts/check_data.py`, `scripts/check_runtime.js`; CI baut die APK. Letzter grüner Lauf: `45207657533` (v1.48-Lauf folgt).
 - Chronologische Übergabe inkl. aller Versionen: `/root/projects/FABELBATTLER/readme.txt` (Kopie: `docs/PROJECT_README.txt`).
 - Offen: kein direkter Gerätezugriff in der Entwicklung; Fullscreen-Verhalten nur per User-Screenshot verifiziert.
 - Boss-Mobs zeigen in der Kampfleiste einen eigenen Lebensbalken inkl. Prozent (`updateBossBar()`, v1.23); unter 25 % HP pulsiert er rot als kritische Warnung (v1.24). Die Schwarm-Mobs haben keine Einzelbalken.

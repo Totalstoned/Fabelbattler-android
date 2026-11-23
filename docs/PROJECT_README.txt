@@ -473,3 +473,11 @@ Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung):
     0 offen. Externe Quelle synchronisiert, alle Checks gruen.
   - CI 45207657533 gruen; APK /root/projects/FABELBATTLER/fabelbattler-v1.44-b45.apk
     SHA-256 6b30f1e2849879dd07550d893660f52cf17adf21f67981600b5a779a2856ae60
+
+2026-11-23 17:40 UTC – 4 neue Loop-PRs integriert (v1.45-b46 bis v1.48-b49):
+  - v1.45 Toasts im Kampf oben (verdecken nicht mehr die Kampfleiste).
+  - v1.46 Fokus-Ziel in der Kampfleiste (Name, HP, Schild, kritisch).
+  - v1.47 Elite-/Boss-Treffer im 3D-Feld sichtbar (hasDamageFx).
+  - v1.48 Niederlage-Toast mit Kampfbilanz (Dauer, Helden, Gegner uebrig).
+  - PRs #121-#124 geschlossen, 0 offen. Externe Quelle synchronisiert.
+  - CI und APK fuer v1.48-b49 folgen.
