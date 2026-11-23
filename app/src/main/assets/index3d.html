@@ -100,6 +100,12 @@
   .bossbar.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
   .bossbar.critical b{animation:bossWarn .7s ease-in-out infinite;}
   @keyframes bossWarn{50%{opacity:.3;}}
+   .bossbar.ally{color:#9ff0bd;}
+   .bossbar.ally .track{border-color:#2f6b47;}
+   .bossbar.ally .track i{background:linear-gradient(90deg,#2f9e60,#4ade80);}
+   .bossbar.ally.critical{color:#ff6b6b;}
+   .bossbar.ally.critical .track{border-color:#ff6b6b;}
+   .bossbar.ally.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
   .teamhp{display:none;align-items:center;gap:6px;font-size:11px;color:#9ff0bd;padding:0 6px;white-space:nowrap;}
   .teamhp.show{display:flex;}
   .teamhp .track{width:84px;height:6px;background:#0b0e13;border:1px solid #2f6b47;border-radius:4px;overflow:hidden;}
@@ -235,6 +241,7 @@
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
+  <span class="bossbar ally" id="allyBossBar" title="Lebenspunkte des verbündeten Boss">🤝 <span class="track"><i id="allyBossBarFill"></i></span> <b id="allyBossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
@@ -2878,14 +2885,19 @@ function updateBattleTimer(){
 }
 function updateBossBar(){
   if(SIM.headless) return;
-  const bar = document.getElementById("bossBar");
-  const boss = G.battle && G.battle.enemyMobs ? G.battle.enemyMobs.find(m => m.isBoss && !m.isDead) : null;
+  const enemyBoss = G.battle && G.battle.enemyMobs ? G.battle.enemyMobs.find(m => m.isBoss && !m.isDead) : null;
+  updateBossBarFor("bossBar","bossBarFill","bossBarPct",enemyBoss);
+  const allyBoss = G.battle && G.battle.playerMobs ? G.battle.playerMobs.find(m => m.isBoss && !m.isDead) : null;
+  updateBossBarFor("allyBossBar","allyBossBarFill","allyBossBarPct",allyBoss);
+}
+function updateBossBarFor(id,fillId,pctId,boss){
+  const bar = document.getElementById(id);
   if(!boss){ bar.classList.remove("show"); bar.classList.remove("critical"); return; }
   bar.classList.add("show");
   const pct = clamp(boss.hp/boss.maxHp*100,0,100);
   bar.classList.toggle("critical",pct <= 25);
-  document.getElementById("bossBarFill").style.width = pct.toFixed(1)+'%';
-  document.getElementById("bossBarPct").textContent = Math.ceil(pct)+'%';
+  document.getElementById(fillId).style.width = pct.toFixed(1)+'%';
+  document.getElementById(pctId).textContent = Math.ceil(pct)+'%';
 }
 function updateBattleStatus(){
   if(SIM.headless) return;
