@@ -171,6 +171,9 @@ for token in ['playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'functio
 for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', 'swarmStacks(sideUnits(G.battle,"player").length)']:
     if token not in src:
         problems.append('Duden-Bonus in der Kampfleiste fehlt: ' + token)
+for token in ['function loseBattle', 'Niederlage in Welle', 'Gegner "+foesLeft+" übrig']:
+    if token not in src:
+        problems.append('Niederlage-Zusammenfassung fehlt: ' + token)
 for token in ['focusHp', 'focusName', 'focusHpValue', 'function updateFocusHp']:
     if token not in src:
         problems.append('Fokus-HP-Anzeige in der Kampfleiste fehlt: ' + token)

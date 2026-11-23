@@ -331,6 +331,12 @@ v1.46-b47 2026-11-23  (Fokus-Ziel in der Kampfleiste)
       Ziel/Fokus und ausserhalb des Kampfes bleibt die Anzeige ausgeblendet.
     - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige, HP/Schild,
       kritische HP, totes Ziel, toten Fokus und Ausblenden.
+v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
+    - loseBattle() ersetzt den knappen Hinweis durch genau einen Toast mit
+      Kampfdauer, ueberlebenden Helden und verbleibenden Gegnern. Die Werte
+      werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
+    - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
+      Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -375,6 +381,7 @@ Core-Loop-Status:
   [x] 28. Duden-Bonus in der Kampfleiste (v1.44)
   [x] 29. Toasts im Kampf oben (v1.45)
   [x] 30. Fokus-Ziel in der Kampfleiste (v1.46)
+  [x] 29. Niederlage-Zusammenfassung im Toast (v1.45)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

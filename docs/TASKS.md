@@ -168,6 +168,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Anzeige ausgeblendet.
   *Erledigt:* `check_runtime.js` prüft Ein-/Ausblenden, Bonuswert und Reaktion auf die
   Einheitenanzahl; `check_data.py` prüft die UI-Tokens.
+- [x] **29. Niederlage-Zusammenfassung im Toast** (v1.45)
+  `loseBattle()` zeigt jetzt kampfdauer, überlebende Helden und verbleibende Gegner
+  in genau einem Toast. Bisher stand dort nur „Niederlage in Welle X – erneut versuchen“;
+  die neuen Werte bleiben trotz `reviveTeam()` erhalten, weil sie vorher aus `G.battle`
+  gelesen werden.
+  *Erledigt:* `check_runtime.js` prüft genau einen Toast mit Welle, Dauer, Helden und
+  Gegnerzahl; `check_data.py` prüft die Tokens.
 
 - [x] **29. Toasts im Kampf oben** (v1.45)
   Die Toasts lagen mit `bottom:14px` und `z-index:99` direkt über der Kampfleiste und verdeckten Timer, Kampfstatus, Fokus- und Mana-Anzeige. `body.battle-mode .toasts` setzt sie auf `top:14px` (`bottom:auto`, `pointer-events:none`); außerhalb des Kampfes bleibt die alte Position.

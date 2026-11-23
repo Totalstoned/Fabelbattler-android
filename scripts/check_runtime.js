@@ -1007,4 +1007,37 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+fokusZiel, mob-treffer-impuls+elite/boss-treffer-fx, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  const lossToastList = [];
+  const origLossToast = showToast;
+  showToast = function(msg){ lossToastList.push(msg); };
+  G.battle.time = 8.4;
+  G.battle.player[0].isDead = true;
+  G.battle.enemyMobs[0].isDead = true;
+  const lossFoesLeft = sideUnits(G.battle, "enemy").filter(u => !u.isDead).length;
+  loseBattle();
+  showToast = origLossToast;
+  const lossSummary = lossToastList.filter(t => t.indexOf("Niederlage") >= 0);
+  globalThis.__lossToastSingle = lossSummary.length === 1 && lossToastList.length === 1;
+  globalThis.__lossToastSummary = lossSummary.length === 1 &&
+    lossSummary[0].indexOf("Niederlage in Welle 1") === 0 &&
+    lossSummary[0].indexOf("8s") >= 0 &&
+    lossSummary[0].indexOf("Helden 2/3") >= 0 &&
+    lossSummary[0].indexOf("Gegner "+lossFoesLeft+" übrig") >= 0;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__lossToastSingle', 'Niederlage erzeugt mehrere oder keine Zusammenfassungs-Toasts'],
+  ['__lossToastSummary', 'Niederlage-Toast zeigt nicht Dauer, überlebende Helden und verbleibende Gegner'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
