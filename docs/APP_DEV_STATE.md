@@ -13,14 +13,14 @@ Letztes Update: 2026-11-23
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.48**, Build **49**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.44-b45.apk`).
+- Version **1.53**, Build **54**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.50-b51.apk`).
 - Letztes geprüftes APK: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
 - Mob-Tiere: `elite` alle 5 Wellen (3,5× HP, 2,2× ATK), `boss` alle 10 Wellen (12× HP, 3,5× ATK, je Seite 1). Bonus-Gold +2 pro Elite, +15 pro Boss.
 - Animationen: `poseCharacter()` für Idle/Lauf/Angriff/Treffer/Tod bei allen Einheiten, `attackPulse()` normalisiert die Angriffs-Dauer; Mobs mit Impuls bei Angriff. Kein Engine- oder Sprachwechsel (User: „alles so lassen wie es ist").
-- Inhalt: **95 Einheiten, 10 Klassen, 7 Rassen, 50 Zauber**.
+- Inhalt: **113 Einheiten, 10 Klassen, 7 Rassen, 51 Zauber**; davon 18 gegner-exklusive zivile Wesen/Fahrzeuge.
 - Rassen: Folklore, Kaiju, Fee, Zwerg, **Kryptozoologie**, Assassine, Alien. Barbar-Rasse wurde entfernt.
 - Kryptiden-Pack mit 12 Wesen; neue Fähigkeiten `schrecken` (Schreckensblick) und `schwarmruf` (Team-Buff).
 - Team-Buffs skalieren nach Anzahl: ein Stack pro weiterem Wesen mit gleicher Klasse/Rasse (max. 4) sowie +4 % HP/ATK pro zusätzlichem Duden ab dem dritten.
@@ -56,7 +56,7 @@ Letztes Update: 2026-11-23
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - Toasts erscheinen seit v1.45 im Kampfmodus oben statt unten (`body.battle-mode .toasts`): Die Kampfleiste mit Timer, Status, Fokus, Mana und Boss-Balken wird dadurch nicht mehr von Wellen-, Tod- und Sieges-Meldungen verdeckt; Toasts sind dort zusätzlich klick-transparent.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
-- Gegner-exklusive Wesen (v1.50): `oma` (Oma mit Stock), `feuerwehr`, `teddy` – einzige Fähigkeit `biss` (einfacher Nahkampf, keine Sonderwirkung), keine Spezialfahrzeuge. Sie liegen in `ENEMY_ONLY`/`FOE_KEYS`, werden nicht gedraftet und erscheinen mit ~50 % Chance unter den Gegner-Helden (`enemyKeyFor()`). Werte skalieren wie alle Einheiten über `createUnit(key,level)`.
+- Gegner-exklusive Wesen (v1.50–v1.53): 18 zivile Gegner – `oma`, `opa`, `feuerwehr`, `kampftruppe`, `soldat`, `missionar`, `sanitaeter`, `rebelle`, `armee`, `bundeswehr`, `soeldner`, `teddy` sowie die Fahrzeuge `feuerwehrwagen`, `krankenwagen`, `panzer`, `hubschrauber`, `kampfflugzeug`, `drohne`. Einzige Fähigkeit `biss` (einfacher Nahkampf), keine Sonderwirkungen; Fahrzeuge sind erlaubt (User-Entscheid 2026-11-23) und nutzen den vorhandenen `robot`-Mesh. Sie liegen in `ENEMY_ONLY`/`FOE_KEYS`, werden nicht gedraftet; `enemyKeyFor()` wählt seit v1.51 ausschließlich aus diesem Pool – Gegnerteams enthalten keine Monster aus dem Spieler-Roster. Werte skalieren über `createUnit(key,level)`.
 
 ## Entwicklungsregeln
 

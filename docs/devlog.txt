@@ -1,0 +1,70 @@
+Fabelbattler – Devlog
+=====================
+
+Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
+(CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
+Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
+
+2026-11-23 20:35  v1.53-b54  (zivile Gegner + Fahrzeuge)
+  - Gegner-Helden sind jetzt IMMER zivile Wesen aus ENEMY_ONLY, nie mehr die
+    Monster aus dem Spieler-Pool (enemyKeyFor() wurde entsprechend vereinfacht).
+  - Neue Gegner: oma, opa, feuerwehr, kampftruppe, soldat, missionar,
+    sanitaeter, rebelle, armee, bundeswehr, soeldner, teddy sowie die
+    Fahrzeuge feuerwehrwagen, krankenwagen, panzer, hubschrauber,
+    kampfflugzeug, drohne (18 Stueck). Alle nur mit "biss", Skalierung ueber
+    Level, keine Sonderfavehikel-Faehigkeiten.
+  - Fahrzeuge nutzen den vorhandenen robot-Mesh (kein neuer Mesh-Typ).
+  - Balance: lange Reichweiten der Fahrzeuge liessen Kaempfe nicht enden
+    (check_runtime timeout); Reichweite/HP reduziert, 3 Checks mehrfach gruen.
+  - check_data.py: 113 Einheiten / 51 Zauber / 18 Gegner-Keys;
+    check_runtime.js prueft, dass keine Monster in Gegnerteams auftauchen.
+  - Naechster Schritt: CI/APK, Screenshot-Pruefung der neuen Gegner auf dem Geraet.
+
+2026-11-23 20:31  v1.51-b52  (Commit 1cec51d)
+  - Erste Erweiterung der zivilen Gegner: opa, kampftruppe, soldat, missionar.
+    Gegnerteams zu 100 % auf zivile Wesen umgestellt.
+  - Hinweis: PRs #129-#133 (auto-improve) nutzen ebenfalls v1.51/b52.
+    Beim Mergen dort Versionen abstimmen.
+
+2026-11-23 20:05  PR #133  (auto-improve 20261123-195818)
+  - Fokus-Ziel zeigt Angriffswert im Kampf (updateFocusTarget).
+
+2026-11-23 19:58  PR #132  (auto-improve 20261123-192816)
+  - Besiegte Gegner in der Kampfleiste.
+
+2026-11-23 19:31  PR #131  (auto-improve 20261123-191314)
+  - Gegner-Staerkebalken in der Kampfleiste.
+
+2026-11-23 19:13  PR #130  (auto-improve 20261123-185813)
+  - Gold-Gewinn-Feedback in der Kampfleiste.
+
+2026-11-23 18:43  PR #129  (auto-improve 20261123-184312)
+  - Fokuswechsel im Kampf ohne Toast-Spam.
+
+2026-11-23 17:57  v1.50-b51  (Commit 9cab95e, CI 45232992648)
+  - Erste gegner-exklusive Wesen: oma, feuerwehr, teddy (nur biss).
+    ENEMY_ONLY/FOE_KEYS halten sie aus dem Draft; anfangs nur ~50 % Chance
+    unter den Gegner-Helden. APK fabelbattler-v1.50-b51.apk.
+
+2026-11-23 17:5x  v1.4x  (Commit e3b5e94, CI 45255203997)
+  - Headless-Spiel-Harness scripts/game_harness.js fuer Balancing:
+    --team/--enemies/--wave/--level/--ticks/--runs/--no-mobs/--seed/--json.
+
+2026-11-23 17:33  PR #125  (noch offen)
+  - Eliten-Zaehler im Kampfstatus (v1.49/b50) – Version bei Merge abstimmen.
+
+2026-11-23 15:50  Loop-Reaktivierung
+  - scripts/auto-improve.sh laeuft als PID 20489 alle 15 Minuten in Worktrees.
+    PRs werden nicht automatisch gemergt (User gibt frei).
+  - Letzte Heartbeats 20:13 und 20:28: Agent Abbruch wegen "Free usage limit
+    reached"; der Loop laeuft weiter, der Hauptcheckout blieb sauber.
+  - Stopp-Datei: /root/projects/FABELBATTLER/auto-improve.stop
+  - Log: /root/projects/FABELBATTLER/auto-improve.log
+
+Konventionen
+  - Nach jeder index3d.html-Aenderung: /root/fabelbattler/index3d.html syncen.
+  - Version in gradle.properties um genau 1 erhoehen (APP_VERSION_CODE/NAME).
+  - Validation: check_js.py, check_data.py, check_runtime.js (beide Kopien).
+  - Ein Heartbeat = ein Ziel; der User kann aber mehrere Aenderungen pro
+    Heartbeat freigeben (2026-11-23). Wenn der naechste Heartbeat schon
+    startet: abwarten, nicht in den Hauptcheckout greifen.

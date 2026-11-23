@@ -127,11 +127,14 @@ for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block(
     traits[key] = m.group(1) if m else None
 
 problems = []
-if len(roster) != 102:
-    problems.append('Einheiten: erwartet 102, gefunden ' + str(len(roster)))
+if len(roster) != 113:
+    problems.append('Einheiten: erwartet 113, gefunden ' + str(len(roster)))
 if len(spells) != 51:
     problems.append('Zauber: erwartet 51, gefunden ' + str(len(spells)))
-for key in ['oma', 'opa', 'feuerwehr', 'kampftruppe', 'soldat', 'missionar', 'teddy']:
+for key in ['oma', 'opa', 'feuerwehr', 'kampftruppe', 'soldat', 'missionar',
+            'sanitaeter', 'rebelle', 'armee', 'bundeswehr', 'soeldner',
+            'feuerwehrwagen', 'krankenwagen', 'panzer', 'hubschrauber',
+            'kampfflugzeug', 'drohne', 'teddy']:
     if key not in roster or roster[key]['ability'] != 'biss':
         problems.append('Gegner-Wesen fehlt oder hat keine Biss-Fähigkeit: ' + key)
 for token in ['ENEMY_ONLY', 'FOE_KEYS', 'const ALL_KEYS = Object.keys(ROSTER).filter', 'biss:S("Biss"']:

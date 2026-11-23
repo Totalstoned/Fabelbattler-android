@@ -54,12 +54,23 @@ const windowObj = {
   classList: {contains: () => false, add() {}, remove() {}, toggle() {}},
   getBoundingClientRect: () => ({left: 0, top: 0, width: 720, height: 460}),
 };
+// Deterministischer Zufall: wechselnde Gegner-Kombinationen duerfen den
+// Smoke-Test nicht flaky machen (CI muss reproduzierbar gruen bleiben).
+function seededMath(seed) {
+  let s = seed >>> 0;
+  const random = () => {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+  return Object.create(Math, {random: {value: random}});
+}
+
 const ctx = {
   console, document: documentObj, window: windowObj,
   performance: {now: () => Date.now()},
   requestAnimationFrame: () => 1, cancelAnimationFrame() {},
   setTimeout, clearTimeout, setInterval, clearInterval,
-  Math, Date, JSON, Object, Array, String, Number, Boolean,
+  Math: seededMath(1), Date, JSON, Object, Array, String, Number, Boolean,
   Promise, RegExp, Error, TypeError, RangeError, Reflect,
   navigator: {userAgent: 'check-runtime'}, devicePixelRatio: 2,
 };
@@ -262,7 +273,7 @@ vm.runInContext(`
   draftFilterClass = "ALL";
   draftOffer = [];
   globalThis.__synergyTextCheck = typeof draftSynergyText === "function" && draftSynergyText().indexOf("Lücken:") === 0;
-  globalThis.__foeOnlyCheck = Object.keys(ENEMY_ONLY).length === 7 &&
+  globalThis.__foeOnlyCheck = Object.keys(ENEMY_ONLY).length === 18 &&
     Object.keys(ENEMY_ONLY).every(k => ROSTER[k] && ROSTER[k].ability === "biss" &&
       FOE_KEYS.includes(k) && !ALL_KEYS.includes(k));
   let foeLeak = false;

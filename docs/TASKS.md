@@ -191,3 +191,16 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
+
+- [x] **31. Zivile Gegnerheere statt Monster** (v1.53)
+  `ENEMY_ONLY`/`FOE_KEYS` enthalten 18 gegner-exklusive Wesen: Oma, Opa, Feuerwehr,
+  Kampftruppe, Soldat, Missionar, Sanitäter, Rebell, Armee, Bundeswehr, Söldner
+  sowie Feuerwehrwagen, Krankenwagen, Panzer, Hubschrauber, Kampfflugzeug und
+  Drohne. Alle besitzen nur `biss` (Level-Scaling), keine Sonderfähigkeiten;
+  Fahrzeuge nutzen den vorhandenen `robot`-Mesh. `enemyKeyFor()` wählt
+  ausschließlich aus `FOE_KEYS`, sodass Gegnerteams nie die Monster des
+  Spieler-Pools enthalten. Draft bleibt auf `ALL_KEYS` beschränkt.
+  *Erledigt:* `check_data.py` prüft 113 Einheiten/51 Zauber und alle 18 Keys;
+  `check_runtime.js` prüft Draft-Sperre und dass 80 `enemyKeyFor()`-Ziehung
+  ausschließlich Gegner-Wesen liefern. Balance der Fahrzeug-Reichweiten so
+  angepasst, dass Kämpfe terminiieren.

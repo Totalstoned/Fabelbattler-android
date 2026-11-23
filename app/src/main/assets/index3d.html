@@ -325,6 +325,17 @@ const ROSTER = {
   kampftruppe:{name:"Kampftruppe",emoji:"🪖",role:"TANK",cls:"Stahl",cls2:"Chaos",hp:150,atk:13,rng:70,spd:0.85,ability:"biss"},
   soldat:{name:"Soldat",emoji:"🎖️",role:"DPS",cls:"Stahl",cls2:"Chaos",hp:110,atk:14,rng:75,spd:0.95,ability:"biss"},
   missionar:{name:"Missionar",emoji:"⛪",role:"HEALER",cls:"Magie",cls2:"Stahl",hp:90,atk:9,rng:65,spd:0.85,ability:"biss"},
+  sanitaeter:{name:"Sanitäter",emoji:"🚑",role:"HEALER",cls:"Magie",cls2:"Stahl",hp:85,atk:8,rng:62,spd:0.9,ability:"biss"},
+  rebelle:{name:"Rebell",emoji:"✊",role:"DPS",cls:"Chaos",cls2:"Stahl",hp:95,atk:13,rng:68,spd:1.0,ability:"biss"},
+  armee:{name:"Armee",emoji:"🎺",role:"TANK",cls:"Stahl",cls2:"Chaos",hp:140,atk:12,rng:72,spd:0.82,ability:"biss"},
+  bundeswehr:{name:"Bundeswehr",emoji:"🇩🇪",role:"DPS",cls:"Stahl",cls2:"Chaos",hp:120,atk:14,rng:78,spd:0.92,ability:"biss"},
+  soeldner:{name:"Söldner",emoji:"💰",role:"DPS",cls:"Stahl",cls2:"Chaos",hp:105,atk:15,rng:70,spd:1.0,ability:"biss"},
+  feuerwehrwagen:{name:"Feuerwehrwagen",emoji:"🚒",role:"TANK",cls:"Stahl",cls2:"Element",hp:150,atk:12,rng:70,spd:0.7,ability:"biss"},
+  krankenwagen:{name:"Krankenwagen",emoji:"🚑",role:"HEALER",cls:"Stahl",cls2:"Magie",hp:100,atk:8,rng:65,spd:0.85,ability:"biss"},
+  panzer:{name:"Panzer",emoji:"🛡️",role:"TANK",cls:"Stahl",cls2:"Chaos",hp:180,atk:16,rng:70,spd:0.55,ability:"biss"},
+  hubschrauber:{name:"Hubschrauber",emoji:"🚁",role:"DPS",cls:"Stahl",cls2:"Element",hp:90,atk:14,rng:70,spd:1.0,ability:"biss"},
+  kampfflugzeug:{name:"Kampfflugzeug",emoji:"✈️",role:"DPS",cls:"Stahl",cls2:"Element",hp:85,atk:17,rng:70,spd:1.0,ability:"biss"},
+  drohne:{name:"Drohne",emoji:"📡",role:"DPS",cls:"Stahl",cls2:"Element",hp:60,atk:10,rng:70,spd:1.1,ability:"biss"},
   teddy:{name:"Teddy",emoji:"🧸",role:"DPS",cls:"Tier",cls2:"Wald",hp:95,atk:12,rng:52,spd:0.92,ability:"biss"}
 };
 const RACE_PACKS = {
@@ -397,7 +408,7 @@ Object.entries(RACE_PACKS).forEach(([race,list]) => {
     ROSTER[e[0]] = {name:e[1],emoji:e[2],role:e[3],cls:e[4],cls2:e[5],hp:e[6],atk:e[7],rng:e[8],spd:e[9],ability:e[10],race:race,variant:e[11]};
   });
 });
-const ENEMY_ONLY = {oma:1,opa:1,feuerwehr:1,kampftruppe:1,soldat:1,missionar:1,teddy:1};
+const ENEMY_ONLY = {oma:1,opa:1,feuerwehr:1,kampftruppe:1,soldat:1,missionar:1,sanitaeter:1,rebelle:1,armee:1,bundeswehr:1,soeldner:1,feuerwehrwagen:1,krankenwagen:1,panzer:1,hubschrauber:1,kampfflugzeug:1,drohne:1,teddy:1};
 const FOE_KEYS = Object.keys(ROSTER).filter(k => ENEMY_ONLY[k]);
 const ALL_KEYS = Object.keys(ROSTER).filter(k => !ENEMY_ONLY[k]);
 const ROLE_META = {TANK:{col:"#6ea8fe",label:"Tank"},DPS:{col:"#e5484d",label:"DPS"},HEALER:{col:"#4ade80",label:"Heiler"},BUFFER:{col:"#a78bfa",label:"Puffer"}};
@@ -1107,6 +1118,17 @@ const MONSTER_STYLE = {
   kampftruppe:{type:"folk",variant:"kampftruppe",body:0x4a5638,trim:0xb9c49a,plate:0x2b3323,glow:0xa3e635,glowIntensity:0.22,scale:1.04,hpY:1.55,radius:0.46},
   soldat:{type:"folk",variant:"soldat",body:0x5b6142,trim:0xc7c9a8,plate:0x333a29,glow:0xfde68a,glowIntensity:0.2,scale:1.0,hpY:1.5,radius:0.44},
   missionar:{type:"folk",variant:"missionar",body:0x3f3a5c,trim:0xe6e0f2,plate:0x272239,glow:0xc4b5fd,glowIntensity:0.28,scale:0.92,hpY:1.42,radius:0.38},
+  sanitaeter:{type:"folk",variant:"sanitaeter",body:0xd8dde2,trim:0xf2f6f8,plate:0xb23a2e,glow:0x7dd3fc,glowIntensity:0.25,scale:0.94,hpY:1.44,radius:0.38},
+  rebelle:{type:"folk",variant:"rebelle",body:0x6b3a34,trim:0xd1a48a,plate:0x3a201e,glow:0xf87171,glowIntensity:0.3,scale:0.96,hpY:1.46,radius:0.4},
+  armee:{type:"folk",variant:"armee",body:0x4c5540,trim:0xc2c69c,plate:0x2e3526,glow:0xfacc15,glowIntensity:0.2,scale:1.06,hpY:1.56,radius:0.47},
+  bundeswehr:{type:"folk",variant:"bundeswehr",body:0x46503c,trim:0xb8bf9a,plate:0x2b3125,glow:0xfde047,glowIntensity:0.22,scale:1.02,hpY:1.52,radius:0.45},
+  soeldner:{type:"folk",variant:"soeldner",body:0x5a4a3c,trim:0xc7b49a,plate:0x352b23,glow:0xfbbf24,glowIntensity:0.26,scale:1.0,hpY:1.5,radius:0.44},
+  feuerwehrwagen:{type:"robot",variant:"feuerwehrwagen",body:0xb23a2e,trim:0xe2e6e8,plate:0x6b1f18,glow:0xff8a4d,glowIntensity:0.45,scale:1.12,hpY:1.6,radius:0.52},
+  krankenwagen:{type:"robot",variant:"krankenwagen",body:0xe6ebee,trim:0xb23a2e,plate:0x9aa5ab,glow:0x7dd3fc,glowIntensity:0.35,scale:1.05,hpY:1.55,radius:0.48},
+  panzer:{type:"robot",variant:"panzer",body:0x4b5337,trim:0xb8bf9a,plate:0x2b3123,glow:0xfacc15,glowIntensity:0.4,scale:1.25,hpY:1.7,radius:0.6},
+  hubschrauber:{type:"robot",variant:"hubschrauber",body:0x3d5a72,trim:0xc7d7e2,plate:0x243a4d,glow:0x67e8f9,glowIntensity:0.5,scale:1.05,hpY:1.75,radius:0.5},
+  kampfflugzeug:{type:"robot",variant:"kampfflugzeug",body:0x3a4250,trim:0x9fb0c2,plate:0x1f2733,glow:0x93c5fd,glowIntensity:0.55,scale:1.1,hpY:1.78,radius:0.52},
+  drohne:{type:"robot",variant:"drohne",body:0x4a4f5c,trim:0xb9c4cf,plate:0x2a2f38,glow:0xa5b4fc,glowIntensity:0.6,scale:0.8,hpY:1.5,radius:0.4},
   teddy:{type:"beast",variant:"teddy",body:0x9a6a43,trim:0xd9b98a,plate:0x5a3b28,glow:0xf2c14e,glowIntensity:0.12,scale:0.72,hpY:1.05,radius:0.36}
 };
 const RACE_STYLE = {

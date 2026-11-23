@@ -338,6 +338,29 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
 
+v1.53-b54 2026-11-23  (Zivile Gegner + Fahrzeuge)
+   - Gegner-Helden kommen jetzt ausschliesslich aus ENEMY_ONLY (18 Keys),
+     nie mehr aus dem Monster-Pool des Spielers. enemyKeyFor() greift nur noch
+     auf FOE_KEYS zu; ALL_KEYS bleibt der Draft-/Spielerpool.
+   - Neu: opa, kampftruppe, soldat, missionar, sanitaeter, rebelle, armee,
+     bundeswehr, soeldner sowie Fahrzeuge feuerwehrwagen, krankenwagen, panzer,
+     hubschrauber, kampfflugzeug, drohne. Alle haben nur "biss" und Level-Scaling;
+     Fahrzeuge nutzen den vorhandenen robot-Mesh, keine neuen Mesh-Typen.
+   - Balance: zu lange Fahrzeug-Reichweiten verhinderten Kampf-Ende im
+     check_runtime; Reichweite/HP reduziert. 113 Einheiten / 51 Zauber.
+   - Checks: check_data.py mit 18 Gegner-Keys, check_runtime.js weist Monster
+     in Gegnerteams zurueck. devlog.txt als zusaetzliche Chronik angelegt.
+
+v1.52-b53 2026-11-23  (Sanitaeter, Rebellen, Armeen)
+   - Gegner-Pool auf 12 zivile Wesen erweitert: sanitaeter, rebelle, armee,
+     bundeswehr, soeldner. Version 1.52/b53 wurde noch nicht gebaut (direkt
+     von 1.51/b52 auf 1.53/b54 weitergegangen).
+
+v1.51-b52 2026-11-23  (Zivile Gegner statt Monster)
+   - Opa, Kampftruppe, Soldat, Missionar als Gegner ergaenzt; enemyKeyFor()
+     waehlt zu 100 % zivile Gegner statt Monster aus dem Spieler-Roster.
+   - Achtung: PRs #129-#133 (auto-improve) nutzen ebenfalls v1.51/b52.
+
 v1.50-b51 2026-11-23  (Gegner-Wesen)
    - Neue gegner-exklusive Einheiten: oma (Oma mit Stock), feuerwehr, teddy.
    - Einzige Fähigkeit "biss" (Biss, 1.6/1.1, dmg 0.75, ohne Statuswirkung);
