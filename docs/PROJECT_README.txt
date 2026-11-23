@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Stand: 2026-11-23
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -263,6 +263,13 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
      durch Gold-auf-Kill-Effekte und der Stand fuer den kommenden Draft sichtbar.
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
+v1.37-b38 2026-11-23  (Zauber-Bereitschaft an der Mana-Anzeige)
+   - Im Kampfmodus ist das HUD mit den Zauber-Kosten ausgeblendet, die Mana
+     regeneriert laufend. updateBattleManaBar() ergaenzt die kompakte Mana-Anzeige
+     um zwei Marker (manaHealReady ab 40 fuer Heilregen, manaNovaReady ab 70 fuer
+     Fabel-Blitz), die farbig aufleuchten, sobald der Zauber bezahlbar ist.
+   - check_data.py prueft die Tokens; check_runtime.js prueft die Schwellen 40/70,
+     das Abdunkeln bei 0 und das Ausblenden ausserhalb des Kampfes.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -299,6 +306,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Zauber-Bereitschaft an der Mana-Anzeige (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
