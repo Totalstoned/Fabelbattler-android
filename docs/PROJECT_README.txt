@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Stand: 2026-11-23
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -264,6 +264,14 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
 
+v1.37-b38 2026-11-23  (ATK des Fokus in der Kampfleiste)
+    - Die Fokus-Anzeige (id focusHp) zeigt zusaetzlich den gerundeten Angriffswert
+      (id focusAtkValue), aktualisiert in updateFocusHp(). Im Kampfmodus ist das
+      Einheiten-Panel mit dem ATK-Wert ausgeblendet.
+    - Bei totem Fokus und ausserhalb des Kampfes wird der Wert auf 0 zurueckgesetzt.
+    - check_data.py prueft die Tokens; check_runtime.js prueft Startwert, Live-Update,
+      Fokuswechsel und Zuruecksetzen.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung)" unten.
@@ -299,6 +307,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. ATK-Wert des Fokus in der Kampfleiste (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
