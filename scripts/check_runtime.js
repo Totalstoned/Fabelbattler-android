@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -557,6 +557,64 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  G.wave = 1;
+  startBattle();
+  const foes = G.battle.enemies;
+  foes.forEach(u => { u.hp = u.maxHp; u.shield = 0; });
+  const enemyBar = document.getElementById("enemyHpBar");
+  const enemyFill = document.getElementById("enemyHpFill");
+  const enemyPct = document.getElementById("enemyHpPct");
+  enemyBar.classList.remove("show");
+  enemyBar.classList.remove("warn");
+  enemyBar.classList.remove("weakened");
+  updateEnemyHpBar();
+  globalThis.__enemyHpStart = enemyBar.classList.contains("show") && enemyPct.textContent === "100%" &&
+    parseFloat(enemyFill.style.width) === 100 && !enemyBar.classList.contains("warn") &&
+    !enemyBar.classList.contains("weakened");
+  const enemyMax = foes.reduce((s,u) => s+u.maxHp, 0);
+  foes[0].hp = foes[0].maxHp * 0.5;
+  const expectedEnemyDamage = (enemyMax - foes[0].maxHp * 0.5) / enemyMax * 100;
+  updateEnemyHpBar();
+  globalThis.__enemyHpDamage = Math.abs(parseFloat(enemyFill.style.width) - expectedEnemyDamage) < 0.2;
+  foes[0].shield = foes[0].maxHp * 0.5;
+  updateEnemyHpBar();
+  globalThis.__enemyHpShield = parseFloat(enemyFill.style.width) === 100 && enemyPct.textContent === "100%";
+  foes.forEach(u => { u.shield = 0; u.hp = u.maxHp * 0.4; });
+  updateEnemyHpBar();
+  globalThis.__enemyHpWarn = enemyBar.classList.contains("warn") && !enemyBar.classList.contains("weakened");
+  foes.forEach(u => { u.hp = u.maxHp * 0.2; });
+  updateEnemyHpBar();
+  globalThis.__enemyHpWeakened = enemyBar.classList.contains("weakened") && !enemyBar.classList.contains("warn") &&
+    parseFloat(enemyFill.style.width) <= 25 && parseFloat(enemyPct.textContent) <= 25;
+  foes[0].isDead = true;
+  foes[0].hp = 0;
+  foes.slice(1).forEach(u => { u.hp = u.maxHp; });
+  updateEnemyHpBar();
+  const expectedEnemyDead = (enemyMax - foes[0].maxHp) / enemyMax * 100;
+  globalThis.__enemyHpDead = Math.abs(parseFloat(enemyFill.style.width) - expectedEnemyDead) < 0.2;
+  G.phase = "menu";
+  G.battle = null;
+  updateEnemyHpBar();
+  globalThis.__enemyHpHide = !enemyBar.classList.contains("show") && !enemyBar.classList.contains("warn") &&
+    !enemyBar.classList.contains("weakened");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__enemyHpStart', 'Gegner-HP-Balken startet nicht bei 100 %'],
+  ['__enemyHpDamage', 'Gegner-HP-Balken reagiert nicht auf Schaden'],
+  ['__enemyHpShield', 'Gegner-HP-Balken berücksichtigt Schilde nicht'],
+  ['__enemyHpWarn', 'Gegner-HP-Balken zeigt keine Warnstufe bei 50 %'],
+  ['__enemyHpWeakened', 'Gegner-HP-Balken zeigt keine Schwächung bei 25 %'],
+  ['__enemyHpDead', 'Gegner-HP-Balken zählt tote Gegner falsch'],
+  ['__enemyHpHide', 'Gegner-HP-Balken verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   const mana = document.getElementById("battleMana");
   const manaFill = document.getElementById("battleManaFill");
   const manaValue = document.getElementById("battleManaValue");
@@ -752,4 +810,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+enemyHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

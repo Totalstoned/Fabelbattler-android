@@ -122,6 +122,16 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar bleiben.
   *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert und Live-Updates;
   `check_data.py` prüft die UI-Tokens.
+
+- [x] **22. Gegner-Team-HP-Balken in der Kampfleiste** (v1.37)
+  Neben dem eigenen Team-HP-Balken (`updateTeamHpBar()`) zeigt `updateEnemyHpBar()` die
+  summierte HP inklusive Schild der gegnerischen Helden (pro Held gedeckelt auf max. HP).
+  Im 500er-Schwarm war der Fortschritt gegen die Gegnerhelden anhand der reinen Stückzahlen
+  nicht erkennbar. Rot, ab 50 % gelb (`warn`), ab 25 % grün (`weakened`); tote Gegner
+  steuern 0 bei, außerhalb des Kampfes verschwindet der Balken inklusive Warnklassen.
+  *Erledigt:* `check_runtime.js` prüft Startwert, Schaden, Schild, Warn-/Schwächstufen,
+  tote Gegner und Ausblenden; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
