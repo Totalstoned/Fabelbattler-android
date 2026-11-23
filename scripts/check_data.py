@@ -164,6 +164,9 @@ for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'function updat
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['btnBattleHeal', 'btnBattleNova', 'Heilregen 40✦', 'Blitz 70✦']:
+    if token not in src:
+        problems.append('Mana-Kosten auf den Kampfleisten-Buttons fehlen: ' + token)
 for token in ['focusHp', 'focusName', 'focusHpValue', 'function updateFocusHp']:
     if token not in src:
         problems.append('Fokus-HP-Anzeige in der Kampfleiste fehlt: ' + token)

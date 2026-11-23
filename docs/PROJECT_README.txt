@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Stand: 2026-11-23
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -264,6 +264,15 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
 
+v1.37-b38 2026-11-23  (Mana-Kosten auf den Kampfleisten-Buttons)
+   - Die Kampfleisten-Buttons "Heilregen" und "Blitz" zeigen ihre Mana-Kosten jetzt direkt
+     in der Beschriftung: "Heilregen 40✦" und "Blitz 70✦" (updateButtons()). Das HUD mit den
+     Kosten-Hinweisen ist im Kampfmodus ausgeblendet; Tooltips helfen auf Touch-Geraeten nicht.
+     Die Sperrung bei zu wenig Mana bleibt unveraendert; zusaetzliche Titel-Tooltips erklaeren
+     die Wirkung (25 % Heilung auf alle Helden bzw. 35 % Schaden auf einen Gegner-Helden).
+   - check_data.py prueft die Tokens; check_runtime.js prueft Beschriftung, Sperrung bei
+     39 Mana, Freigabe bei 40/70 Mana und Verhalten ausserhalb des Kampfes.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung)" unten.
@@ -299,6 +308,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Mana-Kosten auf den Kampfleisten-Buttons (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
