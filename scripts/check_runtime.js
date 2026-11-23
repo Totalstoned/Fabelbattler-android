@@ -662,6 +662,48 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  G.wave = 10;
+  startBattle();
+  const normalMob = G.battle.enemyMobs.find(m => !m.isElite && !m.isBoss);
+  const eliteMob = G.battle.enemyMobs.find(m => m.isElite);
+  const bossMob = G.battle.enemyMobs.find(m => m.isBoss);
+  globalThis.__mobTextTiers = !!normalMob && !!eliteMob && !!bossMob &&
+    canShowEffectText(normalMob) === false && canShowEffectText(eliteMob) === true &&
+    canShowEffectText(bossMob) === true;
+  const effectBefore = G.effects.length;
+  pushEffect(normalMob, "probe", "#fff");
+  globalThis.__mobTextNormalSilent = G.effects.length === effectBefore;
+  pushEffect(eliteMob, "probe", "#fff");
+  globalThis.__mobTextEliteShown = G.effects.length === effectBefore + 1;
+  pushEffect(bossMob, "probe", "#fff");
+  const bossSprite = G.effects[G.effects.length - 1];
+  globalThis.__mobTextBossShown = G.effects.length === effectBefore + 2 && !!bossSprite && bossSprite.scale.x > 2;
+  applyDamage(normalMob, 5, null, {crit:true});
+  globalThis.__mobTextDamageNormalSilent = G.effects.length === effectBefore + 2;
+  applyDamage(eliteMob, 5, null, {crit:true});
+  globalThis.__mobTextDamageEliteShown = G.effects.length === effectBefore + 3;
+  updateEffects(1);
+  globalThis.__mobTextCleanup = G.effects.length === 0;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__mobTextTiers', 'Elite-/Boss-Mobs werden nicht als Text-Ziel erkannt'],
+  ['__mobTextNormalSilent', 'Gewöhnliche Mobs zeigen unerwünscht Effect-Texte'],
+  ['__mobTextEliteShown', 'Elite-Mobs zeigen keine Effect-Texte'],
+  ['__mobTextBossShown', 'Boss-Mobs zeigen keine vergrößerten Effect-Texte'],
+  ['__mobTextDamageNormalSilent', 'Schadenszahlen erscheinen bei gewöhnlichen Mobs'],
+  ['__mobTextDamageEliteShown', 'Schadenszahlen fehlen bei Elite-Mobs'],
+  ['__mobTextCleanup', 'Effect-Texte werden nicht aufgeräumt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   startBattle();
   const bar = document.getElementById("focusHp");
   const value = document.getElementById("focusHpValue");
@@ -752,4 +794,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls+elite/boss-zahlen, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
