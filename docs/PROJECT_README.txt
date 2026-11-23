@@ -440,4 +440,5 @@ Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung):
   - PR #120 war inzwischen direkt gemergt; die restlichen 7 Commits wurden
     sauber darauf rebast. Alle 112 verbleibenden PRs als Duplikate geschlossen,
     0 offen. Externe Quelle synchronisiert, alle Checks gruen.
-  - CI und APK fuer v1.44-b45 folgen.
+  - CI 45207657533 gruen; APK /root/projects/FABELBATTLER/fabelbattler-v1.44-b45.apk
+    SHA-256 6b30f1e2849879dd07550d893660f52cf17adf21f67981600b5a779a2856ae60
