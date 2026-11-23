@@ -73,6 +73,9 @@ if (!match) throw new Error(`Kein <script>-Block in ${htmlPath} gefunden`);
 if (!/body\.battle-mode\s+\.battle-bar\s*\{[^}]*display:\s*flex/.test(html)) {
   throw new Error('Kampfleiste wird im Kampfmodus nicht eingeblendet (body.battle-mode .battle-bar)');
 }
+if (!/body\.battle-mode\s+\.toasts\s*\{[^}]*top:\s*\d+px[^}]*bottom:\s*auto/.test(html)) {
+  throw new Error('Toasts überlagern im Kampfmodus die Kampfleiste (body.battle-mode .toasts fehlt)');
+}
 if (!html.includes('id="battleTimer"') || !html.includes('function updateBattleTimer')) {
   throw new Error('Kampf-Timer fehlt');
 }

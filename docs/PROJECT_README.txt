@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.44-b45
+Aktuelle Version: v1.45-b46
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -310,6 +310,14 @@ v1.44-b45 2026-11-23  (Duden-Bonus in der Kampfleiste)
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Bonuswert und Reaktion auf die Einheitenanzahl.
 
+v1.45-b46 2026-11-23  (Toasts im Kampf oben)
+    - Toasts lagen mit bottom:14px/z-index:99 direkt auf der Kampfleiste und
+      verdeckten Timer, Status, Fokus, Mana und Boss-Balken. Neue Regel
+      body.battle-mode .toasts{top:14px;bottom:auto;pointer-events:none;}
+      verschiebt Meldungen im Kampf nach oben und macht sie klick-transparent.
+      Ausserhalb des Kampfes bleibt die Position unten unveraendert.
+    - check_runtime.js prueft die CSS-Regel; alle drei Checks gruen.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung)" unten.
@@ -351,6 +359,7 @@ Core-Loop-Status:
   [x] 25. Fokus-Angriffswert in der Kampfleiste (v1.41)
   [x] 27. Zauber-Bereitschaft an der Mana-Anzeige (v1.43)
   [x] 28. Duden-Bonus in der Kampfleiste (v1.44)
+  [x] 29. Toasts im Kampf oben (v1.45)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
