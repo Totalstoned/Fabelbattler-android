@@ -747,6 +747,47 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
+  clearEffects();
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  const fxElite = G.battle.enemyMobs.find(m => m.isElite);
+  const fxBoss = createMob("brute", "enemy", 10, "boss");
+  const fxNormal = G.battle.enemyMobs.find(m => !m.isElite && !m.isBoss);
+  globalThis.__specialFxFlagCheck = typeof hasDamageFx === "function" &&
+    hasDamageFx(G.battle.player[0]) && hasDamageFx(fxElite) && hasDamageFx(fxBoss) && !hasDamageFx(fxNormal);
+  const effectsBefore = G.effects.length, particlesBefore = G.particles.length, wavesBefore = G.shockwaves.length;
+  applyDamage(fxNormal, fxNormal.maxHp*0.1, null, {});
+  spawnBurst(fxNormal, "#fff", 6, 1);
+  spawnShockwave(fxNormal, "#fff", 1);
+  globalThis.__normalFxCheck = G.effects.length === effectsBefore &&
+    G.particles.length === particlesBefore && G.shockwaves.length === wavesBefore;
+  applyDamage(fxElite, fxElite.maxHp*0.1, null, {});
+  spawnBurst(fxElite, "#fff", 6, 1);
+  spawnShockwave(fxElite, "#fff", 1);
+  globalThis.__eliteFxCheck = G.effects.length > effectsBefore &&
+    G.particles.length > particlesBefore && G.shockwaves.length > wavesBefore;
+  const effectsAfterElite = G.effects.length, wavesAfterElite = G.shockwaves.length;
+  applyDamage(fxBoss, fxBoss.maxHp*0.1, null, {});
+  spawnShockwave(fxBoss, "#fff", 1);
+  globalThis.__bossFxCheck = G.effects.length > effectsAfterElite && G.shockwaves.length > wavesAfterElite;
+  clearEffects();
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__specialFxFlagCheck', 'Treffer-Feedback ist nicht auf Elite-/Boss-Mobs begrenzt'],
+  ['__normalFxCheck', 'Normale Mobs erzeugen ungewollt Treffer-Effekte'],
+  ['__eliteFxCheck', 'Elite-Mobs zeigen keine Trefferzahl, Partikel oder Schockwelle'],
+  ['__bossFxCheck', 'Boss-Mobs zeigen keine Trefferzahl oder Schockwelle'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
   beginRun();
   startBattle();
   const bar = document.getElementById("focusHp");
@@ -913,4 +954,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls+elite/boss-treffer-fx, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, timer ${timerText})`);

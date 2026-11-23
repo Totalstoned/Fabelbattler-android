@@ -169,6 +169,12 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Ein-/Ausblenden, Bonuswert und Reaktion auf die
   Einheitenanzahl; `check_data.py` prüft die UI-Tokens.
 
+- [x] **29. Treffer-Feedback für Elite-/Boss-Mobs** (v1.45)
+   `hasDamageFx()` erlaubt Trefferzahlen, Partikel und Schockwellen für Elite/Boss im 3D-Feld;
+   normale Schwarm-Mobs bleiben effektfrei, damit 500 Mobs pro Seite performant bleiben.
+   *Erledigt:* `check_data.py` prüft die Tokens; `check_runtime.js` prüft, dass nur Elite/Boss
+   Effekte erzeugen und Helden weiterhin Feedback zeigen.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
