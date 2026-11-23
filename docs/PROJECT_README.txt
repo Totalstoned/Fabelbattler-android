@@ -295,6 +295,13 @@ v1.41-b42 2026-11-23  (Fokus-Angriffswert in der Kampfleiste)
      Fokus sowie ausserhalb des Kampfes zurueck.
    - check_data.py prueft die Tokens; check_runtime.js prueft Startwert,
      Live-Update nach ATK-Aenderung, toten Fokus und Zuruecksetzen.
+v1.43-b44 2026-11-23  (Zauber-Bereitschaft an der Mana-Anzeige)
+   - Im Kampfmodus ist das HUD mit den Zauber-Kosten ausgeblendet, die Mana
+     regeneriert laufend. updateBattleManaBar() ergaenzt die kompakte Mana-Anzeige
+     um zwei Marker (manaHealReady ab 40 fuer Heilregen, manaNovaReady ab 70 fuer
+     Fabel-Blitz), die farbig aufleuchten, sobald der Zauber bezahlbar ist.
+   - check_data.py prueft die Tokens; check_runtime.js prueft die Schwellen 40/70,
+     das Abdunkeln bei 0 und das Ausblenden ausserhalb des Kampfes.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -335,6 +342,7 @@ Core-Loop-Status:
   [x] 23. Sieges-Zusammenfassung als ein Toast (v1.39)
   [x] 24. Eigener Boss-Lebensbalken (v1.40)
   [x] 25. Fokus-Angriffswert in der Kampfleiste (v1.41)
+  [x] 27. Zauber-Bereitschaft an der Mana-Anzeige (v1.43)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

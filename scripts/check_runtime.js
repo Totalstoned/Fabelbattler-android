@@ -102,7 +102,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -592,32 +592,49 @@ vm.runInContext(`
   const mana = document.getElementById("battleMana");
   const manaFill = document.getElementById("battleManaFill");
   const manaValue = document.getElementById("battleManaValue");
+  const manaHeal = document.getElementById("manaHealReady");
+  const manaNova = document.getElementById("manaNovaReady");
   updateBattleManaBar();
   globalThis.__manaHidden = !mana.classList.contains("show");
+  globalThis.__manaSpellHidden = !manaHeal.classList.contains("ready-heal") &&
+    !manaNova.classList.contains("ready-nova");
   G.wave = 1;
   startBattle();
   G.mana = 40;
   updateBattleManaBar();
   globalThis.__manaShow = mana.classList.contains("show") &&
     parseFloat(manaFill.style.width) === 40 && manaValue.textContent === "40/100";
+  globalThis.__manaHealOnly = manaHeal.classList.contains("ready-heal") &&
+    !manaNova.classList.contains("ready-nova");
   G.mana = 70;
   updateBattleManaBar();
   globalThis.__manaLive = parseFloat(manaFill.style.width) === 70 && manaValue.textContent === "70/100";
+  globalThis.__manaBothReady = manaHeal.classList.contains("ready-heal") &&
+    manaNova.classList.contains("ready-nova");
   G.mana = 0;
   updateBattleManaBar();
   globalThis.__manaEmpty = parseFloat(manaFill.style.width) === 0 && manaValue.textContent === "0/100";
+  globalThis.__manaSpellDim = !manaHeal.classList.contains("ready-heal") &&
+    !manaNova.classList.contains("ready-nova");
   G.phase = "menu";
   G.battle = null;
   updateBattleManaBar();
   globalThis.__manaHideCheck = !mana.classList.contains("show");
+  globalThis.__manaSpellHideCheck = !manaHeal.classList.contains("ready-heal") &&
+    !manaNova.classList.contains("ready-nova");
 `, ctx);
 
 for (const [flag, message] of [
   ['__manaHidden', 'Mana-Anzeige erscheint außerhalb des Kampfes'],
+  ['__manaSpellHidden', 'Zauberbereitschaft erscheint außerhalb des Kampfes'],
   ['__manaShow', 'Mana-Anzeige zeigt Startwert nicht an'],
+  ['__manaHealOnly', 'Mana-Anzeige markiert Heilregen nicht ab 40 Mana als bereit'],
   ['__manaLive', 'Mana-Anzeige reagiert nicht auf Mana-Änderungen'],
+  ['__manaBothReady', 'Mana-Anzeige markiert Blitz nicht ab 70 Mana als bereit'],
   ['__manaEmpty', 'Mana-Anzeige zeigt 0 nicht korrekt an'],
+  ['__manaSpellDim', 'Mana-Anzeige blendet Zauberbereitschaft bei 0 Mana nicht aus'],
   ['__manaHideCheck', 'Mana-Anzeige verschwindet nicht außerhalb des Kampfes'],
+  ['__manaSpellHideCheck', 'Zauberbereitschaft verschwindet nicht außerhalb des Kampfes'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
@@ -859,4 +876,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, timer ${timerText})`);
