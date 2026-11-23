@@ -5,6 +5,18 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-23 21:36  v1.54-b55  (Support-Cooldown)
+  - Root-Cause fuer Kampf-Stillstand gefunden: supportAction() liess Einheiten
+    mit shieldPct (Stahl-Buff) bei jedem Zyklus schilden statt anzugreifen,
+    sobald ein Verbündeter unter 78 % HP+Schild lag. Beide Seiten schildeten
+    sich gegenseitig kaputt, Kämpfe endeten nie.
+  - Fix: u.supportCd = 4 s nach Support, Dekrement in tickUnit(). Harness
+    vorher 12/12 Timeouts (Welle 3), nachher 12/12 Siege; Welle 5/10 und
+    Panzer-Trupp 5/5 Siege, Oe 10-14 s. check_runtime 5 Siege/2023 Ticks.
+  - Commit 688456d, CI 45271183092 gruen, APK
+    /root/projects/FABELBATTLER/fabelbattler-v1.54-b55.apk (versionCode 55).
+  - Naechster Schritt: Balance-Eindruck auf dem Geraet (User-Screenshot).
+
 2026-11-23 20:35  v1.53-b54  (zivile Gegner + Fahrzeuge)
   - Gegner-Helden sind jetzt IMMER zivile Wesen aus ENEMY_ONLY, nie mehr die
     Monster aus dem Spieler-Pool (enemyKeyFor() wurde entsprechend vereinfacht).
