@@ -414,6 +414,45 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  G.wave = 10;
+  startBattle();
+  const bossTarget = G.battle.enemyMobs.find(m => m.isBoss);
+  const eliteTarget = G.battle.enemyMobs.find(m => m.isElite && !m.isBoss);
+  const normalTarget = G.battle.enemyMobs.find(m => !m.isElite && !m.isBoss);
+  const numberSource = G.battle.player[0];
+  const fxCountStart = G.effects.length;
+  pushEffect(normalTarget, "-5", "#ffd166");
+  globalThis.__normalMobNoNumber = G.effects.length === fxCountStart;
+  pushEffect(eliteTarget, "-5", "#ffd166");
+  globalThis.__eliteMobNumber = G.effects.length === fxCountStart + 1;
+  const fxCountBoss = G.effects.length;
+  applyDamage(bossTarget, bossTarget.maxHp*0.01, numberSource, {});
+  globalThis.__bossMobNumber = G.effects.length === fxCountBoss + 1;
+  SIM.headless = true;
+  pushEffect(bossTarget, "-5", "#ffd166");
+  globalThis.__bossNumberHeadless = G.effects.length === fxCountBoss + 1;
+  SIM.headless = false;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__normalMobNoNumber', ctx)) {
+  throw new Error('Normale Schwarm-Mobs zeigen unerwünschte Trefferzahlen');
+}
+if (!vm.runInContext('globalThis.__eliteMobNumber', ctx)) {
+  throw new Error('Elite-Mobs zeigen keine Trefferzahl');
+}
+if (!vm.runInContext('globalThis.__bossMobNumber', ctx)) {
+  throw new Error('Boss-Mobs zeigen bei Schaden keine Trefferzahl');
+}
+if (!vm.runInContext('globalThis.__bossNumberHeadless', ctx)) {
+  throw new Error('Trefferzahlen erscheinen im Headless-Modus');
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   G.wave = 1;
   startBattle();
   updateBattleStatus();
@@ -752,4 +791,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls+elite/boss-zahlen, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
