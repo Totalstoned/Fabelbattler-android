@@ -168,6 +168,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Anzeige ausgeblendet.
   *Erledigt:* `check_runtime.js` prüft Ein-/Ausblenden, Bonuswert und Reaktion auf die
   Einheitenanzahl; `check_data.py` prüft die UI-Tokens.
+- [x] **29. Niederlage-Zusammenfassung im Toast** (v1.45)
+  `loseBattle()` zeigt jetzt kampfdauer, überlebende Helden und verbleibende Gegner
+  in genau einem Toast. Bisher stand dort nur „Niederlage in Welle X – erneut versuchen“;
+  die neuen Werte bleiben trotz `reviveTeam()` erhalten, weil sie vorher aus `G.battle`
+  gelesen werden.
+  *Erledigt:* `check_runtime.js` prüft genau einen Toast mit Welle, Dauer, Helden und
+  Gegnerzahl; `check_data.py` prüft die Tokens.
 
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.

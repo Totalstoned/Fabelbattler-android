@@ -2554,12 +2554,17 @@ function winBattle(){
   if(draftTimer){ clearTimeout(draftTimer); draftTimer = null; }
 }
 function loseBattle(){
+  const b = G.battle;
+  const duration = b ? Math.floor(b.time) : 0;
+  const survivors = b ? b.player.filter(u => !u.isDead).length : 0;
+  const heroTotal = b ? b.player.length : G.team.length;
+  const foesLeft = b ? sideUnits(b,"enemy").filter(u => !u.isDead).length : 0;
   G.phase = "defeat";
   G.battle = null;
   clearEffects();
   reviveTeam();
   syncUnits();
-  showToast("Niederlage in Welle "+G.wave+" – erneut versuchen");
+  showToast("Niederlage in Welle "+G.wave+" · "+duration+"s · Helden "+survivors+"/"+heroTotal+" · Gegner "+foesLeft+" übrig");
   updateHud();
   updateTeamList();
   updateButtons();

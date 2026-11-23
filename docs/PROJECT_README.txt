@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.44-b45
+Aktuelle Version: v1.45-b46
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -309,6 +309,12 @@ v1.44-b45 2026-11-23  (Duden-Bonus in der Kampfleiste)
    - Ohne Bonus und ausserhalb des Kampfes bleibt die Anzeige ausgeblendet.
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Bonuswert und Reaktion auf die Einheitenanzahl.
+v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
+    - loseBattle() ersetzt den knappen Hinweis durch genau einen Toast mit
+      Kampfdauer, ueberlebenden Helden und verbleibenden Gegnern. Die Werte
+      werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
+    - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
+      Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -351,6 +357,7 @@ Core-Loop-Status:
   [x] 25. Fokus-Angriffswert in der Kampfleiste (v1.41)
   [x] 27. Zauber-Bereitschaft an der Mana-Anzeige (v1.43)
   [x] 28. Duden-Bonus in der Kampfleiste (v1.44)
+  [x] 29. Niederlage-Zusammenfassung im Toast (v1.45)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
