@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'eliteCount', 'eliteCountValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -625,6 +625,47 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  G.wave = 1;
+  startBattle();
+  const eliteBar = document.getElementById("eliteCount");
+  const eliteValue = document.getElementById("eliteCountValue");
+  updateEliteCount();
+  globalThis.__eliteHiddenWave1 = !eliteBar.classList.contains("show") && eliteValue.textContent === "0";
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  const eliteTotal = G.battle.enemyMobs.filter(m => m.isElite).length;
+  updateEliteCount();
+  globalThis.__eliteShow = eliteTotal > 0 && eliteBar.classList.contains("show") &&
+    eliteValue.textContent === String(eliteTotal);
+  G.battle.enemyMobs.find(m => m.isElite).isDead = true;
+  updateEliteCount();
+  globalThis.__eliteLive = eliteValue.textContent === String(eliteTotal - 1);
+  G.battle.enemyMobs.forEach(m => { if (m.isElite) m.isDead = true; });
+  updateEliteCount();
+  globalThis.__eliteCleared = !eliteBar.classList.contains("show") && eliteValue.textContent === "0";
+  G.phase = "menu";
+  G.battle = null;
+  updateEliteCount();
+  globalThis.__eliteHide = !eliteBar.classList.contains("show") && eliteValue.textContent === "0";
+`, ctx);
+
+for (const [flag, message] of [
+  ['__eliteHiddenWave1', 'Eliten-Anzeige erscheint in Welle 1 ohne Eliten'],
+  ['__eliteShow', 'Eliten-Anzeige zeigt lebende Gegner-Eliten nicht'],
+  ['__eliteLive', 'Eliten-Anzeige reagiert nicht auf getötete Eliten'],
+  ['__eliteCleared', 'Eliten-Anzeige verschwindet nicht nach dem letzten Elite'],
+  ['__eliteHide', 'Eliten-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   startBattle();
   initMobMeshes();
   const m = G.battle.enemyMobs[0];
@@ -752,4 +793,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+eliten+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
