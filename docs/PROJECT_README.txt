@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Stand: 2026-11-23
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -263,6 +263,14 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
      durch Gold-auf-Kill-Effekte und der Stand fuer den kommenden Draft sichtbar.
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
+v1.37-b38 2026-11-23  (Eigener Boss-Lebensbalken)
+   - Bosse spawnen alle 10 Wellen auf beiden Seiten; die Kampfleiste zeigte bisher
+     nur den gegnerischen Boss. Neuer gruener Balken "👑 Team" (bossBarAlly) mit
+     Prozentwert; setBossBar() aktualisiert beide Balken unabhaengig voneinander.
+   - Kritische HP unter 25 % faerbt auch den eigenen Balken rot und laesst den Wert
+     pulsieren; jeder Balken verschwindet beim Tod seines Boss und ausserhalb des Kampfes.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige, Prozentwerte,
+     Warnung, unabhaengiges Ausblenden und Menue-Reset.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -299,6 +307,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Eigener Boss-Lebensbalken in der Kampfleiste (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

@@ -173,6 +173,9 @@ for token in ['focusStatus', 'function updateFocusHp', 'activeStatusKeys(u).map'
 for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
     if token not in src:
         problems.append('Fokus-Zauber-Cooldown in der Kampfleiste fehlt: ' + token)
+for token in ['bossBarAlly', 'bossBarAllyFill', 'bossBarAllyPct', 'function setBossBar', 'setBossBar("bossBarAlly"']:
+    if token not in src:
+        problems.append('Eigener Boss-Lebensbalken in der Kampfleiste fehlt: ' + token)
 for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:
     if token not in src:
         problems.append('Treffer-Impuls für Mobs fehlt: ' + token)

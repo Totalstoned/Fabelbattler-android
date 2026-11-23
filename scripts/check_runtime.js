@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'bossBarAlly', 'bossBarAllyFill', 'bossBarAllyPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -363,6 +363,25 @@ vm.runInContext(`
   globalThis.__bossBarCriticalCheck = bossBar.classList.contains("show") && bossBar.classList.contains("critical") &&
     parseFloat(document.getElementById("bossBarFill").style.width) === 20 &&
     document.getElementById("bossBarPct").textContent === "20%";
+  const allyBar = document.getElementById("bossBarAlly");
+  const allyBoss = pm.find(m => m.isBoss);
+  allyBoss.hp = allyBoss.maxHp * 0.5;
+  updateBossBar();
+  globalThis.__allyBossBarCheck = allyBar.classList.contains("show") &&
+    !allyBar.classList.contains("critical") &&
+    parseFloat(document.getElementById("bossBarAllyFill").style.width) === 50 &&
+    document.getElementById("bossBarAllyPct").textContent === "50%";
+  allyBoss.hp = allyBoss.maxHp * 0.2;
+  updateBossBar();
+  globalThis.__allyBossBarCriticalCheck = allyBar.classList.contains("show") &&
+    allyBar.classList.contains("critical") &&
+    parseFloat(document.getElementById("bossBarAllyFill").style.width) === 20 &&
+    document.getElementById("bossBarAllyPct").textContent === "20%" &&
+    bossBar.classList.contains("critical");
+  allyBoss.isDead = true;
+  updateBossBar();
+  globalThis.__allyBossBarHideCheck = !allyBar.classList.contains("show") &&
+    !allyBar.classList.contains("critical") && bossBar.classList.contains("show");
   boss.isDead = true;
   updateBossBar();
   globalThis.__bossBarHideCheck = !bossBar.classList.contains("show") && !bossBar.classList.contains("critical");
@@ -380,6 +399,9 @@ vm.runInContext(`
   globalThis.__noTierCheck = !G.battle.enemyMobs.some(m => m.isElite || m.isBoss);
   G.phase = "menu";
   G.battle = null;
+  updateBossBar();
+  globalThis.__bossBarMenuHideCheck = !bossBar.classList.contains("show") &&
+    !allyBar.classList.contains("show") && !allyBar.classList.contains("critical");
 `, ctx);
 
 if (!vm.runInContext('globalThis.__bossCheck', ctx)) {
@@ -399,6 +421,18 @@ if (!vm.runInContext('globalThis.__bossBarCriticalCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__bossBarHideCheck', ctx)) {
   throw new Error('Boss-Lebensbalken verschwindet nicht nach dem Boss-Tod');
+}
+if (!vm.runInContext('globalThis.__allyBossBarCheck', ctx)) {
+  throw new Error('Eigener Boss-Lebensbalken zeigt nicht die aktuelle Boss-HP');
+}
+if (!vm.runInContext('globalThis.__allyBossBarCriticalCheck', ctx)) {
+  throw new Error('Eigener Boss-Lebensbalken zeigt keine kritische HP unter 25 %');
+}
+if (!vm.runInContext('globalThis.__allyBossBarHideCheck', ctx)) {
+  throw new Error('Eigener Boss-Lebensbalken verschwindet nicht nach dem Boss-Tod');
+}
+if (!vm.runInContext('globalThis.__bossBarMenuHideCheck', ctx)) {
+  throw new Error('Boss-Lebensbalken verschwinden nicht außerhalb des Kampfes');
 }
 if (!vm.runInContext('globalThis.__bossGoldCheck', ctx)) {
   throw new Error('Boss/Elite geben keinen Bonus-Gold');
