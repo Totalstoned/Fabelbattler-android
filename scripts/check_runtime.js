@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'statusElites', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -448,6 +448,37 @@ if (!vm.runInContext('globalThis.__statusLiveCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__statusHideCheck', ctx)) {
   throw new Error('Kampf-Status verschwindet nicht außerhalb des Kampfes');
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  updateBattleStatus();
+  const elitesStart = G.battle.enemyMobs.filter(m => m.isElite && !m.isDead).length;
+  globalThis.__eliteStatusShow = elitesStart > 0 &&
+    document.getElementById("statusElites").textContent === String(elitesStart) &&
+    document.getElementById("battleStatus").classList.contains("show");
+  G.battle.enemyMobs.find(m => m.isElite && !m.isDead).isDead = true;
+  updateBattleStatus();
+  globalThis.__eliteStatusLive =
+    document.getElementById("statusElites").textContent === String(elitesStart - 1);
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleStatus();
+  globalThis.__eliteStatusHide = !document.getElementById("battleStatus").classList.contains("show");
+`, ctx);
+
+if (!vm.runInContext('globalThis.__eliteStatusShow', ctx)) {
+  throw new Error('Kampf-Status zeigt die gegnerischen Eliten nicht korrekt an');
+}
+if (!vm.runInContext('globalThis.__eliteStatusLive', ctx)) {
+  throw new Error('Eliten-Anzeige reagiert nicht auf den Tod eines Elite-Mobs');
+}
+if (!vm.runInContext('globalThis.__eliteStatusHide', ctx)) {
+  throw new Error('Eliten-Anzeige verschwindet nicht außerhalb des Kampfes');
 }
 
 vm.runInContext(`
