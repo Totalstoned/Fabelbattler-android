@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'battleKills', 'battleKillsValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -624,6 +624,46 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
+  const killsBar = document.getElementById("battleKills");
+  const killsValue = document.getElementById("battleKillsValue");
+  updateBattleKills();
+  globalThis.__killsHidden = !killsBar.classList.contains("show");
+  G.wave = 1;
+  startBattle();
+  updateBattleKills();
+  globalThis.__killsStart = killsBar.classList.contains("show") && killsValue.textContent === "0";
+  const foeMob = G.battle.enemyMobs[0];
+  killUnit(foeMob, G.battle.player[0]);
+  updateBattleKills();
+  globalThis.__killsMob = killsValue.textContent === "1" && G.battle.kills === 1;
+  killUnit(G.battle.player[0], foeMob);
+  updateBattleKills();
+  globalThis.__killsOwnDeath = killsValue.textContent === "1" && G.battle.kills === 1;
+  const foeHero = G.battle.enemies[0];
+  foeHero.modsEffective.revive = 0;
+  killUnit(foeHero, G.battle.player[0]);
+  updateBattleKills();
+  globalThis.__killsFoeHero = killsValue.textContent === "2" && G.battle.kills === 2;
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleKills();
+  globalThis.__killsHide = !killsBar.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__killsHidden', 'Besiegte-Gegner-Anzeige erscheint außerhalb des Kampfes'],
+  ['__killsStart', 'Besiegte-Gegner-Anzeige startet nicht bei 0'],
+  ['__killsMob', 'Besiegter Gegner-Mob wird nicht gezählt'],
+  ['__killsOwnDeath', 'Tod eines eigenen Wesens wird fälschlich gezählt'],
+  ['__killsFoeHero', 'Besiegter Gegner-Held wird nicht gezählt'],
+  ['__killsHide', 'Besiegte-Gegner-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
   beginRun();
   startBattle();
   initMobMeshes();
@@ -752,4 +792,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+kills+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);

@@ -135,6 +135,9 @@
   .battle-info.gold{display:none;color:var(--gold);}
   .battle-info.gold.show{display:inline-block;}
   .battle-info.gold b{color:#fff3c4;}
+  .battle-info.kills{display:none;color:#ffb86b;}
+  .battle-info.kills.show{display:inline-block;}
+  .battle-info.kills b{color:#fff3c4;}
   .battle-bar .btn{width:auto;min-width:92px;padding:8px 10px;font-size:11px;}
   body.battle-mode .battle-bar{display:flex;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
@@ -228,6 +231,7 @@
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
   <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll">◆ <b id="battleGoldValue">0</b></span>
+  <span class="battle-info kills" id="battleKills" title="Besiegte Gegner in dieser Welle (Helden und Mobs)">☠ <b id="battleKillsValue">0</b></span>
   <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner) und eigene Helden">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b></span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
@@ -2244,6 +2248,7 @@ function killUnit(u,source){
   u.hp = 0;
   u.target = null;
   u.deathTimer = 0.6;
+  if(u.side === "enemy" && G.battle) G.battle.kills++;
   pushEffect(u,"☠","#e5484d");
   spawnBurst(u,"#e5484d",18,1.4);
   spawnShockwave(u,"#e5484d",1.3);
@@ -2586,7 +2591,7 @@ function startBattle(){
   const enemyTeam = buildEnemyTeam();
   const playerMobs = buildMobSwarm("player",G.wave);
   const enemyMobs = buildMobSwarm("enemy",G.wave);
-  G.battle = {player:G.team,enemies:enemyTeam,playerMobs:playerMobs,enemyMobs:enemyMobs,time:0,mobCache:null};
+  G.battle = {player:G.team,enemies:enemyTeam,playerMobs:playerMobs,enemyMobs:enemyMobs,time:0,kills:0,mobCache:null};
   if(!findUnitById(G.selectedUnitId)) G.selectedUnitId = G.team[0] ? G.team[0].id : null;
   enemyTeam.forEach(recalcUnit);
   G.team.forEach(recalcUnit);
@@ -2932,6 +2937,13 @@ function updateBattleGold(){
   bar.classList.add("show");
   document.getElementById("battleGoldValue").textContent = String(G.gold);
 }
+function updateBattleKills(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("battleKills");
+  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); return; }
+  bar.classList.add("show");
+  document.getElementById("battleKillsValue").textContent = String(G.battle.kills||0);
+}
 function updateHeroAlert(){
   if(SIM.headless) return;
   const bar = document.getElementById("heroAlert");
@@ -3245,6 +3257,7 @@ window.addEventListener("load", () => {
     updateTeamHpBar();
     updateBattleManaBar();
     updateBattleGold();
+    updateBattleKills();
     updateHeroAlert();
     updateFocusHp();
     updateFocusCooldown();
