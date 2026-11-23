@@ -122,6 +122,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar bleiben.
   *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert und Live-Updates;
   `check_data.py` prüft die UI-Tokens.
+- [x] **22. Mana-Kosten an den Kampf-Buttons** (v1.37)
+  `btnBattleHeal`/`btnBattleNova` zeigen „Heilregen ✦40" und „Blitz ✦70" direkt an.
+  Im Kampfmodus ist das HUD mit den Kosten ausgeblendet; Tooltips sind auf Touch nicht lesbar.
+  `MANA_COST_HEAL`/`MANA_COST_NOVA` steuern Anzeige, Freigabe und Abzug aus einer Quelle.
+  *Erledigt:* `check_data.py` prüft Konstanten und Labels, `check_runtime.js` prüft Labels,
+  Freigabe bei 0/40/70 Mana und die Sperre außerhalb des Kampfes.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

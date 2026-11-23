@@ -161,6 +161,14 @@ for token in ['teamHpBar', 'teamHpFill', 'teamHpPct', 'function updateTeamHpBar'
 for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'function updateBattleManaBar']:
     if token not in src:
         problems.append('Mana-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['const MANA_COST_HEAL = 40;', 'const MANA_COST_NOVA = 70;',
+              'id="btnBattleHeal">Heilregen ✦40<', 'id="btnBattleNova">Blitz ✦70<',
+              'battleHeal.textContent = "Heilregen ✦"+MANA_COST_HEAL;',
+              'battleNova.textContent = "Blitz ✦"+MANA_COST_NOVA;']:
+    if token not in src:
+        problems.append('Mana-Kosten an den Kampf-Buttons fehlen: ' + token)
+if re.search(r'G\.mana\s*(?:<|>|-=|\+=)\s*=?\s*(40|70)\b', src):
+    problems.append('Zauber-Kosten sind noch hart codiert statt MANA_COST_HEAL/NOVA zu nutzen')
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)

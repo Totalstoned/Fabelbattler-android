@@ -238,8 +238,8 @@
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
-  <button class="btn heal" id="btnBattleHeal">Heilregen</button>
-  <button class="btn nova" id="btnBattleNova">Blitz</button>
+  <button class="btn heal" id="btnBattleHeal">Heilregen ✦40</button>
+  <button class="btn nova" id="btnBattleNova">Blitz ✦70</button>
   <button class="btn heal" id="btnItemHeal">Trank</button>
   <button class="btn" id="btnItemShield">Schild</button>
   <button class="btn nova" id="btnItemNova">Splitter</button>
@@ -253,6 +253,8 @@
 <script>
 "use strict";
 const OUTLINE_COLOR = 0x151018;
+const MANA_COST_HEAL = 40;
+const MANA_COST_NOVA = 70;
 const ROSTER = {
   rumpelstilzchen:{name:"Rumpelstilzchen",emoji:"🧵",role:"DPS",cls:"Chaos",cls2:"Magie",hp:60,atk:11,rng:90,spd:1.1,ability:"goldspinnen"},
   hotzenplotz:{name:"Räuber Hotzenplotz",emoji:"🔫",role:"DPS",cls:"Chaos",cls2:"Stahl",hp:80,atk:13,rng:70,spd:1.0,ability:"pfeffer"},
@@ -2986,13 +2988,17 @@ function updateButtons(){
   battleBtn.disabled = menu || inBattle || drafting || !full;
   battleBtn.textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
   document.getElementById("btnDraft").disabled = menu || inBattle || drafting || full;
-  document.getElementById("btnHeal").disabled = menu || !inBattle || G.mana < 40;
-  document.getElementById("btnNova").disabled = menu || !inBattle || G.mana < 70;
+  document.getElementById("btnHeal").disabled = menu || !inBattle || G.mana < MANA_COST_HEAL;
+  document.getElementById("btnNova").disabled = menu || !inBattle || G.mana < MANA_COST_NOVA;
   document.getElementById("btnBattleSelect").disabled = menu || drafting || full;
   document.getElementById("btnBattleNext").disabled = menu || inBattle || drafting || !full;
   document.getElementById("btnBattleNext").textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
-  document.getElementById("btnBattleHeal").disabled = !inBattle || G.mana < 40;
-  document.getElementById("btnBattleNova").disabled = !inBattle || G.mana < 70;
+  const battleHeal = document.getElementById("btnBattleHeal");
+  const battleNova = document.getElementById("btnBattleNova");
+  battleHeal.disabled = !inBattle || G.mana < MANA_COST_HEAL;
+  battleNova.disabled = !inBattle || G.mana < MANA_COST_NOVA;
+  battleHeal.textContent = "Heilregen ✦"+MANA_COST_HEAL;
+  battleNova.textContent = "Blitz ✦"+MANA_COST_NOVA;
   const itemBtns = {btnItemHeal:"heal",btnItemShield:"shield",btnItemNova:"nova"};
   const itemLabels = {heal:"Trank",shield:"Schild",nova:"Splitter"};
   Object.keys(itemBtns).forEach(id => {
@@ -3214,17 +3220,17 @@ window.addEventListener("load", () => {
     openInfo(u.name+" · Fähigkeit", abilityInfoHtml(u), "");
   };
   document.getElementById("btnHeal").onclick = () => {
-    if(G.mana < 40 || !G.battle || G.phase !== "battle") return;
-    G.mana -= 40;
+    if(G.mana < MANA_COST_HEAL || !G.battle || G.phase !== "battle") return;
+    G.mana -= MANA_COST_HEAL;
     G.battle.player.filter(u => !u.isDead).forEach(u => healUnit(u,u.maxHp*0.25));
     showToast("Heilregen ☔");
     updateButtons();
   };
   document.getElementById("btnNova").onclick = () => {
-    if(G.mana < 70 || !G.battle || G.phase !== "battle") return;
+    if(G.mana < MANA_COST_NOVA || !G.battle || G.phase !== "battle") return;
     const targets = G.battle.enemies.filter(u => !u.isDead);
     if(!targets.length) return;
-    G.mana -= 70;
+    G.mana -= MANA_COST_NOVA;
     const target = targets[Math.floor(Math.random()*targets.length)];
     applyDamage(target,target.maxHp*0.35,null,{});
     spawnShockwave(target,"#fde68a",1.5);

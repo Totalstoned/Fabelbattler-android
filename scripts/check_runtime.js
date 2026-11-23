@@ -594,6 +594,41 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  startBattle();
+  const healBtn = document.getElementById("btnBattleHeal");
+  const novaBtn = document.getElementById("btnBattleNova");
+  G.mana = 0;
+  updateButtons();
+  globalThis.__spellCostLabels = healBtn.textContent === "Heilregen ✦40" &&
+    novaBtn.textContent === "Blitz ✦70";
+  globalThis.__spellCostLocked = healBtn.disabled && novaBtn.disabled;
+  G.mana = MANA_COST_HEAL;
+  updateButtons();
+  globalThis.__spellCostHealReady = !healBtn.disabled && novaBtn.disabled;
+  G.mana = MANA_COST_NOVA;
+  updateButtons();
+  globalThis.__spellCostBothReady = !healBtn.disabled && !novaBtn.disabled;
+  G.phase = "menu";
+  G.battle = null;
+  updateButtons();
+  globalThis.__spellCostHide = healBtn.disabled && novaBtn.disabled &&
+    healBtn.textContent === "Heilregen ✦40" && novaBtn.textContent === "Blitz ✦70";
+`, ctx);
+
+for (const [flag, message] of [
+  ['__spellCostLabels', 'Kampf-Buttons zeigen die Mana-Kosten nicht'],
+  ['__spellCostLocked', 'Zauber-Buttons sind ohne Mana nicht gesperrt'],
+  ['__spellCostHealReady', 'Heilregen wird nicht ab 40 Mana freigeschaltet'],
+  ['__spellCostBothReady', 'Blitz wird nicht ab 70 Mana freigeschaltet'],
+  ['__spellCostHide', 'Zauber-Buttons bleiben außerhalb des Kampfes aktiv oder verlieren die Kosten'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   const goldBar = document.getElementById("battleGold");
   const goldValue = document.getElementById("battleGoldValue");
   updateBattleGold();
@@ -752,4 +787,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberKosten+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
