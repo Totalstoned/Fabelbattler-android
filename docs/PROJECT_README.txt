@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Stand: 2026-11-23
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -263,6 +263,13 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
      durch Gold-auf-Kill-Effekte und der Stand fuer den kommenden Draft sichtbar.
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
+v1.37-b38 2026-11-23  (Duden-Bonus in der Kampfleiste)
+   - Das HUD mit den Synergie-Badges ist im Kampfmodus ausgeblendet. Neue kompakte
+     Anzeige (id battleDudes, battleDudesValue) via updateBattleDudes(): zeigt den
+     aktiven Schwarm-Bonus der Spielerseite (Helden + Mobs) als "+X %".
+   - Ohne Bonus und ausserhalb des Kampfes bleibt die Anzeige ausgeblendet.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
+     Bonuswert und Reaktion auf die Einheitenanzahl.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -299,6 +306,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Duden-Bonus in der Kampfleiste (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

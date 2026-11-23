@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -617,6 +617,43 @@ for (const [flag, message] of [
   ['__goldShow', 'Gold-Anzeige zeigt den Startwert nicht an'],
   ['__goldLive', 'Gold-Anzeige reagiert nicht auf Gold-Änderungen'],
   ['__goldHide', 'Gold-Anzeige verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  const dudesBar = document.getElementById("battleDudes");
+  const dudesValue = document.getElementById("battleDudesValue");
+  updateBattleDudes();
+  globalThis.__dudesHidden = !dudesBar.classList.contains("show");
+  G.wave = 1;
+  startBattle();
+  const dudesStacks = swarmStacks(sideUnits(G.battle,"player").length);
+  updateBattleDudes();
+  globalThis.__dudesShow = dudesStacks > 0 && dudesBar.classList.contains("show") &&
+    dudesValue.textContent === "+"+(dudesStacks*4)+" %";
+  const savedMobs = G.battle.playerMobs;
+  G.battle.playerMobs = [];
+  updateBattleDudes();
+  const soloStacks = swarmStacks(G.team.length);
+  globalThis.__dudesLive = soloStacks < dudesStacks &&
+    (soloStacks === 0 ? !dudesBar.classList.contains("show") :
+      dudesBar.classList.contains("show") && dudesValue.textContent === "+"+(soloStacks*4)+" %");
+  G.battle.playerMobs = savedMobs;
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleDudes();
+  globalThis.__dudesHide = !dudesBar.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__dudesHidden', 'Duden-Bonus erscheint außerhalb des Kampfes'],
+  ['__dudesShow', 'Duden-Bonus zeigt den aktiven Schwarm-Bonus nicht an'],
+  ['__dudesLive', 'Duden-Bonus reagiert nicht auf die Anzahl der Einheiten'],
+  ['__dudesHide', 'Duden-Bonus verschwindet nicht außerhalb des Kampfes'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
