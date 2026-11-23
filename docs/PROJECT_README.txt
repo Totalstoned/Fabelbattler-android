@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-22
-Aktuelle Version: v1.36-b37
+Stand: 2026-11-23
+Aktuelle Version: v1.37-b38
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -264,6 +264,14 @@ v1.36-b37 2026-11-22  (Gold-Anzeige in der Kampfleiste)
    - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
      Startwert und Live-Updates bei Gold-Aenderungen.
 
+v1.37-b38 2026-11-23  (Seiten-Markierung der Fokus-Anzeige)
+   - Ein per Tap ausgewaehlter Gegner wurde in der Fokus-HP-Anzeige bisher gruen
+     wie ein Held dargestellt. updateFocusHp() ergaenzt focusSide mit
+     "⚔ Gegner" (rote Anzeige) bzw. "✓ Held" (gruene Anzeige); die Markierung
+     wird beim Verlassen des Kampfes zurueckgesetzt.
+   - check_data.py prueft den UI-Token; check_runtime.js prueft Helden-,
+     Gegner- und Reset-Zustand.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (10-Minuten-Verbesserung)" unten.
@@ -299,6 +307,7 @@ Core-Loop-Status:
   [x] 19. Statuseffekte des Fokus in der Kampfleiste (v1.34)
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
+  [x] 22. Seiten-Markierung der Fokus-Anzeige (v1.37)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
