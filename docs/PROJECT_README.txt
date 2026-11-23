@@ -271,6 +271,13 @@ v1.37-b38 2026-11-23  (Fokus-Level und -Rolle in der Kampfleiste)
     - check_data.py prueft die Tokens; check_runtime.js prueft Startwert,
       Aktualisierung nach cycleFocus(1), toten Fokus und Ausblenden.
 
+v1.37-b38 2026-11-23  (Sieges-Zusammenfassung)
+   - winBattle() erzeugte zwei fast identische "Welle X besiegt!"-Toasts; der zweite
+     nannte statisch teamSize gegen teamSize. Jetzt genau ein Toast mit Gold-Belohnung
+     (inkl. Boss-/Elite-Bonus), Kampfdauer in Sekunden und ueberlebenden Helden
+     ("Helden A/B"). Weniger Toast-Spam, mehr Infos auf einen Blick.
+   - check_runtime.js prueft genau einen Sieges-Toast mit Gold, Dauer und Helden-Zahl.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung)" unten.
@@ -307,6 +314,7 @@ Core-Loop-Status:
   [x] 20. Fokusname live in der Kampfleiste (v1.35)
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
   [x] 22. Fokus-Level und -Rolle in der Kampfleiste (v1.37)
+  [x] 23. Sieges-Zusammenfassung als ein Toast (v1.39)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

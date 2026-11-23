@@ -13,7 +13,7 @@ Letztes Update: 2026-11-23
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.37**, Build **38**; APK: `/root/projects/FABELBATTLER/fabelbattler-v1.37-b38.apk` (wird vom umgebenden Skript erstellt).
+- Version **1.39**, Build **40**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`).
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
@@ -43,6 +43,7 @@ Letztes Update: 2026-11-23
 - Fokus-Anzeige zeigt seit v1.35 live den Namen des fokussierten Wesens (`focusName`): `updateFocusHp()` läuft pro Frame, damit ◀/▶ sofort den richtigen Namen anzeigt und außerhalb des Kampfes zurücksetzt.
 - Kampfleiste zeigt seit v1.36 das aktuelle Gold (`updateBattleGold()`): Das HUD ist im Kampfmodus ausgeblendet, daher bleiben Gold-Gewinne durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar; außerhalb des Kampfes ausgeblendet.
 - Fokus-Anzeige zeigt seit v1.37 Level und Rolle des fokussierten Wesens (`focusMeta`, `updateFocusMeta()`): Teamliste und Einheiten-Panel sind im Kampfmodus ausgeblendet; die ◀/▶-Navigation bleibt dadurch auch über Stufe und Rolle (Tank/DPS/Heiler/Puffer) lesbar. Bei totem Fokus und außerhalb des Kampfes ausgeblendet.
+- Sieg-Feedback ist seit v1.39 ein einziger Zusammenfassungs-Toast: `winBattle()` zeigt Gold-Belohnung (inkl. Boss-/Elite-Bonus), Kampfdauer in Sekunden und überlebende Helden („Helden A/B“). Der zweite, redundante Toast („… gegen … · nächste Welle bereit“) entfällt; `check_runtime.js` prüft genau einen Sieges-Toast mit allen Angaben.
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
 
