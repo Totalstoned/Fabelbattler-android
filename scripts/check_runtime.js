@@ -296,6 +296,29 @@ if (vm.runInContext('globalThis.__foeDraftLeak', ctx)) {
   throw new Error('Gegner-Wesen tauchen im Draft auf');
 }
 
+if (!html.includes('Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk}')) {
+  throw new Error('Draft-Karten zeigen kein Level und keine skalierten Werte');
+}
+vm.runInContext(`
+  G.phase = "draft";
+  G.team = [createUnit("bigfoot",3,"player"), createUnit("fee",2,"player")];
+  const lvl = draftPickLevel();
+  const low = draftPreviewStats("bigfoot",1);
+  const high = draftPreviewStats("bigfoot",lvl);
+  renderDraftCards();
+  globalThis.__draftLevelCheck = lvl === 3 && low.hp === ROSTER.bigfoot.hp &&
+    high.hp === Math.round(ROSTER.bigfoot.hp*1.6) && high.hp > low.hp && high.atk > low.atk;
+  G.team = [];
+  globalThis.__draftLevelReset = draftPickLevel() === 1;
+  G.phase = "menu";
+`, ctx);
+if (!vm.runInContext('globalThis.__draftLevelCheck', ctx)) {
+  throw new Error('Draft-Vorschau skaliert nicht mit dem Teamlevel');
+}
+if (!vm.runInContext('globalThis.__draftLevelReset', ctx)) {
+  throw new Error('Draft-Picklevel fällt ohne Team nicht auf 1 zurück');
+}
+
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;

@@ -13,7 +13,7 @@ Letztes Update: 2026-11-23
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.48**, Build **49**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.44-b45.apk`).
+- Version **1.52**, Build **52**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.44-b45.apk`).
 - Letztes geprüftes APK: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
@@ -57,6 +57,7 @@ Letztes Update: 2026-11-23
 - Toasts erscheinen seit v1.45 im Kampfmodus oben statt unten (`body.battle-mode .toasts`): Die Kampfleiste mit Timer, Status, Fokus, Mana und Boss-Balken wird dadurch nicht mehr von Wellen-, Tod- und Sieges-Meldungen verdeckt; Toasts sind dort zusätzlich klick-transparent.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
 - Gegner-exklusive Wesen (v1.50): `oma` (Oma mit Stock), `feuerwehr`, `teddy` – einzige Fähigkeit `biss` (einfacher Nahkampf, keine Sonderwirkung), keine Spezialfahrzeuge. Sie liegen in `ENEMY_ONLY`/`FOE_KEYS`, werden nicht gedraftet und erscheinen mit ~50 % Chance unter den Gegner-Helden (`enemyKeyFor()`). Werte skalieren wie alle Einheiten über `createUnit(key,level)`.
+- Draft-Karten zeigen seit v1.52 das Übernahmelevel und die level-skalierten Basiswerte (`draftPickLevel()`, `draftPreviewStats()`): Die alten Rohwerte `HP 60 · ATK 11` waren ab Level-Up-Wellen irreführend, weil neue Wesen auf das höchste Teamlevel gehoben werden. Auswahl und Anzeige nutzen jetzt dieselbe Level-Quelle; `check_data.py` und `check_runtime.js` prüfen die Vorschau.
 
 ## Entwicklungsregeln
 

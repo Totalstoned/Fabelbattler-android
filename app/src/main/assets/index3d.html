@@ -3200,6 +3200,18 @@ function rerollDraft(){
   showToast("Draft neu gewürfelt (−1 Gold)");
   return true;
 }
+function draftPickLevel(){
+  if(!G.team.length) return 1;
+  return Math.max.apply(null,G.team.map(u => u.level));
+}
+function draftPreviewStats(key,lvl){
+  const base = ROSTER[key];
+  if(!base) return null;
+  return {
+    hp:Math.round(base.hp*(1+(lvl-1)*0.3)),
+    atk:Math.round(base.atk*(1+(lvl-1)*0.25)*10)/10
+  };
+}
 function renderDraftCards(){
   renderDraftFilters();
   document.getElementById("mdTitle").textContent = "Wähle dein Team";
@@ -3213,8 +3225,10 @@ function renderDraftCards(){
   reroll.textContent = "Reroll 1 Gold";
   const draft = document.getElementById("mdDraft");
   draft.innerHTML = '';
+  const previewLevel = draftPickLevel();
   draftKeys().forEach(key => {
     const unit = ROSTER[key];
+    const preview = draftPreviewStats(key,previewLevel);
     const classes = [unit.cls,unit.cls2].filter(Boolean).map(c => CLASS_META[c]).filter(Boolean);
     const race = RACE_META[unit.race];
     const spell = SPELLS[unit.spell];
@@ -3228,14 +3242,14 @@ function renderDraftCards(){
           <div class="rl">${ROLE_META[unit.role].label} · ${race ? race.label : unit.race} · ${classes.map(c => c.label).join(" / ")}</div>
         </div>
       </div>
-      <div class="stats">HP ${unit.hp} · ATK ${unit.atk} · ${ABILITY_DESC[unit.ability]}</div>
+      <div class="stats">Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk} · ${ABILITY_DESC[unit.ability]}</div>
       <div class="abil" style="color:${spell ? spell.color : "#e6edf5"}">${spell ? spell.name+" · "+spell.range+" Felder" : "—"}${unit.role === "HEALER" ? " · heilt bis "+unit.healRange+" Felder" : ""} · ${classes.map(c => c.label+": "+c.desc).join(" · ")}</div>
     `;
     card.onclick = () => {
       if(G.team.length >= G.teamSize){ showToast("Team ist bereits voll"); return; }
       if(G.gold < 2){ showToast("Zu wenig Gold – Wesen nicht verfügbar"); return; }
       G.gold -= 2;
-      const pickLevel = G.team.length ? Math.max.apply(null,G.team.map(u => u.level)) : 1;
+      const pickLevel = draftPickLevel();
       G.team.push(createUnit(key,pickLevel,"player"));
       G.selectedUnitId = G.team[G.team.length-1].id;
       refreshTeamStats();

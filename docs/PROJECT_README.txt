@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.45-b46
+Aktuelle Version: v1.52-b52
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -348,6 +348,15 @@ v1.50-b51 2026-11-23  (Gegner-Wesen)
      dass die drei Wesen im Gegnerpool liegen und nie im Draft auftauchen.
    - Version 1.50/b51 bewusst gewaehlt: v1.49/b50 ist bereits durch PR #125 belegt.
 
+v1.52-b52 2026-11-23  (Level-Vorschau im Draft)
+   - Draft-Karten zeigen jetzt "Lv X · HP Y · ATK Z" mit dem tatsaechlichen
+     Uebernahmelevel (hoechstes Teamlevel) und den level-skalierten Basiswerten.
+     Bisher standen dort konstante Rohwerte, obwohl neue Wesen mit steigendem
+     Teamlevel eingezogen werden.
+   - draftPickLevel()/draftPreviewStats() werden von Anzeige und Auswahl genutzt;
+     check_data.py prueft die Tokens, check_runtime.js Skalierung und Renderlauf.
+   - Version 1.52/b52 bewusst gewaehlt: v1.51 ist durch PR #126/#127 belegt.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung)" unten.
@@ -392,6 +401,7 @@ Core-Loop-Status:
   [x] 29. Toasts im Kampf oben (v1.45)
   [x] 30. Fokus-Ziel in der Kampfleiste (v1.46)
   [x] 29. Niederlage-Zusammenfassung im Toast (v1.45)
+  [x] 31. Level-Vorschau im Draft (v1.52)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
