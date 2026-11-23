@@ -167,6 +167,10 @@ for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
 for token in ['playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'function updatePlayerBossBar']:
     if token not in src:
         problems.append('Eigener Boss-Lebensbalken fehlt: ' + token)
+
+for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', 'swarmStacks(sideUnits(G.battle,"player").length)']:
+    if token not in src:
+        problems.append('Duden-Bonus in der Kampfleiste fehlt: ' + token)
 for token in ['focusHp', 'focusName', 'focusHpValue', 'function updateFocusHp']:
     if token not in src:
         problems.append('Fokus-HP-Anzeige in der Kampfleiste fehlt: ' + token)

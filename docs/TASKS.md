@@ -161,6 +161,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   der Zauber bezahlbar ist, und sich sonst abdunkeln. Außerhalb des Kampfes verschwinden sie.
   *Erledigt:* `check_runtime.js` prüft die Schwellen 40/70, das Ausblenden bei 0 und außerhalb
   des Kampfes; `check_data.py` prüft die UI-Tokens.
+- [x] **28. Duden-Bonus in der Kampfleiste** (v1.44)
+  Das HUD mit den Synergie-Badges ist im Kampfmodus ausgeblendet. `updateBattleDudes()`
+  zeigt nun den aktiven Schwarm-Bonus aus der Spielerseite (Helden + Mobs) als
+  „● Duden +X %“ in der Kampfleiste. Ohne Bonus und außerhalb des Kampfes ist die
+  Anzeige ausgeblendet.
+  *Erledigt:* `check_runtime.js` prüft Ein-/Ausblenden, Bonuswert und Reaktion auf die
+  Einheitenanzahl; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

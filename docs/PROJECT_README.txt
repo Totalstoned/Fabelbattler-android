@@ -302,6 +302,13 @@ v1.43-b44 2026-11-23  (Zauber-Bereitschaft an der Mana-Anzeige)
      Fabel-Blitz), die farbig aufleuchten, sobald der Zauber bezahlbar ist.
    - check_data.py prueft die Tokens; check_runtime.js prueft die Schwellen 40/70,
      das Abdunkeln bei 0 und das Ausblenden ausserhalb des Kampfes.
+v1.44-b45 2026-11-23  (Duden-Bonus in der Kampfleiste)
+   - Das HUD mit den Synergie-Badges ist im Kampfmodus ausgeblendet. Neue kompakte
+     Anzeige (id battleDudes, battleDudesValue) via updateBattleDudes(): zeigt den
+     aktiven Schwarm-Bonus der Spielerseite (Helden + Mobs) als "+X %".
+   - Ohne Bonus und ausserhalb des Kampfes bleibt die Anzeige ausgeblendet.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Ein-/Ausblenden,
+     Bonuswert und Reaktion auf die Einheitenanzahl.
 
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
@@ -343,6 +350,7 @@ Core-Loop-Status:
   [x] 24. Eigener Boss-Lebensbalken (v1.40)
   [x] 25. Fokus-Angriffswert in der Kampfleiste (v1.41)
   [x] 27. Zauber-Bereitschaft an der Mana-Anzeige (v1.43)
+  [x] 28. Duden-Bonus in der Kampfleiste (v1.44)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG

@@ -13,7 +13,8 @@ Letztes Update: 2026-11-23
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.43**, Build **44**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`).
+- Version **1.44**, Build **45**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`).
+- Letztes geprüftes APK: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
@@ -48,6 +49,7 @@ Letztes Update: 2026-11-23
 - Fokus-Anzeige zeigt seit v1.41 den live Angriffswert (`focusAtkValue` in `updateFocusHp()`): Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet, daher war der ATK-Wert trotz Name/HP/Status/Zauber nicht ablesbar; Buffs wie `killAtk` wirken sofort, bei totem Fokus und außerhalb des Kampfes wird der Wert zurückgesetzt.
 - Stirbt der fokussierte Held im Kampf, springt der Fokus seit v1.42 automatisch auf den nächsten lebenden Helden (`killUnit()`), damit Fokus-HP, Zauber-Cooldown und Statuseffekte ohne manuelles Umschalten weiter nutzbar bleiben.
 - Mana-Anzeige markiert seit v1.37 die Zauber-Bereitschaft (`manaHealReady`/`manaNovaReady`): Während des Kampfes leuchten `✚40` und `✺70` auf, sobald Heilregen (40) bzw. Fabel-Blitz (70) bezahlbar sind. Die Mana regeneriert laufend; die Marker machen den Zeitpunkt des nächsten Zaubers direkt an der Kampfleiste ablesbar. Außerhalb des Kampfes ausgeblendet.
+- Kampfleiste zeigt seit v1.37 den aktiven Duden-Bonus (`battleDudes`, `updateBattleDudes()`): +4 % HP/ATK pro Stack aus der Spielerseite; ohne Bonus und außerhalb des Kampfes ausgeblendet.
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
 
