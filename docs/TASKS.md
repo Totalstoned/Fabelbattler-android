@@ -188,6 +188,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Anzeige, HP/Schild, kritische HP, totes Ziel,
   toten Fokus und Ausblenden; `check_data.py` prüft die UI-Tokens.
 
+- [x] **31. Gegner-Stärkebalken in der Kampfleiste** (v1.51)
+  Das HUD ist im Kampfmodus ausgeblendet. `updateEnemyHpBar()` zeigt als `enemyHpBar` die
+  verbleibende HP+Schild-Summe aller Gegner inkl. Schwarm (pro Einheit auf max. HP gedeckelt)
+  als Balken mit Prozentwert. Ab ≤ 25 % Reststärke wechselt er auf grün (naher Sieg);
+  außerhalb des Kampfes ist die Anzeige ausgeblendet.
+  *Erledigt:* `check_runtime.js` prüft Startwert, Schaden, Schild, tote Gegner, grünen
+  Warnzustand und Ausblenden; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
