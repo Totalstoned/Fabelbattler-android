@@ -176,6 +176,9 @@ for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
 for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:
     if token not in src:
         problems.append('Treffer-Impuls für Mobs fehlt: ' + token)
+for token in ['function healPulse', 'healFlash:0', 'u.healFlash = 0.3', 'new THREE.Color(0x4ade80)']:
+    if token not in src:
+        problems.append('Heil-Impuls fehlt: ' + token)
 if len(roster) != len(set(roster)):
     problems.append('doppelte Einheitenschlüssel')
 

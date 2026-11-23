@@ -1991,7 +1991,7 @@ function createUnit(key,lvl=1,side="player"){
     baseHp:base.hp*(1+(lvl-1)*0.3),baseAtk:base.atk*(1+(lvl-1)*0.25),baseSpd:base.spd,
     rng:base.rng,healRange:base.healRange||3,mods:Object.assign({},DEFAULT_MODS),modsEffective:Object.assign({},DEFAULT_MODS),
     maxHp:0,hp:0,atk:0,spd:1,shield:0,
-    grid:{gx:0,gy:0},target:null,attackCd:0,spellCd:Math.random()*0.8,hitFlash:0,animAttack:0,deathTimer:0,
+    grid:{gx:0,gy:0},target:null,attackCd:0,spellCd:Math.random()*0.8,hitFlash:0,healFlash:0,animAttack:0,deathTimer:0,
     statuses:{},statusPower:{},isDead:false,revived:false,auraCd:0,trait:null,aura:null
   };
   recalcUnit(u);
@@ -2186,6 +2186,7 @@ function healUnit(u,amount){
   const real = Math.min(amount,u.maxHp-u.hp);
   u.hp += real;
   if(real > 1){
+    if(!SIM.headless) u.healFlash = 0.3;
     pushEffect(u,"+"+Math.round(real),"#4ade80");
     spawnBurst(u,"#4ade80",10,0.7);
   }
@@ -2287,6 +2288,7 @@ function tickUnit(u,dt,b){
   u.attackCd = Math.max(0,u.attackCd-dt);
   u.spellCd = Math.max(0,u.spellCd-dt);
   u.hitFlash = Math.max(0,u.hitFlash-dt);
+  u.healFlash = Math.max(0,(u.healFlash||0)-dt);
   u.animAttack = Math.max(0,u.animAttack-dt);
   for(const key in u.statuses){
     if(u.statuses[key] > 0) u.statuses[key] = Math.max(0,u.statuses[key]-dt);
@@ -2499,6 +2501,7 @@ function reviveTeam(){
     u.revived = false;
     u.deathTimer = 0;
     u.animAttack = 0;
+    u.healFlash = 0;
     clearStatuses(u);
     recalcUnit(u);
   });
@@ -2604,6 +2607,8 @@ function attackPulse(u,dur){
   if(!(u.animAttack > 0)) return 0;
   return Math.sin(clamp(1-u.animAttack/(dur||0.3),0,1)*Math.PI);
 }
+// Kurzer Heil-Impuls, damit Heilungen im Kampf sichtbar sind (Gegengewicht zum Treffer-Flash).
+function healPulse(u){ return clamp((u && u.healFlash > 0 ? u.healFlash : 0)/0.3,0,1); }
 function poseCharacter(u,group,time,dt,deathT){
   const d = group.userData;
   const model = d.model;
@@ -2611,14 +2616,15 @@ function poseCharacter(u,group,time,dt,deathT){
   const walk = d.walk || 0;
   const attack = attackPulse(u,0.3);
   const recoil = u.hitFlash > 0 ? clamp(u.hitFlash/0.15,0,1) : 0;
+  const heal = healPulse(u);
   if(model){
     if(deathT >= 1){
       const bob = Math.sin(time*(2.1+walk*5)+phase);
-      model.position.y = bob*(0.018+walk*0.04)+attack*0.05;
+      model.position.y = bob*(0.018+walk*0.04)+attack*0.05+heal*0.07;
       model.rotation.x = recoil*0.3-walk*0.12+Math.sin(time*3+phase)*0.02;
       model.rotation.z = Math.sin(time*(1.8+walk*3)+phase)*0.04+recoil*0.12;
       model.rotation.y = (d.baseYaw||0)+Math.sin(time*1.3+phase)*0.05+attack*0.3*(u.side === "player" ? 1 : -1);
-      const s = (d.modelScale||1)*(1+attack*0.06-recoil*0.04);
+      const s = (d.modelScale||1)*(1+attack*0.06-recoil*0.04)*(1+heal*0.07);
       model.scale.set(s,s*(1+recoil*0.05),s);
     } else {
       model.position.y = -0.1*(1-deathT);
@@ -2698,10 +2704,12 @@ function updateVisuals(time,dt){
     if(u.shield > 0) group.userData.shieldRing.rotation.z += dt*0.8;
     group.userData.hp.quaternion.copy(camera.quaternion);
     const flash = u.hitFlash > 0 ? u.hitFlash*5 : 0;
+    const heal = healPulse(u);
     group.userData.bodyMat.emissive.copy(group.userData.baseEmissive);
-    group.userData.bodyMat.emissiveIntensity = group.userData.baseEmissiveIntensity+flash;
+    group.userData.bodyMat.emissiveIntensity = group.userData.baseEmissiveIntensity+flash+heal*0.6;
+    if(heal > 0) group.userData.bodyMat.emissive.lerp(new THREE.Color(0x4ade80),clamp(heal,0,1));
     if(flash > 0) group.userData.bodyMat.emissive.lerp(new THREE.Color(0xffffff),clamp(flash,0,1));
-    group.userData.glow.material.opacity = clamp((u.isDead ? 0.08 : 0.34)+Math.sin(time*2.4+u.id*0.6)*0.07+flash*0.2,0,0.9);
+    group.userData.glow.material.opacity = clamp((u.isDead ? 0.08 : 0.34)+Math.sin(time*2.4+u.id*0.6)*0.07+flash*0.2+heal*0.15,0,0.9);
     group.userData.teamRing.material.opacity = u.isDead ? 0.12 : 0.42+Math.sin(time*1.7+u.id*0.4)*0.12;
     const isSelected = G.selectedUnitId === u.id && !u.isDead;
     group.userData.selectRing.visible = isSelected;

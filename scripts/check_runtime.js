@@ -752,4 +752,55 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  const healHero = G.battle.player[0];
+  healHero.hp = healHero.maxHp*0.4;
+  healHero.healFlash = 0;
+  globalThis.__healZero = healPulse(healHero) === 0;
+  healUnit(healHero,healHero.maxHp*0.2);
+  globalThis.__healSet = healHero.healFlash > 0 && healPulse(healHero) === 1;
+  const pulseGroup = makeCharacter(healHero);
+  const pulseModel = pulseGroup.userData.model;
+  healHero.hitFlash = 0;
+  healHero.animAttack = 0;
+  pulseGroup.userData.walk = 0;
+  healHero.healFlash = 0;
+  poseCharacter(healHero,pulseGroup,1,0,1);
+  const baseScale = pulseModel ? pulseModel.scale.x : 1;
+  const baseY = pulseModel ? pulseModel.position.y : 0;
+  healHero.healFlash = 0.15;
+  poseCharacter(healHero,pulseGroup,1,0,1);
+  globalThis.__healPose = !!pulseModel && pulseModel.scale.x > baseScale && pulseModel.position.y > baseY;
+  healHero.auraCd = 999;
+  healHero.healFlash = 0.3;
+  tickUnit(healHero,0.1,G.battle);
+  globalThis.__healDecay = healHero.healFlash > 0 && healHero.healFlash < 0.3 &&
+    Math.abs(healPulse(healHero)-healHero.healFlash/0.3) < 1e-6;
+  const liveGroup = unitGroups.get(healHero.id);
+  healHero.healFlash = 0;
+  updateVisuals(1,0.016);
+  const baseEmissive = liveGroup.userData.bodyMat.emissive.getHex();
+  healHero.healFlash = 0.3;
+  updateVisuals(1,0.016);
+  globalThis.__healGlow = liveGroup.userData.bodyMat.emissive.getHex() !== baseEmissive &&
+    liveGroup.userData.bodyMat.emissiveIntensity > liveGroup.userData.baseEmissiveIntensity;
+  healHero.healFlash = 0;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__healZero', 'Heil-Impuls ist ohne Heilung nicht null'],
+  ['__healSet', 'healUnit() setzt den Heil-Impuls nicht'],
+  ['__healPose', 'Heil-Impuls verändert die Modell-Pose nicht'],
+  ['__healDecay', 'Heil-Impuls klingt nicht über tickUnit() ab'],
+  ['__healGlow', 'Heil-Impuls färbt das Modell nicht grün'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls+heil-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
