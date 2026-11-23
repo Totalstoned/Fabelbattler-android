@@ -2103,11 +2103,16 @@ function castAura(u,b){
     spawnShockwave(u,a.css,0.6);
   }
 }
+// Elite und Bosse sind einzelne, wichtige Ziele: ihre Trefferzahlen sind sichtbar.
+// Der normale 500er-Schwarm bleibt bewusst ohne Text-Sprites (Performance).
+function specialMob(u){ return !!(u && u.isMob && (u.isElite || u.isBoss)); }
 function pushEffect(u,text,color){
-  if(SIM.headless || !u || u.isMob) return;
+  if(SIM.headless || !u) return;
+  if(u.isMob && !specialMob(u)) return;
   const sprite = makeTextSprite(text,color,0.7);
   const p = worldPos(u.grid.gx,u.grid.gy);
-  sprite.position.set(p.x+(Math.random()-0.5)*0.28,1.6,p.z+(Math.random()-0.5)*0.28);
+  const height = u.isBoss ? 2.8 : u.isElite ? 2.0 : 1.6;
+  sprite.position.set(p.x+(Math.random()-0.5)*0.28,height,p.z+(Math.random()-0.5)*0.28);
   sprite.userData.life = 0.9;
   sprite.userData.max = 0.9;
   sprite.userData.vy = 0.9;

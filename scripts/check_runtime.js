@@ -414,6 +414,47 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  G.wave = 10;
+  startBattle();
+  const mobFxBoss = G.battle.enemyMobs.find(m => m.isBoss);
+  const mobFxElite = G.battle.enemyMobs.find(m => m.isElite);
+  const mobFxNormal = G.battle.enemyMobs.find(m => !m.isElite && !m.isBoss);
+  const mobFxHero = G.battle.player[0];
+  globalThis.__specialMobCheck = specialMob(mobFxBoss) && specialMob(mobFxElite) &&
+    !specialMob(mobFxNormal) && !specialMob(mobFxHero);
+  const mobFxN0 = G.effects.length;
+  applyDamage(mobFxBoss, 1, mobFxHero, {});
+  const mobFxBossSprite = G.effects[G.effects.length - 1];
+  const mobFxN1 = G.effects.length;
+  applyDamage(mobFxElite, 1, mobFxHero, {});
+  const mobFxEliteSprite = G.effects[G.effects.length - 1];
+  const mobFxN2 = G.effects.length;
+  applyDamage(mobFxNormal, 1, mobFxHero, {});
+  const mobFxN3 = G.effects.length;
+  globalThis.__mobNumberCheck = mobFxN1 === mobFxN0 + 1 && mobFxN2 === mobFxN1 + 1 && mobFxN3 === mobFxN2 &&
+    mobFxBossSprite.position.y > mobFxEliteSprite.position.y;
+  SIM.headless = true;
+  applyDamage(mobFxBoss, 1, mobFxHero, {});
+  globalThis.__mobNumberHeadlessCheck = G.effects.length === mobFxN3;
+  SIM.headless = false;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__specialMobCheck', ctx)) {
+  throw new Error('specialMob() erkennt nur Elite- und Boss-Mobs');
+}
+if (!vm.runInContext('globalThis.__mobNumberCheck', ctx)) {
+  throw new Error('Elite-/Boss-Mobs zeigen keine Trefferzahl, normale Mobs zu viele');
+}
+if (!vm.runInContext('globalThis.__mobNumberHeadlessCheck', ctx)) {
+  throw new Error('Trefferzahlen erscheinen im Headless-Modus');
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   G.wave = 1;
   startBattle();
   updateBattleStatus();
