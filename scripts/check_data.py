@@ -158,6 +158,9 @@ for token in ['heroAlert', 'heroAlertCount', 'function updateHeroAlert']:
 for token in ['teamHpBar', 'teamHpFill', 'teamHpPct', 'function updateTeamHpBar']:
     if token not in src:
         problems.append('Team-HP-Balken fehlt: ' + token)
+for token in ['foeHpBar', 'foeHpFill', 'foeHpPct', 'function updateFoeHpBar']:
+    if token not in src:
+        problems.append('Gegner-HP-Balken in der Kampfleiste fehlt: ' + token)
 for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'function updateBattleManaBar']:
     if token not in src:
         problems.append('Mana-Anzeige in der Kampfleiste fehlt: ' + token)

@@ -112,6 +112,18 @@
   .teamhp.critical .track{border-color:#ff6b6b;}
   .teamhp.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
   .teamhp.critical b{animation:bossWarn .7s ease-in-out infinite;}
+  .foehp{display:none;align-items:center;gap:6px;font-size:11px;color:#ff9a9a;padding:0 6px;white-space:nowrap;}
+  .foehp.show{display:flex;}
+  .foehp .track{width:84px;height:6px;background:#0b0e13;border:1px solid #8f3b3b;border-radius:4px;overflow:hidden;}
+  .foehp .track i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#c2410c,#ff8a5b);transition:width .15s;}
+  .foehp b{min-width:30px;text-align:right;}
+  .foehp.warn{color:#ffd166;}
+  .foehp.warn .track{border-color:#ffd166;}
+  .foehp.warn .track i{background:linear-gradient(90deg,#e08e2d,#ffd166);}
+  .foehp.critical{color:#ff6b6b;}
+  .foehp.critical .track{border-color:#ff6b6b;}
+  .foehp.critical .track i{background:linear-gradient(90deg,#ff2d2d,#ff7a45);}
+  .foehp.critical b{animation:bossWarn .7s ease-in-out infinite;}
   .battle-mana{display:none;align-items:center;gap:6px;font-size:11px;color:#8fb5ff;padding:0 6px;white-space:nowrap;}
   .battle-mana.show{display:flex;}
   .battle-mana .track{width:84px;height:6px;background:#0b0e13;border:1px solid #2f4a8f;border-radius:4px;overflow:hidden;}
@@ -232,6 +244,7 @@
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
+  <span class="foehp" id="foeHpBar" title="Gesamte HP und Schilde der gegnerischen Helden">⚔ <span class="track"><i id="foeHpFill"></i></span> <b id="foeHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
@@ -2916,6 +2929,20 @@ function updateTeamHpBar(){
   document.getElementById("teamHpFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("teamHpPct").textContent = Math.ceil(pct)+'%';
 }
+function updateFoeHpBar(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("foeHpBar");
+  if(G.phase !== "battle" || !G.battle){ bar.classList.remove("show"); bar.classList.remove("warn"); bar.classList.remove("critical"); return; }
+  const heroes = G.battle.enemies;
+  const maxHp = heroes.reduce((s,u) => s+u.maxHp,0);
+  const current = heroes.reduce((s,u) => s+(u.isDead ? 0 : Math.min(u.hp+(u.shield||0),u.maxHp)),0);
+  const pct = maxHp > 0 ? clamp(current/maxHp*100,0,100) : 0;
+  bar.classList.add("show");
+  bar.classList.toggle("warn",pct <= 50 && pct > 25);
+  bar.classList.toggle("critical",pct <= 25);
+  document.getElementById("foeHpFill").style.width = pct.toFixed(1)+'%';
+  document.getElementById("foeHpPct").textContent = Math.ceil(pct)+'%';
+}
 function updateBattleManaBar(){
   if(SIM.headless) return;
   const bar = document.getElementById("battleMana");
@@ -3243,6 +3270,7 @@ window.addEventListener("load", () => {
     updateBossBar();
     updateBattleStatus();
     updateTeamHpBar();
+    updateFoeHpBar();
     updateBattleManaBar();
     updateBattleGold();
     updateHeroAlert();
