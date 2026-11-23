@@ -164,6 +164,9 @@ for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'function updat
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['statusElites', 'u.isElite && !u.isDead', 'function updateBattleStatus']:
+    if token not in src:
+        problems.append('Eliten-Anzeige im Kampfstatus fehlt: ' + token)
 for token in ['focusHp', 'focusName', 'focusHpValue', 'function updateFocusHp']:
     if token not in src:
         problems.append('Fokus-HP-Anzeige in der Kampfleiste fehlt: ' + token)

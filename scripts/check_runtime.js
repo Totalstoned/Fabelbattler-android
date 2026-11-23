@@ -96,7 +96,7 @@ if (!html.includes('id="battleMana"') || !html.includes('function updateBattleMa
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'statusElites', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -425,7 +425,8 @@ vm.runInContext(`
     foesStart === sideUnits(G.battle, "enemy").length &&
     document.getElementById("statusFoeHeroes").textContent === G.battle.enemies.length+'/'+G.battle.enemies.length &&
     document.getElementById("statusMobs").textContent === mobsPlayerStart+'/'+mobsEnemyStart &&
-    document.getElementById("statusHeroes").textContent === "3/3";
+    document.getElementById("statusHeroes").textContent === "3/3" &&
+    document.getElementById("statusElites").textContent === "0";
   G.battle.enemyMobs[0].isDead = true;
   G.battle.enemies[0].isDead = true;
   G.battle.player[0].isDead = true;
@@ -434,6 +435,12 @@ vm.runInContext(`
     document.getElementById("statusFoeHeroes").textContent === (G.battle.enemies.length-1)+'/'+G.battle.enemies.length &&
     document.getElementById("statusMobs").textContent === mobsPlayerStart+'/'+(mobsEnemyStart-1) &&
     document.getElementById("statusHeroes").textContent === "2/3";
+  G.battle.enemyMobs[1].isElite = true;
+  updateBattleStatus();
+  globalThis.__statusEliteCheck = document.getElementById("statusElites").textContent === "1";
+  G.battle.enemyMobs[1].isDead = true;
+  updateBattleStatus();
+  globalThis.__statusEliteKillCheck = document.getElementById("statusElites").textContent === "0";
   G.phase = "menu";
   G.battle = null;
   updateBattleStatus();
@@ -445,6 +452,12 @@ if (!vm.runInContext('globalThis.__statusShowCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__statusLiveCheck', ctx)) {
   throw new Error('Kampf-Status reagiert nicht auf Tod von Gegner-Helden, Mobs oder Helden');
+}
+if (!vm.runInContext('globalThis.__statusEliteCheck', ctx)) {
+  throw new Error('Kampf-Status zählt lebende Eliten nicht');
+}
+if (!vm.runInContext('globalThis.__statusEliteKillCheck', ctx)) {
+  throw new Error('Kampf-Status zieht getötete Eliten nicht ab');
 }
 if (!vm.runInContext('globalThis.__statusHideCheck', ctx)) {
   throw new Error('Kampf-Status verschwindet nicht außerhalb des Kampfes');
