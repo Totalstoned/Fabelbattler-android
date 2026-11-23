@@ -122,6 +122,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   durch Gold-auf-Kill-Effekte und der Stand für den kommenden Draft sichtbar bleiben.
   *Erledigt:* `check_runtime.js` prüft Tokens, Ein-/Ausblenden, Startwert und Live-Updates;
   `check_data.py` prüft die UI-Tokens.
+
+- [x] **22. Boss-Name in der Kampfleiste** (v1.37)
+  Die Boss-Leiste zeigte bisher nur eine Krone und den HP-Prozentsatz. `updateBossBar()`
+  blendet jetzt den Namen des gegnerischen Boss (z. B. „Boss-Brute“) neben dem Balken ein,
+  damit im Schwarm erkennbar ist, welcher Archetyp gefährlich ist. Nach dem Boss-Tod
+  wird der Name zurückgesetzt.
+  *Erledigt:* `check_runtime.js` prüft Namen, Zurücksetzung und Ausblenden;
+  `check_data.py` prüft die UI-Tokens.
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.
