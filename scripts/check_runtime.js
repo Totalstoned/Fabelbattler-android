@@ -90,13 +90,16 @@ if (!html.includes('id="heroAlert"') || !html.includes('id="heroAlertCount"') ||
 if (!html.includes('id="teamHpBar"') || !html.includes('function updateTeamHpBar')) {
   throw new Error('Team-HP-Balken in der Kampfleiste fehlt');
 }
+if (!html.includes('id="foeHpBar"') || !html.includes('function updateFoeHpBar')) {
+  throw new Error('Gegner-HP-Balken in der Kampfleiste fehlt');
+}
 if (!html.includes('id="battleMana"') || !html.includes('function updateBattleManaBar')) {
   throw new Error('Mana-Anzeige in der Kampfleiste fehlt');
 }
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'foeHpBar', 'foeHpFill', 'foeHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'battleGold', 'battleGoldValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -557,6 +560,53 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  const foeBar = document.getElementById("foeHpBar");
+  const foeFill = document.getElementById("foeHpFill");
+  const foePct = document.getElementById("foeHpPct");
+  updateFoeHpBar();
+  globalThis.__foeHpHidden = !foeBar.classList.contains("show");
+  G.wave = 1;
+  startBattle();
+  const foes = sideUnits(G.battle, "enemy");
+  foes.forEach(u => { u.hp = u.maxHp; u.shield = 0; });
+  updateFoeHpBar();
+  const foeTotalMax = foes.reduce((s, u) => s + u.maxHp, 0);
+  globalThis.__foeHpStart = foeBar.classList.contains("show") && foePct.textContent === "100%" &&
+    parseFloat(foeFill.style.width) === 100;
+  foes[0].hp = foes[0].maxHp * 0.5;
+  const foeExpectedDamage = (foeTotalMax - foes[0].maxHp * 0.5) / foeTotalMax * 100;
+  updateFoeHpBar();
+  globalThis.__foeHpDamage = Math.abs(parseFloat(foeFill.style.width) - foeExpectedDamage) < 0.2;
+  foes[0].shield = foes[0].maxHp * 0.5;
+  updateFoeHpBar();
+  globalThis.__foeHpShield = parseFloat(foeFill.style.width) === 100 && foePct.textContent === "100%";
+  foes[0].shield = 0;
+  foes[0].isDead = true;
+  foes[0].hp = 0;
+  updateFoeHpBar();
+  const foeExpectedDead = (foeTotalMax - foes[0].maxHp) / foeTotalMax * 100;
+  globalThis.__foeHpDead = Math.abs(parseFloat(foeFill.style.width) - foeExpectedDead) < 0.2;
+  G.phase = "menu";
+  G.battle = null;
+  updateFoeHpBar();
+  globalThis.__foeHpHide = !foeBar.classList.contains("show");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__foeHpHidden', 'Gegner-HP-Balken erscheint außerhalb des Kampfes'],
+  ['__foeHpStart', 'Gegner-HP-Balken startet nicht bei 100 %'],
+  ['__foeHpDamage', 'Gegner-HP-Balken reagiert nicht auf Schaden'],
+  ['__foeHpShield', 'Gegner-HP-Balken berücksichtigt Schilde nicht'],
+  ['__foeHpDead', 'Gegner-HP-Balken zählt tote Gegner falsch'],
+  ['__foeHpHide', 'Gegner-HP-Balken verschwindet nicht außerhalb des Kampfes'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   const mana = document.getElementById("battleMana");
   const manaFill = document.getElementById("battleManaFill");
   const manaValue = document.getElementById("battleManaValue");
@@ -752,4 +802,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar, kampfstatus+mobs+heldenwarnung+teamHp+foeHp+mana+gold+fokusHp+fokusName+fokusStatus+fokusCd, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, timer ${timerText})`);
