@@ -24,6 +24,15 @@ node scripts/check_runtime.js app/src/main/assets/index3d.html
 
 Die GitHub Action `.github/workflows/build-apk.yml` baut die APK und benennt sie `fabelbattler-v<name>-b<code>.apk`. `scripts/download-apk.sh <run-id>` lädt nur neue Versionen nach `/root/projects/FABELBATTLER/`.
 
+Für Balancing und gezielte Gegner-Szenarien gibt es `scripts/game_harness.js` (headless, ohne Gerät/WebGL):
+
+```bash
+node scripts/game_harness.js --enemies oma,feuerwehr,teddy --wave 3 --ticks 1800 --runs 5
+node scripts/game_harness.js --team bigfoot,fee --no-mobs --seed 7 --json
+```
+
+Optionen: `--team`, `--enemies`, `--wave`, `--level`, `--ticks`, `--runs` (Bilanz mit Siegquote über aufeinanderfolgende Seeds), `--no-mobs`, `--seed`, `--html`, `--json`. Die gegner-exklusiven Wesen sind `oma`, `feuerwehr`, `teddy`; ohne `--enemies` wählt das Spiel wie gewohnt zufällig. Der Harness nutzt dieselben DOM-/WebGL-Stubs wie `check_runtime.js` und lässt sich per `require('./scripts/game_harness')` auch aus anderen Skripten aufrufen.
+
 ## Bedienung
 
 - Wesen antippen wählt es aus; das Team-Panel zeigt Name, Rolle, Klassen, Rassen, Fähigkeit und Reichweite
