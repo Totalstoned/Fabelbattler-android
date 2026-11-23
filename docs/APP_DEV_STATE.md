@@ -13,7 +13,7 @@ Letztes Update: 2026-11-23
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.48**, Build **49**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.44-b45.apk`).
+- Version **1.49**, Build **50**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.44-b45.apk`).
 - Letztes geprüftes APK: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
@@ -35,6 +35,7 @@ Letztes Update: 2026-11-23
 - Kampfleiste warnt pulsierend vor kritischen Helden (`updateHeroAlert()`, v1.26): zählt lebende Helden mit HP+Schild ≤ 25 % und blendet sich außerhalb des Kampfes aus.
 - Kampfleiste zeigt einen Team-HP-Balken (`updateTeamHpBar()`, v1.27): Summe aus HP+Schild aller Helden, gedeckelt pro Held auf max. HP; grün/gelb/rot ab 50/25 %, außerhalb des Kampfes ausgeblendet.
 - Kampfleiste zeigt im Kampfstatus die lebenden Schwarm-Mobs beider Seiten als „Mobs Spieler/Gegner“ (`statusMobs`, v1.28); das HUD ist im Kampfmodus ausgeblendet.
+- Kampfstatus zeigt seit v1.49 zusätzlich lebende gegnerische Eliten als „✨ Elite x/y“ (`eliteInfo`, `statusElites`): nur in Eliten-Wellen sichtbar, damit hochwertige Ziele im 500er-Schwarm auffindbar bleiben; außerhalb des Kampfes ausgeblendet.
 - Kampfleiste zeigt im Kampf eine kompakte Mana-Anzeige mit Balken und Wert (`battleMana`, v1.29), da das HUD mit dem Mana-Balken im Kampfmodus ausgeblendet ist; außerhalb des Kampfes ausgeblendet.
 - Mob-Schwarm zeigt einen kurzen Treffer-Impuls (`mobHitPulse()`, v1.30): Getroffene Mobs wachsen kurz an und wackeln, damit Treffer im 500er-Schwarm sichtbar bleiben.
 - Kampfleiste zeigt die HP inkl. Schild des fokussierten Wesens (`updateFocusHp()`, v1.31): Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet; die ◀/▶-Fokusnavigation bleibt dadurch mit exakten Werten und Warnfarben lesbar.

@@ -188,6 +188,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_runtime.js` prüft Anzeige, HP/Schild, kritische HP, totes Ziel,
   toten Fokus und Ausblenden; `check_data.py` prüft die UI-Tokens.
 
+- [x] **31. Eliten-Zähler im Kampfstatus** (v1.49)
+  Der Kampfstatus ergänzt „✨ Elite x/y“ für lebende gegnerische Elit-Mobs. Im 500er-Schwarm
+  sind die goldenen Eliten wichtige Ziele, waren aber außerhalb der Wellen-Meldung nicht
+  zählbar. Die Anzeige erscheint nur in Wellen mit Eliten und verschwindet außerhalb des Kampfes.
+  *Erledigt:* `check_runtime.js` prüft Welle 1 ohne Anzeige, Welle 5 mit Zähler, Abzug bei
+  getöteter Elite und Ausblenden; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

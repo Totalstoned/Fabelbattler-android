@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.45-b46
+Aktuelle Version: v1.49-b50
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -382,6 +382,7 @@ Core-Loop-Status:
   [x] 29. Toasts im Kampf oben (v1.45)
   [x] 30. Fokus-Ziel in der Kampfleiste (v1.46)
   [x] 29. Niederlage-Zusammenfassung im Toast (v1.45)
+  [x] 31. Eliten-Zaehler im Kampfstatus (v1.49)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
@@ -481,3 +482,10 @@ Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung):
   - v1.48 Niederlage-Toast mit Kampfbilanz (Dauer, Helden, Gegner uebrig).
   - PRs #121-#124 geschlossen, 0 offen. Externe Quelle synchronisiert.
   - CI und APK fuer v1.48-b49 folgen.
+
+v1.49-b50 2026-11-23  (Eliten-Zaehler im Kampfstatus)
+  - Kampfleiste zeigt "✨ Elite x/y" (eliteInfo/statusElites): lebende gegnerische
+    Elit-Mobs im 500er-Schwarm. Nur in Wellen mit Eliten sichtbar, ausserhalb des
+    Kampfes ausgeblendet. Bosse bleiben ueber ihre eigenen HP-Balken erkennbar.
+  - check_data.py prueft die Tokens; check_runtime.js prueft Welle 1 ohne Anzeige,
+    Welle 5 mit Zaehler, Abzug nach Eliten-Tod und Ausblenden. Alle Checks gruen.

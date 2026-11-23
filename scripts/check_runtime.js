@@ -105,7 +105,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -483,6 +483,49 @@ if (!vm.runInContext('globalThis.__statusLiveCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__statusHideCheck', ctx)) {
   throw new Error('Kampf-Status verschwindet nicht außerhalb des Kampfes');
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 1;
+  startBattle();
+  updateBattleStatus();
+  const eliteInfo = document.getElementById("eliteInfo");
+  globalThis.__eliteHiddenWave1 = !eliteInfo.classList.contains("show") &&
+    document.getElementById("statusElites").textContent === "0/0";
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  const elites = G.battle.enemyMobs.filter(m => m.isElite);
+  updateBattleStatus();
+  const eliteTotal = elites.length;
+  globalThis.__eliteShow = eliteTotal > 0 && eliteInfo.classList.contains("show") &&
+    document.getElementById("statusElites").textContent === eliteTotal+'/'+eliteTotal;
+  elites[0].isDead = true;
+  updateBattleStatus();
+  globalThis.__eliteLive = document.getElementById("statusElites").textContent === (eliteTotal-1)+'/'+eliteTotal &&
+    eliteInfo.classList.contains("show");
+  G.phase = "menu";
+  G.battle = null;
+  updateBattleStatus();
+  globalThis.__eliteHide = !eliteInfo.classList.contains("show");
+`, ctx);
+
+if (!vm.runInContext('globalThis.__eliteHiddenWave1', ctx)) {
+  throw new Error('Eliten-Zähler erscheint in Welle 1 ohne Eliten');
+}
+if (!vm.runInContext('globalThis.__eliteShow', ctx)) {
+  throw new Error('Eliten-Zähler zeigt die gegnerischen Eliten nicht');
+}
+if (!vm.runInContext('globalThis.__eliteLive', ctx)) {
+  throw new Error('Eliten-Zähler reagiert nicht auf getötete Eliten');
+}
+if (!vm.runInContext('globalThis.__eliteHide', ctx)) {
+  throw new Error('Eliten-Zähler verschwindet nicht außerhalb des Kampfes');
 }
 
 vm.runInContext(`
@@ -1040,4 +1083,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+heldenwarnung+teamHp+mana+zauberbereit+gold+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText})`);
