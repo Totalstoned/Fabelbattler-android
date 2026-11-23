@@ -137,6 +137,10 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   (inkl. Boss-/Elite-Bonus), Kampfdauer in Sekunden und überlebenden Helden („Helden A/B“).
   *Erledigt:* `check_runtime.js` prüft, dass genau ein Sieges-Toast erscheint und Gold,
   Dauer und Helden-Zahl korrekt enthalten sind.
+- [x] **24. Eigener Boss-Lebensbalken** (v1.40)
+  `updatePlayerBossBar()` zeigt in der Kampfleiste die HP des Spieler-Boss (türkis, rot/pulsierend unter 25 %), der bisher nur auf Gegnerseite sichtbar war. Die Balken sind als „Gegner“/„Team“ beschriftet; nach Boss-Tod verschwindet die Anzeige.
+  *Erledigt:* `check_runtime.js` prüft Anzeige, 50 %/20 % HP und Ausblenden; `check_data.py` prüft die UI-Tokens.
+
 - [x] **4. Mob-Schwarm auf beiden Seiten** (v1.18)
   `MOB_CAP = 500`, 3 Archetypen und wellenbasierte Anzahl auf Spieler- und Gegnerseite. Mobs sind kompakte Einheiten ohne `makeCharacter()` und werden über `THREE.InstancedMesh` gerendert. Die KI nutzt alle 0,2 s einen Front-/Ziel-Cache statt pro Mob sortierter Zielwahl; Helden treffen weiterhin vollwertige ROSTER-Gegner.
   *Erledigt:* `check_data.py` prüft Cap und System-Tokens, `check_runtime.js` spawnt 500/500 Mobs und simuliert 600 Ticks ohne DOM-Fehler. User hat „Beide Seiten“ bestätigt.

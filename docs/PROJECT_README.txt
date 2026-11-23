@@ -278,6 +278,15 @@ v1.37-b38 2026-11-23  (Sieges-Zusammenfassung)
      ("Helden A/B"). Weniger Toast-Spam, mehr Infos auf einen Blick.
    - check_runtime.js prueft genau einen Sieges-Toast mit Gold, Dauer und Helden-Zahl.
 
+v1.37-b38 2026-11-23  (Eigener Boss-Lebensbalken)
+    - Bosse spawnen auf beiden Seiten, aber die Kampfleiste zeigte nur den
+      gegnerischen Boss. Neuer Balken playerBossBar (tuerkis, ids
+      playerBossBarFill/playerBossBarPct) via updatePlayerBossBar(): zeigt die HP
+      des eigenen Boss live, wird unter 25 % rot/pulsierend und verschwindet nach
+      dem Tod. Beide Boss-Balken sind jetzt mit "Gegner"/"Team" beschriftet.
+    - check_data.py prueft die Tokens; check_runtime.js prueft Anzeige, 50 %/20 %
+      HP und Ausblenden nach dem Boss-Tod.
+
 Automatisierung ab 2026-11-22:
   - User will Verbesserungen alle 10 Minuten; Entscheidung "Beides kombinieren".
   - Details im Abschnitt "Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung)" unten.
@@ -315,6 +324,7 @@ Core-Loop-Status:
   [x] 21. Gold-Anzeige in der Kampfleiste (v1.36)
   [x] 22. Fokus-Level und -Rolle in der Kampfleiste (v1.37)
   [x] 23. Sieges-Zusammenfassung als ein Toast (v1.39)
+  [x] 24. Eigener Boss-Lebensbalken (v1.40)
 
 =====================================================================
 3) BEFEHLE / VALIDIERUNG
