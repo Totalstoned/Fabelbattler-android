@@ -210,3 +210,9 @@ wann deren nächster Angriff kommt („bereit“, Restzeit, „nähert sich“ o
 „blockiert“). Normale Schwarm-Mobs bleiben ohne Anzeige, damit die Leiste
 lesbar bleibt. Die Datei 1.20.0.apk wurde mit diesem Stand überschrieben;
 die alten APK-Dateien bleiben unverändert liegen.
+
+Neu in dieser 1.20.0.apk: Vor dem Kampf steht in der Leiste jetzt eine
+Runden-Vorschau: „⇢ Welle N: Standard/Elite×N/👑 Boss · M Mobs · +G Gold“.
+Art, Gegnerzahl und Gold kommen aus denselben Regeln wie der echte Kampf.
+Sobald die Welle läuft, verschwindet die Vorschau wieder. Die Datei
+1.20.0.apk wurde mit diesem Stand überschrieben; alte APKs bleiben liegen.

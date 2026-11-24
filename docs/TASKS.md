@@ -1,3 +1,5 @@
+- [x] **51. Runden-Vorschau im Prep-HUD**: zeigt Wellenart, Gegnerzahl und Gold vor dem Kampf, deterministisch aus den Kampfregeln abgeleitet und im Kampf ausgeblendet; alle drei Checks grün.
+
 
 - [x] **49. Elite/Boss-Intent im Fokus-Panel**: next-action telegraph für Elite/Boss (Angriff bereit/Restzeit/blockiert/nähert sich), deterministisch aus attackCd + Reichweite, keine normalen Mobs; alle drei Checks grün.
 

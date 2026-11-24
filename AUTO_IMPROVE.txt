@@ -1,3 +1,5 @@
+2026-11-24: Die Runden-Vorschau ändert nichts an der Endmarke 1.20.0; der Loop bleibt gestoppt.
+
 
 2026-11-24: 1.20.0 erreicht – Endmarke. Der 10-Minuten-Loop bleibt bewusst gestoppt (`/root/projects/FABELBATTLER/auto-improve.stop`); keine weiteren Versionsschritte.
 
