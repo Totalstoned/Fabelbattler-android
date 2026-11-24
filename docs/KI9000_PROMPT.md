@@ -21,7 +21,7 @@ Pro Iteration:
 5. Invarianten einhalten: 123 Einheiten, 51 Zauber, 18 Gegner-Keys, MOB_CAP=500, CORE_UNITS bigfoot/chupacabra/fee, keine Barbar-Rasse. Wenn nötig, beide Checks (check_data.py UND check_runtime.js) bewusst mitziehen.
 6. Nach jeder index3d.html-Änderung: externe Kopie /root/fabelbattler/index3d.html byte-identisch halten (sha256sum vergleichen).
 7. Validieren: python3 scripts/check_js.py <datei> && python3 scripts/check_data.py <datei> && node scripts/check_runtime.js <datei> – für beide Kopien. Zusätzlich python3 gamemaker/check_project.py.
-8. Committen, pushen, PR öffnen, scripts/auto-integrate.sh nutzen, CIwatch, APK/Docs (beide Kopien) und Issue #1 aktualisieren.
+8. Committen, pushen, PR öffnen, scripts/auto-integrate.sh nutzen, CI-Watch, APK/Docs (beide Kopien) und Issue #1 aktualisieren.
 
 Download-Budget: Ich erlaube dir bis zu 2 GiB Download pro UTC-Tag ohne Rückfrage. Vor größeren Downloads `python3 scripts/download_budget.py status`, danach `reserve <bytes> <label>`. Der Ideen-Scout bucht automatisch. Bei Budget-Ende mit lokalen Quellen weiterarbeiten.
 
