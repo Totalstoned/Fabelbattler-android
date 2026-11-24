@@ -216,6 +216,10 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **38. Kritische Helden im 3D markieren** (v1.73)
+  Helden mit HP+Schild ≤ 25 % bekommen in `updateVisuals()` einen pulsierenden roten Bodenring statt des türkisen Team-Rings. Damit bleibt im Kampfmodus (HUD und Teamliste sind ausgeblendet) sofort erkennbar, wer Hilfe braucht; Schild schützt vor der Warnung, Heilung setzt sie zurück.
+  *Erledigt:* `check_runtime.js` prüft Normalfarbe, kritischen Puls (Farbe, Deckkraft, Größe) und Rücksetzung durch Schild; beide anderen Checks grün.
+
 - [x] **37. Realistischer Steinboden** (v1.72)
   User: „so grafisch jetzt viel realistischer". Neue `stoneTexture()` erzeugt
   prozedurale Stein-Kacheln (Koerner, Risse, Vignette, zwei Toene), die Arena

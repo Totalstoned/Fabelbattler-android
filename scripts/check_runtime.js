@@ -653,11 +653,19 @@ vm.runInContext(`
   updateHeroAlert();
   globalThis.__heroAlertHidden = !alert.classList.contains("show");
   const [a, b, c] = G.battle.player;
+  const critRing = unitGroups.get(a.id).userData.teamRing;
+  updateVisuals(0.4, 0.016);
+  globalThis.__critRingOff = critRing.material.color.getHex() === 0x67e8f9 && critRing.scale.x === 1;
   a.shield = 0;
   a.hp = a.maxHp * 0.2;
   updateHeroAlert();
+  updateVisuals(0.4, 0.016);
   globalThis.__heroAlertOne = alert.classList.contains("show") && count.textContent === "1";
+  globalThis.__critRingOn = critRing.material.color.getHex() === 0xff2d2d &&
+    critRing.material.opacity > 0.6 && critRing.scale.x > 1;
   a.shield = a.maxHp * 0.2;
+  updateVisuals(0.4, 0.016);
+  globalThis.__critRingShield = critRing.material.color.getHex() === 0x67e8f9 && critRing.scale.x === 1;
   b.shield = 0;
   b.hp = b.maxHp * 0.2;
   updateHeroAlert();
@@ -688,6 +696,15 @@ if (!vm.runInContext('globalThis.__heroAlertCount', ctx)) {
 }
 if (!vm.runInContext('globalThis.__heroAlertHideCheck', ctx)) {
   throw new Error('Kritische-Helden-Warnung verschwindet nicht außerhalb des Kampfes');
+}
+if (!vm.runInContext('globalThis.__critRingOff', ctx)) {
+  throw new Error('Bodenring gesunder Helden ist nicht normal');
+}
+if (!vm.runInContext('globalThis.__critRingOn', ctx)) {
+  throw new Error('Kritischer Held bekommt keinen pulsierenden roten Bodenring im 3D');
+}
+if (!vm.runInContext('globalThis.__critRingShield', ctx)) {
+  throw new Error('Bodenring ignoriert den Schild eines kritischen Helden');
 }
 
 vm.runInContext(`
@@ -1341,4 +1358,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+kritischer-bodenring+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);
