@@ -14,14 +14,14 @@ Letztes Update: 2026-11-24
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
 - Kamera: Rad/2-Finger zoomt, Ziehen (Maus oder ein Finger) bewegt das Feld frei; Auto-Follow auf das gewählte Wesen. ⌖ / Doppelklick / `0` setzt Zoom und Position zurück.
-- Version **1.00.2**, Build **1002**; APK `/root/projects/FABELBATTLER/1.00.2.apk` (CI 45436971464). APK-Name nur `<VERSION>.apk` ohne `v`/`-b`. Signatur fest über `app/debug.p12`.
-- Letztes geprüftes APK: `/root/projects/FABELBATTLER/1.00.2.apk` (aapt: versionCode 1002, versionName 1.00.2).
+- Version **1.00.3**, Build **1003**; APK `/root/projects/FABELBATTLER/1.00.3.apk` (CI 45438758594). APK-Name nur `<VERSION>.apk` ohne `v`/`-b`. Signatur fest über `app/debug.p12`.
+- Letztes geprüftes APK: `/root/projects/FABELBATTLER/1.00.3.apk` (aapt: versionCode 1003, versionName 1.00.3, SHA-256 6520c015d75fb684…e).
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`. `check_runtime.js` prüft seit v1.74 zusätzlich pro Tick, dass Simulation keine Effekte/Partikel/Schockwellen/Toasts erzeugt (inkl. Gegenprobe des Toast-Zählers).
-- Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
+- `CORE_UNITS = ["bigfoot","chupacabra","fee"]` bleibt als Empfehlung (Tank/DPS/Heiler); der Startteam wird jetzt frei gewählt, erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
 - Mob-Tiere: `elite` alle 5 Wellen (3,5× HP, 2,2× ATK), `boss` alle 10 Wellen (12× HP, 3,5× ATK, je Seite 1). Bonus-Gold +2 pro Elite, +15 pro Boss.
 - Animationen: `poseCharacter()` für Idle/Lauf/Angriff/Treffer/Tod bei allen Einheiten, `attackPulse()` normalisiert die Angriffs-Dauer; Mobs mit Impuls bei Angriff. Kein Engine- oder Sprachwechsel (User: „alles so lassen wie es ist").
-- Inhalt: **113 Einheiten, 10 Klassen, 7 Rassen, 51 Zauber**; davon 18 gegner-exklusive zivile Wesen/Fahrzeuge.
+- Inhalt: **123 Einheiten, 10 Klassen, 7 Rassen, 51 Zauber**; davon 18 gegner-exklusive zivile Wesen/Fahrzeuge.
 - Rassen: Folklore, Kaiju, Fee, Zwerg, **Kryptozoologie**, Assassine, Alien. Barbar-Rasse wurde entfernt.
 - Kryptiden-Pack mit 12 Wesen; neue Fähigkeiten `schrecken` (Schreckensblick) und `schwarmruf` (Team-Buff).
 - Team-Buffs skalieren nach Anzahl: ein Stack pro weiterem Wesen mit gleicher Klasse/Rasse (max. 4) sowie +4 % HP/ATK pro zusätzlichem Duden ab dem dritten.
@@ -56,7 +56,7 @@ Letztes Update: 2026-11-24
 - Elite- und Boss-Mobs zeigen seit v1.45 Trefferzahlen, Partikel und Schockwellen im 3D-Feld (`hasDamageFx()`); die normalen Schwarm-Mobs bleiben zugunsten der Performance effektfrei.
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - Toasts erscheinen seit v1.45 im Kampfmodus oben statt unten (`body.battle-mode .toasts`): Die Kampfleiste mit Timer, Status, Fokus, Mana und Boss-Balken wird dadurch nicht mehr von Wellen-, Tod- und Sieges-Meldungen verdeckt; Toasts sind dort zusätzlich klick-transparent.
-- GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
+- GitHub-Issue #1 ist der Fortschrittskanal für den 10-Minuten-Hintergrund-Agenten.
 - Kamera (v1.00.2): Der ⌖-Button zeigt jetzt „⌖ Folgen" bzw. „⌖ Frei" samt farbiger Markierung an. Ziehen schaltet das Auto-Follow stillschweigend ab; der Modus ist damit direkt ablesbar, und der Button erklärt den Reset per ⌖/Doppelklick/0. `check_data.py` und `check_runtime.js` prüfen beide Zustände.
 - UI (v1.75): Gegner-Stärkebalken zeigt neben Prozent auch absolute Rest-HP inkl. Schild (`enemyHpValue`, `shortHp()`); ab 1000 kompakt als k, außerhalb des Kampfes 0/0. Damit ist der Schadensfortschritt auch beim 500er-Schwarm ablesbar; `check_data.py` und `check_runtime.js` prüfen die Werte.
 - UI (v1.74): Kampfleiste und Toasts halbtransparent mit Blur, schmalere Buttons/Balken – mehr freies Schlachtfeld.
@@ -76,3 +76,6 @@ Letztes Update: 2026-11-24
 
 - Autonomer 10-Minuten-Loop bis **1.20.0**: `scripts/auto-improve.sh` (600 s) + `scripts/auto-integrate.sh` (automatischer PR-Merge), Versionsschritt via `scripts/bump_version.py`. User-Anleitung: `Patch.txt`. Stopp/Start in `docs/AUTO_IMPROVE.txt`.
 - Kampf-Feedback (v1.00.1): `battleEndFx()` zeigt Sieg/Niederlage im 3D-Feld (PR #158); `check_data.py`/`check_runtime.js` sichern beide Pfade.
+- Karte: **18×14 Felder** (vorher 8×6, gut fünfmal so groß); `MAP_SPEED = 2.2` hält den Kampf tempo. Die Kamera pannt über das ganze Feld.
+- Wesen-Grafiken: `drawPortraitCanvas()` zeichnet lokal Porträts mit Mustern aus nordischer, japanischer, arabischer, keltischer, slawischer, afrikanischer, griechischer, aztekischer, ägyptischer und indischer Volkskunde. Zehn neue Wesen (Kappa, Baba Jaga, Anansi, Quetzalcoatl, Ammit, Tengu, Selkie, Yama, Oni, Mami Wata).
+- Start und Runden: `beginRun()` öffnet sofort den Draft (3 Wesen zum Start, 2 Gold each); nach jedem Sieg wächst `G.teamSize` um 1 (bis 10) und der Draft öffnet automatisch. Reroll kostet **2 → 3 → 4 Gold** (danach 4), zurückgesetzt nach Pick oder neuem Draft.

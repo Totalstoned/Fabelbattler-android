@@ -348,3 +348,11 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Der Tooltip erklärt im freien Modus den Reset per ⌖/Doppelklick/0.
   *Erledigt:* `check_data.py` prüft die Tokens, `check_runtime.js` prüft die
   Anzeige nach Pan und Reset; alle drei Checks grün.
+
+- [x] **43. Grosse Karte, Wesen-Grafiken und Startauswahl** (v1.00.3-b1003)
+  `GRID` 18×14 mit `MAP_SPEED = 2.2`; Porträts aus zehn Kulturmotiven lokal
+  gezeichnet und im Draft sowie über den Einheiten angezeigt. Zehn neue Wesen
+  (Kappa, Baba Jaga, Anansi, Quetzalcoatl, Ammit, Tengu, Selkie, Yama, Oni,
+  Mami Wata). `beginRun()` öffnet den Start-Draft, jeder Sieg erhöht die
+  Teamgröße um 1 (bis 10), Reroll kostet 2 → 3 → 4 Gold.
+  *Erledigt:* 123 Einheiten, alle Checks in beiden Kopien grün, CI 45438758594.

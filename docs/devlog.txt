@@ -5,6 +5,28 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-24 17:15  v1.00.3-b1003  (grosse Karte, Grafiken, Startauswahl)
+  - User: "mach die map viel größer und benutze Grafiken für die Monster und
+    Märchengestalten von überall"; Units am Start wählen; pro Runde 1 Einheit
+    dazu; Reroll 2 Gold, dann 3, dann 4.
+  - Karte 8x6 -> 18x14 Felder (253 Steinplatten), MAP_SPEED 2.2 für Helden
+    und Mobs, Default-Zoom 14.5, Pan-Grenzen und Eckringe mitgezogen.
+    check_runtime.js: Begegnung 0.96 Felder, 4 Siege in 2547 Ticks.
+  - Porträts: ORIGIN_META/ORIGIN_BY_KEY/drawPortraitCanvas() zeichnen pro
+    Wesen eine lokale Grafik mit Kulturmuster und Typ-Silhouette; Porträt im
+    Draft und als Sprite über jeder Einheit. Keine externen Bilddateien.
+  - Zehn neue Wesen aus aller Welt: kappa, babajaga, anansi, quetzalcoatl,
+    ammit, tengu, selkie, yama, oni, mamiwata (113 -> 123 Einheiten).
+    check_data.py und check_runtime.js mitgezogen; MONSTER_STYLE ergänzt.
+  - beginRun() startet im Draft (3 Wesen, 20 Gold), Sieg erhöht teamSize um 1
+    (bis 10) und öffnet den Draft; rerollCost() = min(2+Zähler,4), Reset
+    nach Pick/Draft. Alle Tests auf beginRun() umgestellt (__beginTestRun).
+  - CI 45438758594 gruen, APK /root/projects/FABELBATTLER/1.00.3.apk
+    SHA-256 6520c015d75fb684582a504d16bef02750ba38e5a6344ba0f688de7d4db6e19c, aapt versionCode 1003 / versionName 1.00.3.
+  - Externe Quelle /root/fabelbattler/index3d.html synchron; alle drei
+    Checks in beiden Kopien gruen.
+
+
 2026-11-24 16:35  v1.00.1-b1001  (autonomer 10-Minuten-Loop)
   - User: "beschreibe die agents/devlog/alles so, dass wirklich alle 10
     Minuten an der App gearbeitet wird", "selbstständig bis 1.20.0",

@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.00.2-b1002
+Aktuelle Version: v1.00.3-b1003
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -36,7 +36,7 @@ kein Build-Step fuer die Spiellogik. Android-Wrapper in Kotlin (MainActivity.kt)
 WebView laedt file:///android_asset/index3d.html. Kein Godot/Unity aktiv.
 UE5-Datenexport und C++-Geruest sind nur vorbereitet (docs/UNREAL_NOTES.md).
 
-Inhalt aktuell (v1.17): 95 Einheiten, 10 Klassen, 7 Rassen, 50 Zauber.
+Inhalt aktuell (v1.00.3): 123 Einheiten, 10 Klassen, 7 Rassen, 51 Zauber.
 Rassen: Folklore, Kaiju, Fee, Zwerg, Kryptozoologie, Assassine, Alien.
 Die Barbar-Rasse wurde in v1.15 durch Kryptozoologie ersetzt.
 
@@ -655,3 +655,16 @@ sondern mit den uebrigen Loop-PRs zusammen in v1.55-b56 integriert.]
   - CI 45436971464 gruen; APK /root/projects/FABELBATTLER/1.00.2.apk
     SHA-256 6d1d8d4b769b2bdfdbf87874392d4a05cb768e15855d6a621f7401536576abfc
     SHA-256 8403861dc36a12a7c579d17fdb019042852a7194af5112243e536ee926acf348
+
+2026-11-24 17:15 UTC – v1.00.3-b1003 (grosse Karte, Grafiken, Startauswahl):
+  - User will eine viel groessere Karte, Grafiken fuer Monster und
+    Maerchengestalten "von ueberall", Startauswahl, +1 Einheit pro Runde
+    und Reroll 2/3/4 Gold.
+  - Karte 18x14 (253 Platten), MAP_SPEED 2.2; lokal gezeichnete gezeichnete
+    Wesen-Grafiken mit Kulturmustern (10 Kulturen) und 10 neue Wesen.
+  - beginRun() = Draft am Start; teamSize waechst nach Sieg um 1 (max 10);
+    rerollCost() 2 -> 3 -> 4 Gold, Reset nach Pick oder neuem Draft.
+  - check_data.py (123 Einheiten) und check_runtime.js (Start-Draft, Wachstum,
+    Reroll-Preise, Portraits, grosse Karte) angepasst; alle Checks gruen.
+  - CI 45438758594 gruen; APK /root/projects/FABELBATTLER/1.00.3.apk
+    SHA-256 6520c015d75fb684582a504d16bef02750ba38e5a6344ba0f688de7d4db6e19c

@@ -51,9 +51,29 @@ Schritt 4: Alle alten APKs aus dem Ordner wurden beim Umstellungspunkt
            entfernt; seitdem sammeln sich die Versionen wieder an.
 
 ------------------------------------------------------------
+4b. Was ist neu in 1.00.3?
+------------------------------------------------------------
+Schritt 1: Das Schlachtfeld ist viel größer: 18×14 statt 8×6 Felder.
+           Die Wesen laufen schneller, damit ein Kampf nicht ewig dauert.
+Schritt 2: Alle Wesen haben jetzt eigene Bilder. Die Bilder werden direkt
+           auf dem Gerät gezeichnet und zeigen Muster aus aller Welt:
+           nordisch, japanisch, arabisch, keltisch, slawisch, afrikanisch,
+           griechisch, aztekisch, ägyptisch und indisch.
+Schritt 3: Zehn neue Gestalten sind dabei: Kappa, Baba Jaga, Anansi,
+           Quetzalcoatl, Ammit, Tengu, Selkie, Yama, Oni und Mami Wata.
+Schritt 4: Du wählst am Anfang selbst drei Wesen aus – es gibt kein
+           festes Startteam mehr.
+Schritt 5: Nach jeder gewonnenen Runde darf ein weiteres Wesen dazu kommen
+           (bis zu zehn). Das Gegnerteam wächst genauso.
+Schritt 6: Gefällt dir die Auswahl nicht, klicke auf „Reroll". Der erste
+           Reroll kostet 2 Gold, der nächste 3, dann 4 – danach bleibt es
+           bei 4, bis du ein Wesen wählst oder eine neue Runde beginnt.
+
+------------------------------------------------------------
 5. Wie spiele ich?
 ------------------------------------------------------------
-Schritt 1: Die App startet mit dem festen Team Bigfoot, Chupacabra und Fee.
+Schritt 1: Die App startet mit dem Draft: Wähle drei Wesen (Bigfoot,
+           Chupacabra und Fee sind eine gute Empfehlung).
 Schritt 2: Tippe auf "Kampf starten", um die erste Welle zu beginnen.
 Schritt 3: Die Wesen laufen automatisch aufeinander zu und kämpfen.
 Schritt 4: Unten in der Kampfleiste siehst du Zeit, Gold, Gegnerzahl,
