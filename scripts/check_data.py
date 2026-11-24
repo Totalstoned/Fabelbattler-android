@@ -238,6 +238,9 @@ for token in ['function hasDamageFx', 'hasDamageFx(u)', 'u.isElite', 'u.isBoss']
 for token in ['function announceSpecialMobs', '  announceSpecialMobs();', 'pushEffect(m,m.isBoss ? "👑 Boss" : "✨ Elite",color)', 'if(specials.some(m => m.isBoss)) addShake(0.18)']:
     if token not in src:
         problems.append('Spawn-Ankündigung für Elite-/Boss-Mobs fehlt: ' + token)
+for token in ['function hpBarRatio', 'hpShown:clamp(u.hp/u.maxHp,0,1)', 'group.userData.hpShown = ratio', 'const ratio = hpBarRatio(u,group,dt)']:
+    if token not in src:
+        problems.append('Weich animierter 3D-Lebensbalken fehlt: ' + token)
 for token in ['function draftPickLevel', 'function draftPreviewStats', 'const previewLevel = draftPickLevel()', 'Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk}', 'const pickLevel = draftPickLevel()']:
     if token not in src:
         problems.append('Level-Vorschau im Draft fehlt: ' + token)
