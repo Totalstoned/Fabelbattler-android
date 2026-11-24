@@ -1,6 +1,6 @@
 # APP_DEV_STATE
 
-Letztes Update: 2026-11-23
+Letztes Update: 2026-11-24
 
 ## Engine / Sprache
 
@@ -13,7 +13,7 @@ Letztes Update: 2026-11-23
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.74**, Build **74**; APK folgt nach CI-Lauf (zuletzt heruntergeladen: `/root/projects/FABELBATTLER/fabelbattler-v1.73-b73.apk`). Signatur fest über `app/debug.p12`.
+- Version **1.75**, Build **75**; APK folgt nach CI-Lauf (zuletzt heruntergeladen: `/root/projects/FABELBATTLER/fabelbattler-v1.73-b73.apk`). Signatur fest über `app/debug.p12`.
 - Letztes geprüftes APK: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
@@ -56,6 +56,7 @@ Letztes Update: 2026-11-23
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - Toasts erscheinen seit v1.45 im Kampfmodus oben statt unten (`body.battle-mode .toasts`): Die Kampfleiste mit Timer, Status, Fokus, Mana und Boss-Balken wird dadurch nicht mehr von Wellen-, Tod- und Sieges-Meldungen verdeckt; Toasts sind dort zusätzlich klick-transparent.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
+- UI (v1.75): Gegner-Stärkebalken zeigt neben Prozent auch absolute Rest-HP inkl. Schild (`enemyHpValue`, `shortHp()`); ab 1000 kompakt als k, außerhalb des Kampfes 0/0. Damit ist der Schadensfortschritt auch beim 500er-Schwarm ablesbar; `check_data.py` und `check_runtime.js` prüfen die Werte.
 - UI (v1.74): Kampfleiste und Toasts halbtransparent mit Blur, schmalere Buttons/Balken – mehr freies Schlachtfeld.
 - Grafik (v1.73): Steinboden als 220x220-Ebene mit 36x wiederholter Textur, Fog/Hintergrund auf Steinton – der Boden deckt den ganzen Bildschirm ab.
 - Grafik (v1.72): prozedurale Steintexturen auf allen 48 Kacheln, sichtbare Plattenkante und warmes Key-Licht; keine Trennlinie.
