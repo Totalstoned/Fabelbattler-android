@@ -36,9 +36,9 @@ Ziel: eigenständige Entwicklung von 1.00.1 bis 1.20.0 ohne Rückfrage.
      Nach Aufladen läuft der Cron ohne weitere Aenderung.
 
 AKTUELLER STAND
-   - App v1.00.4 (PR #160 Union). CI laeuft.
+   - App v1.00.4 (PR #160 Union). CI 45439824099 gruen.
    - APK: /root/projects/FABELBATTLER/1.00.4.apk
-     SHA-256 wird nach CI gesetzt
+     SHA-256 941a21707d129ca2fccc6d497c06ee5c3440ef7146e61bbdf669b4d4eb75724e
    - APK-Name ohne Präfix/Suffix: <VERSION>.apk (1.00.0 ... 1.00.3).
      beim Reset entfernt; 1.00.0.apk und 1.00.1.apk liegen wieder im Ordner.
    - PRs #134-#158 sind integriert bzw. manuell uebernommen; der Loop

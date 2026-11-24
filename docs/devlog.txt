@@ -16,6 +16,8 @@ Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
     scheiterte der Integrations-Fetch an fehlendem SSH-Key.
   - Kampf-Logik unverändert: 123 Einheiten, 18x14 Karte, Start-Draft,
     Teamwachstum, Reroll 2/3/4. Alle Checks in beiden Kopien gruen.
+  - CI 45439824099 gruen; APK /root/projects/FABELBATTLER/1.00.4.apk
+    SHA-256 941a21707d129ca2fccc6d497c06ee5c3440ef7146e61bbdf669b4d4eb75724e, aapt versionCode 1004 / versionName 1.00.4.
 
 2026-11-24 16:38  v1.00.3-b1003  (grosse Karte, Grafiken, Startauswahl)
   - User: "mach die map viel größer und benutze Grafiken für die Monster und

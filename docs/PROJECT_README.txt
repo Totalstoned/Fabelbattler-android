@@ -680,3 +680,5 @@ sondern mit den uebrigen Loop-PRs zusammen in v1.55-b56 integriert.]
     scheiterte der Integrations-Fetch an fehlendem SSH-Key.
   - Kampf-Logik unverändert: 123 Einheiten, 18x14 Karte, Start-Draft,
     Teamwachstum, Reroll 2/3/4. Alle Checks in beiden Kopien gruen.
+  - CI 45439824099 gruen; APK /root/projects/FABELBATTLER/1.00.4.apk
+    SHA-256 941a21707d129ca2fccc6d497c06ee5c3440ef7146e61bbdf669b4d4eb75724e, aapt versionCode 1004 / versionName 1.00.4.

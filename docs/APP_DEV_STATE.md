@@ -14,8 +14,8 @@ Letztes Update: 2026-11-24
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
 - Kamera: Rad/2-Finger zoomt, Ziehen (Maus oder ein Finger) bewegt das Feld frei; Auto-Follow auf das gewählte Wesen. ⌖ / Doppelklick / `0` setzt Zoom und Position zurück.
-- Version **1.00.4**, Build **1004**; APK `/root/projects/FABELBATTLER/1.00.4.apk`. APK-Name nur `<VERSION>.apk` ohne `v`/`-b`. Signatur fest über `app/debug.p12`.
-- Letztes geprüftes APK: `/root/projects/FABELBATTLER/1.00.3.apk` (aapt: versionCode 1003, versionName 1.00.3, SHA-256 6520c015d75fb684…e).
+- Version **1.00.4**, Build **1004**; APK `/root/projects/FABELBATTLER/1.00.4.apk` (CI 45439824099). APK-Name nur `<VERSION>.apk` ohne `v`/`-b`. Signatur fest über `app/debug.p12`.
+- Letztes geprüftes APK: `/root/projects/FABELBATTLER/1.00.4.apk` (aapt: versionCode 1004, versionName 1.00.4, SHA-256 941a21707d129ca2…7).
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`. `check_runtime.js` prüft seit v1.74 zusätzlich pro Tick, dass Simulation keine Effekte/Partikel/Schockwellen/Toasts erzeugt (inkl. Gegenprobe des Toast-Zählers).
 - `CORE_UNITS = ["bigfoot","chupacabra","fee"]` bleibt als Empfehlung (Tank/DPS/Heiler); der Startteam wird jetzt frei gewählt, erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
