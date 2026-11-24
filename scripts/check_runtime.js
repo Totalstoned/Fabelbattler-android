@@ -1732,6 +1732,40 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
+// Der Support-Cooldown verhindert, dass Schild-/Heil-Unterstützung bei jedem
+// Zyklus erneut zuschlägt (v1.54: sonst endeten Kämpfe nicht mehr).
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  const support = createUnit("fee", 1, "player");
+  const ally = createUnit("fee", 1, "player");
+  support.modsEffective = {shieldPct: 0.25};
+  ally.hp = ally.maxHp * 0.5;
+  ally.shield = 0;
+  const supportBattle = {player: [support, ally], enemies: [], playerMobs: [], enemyMobs: []};
+  support.supportCd = 0;
+  const firstSupport = supportAction(support, supportBattle, 0.016);
+  const shieldAfterFirst = ally.shield;
+  const blockedSupport = supportAction(support, supportBattle, 0.016);
+  globalThis.__supportCdOnce = firstSupport === true && shieldAfterFirst > 0 &&
+    blockedSupport === false && ally.shield === shieldAfterFirst && support.supportCd === 4;
+  support.supportCd = 0;
+  const secondSupport = supportAction(support, supportBattle, 0.016);
+  globalThis.__supportCdReset = secondSupport === true && ally.shield > shieldAfterFirst &&
+    support.supportCd === 4;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__supportCdOnce', 'Support-Cooldown blockiert wiederholte Schilde nicht (Endlosskampf-Gefahr)'],
+  ['__supportCdReset', 'Support-Unterstützung ist nach Ablauf des Cooldowns nicht wieder verfügbar'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
 vm.runInContext(`
   SIM.headless = false;
   toastLog = [];
