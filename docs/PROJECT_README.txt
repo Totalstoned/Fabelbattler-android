@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-23
-Aktuelle Version: v1.72-b72
+Stand: 2026-11-24
+Aktuelle Version: v1.73-b73
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,14 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.73-b73 2026-11-24  (Zielmarkierung im 3D-Feld)
+   - Die Fokus-Anzeige nennt das Ziel des fokussierten Helden, im 3D-Feld war
+     jedoch nicht sichtbar, wen er angreift. Ein gemeinsamer pulsierender
+     Gold-Ring (targetRing) markiert jetzt dessen Position, skaliert mit der
+     Groesse von Elite-/Boss-Mobs und verschwindet bei totem oder fehlendem Ziel.
+   - check_runtime.js prueft Position, Sichtbarkeit und Ausblenden; alle drei
+     Checks gruen.
 
 v1.72-b72 2026-11-24  (Realistischer Steinboden)
    - User-Wunsch: "grafisch jetzt viel realistischer". Der bisher glatte
