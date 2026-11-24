@@ -5,7 +5,7 @@ Leichte Three.js-WebView-App mit prozeduralen Creature-Formen und Emojis. Keine 
 ## Aufbau
 
 - Aktive App: `app/src/main/assets/index3d.html`
-- Externe Quelle (Source of Truth): `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei kopieren
+- Externe Quelle (Source of Truth): `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei kopieren; beide Kopien müssen per `sha256sum` byte-identisch sein
 - WebView lädt `file:///android_asset/index3d.html`
 - Version kommt aus `gradle.properties`: `APP_VERSION_CODE` und `APP_VERSION_NAME`
 
@@ -22,7 +22,7 @@ node scripts/check_runtime.js app/src/main/assets/index3d.html
 
 `simulateBattle(dt)` nutzt `SIM.headless`, um Kämpfe ohne Effekte, HUD oder Three.js zu simulieren; der Renderloop verwendet weiterhin `updateBattle`/`updateVisuals`.
 
-Die GitHub Action `.github/workflows/build-apk.yml` baut die APK und benennt sie `fabelbattler-v<name>-b<code>.apk`. `scripts/download-apk.sh <run-id>` lädt nur neue Versionen nach `/root/projects/FABELBATTLER/`.
+Die GitHub Action `.github/workflows/build-apk.yml` baut die APK und benennt sie ausschließlich `<VERSION>.apk` (z. B. `1.00.4.apk`, ohne `v`-Präfix und `-b<code>`-Suffix). `scripts/download-apk.sh <run-id>` lädt nur neue Versionen nach `/root/projects/FABELBATTLER/`.
 
 Für Balancing und gezielte Gegner-Szenarien gibt es `scripts/game_harness.js` (headless, ohne Gerät/WebGL):
 
@@ -31,7 +31,7 @@ node scripts/game_harness.js --enemies oma,feuerwehr,teddy --wave 3 --ticks 1800
 node scripts/game_harness.js --team bigfoot,fee --no-mobs --seed 7 --json
 ```
 
-Optionen: `--team`, `--enemies`, `--wave`, `--level`, `--ticks`, `--runs` (Bilanz mit Siegquote über aufeinanderfolgende Seeds), `--no-mobs`, `--seed`, `--html`, `--json`. Die gegner-exklusiven Wesen sind `oma`, `feuerwehr`, `teddy`; ohne `--enemies` wählt das Spiel wie gewohnt zufällig. Der Harness nutzt dieselben DOM-/WebGL-Stubs wie `check_runtime.js` und lässt sich per `require('./scripts/game_harness')` auch aus anderen Skripten aufrufen.
+Optionen: `--team`, `--enemies`, `--wave`, `--level`, `--ticks`, `--runs` (Bilanz mit Siegquote über aufeinanderfolgende Seeds), `--no-mobs`, `--seed`, `--html`, `--json`. Die 18 gegner-exklusiven Wesen sind `oma`, `opa`, `feuerwehr`, `kampftruppe`, `soldat`, `missionar`, `sanitaeter`, `rebelle`, `armee`, `bundeswehr`, `soeldner`, `teddy`, `feuerwehrwagen`, `krankenwagen`, `panzer`, `hubschrauber`, `kampfflugzeug`, `drohne`; ohne `--enemies` wählt das Spiel wie gewohnt zufällig. Der Harness nutzt dieselben DOM-/WebGL-Stubs wie `check_runtime.js` und lässt sich per `require('./scripts/game_harness')` auch aus anderen Skripten aufrufen.
 
 ## Bedienung
 
@@ -39,7 +39,7 @@ Optionen: `--team`, `--enemies`, `--wave`, `--level`, `--ticks`, `--runs` (Bilan
 - `◀` / `▶` in der Kampfleiste wechselt den Fokus; die Anzeige nennt das aktive Wesen
 - Mausrad oder Zwei-Finger-Zoom, Doppelklick oder `0` setzt die Ansicht zurück
 - Kampf: Auswahl, nächste Welle, Heilregen, Blitz, Fähigkeit, Vollbild aus
-- Draft: drei verschiedene Karten, Rollen-/Klassenfilter und Synergie-Hinweis, `Reroll 1 Gold`, Auswahl kostet 2 Gold pro Wesen
+- Draft: drei verschiedene Karten, Rollen-/Klassenfilter und Synergie-Hinweis, Auswahl kostet 2 Gold pro Wesen; Reroll kostet 2, dann 3, dann 4 Gold (danach 4). Runde 1 startet mit der Wahl von 3 Wesen; nach jedem Sieg kommt 1 Wesen dazu (bis 10).
 - Verbrauchsitems: Heiltrank (35 % HP für den schwächsten Helden), Schutzrune (25 % Schild für alle), Blitzsplitter (30 % Schaden + Stun). Start 2/1/1, Nachschub nach Wellensieg; HUD-Pill und Kampfleisten-Buttons zeigen den Bestand
 - Kampfzeit läuft in Sekunden (Kampfleiste und HUD)
 - App startet immer im Querformat und immersive Fullscreen-Modus
@@ -51,7 +51,7 @@ Optionen: `--team`, `--enemies`, `--wave`, `--level`, `--ticks`, `--runs` (Bilan
 
 ## Automatisierung
 
-- `.github/workflows/autonomous-app.yml` läuft stündlich und kommentiert den Fortschritt in Issue #1
+- `.github/workflows/autonomous-app.yml` läuft alle 10 Minuten (`*/10 * * * *`) und kommentiert den Fortschritt in Issue #1; zusätzlich läuft lokal `scripts/auto-improve.sh` mit `INTERVAL=600` und integriert CLEAN-PRs per `scripts/auto-integrate.sh`
 - Der Agent braucht das GitHub Secret `OPENCODE_API_KEY`; ohne Key wird der Agentenschritt übersprungen
 - Issue #1 ist der Fortschrittskanal (`FABEL_PROGRESS_ISSUE=1`)
 

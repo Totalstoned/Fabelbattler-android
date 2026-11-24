@@ -52,7 +52,7 @@ run_iteration(){
   PROMPT=$(cat <<'EOF'
 Du arbeitest autonom an Fabelbattler. Lies zuerst docs/APP_DEV_STATE.md, docs/TASKS.md und docs/PROJECT_README.txt.
 
-Wähle GENAU EIN kleines, abgeschlossenes Ziel mit klarem Nutzen. Bevorzugt: Darstellung, Animation, Kampf-Feedback, UI-Klarheit, Balance, neue Einheiten/Zauber oder Testabdeckung. Du darfst kreativ sein und im Internet recherchieren (z. B. Mythen, Tiere, Kampfbilanz anderer Auto-Battler). Behalte den bestehenden Stack (Three.js, JavaScript, Kotlin-WebView) unverändert – keine Engine-, Sprach- oder Dependency-Wechsel, keine großen Umstrukturierungen. Neue Einheiten duerfen ergaenzt werden, aber die festen Invarianten in scripts/check_data.py und scripts/check_runtime.js (u. a. 113 Einheiten, 51 Zauber, 18 Gegner-Keys, MOB_CAP=500, CORE_UNITS, keine Barbar-Rasse) muessen entweder eingehalten oder in BEIDEN Checks bewusst mitgezogen werden.
+Wähle GENAU EIN kleines, abgeschlossenes Ziel mit klarem Nutzen. Bevorzugt: Darstellung, Animation, Kampf-Feedback, UI-Klarheit, Balance, neue Einheiten/Zauber oder Testabdeckung. Du darfst kreativ sein und im Internet recherchieren (z. B. Mythen, Tiere, Kampfbilanz anderer Auto-Battler). Behalte den bestehenden Stack (Three.js, JavaScript, Kotlin-WebView) unverändert – keine Engine-, Sprach- oder Dependency-Wechsel, keine großen Umstrukturierungen. Neue Einheiten duerfen ergaenzt werden, aber die festen Invarianten in scripts/check_data.py und scripts/check_runtime.js (u. a. 123 Einheiten, 51 Zauber, 18 Gegner-Keys, MOB_CAP=500, CORE_UNITS, keine Barbar-Rasse) muessen entweder eingehalten oder in BEIDEN Checks bewusst mitgezogen werden.
 
 Regeln:
 - Ändere nach Möglichkeit app/src/main/assets/index3d.html und bei Bedarf scripts/ oder docs/.

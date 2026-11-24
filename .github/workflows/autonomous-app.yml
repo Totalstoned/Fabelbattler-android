@@ -56,7 +56,7 @@ jobs:
 
             Aktueller Stand:
             - Aktive App ist die Three.js-WebView-Version in app/src/main/assets/index3d.html.
-            - 95 Einheiten, 10 Klassen, 7 Rassen (inkl. Kryptozoologie), 50 Zauber sind bereits enthalten.
+            - 123 Einheiten, 10 Klassen, 7 Rassen (inkl. Kryptozoologie), 51 Zauber sind bereits enthalten.
             - Team-Buffs skalieren nach Anzahl: gleiche Klassen/Rassen und die gesamte Duden-Zahl stärken das Team.
             - Grafik hat bereits Schatten, Glow, Partikel, HP-/Schildbalken und Kamera-Zoom.
             - UE5-Daten und C++-Gerüst liegen außerhalb dieses Repos nur als spätere Option.
