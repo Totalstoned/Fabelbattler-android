@@ -1267,8 +1267,11 @@ vm.runInContext(`
   showToast = function(msg){ winToasts.push(msg); };
   G.battle.time = 12.7;
   G.battle.player[0].isDead = true;
+  clearEffects();
+  const winFxBefore = G.shockwaves.length + G.particles.length;
   winBattle();
   showToast = origToast;
+  globalThis.__winEndFx = winFxBefore === 0 && G.shockwaves.length === 2 && G.particles.length === 2;
   const summary = winToasts.filter(t => t.indexOf("besiegt") >= 0);
   globalThis.__winToastSingle = summary.length === 1;
   globalThis.__winToastSummary = summary.length === 1 &&
@@ -1283,6 +1286,7 @@ vm.runInContext(`
 for (const [flag, message] of [
   ['__winToastSingle', 'Sieg erzeugt mehrere doppelte Sieges-Toasts'],
   ['__winToastSummary', 'Sieges-Toast zeigt nicht Gold, Kampfdauer und überlebende Helden'],
+  ['__winEndFx', 'Sieg zeigt keine Schockwelle und keine Partikel über den überlebenden Helden'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
@@ -1300,8 +1304,11 @@ vm.runInContext(`
   G.battle.player[0].isDead = true;
   G.battle.enemyMobs[0].isDead = true;
   const lossFoesLeft = sideUnits(G.battle, "enemy").filter(u => !u.isDead).length;
+  clearEffects();
+  const lossFxBefore = G.shockwaves.length + G.particles.length;
   loseBattle();
   showToast = origLossToast;
+  globalThis.__lossEndFx = lossFxBefore === 0 && G.shockwaves.length === 1 && G.particles.length === 1;
   const lossSummary = lossToastList.filter(t => t.indexOf("Niederlage") >= 0);
   globalThis.__lossToastSingle = lossSummary.length === 1 && lossToastList.length === 1;
   globalThis.__lossToastSummary = lossSummary.length === 1 &&
@@ -1316,6 +1323,7 @@ vm.runInContext(`
 for (const [flag, message] of [
   ['__lossToastSingle', 'Niederlage erzeugt mehrere oder keine Zusammenfassungs-Toasts'],
   ['__lossToastSummary', 'Niederlage-Toast zeigt nicht Dauer, überlebende Helden und verbleibende Gegner'],
+  ['__lossEndFx', 'Niederlage zeigt keine Schockwelle und keine Partikel am gefallenen Helden'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
@@ -1349,4 +1357,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast+niederlage-toast+kampfende-fx, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);

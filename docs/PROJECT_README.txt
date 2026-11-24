@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-23
-Aktuelle Version: v1.74-b74
+Stand: 2026-11-24
+Aktuelle Version: v1.75-b75
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,15 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.75-b75 2026-11-24  (Sichtbares Kampfende im Feld)
+   - Sieg und Niederlage hatten bisher nur einen Toast; im Schlachtfeld war das
+     Kampfende unsichtbar. battleEndFx() erzeugt jetzt goldene Schockwellen und
+     Partikel ueber den ueberlebenden Helden bzw. rote ueber den gefallenen.
+   - Die Helfer-Funktion nutzt die vorhandenen spawnShockwave/spawnBurst/addShake
+     und bleibt unter SIM.headless effektfrei (Headless-Simulation unveraendert).
+   - check_data.py prueft Funktion und beide Aufrufstellen; check_runtime.js
+     prueft Schockwellen/Partikel bei Sieg (2 Helden) und Niederlage (1 Held).
 
 v1.74-b74 2026-11-24  (Kompakte Kampf-UI)
    - User: "die ui muss angepasst werden" -> Option "weniger Overlay, mehr Feld".

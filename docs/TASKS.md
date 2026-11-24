@@ -2,6 +2,16 @@
 
 Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfolge.
 
+- [x] **40. Sichtbares Kampfende im 3D-Feld** (v1.75)
+  `battleEndFx()` erzeugt beim Sieg goldene Schockwellen und Partikel über den
+  überlebenden Helden, bei der Niederlage rote über den gefallenen Helden. Bisher
+  gab es nur den Zusammenfassungs-Toast; das Ende war im Schlachtfeld unsichtbar.
+  Die Helfer-Funktion respektiert `SIM.headless`, die Headless-Simulation bleibt
+  effektfrei.
+  *Erledigt:* `check_data.py` prüft Funktion und beide Aufrufstellen,
+  `check_runtime.js` prüft Schockwellen/Partikel bei Sieg (2 Helden) und
+  Niederlage (1 gefallener Held); alle drei Checks grün.
+
 - [x] **1. Kampf-Simulation entkoppeln** (v1.16)
   `simulateBattle(dt)` führt die Kampf-Logik mit `SIM.headless` aus; Effekte, Toasts, HUD, Teamliste, Synergien, Buttons und `syncUnits` werden dabei übersprungen. `updateBattle(dt)` und `updateVisuals(dt)` bleiben für den normalen Renderloop unverändert.
   *Erledigt:* `scripts/check_runtime.js` simuliert fünf Runden à maximal 600 Ticks und prüft, dass Sieg/Niederlage ausgelöst werden und der Headless-Modus danach zurückgesetzt ist.
