@@ -2354,6 +2354,8 @@ function healUnit(u,amount){
   if(real > 1){
     pushEffect(u,"+"+Math.round(real),"#4ade80");
     spawnBurst(u,"#4ade80",10,0.7);
+    // Der gruene Bodenring macht Heilung auch im dichten Schwarm sichtbar.
+    spawnShockwave(u,"#4ade80",0.55);
   }
   return real;
 }
@@ -2362,6 +2364,8 @@ function shieldUnit(u,amount){
   u.shield += amount;
   pushEffect(u,"+"+Math.round(amount)+" ⛨","#8fb5ff");
   spawnBurst(u,"#8fb5ff",9,0.6);
+  // Blauer Ring markiert den Empfaenger, damit Schilde nicht unbemerkt bleiben.
+  spawnShockwave(u,"#8fb5ff",0.5);
 }
 function useItem(kind){
   if(!G.items || !(G.items[kind] > 0) || !G.battle || G.phase !== "battle") return false;
