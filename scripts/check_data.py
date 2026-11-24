@@ -127,8 +127,8 @@ for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block(
     traits[key] = m.group(1) if m else None
 
 problems = []
-if len(roster) != 113:
-    problems.append('Einheiten: erwartet 113, gefunden ' + str(len(roster)))
+if len(roster) != 123:
+    problems.append('Einheiten: erwartet 123, gefunden ' + str(len(roster)))
 if len(spells) != 51:
     problems.append('Zauber: erwartet 51, gefunden ' + str(len(spells)))
 for key in ['oma', 'opa', 'feuerwehr', 'kampftruppe', 'soldat', 'missionar',
@@ -158,6 +158,27 @@ for key, role in core_roles.items():
 mob_cap = re.search(r'const MOB_CAP = (\d+);', src)
 if not mob_cap or int(mob_cap.group(1)) != 500:
     problems.append('MOB_CAP: erwartet 500')
+
+for token in ['const GRID = {cols:18,rows:14};', 'const MAP_SPEED = 2.2;',
+              '(0.4+u.spd*0.5)*MAP_SPEED*dt', 'const DEFAULT_VIEW = 14.5;']:
+    if token not in src:
+        problems.append('Grosse Karte fehlt: ' + token)
+for token in ['const ORIGIN_META = {', 'function unitOrigin(key)', 'function drawPortraitCanvas(key)',
+              'function portraitCanvas(key)', 'function portraitUrl(key)', 'function makePortraitSprite(key)',
+              'class="portrait"', 'makePortraitSprite(u.key)', 'ORIGIN_META[unitOrigin(key)].label']:
+    if token not in src:
+        problems.append('Wesen-Grafiken aus aller Welt fehlen: ' + token)
+for key in ['kappa','babajaga','anansi','quetzalcoatl','ammit','tengu','selkie','yama','oni','mamiwata']:
+    if key not in roster or key not in styles:
+        problems.append('Neues Wesen aus aller Welt fehlt: ' + key)
+for token in ['const START_TEAM_MIN = 3;', 'const TEAM_GROWTH_CAP = 10;',
+              'const REROLL_BASE = 2;', 'const REROLL_MAX = 4;', 'function rerollCost()',
+              'Math.min(REROLL_BASE+rerollCount,REROLL_MAX)', 'rerollCount = 0;',
+              'G.teamSize++', 'openDraft();', 'Reroll "+rerollCost()+" Gold']:
+    if token not in src:
+        problems.append('Startauswahl/Teamwachstum/Reroll 2-3-4 fehlt: ' + token)
+if 'Reroll 1 Gold' in src:
+    problems.append('Alter Reroll-Preis (1 Gold) ist noch im UI vorhanden')
 for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'updateMobVisuals', 'hudMobs', 'mdReroll', 'rerollDraft', 'slice(0,3)', 'mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'draftFilterRole', 'draftSynergyText', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'function useItem', 'ELITE_EVERY', 'BOSS_EVERY', 'MOB_TIERS', 'mobTierFor', 'isBoss', 'isElite', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'function updateBattleStatus']:
     if token not in src:
         problems.append('Mob-System fehlt: ' + token)

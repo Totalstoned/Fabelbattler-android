@@ -32,10 +32,14 @@ function makeElement() {
       font: '', textAlign: '', textBaseline: '', lineWidth: 0,
       strokeStyle: '', fillStyle: '',
       strokeText() {}, fillText() {}, fillRect() {}, fill() {},
+      beginPath() {}, closePath() {}, moveTo() {}, lineTo() {},
+      ellipse() {}, arc() {}, rect() {}, strokeRect() {}, clearRect() {},
+      stroke() {}, save() {}, restore() {}, translate() {}, rotate() {}, scale() {},
       createRadialGradient: () => ({addColorStop() {}}),
       createLinearGradient: () => ({addColorStop() {}}),
     }),
     width: 720, height: 460, clientWidth: 720, clientHeight: 460,
+    toDataURL: () => 'data:image/png;base64,stub',
   };
 }
 
@@ -159,6 +163,15 @@ ctx.THREE.WebGLRenderer = function () {
 };
 vm.runInContext(gameJs, ctx, {filename: path.basename(htmlPath)});
 
+// Die App startet jetzt mit Draft; Tests brauchen weiterhin ein Startteam.
+vm.runInContext(`
+  globalThis.__beginTestRun = function(){
+    beginRun();
+    closeDraft();
+    G.team = CORE_UNITS.map(k => createUnit(k,1,"player"));
+  };
+`, ctx);
+
 vm.runInContext(`
   if (typeof startBattle !== 'function' || typeof simulateBattle !== 'function' || typeof updateVisuals !== 'function') {
     throw new Error('Game API missing');
@@ -209,7 +222,7 @@ vm.runInContext(`
         }
       }
     }
-    if (G.phase === "prep") globalThis.__simOutcomes.wins++;
+    if (G.phase === "prep" || G.phase === "draft") globalThis.__simOutcomes.wins++;
     else if (G.phase === "defeat") globalThis.__simOutcomes.losses++;
   }
   if (SIM.headless) throw new Error('simulateBattle() hat den Headless-Modus nicht zurückgesetzt');
@@ -322,14 +335,32 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  globalThis.__startDraftCheck = G.phase === "draft" && G.team.length === 0 &&
+    G.teamSize === 3 && G.gold === 20 && rerollCost() === 2;
+  G.team = CORE_UNITS.map(k => createUnit(k,1,"player"));
   globalThis.__coreCheck = G.teamSize === 3 && G.team.length === 3 &&
     G.team.map(u => u.key + ":" + u.role).join(",") === "bigfoot:TANK,chupacabra:DPS,fee:HEALER";
+  closeDraft();
   startBattle();
   globalThis.__coreBattleCheck = !!G.battle && G.battle.player.length === 3 && G.battle.enemies.length === 3;
+  globalThis.__bigMapCheck = GRID.cols === 18 && GRID.rows === 14 && MAP_SPEED >= 2;
+  globalThis.__portraitCheck = typeof portraitUrl === "function" &&
+    portraitUrl("bigfoot").indexOf("data:image/png") === 0 &&
+    typeof makePortraitSprite === "function" &&
+    ORIGIN_META[unitOrigin("kappa")].label === "Japanisch";
 `, ctx);
 
+if (!vm.runInContext('globalThis.__startDraftCheck', ctx)) {
+  throw new Error('Startauswahl: Runde beginnt ohne Team im Draft mit 20 Gold');
+}
 if (!vm.runInContext('globalThis.__coreCheck', ctx)) {
   throw new Error('Basis-Trio als Startteam fehlt oder hat falsche Rollen');
+}
+if (!vm.runInContext('globalThis.__bigMapCheck', ctx)) {
+  throw new Error('Schlachtfeld ist nicht vergroessert (18x14, MAP_SPEED)');
+}
+if (!vm.runInContext('globalThis.__portraitCheck', ctx)) {
+  throw new Error('Wesen-Grafiken aus aller Welt fehlen');
 }
 if (!vm.runInContext('globalThis.__coreBattleCheck', ctx)) {
   throw new Error('3-gegen-3-Kampf mit dem Basis-Trio startet nicht');
@@ -341,8 +372,13 @@ vm.runInContext(`
   const dk = draftKeys();
   globalThis.__draftCheck = dk.length === 3 && new Set(dk).size === 3;
   const goldBefore = G.gold;
-  const rolled = rerollDraft();
-  globalThis.__rerollCheck = rolled === true && G.gold === goldBefore - 1;
+  const costs = [rerollCost()];
+  rerollDraft(); costs.push(rerollCost());
+  rerollDraft(); costs.push(rerollCost());
+  rerollDraft(); costs.push(rerollCost());
+  rerollDraft(); costs.push(rerollCost());
+  globalThis.__rerollCheck = costs.join(",") === "2,3,4,4,4" &&
+    G.gold === goldBefore - 13;
   draftFilterRole = "HEALER";
   draftFilterClass = "ALL";
   draftOffer = [];
@@ -355,6 +391,15 @@ vm.runInContext(`
   draftFilterClass = "ALL";
   draftOffer = [];
   globalThis.__synergyTextCheck = typeof draftSynergyText === "function" && draftSynergyText().indexOf("Lücken:") === 0;
+  G.phase = "prep";
+  G.battle = null;
+  G.team = [createUnit("bigfoot",1,"player")];
+  G.teamSize = 3;
+  G.wave = 1;
+  const sizeBefore = G.teamSize;
+  winBattle();
+  globalThis.__growthCheck = G.teamSize === sizeBefore + 1 && G.wave === 2 &&
+    G.phase === "draft" && G.team.length < G.teamSize;
   globalThis.__foeOnlyCheck = Object.keys(ENEMY_ONLY).length === 18 &&
     Object.keys(ENEMY_ONLY).every(k => ROSTER[k] && ROSTER[k].ability === "biss" &&
       FOE_KEYS.includes(k) && !ALL_KEYS.includes(k));
@@ -381,7 +426,10 @@ if (!vm.runInContext('globalThis.__draftCheck', ctx)) {
   throw new Error('Draft liefert nicht genau drei verschiedene Karten');
 }
 if (!vm.runInContext('globalThis.__rerollCheck', ctx)) {
-  throw new Error('Draft-Reroll zieht nicht genau 1 Gold ab');
+  throw new Error('Draft-Reroll kostet nicht 2, dann 3, dann 4 (danach 4) Gold');
+}
+if (!vm.runInContext('globalThis.__growthCheck', ctx)) {
+  throw new Error('Team waechst nicht pro Runde um 1 Einheit');
 }
 if (!vm.runInContext('globalThis.__filterRoleCheck', ctx)) {
   throw new Error('Draft-Rollenfilter liefert falsche Karten');
@@ -428,7 +476,7 @@ if (!vm.runInContext('globalThis.__draftLevelReset', ctx)) {
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   globalThis.__itemsInitCheck = G.items.heal === 2 && G.items.shield === 1 && G.items.nova === 1;
   startBattle();
   G.battle.player.forEach(u => { u.hp = u.maxHp; u.shield = 0; });
@@ -498,7 +546,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   startBattle();
   const healBtn = document.getElementById("btnItemHeal");
   G.items.heal = 1;
@@ -564,7 +612,7 @@ vm.runInContext(`
   G.battle = null;
   G.teamSize = 3;
   G.team = ["bigfoot","chupacabra","fee"].map(k => createUnit(k,1,"player"));
-  beginRun();
+  __beginTestRun();
   G.wave = 40;
   startBattle();
   globalThis.__mobBattleCheck = G.battle.playerMobs.length === mobWaveSize(40,"player") &&
@@ -595,7 +643,7 @@ if (!vm.runInContext('globalThis.__mobAfterCheck', ctx)) {
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   G.wave = 10;
   startBattle();
   const em = G.battle.enemyMobs, pm = G.battle.playerMobs;
@@ -639,11 +687,11 @@ vm.runInContext(`
   const eliteCount = em.filter(m => m.isElite).length;
   winBattle();
   globalThis.__bossGoldCheck = G.gold > bossGoldBefore + 5 + 10*2 + eliteCount*2;
-  beginRun();
+  __beginTestRun();
   G.wave = 5;
   startBattle();
   globalThis.__eliteCheck = G.battle.enemyMobs.some(m => m.isElite) && !G.battle.enemyMobs.some(m => m.isBoss);
-  beginRun();
+  __beginTestRun();
   clearEffects();
   G.wave = 1;
   startBattle();
@@ -695,7 +743,7 @@ if (!vm.runInContext('globalThis.__noTierCheck', ctx)) {
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   G.wave = 1;
   startBattle();
   updateBattleStatus();
@@ -735,7 +783,7 @@ if (!vm.runInContext('globalThis.__statusHideCheck', ctx)) {
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   const killBar = document.getElementById("battleKills");
   const killValue = document.getElementById("battleKillsValue");
   updateBattleKills();
@@ -771,7 +819,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   G.wave = 1;
   startBattle();
   updateBattleStatus();
@@ -783,7 +831,7 @@ vm.runInContext(`
     document.getElementById("statusElitesPlayer").textContent === "0/0";
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   G.wave = 5;
   startBattle();
   const elites = G.battle.enemyMobs.filter(m => m.isElite);
@@ -837,7 +885,7 @@ if (!vm.runInContext('globalThis.__elitePlayerHide', ctx)) {
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   G.wave = 1;
   startBattle();
   const alert = document.getElementById("heroAlert");
@@ -902,7 +950,7 @@ if (!vm.runInContext('globalThis.__critRingShield', ctx)) {
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   G.wave = 1;
   startBattle();
   const heroes = G.battle.player;
@@ -962,7 +1010,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   const enemyHpBar = document.getElementById("enemyHpBar");
   const enemyHpFill = document.getElementById("enemyHpFill");
   const enemyHpPct = document.getElementById("enemyHpPct");
@@ -1030,7 +1078,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   const mana = document.getElementById("battleMana");
   const manaFill = document.getElementById("battleManaFill");
   const manaValue = document.getElementById("battleManaValue");
@@ -1084,7 +1132,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   startBattle();
   const nb = G.battle;
   nb.enemies.forEach(u => { u.isDead = true; });
@@ -1114,7 +1162,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   const goldBar = document.getElementById("battleGold");
   const goldValue = document.getElementById("battleGoldValue");
   const goldGain = document.getElementById("battleGoldGain");
@@ -1150,7 +1198,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   const dudesBar = document.getElementById("battleDudes");
   const dudesValue = document.getElementById("battleDudesValue");
   updateBattleDudes();
@@ -1187,7 +1235,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   startBattle();
   initMobMeshes();
   const m = G.battle.enemyMobs[0];
@@ -1225,7 +1273,7 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   clearEffects();
-  beginRun();
+  __beginTestRun();
   G.wave = 5;
   startBattle();
   const fxElite = G.battle.enemyMobs.find(m => m.isElite);
@@ -1302,7 +1350,7 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   clearEffects();
-  beginRun();
+  __beginTestRun();
   G.wave = 10;
   startBattle();
   const deathToasts = [];
@@ -1324,7 +1372,7 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   clearEffects();
-  beginRun();
+  __beginTestRun();
   cameraShake = 0;
   G.wave = 1;
   startBattle();
@@ -1333,7 +1381,7 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   clearEffects();
-  beginRun();
+  __beginTestRun();
   G.wave = 5;
   startBattle();
   const eliteSpecials = [...G.battle.playerMobs, ...G.battle.enemyMobs].filter(m => m.isElite || m.isBoss);
@@ -1343,7 +1391,7 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   clearEffects();
-  beginRun();
+  __beginTestRun();
   G.wave = 10;
   startBattle();
   const bossSpecials = [...G.battle.playerMobs, ...G.battle.enemyMobs].filter(m => m.isElite || m.isBoss);
@@ -1373,7 +1421,7 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   clearEffects();
-  beginRun();
+  __beginTestRun();
   startBattle();
   const sbBlocked = G.battle.player[0];
   const sbEffectsBefore = G.effects.length, sbParticlesBefore = G.particles.length;
@@ -1410,7 +1458,7 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   clearEffects();
-  beginRun();
+  __beginTestRun();
   startBattle();
   const dsUnit = G.battle.player[0];
   const lastScale = () => G.effects.length ? G.effects[G.effects.length-1].scale.x : 0;
@@ -1438,7 +1486,7 @@ if (!vm.runInContext('globalThis.__damageScaleCheck', ctx)) {
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   startBattle();
   const bar = document.getElementById("focusHp");
   const value = document.getElementById("focusHpValue");
@@ -1532,7 +1580,7 @@ vm.runInContext(`
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   startBattle();
   const targetHero = G.battle.player[0];
   const targetFoe = G.battle.enemies[0];
@@ -1602,7 +1650,7 @@ vm.runInContext(`
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   startBattle();
   const fa = G.battle.player[0];
   const fb = G.battle.player[1];
@@ -1616,7 +1664,7 @@ vm.runInContext(`
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   startBattle();
   const ringHero = G.battle.player[0];
   const ringFoe = G.battle.enemies[0];
@@ -1692,7 +1740,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   G.wave = 1;
   startBattle();
   const winToasts = [];
@@ -1727,7 +1775,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   G.wave = 1;
   startBattle();
   const lossToastList = [];
@@ -1764,7 +1812,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   startBattle();
   const focusToasts = [];
   const origFocusToast = showToast;
@@ -1794,7 +1842,7 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   clearEffects();
-  beginRun();
+  __beginTestRun();
   startBattle();
   const reviveToasts = [];
   const origReviveToast = showToast;
@@ -1849,7 +1897,7 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
-  beginRun();
+  __beginTestRun();
   startBattle();
   const support = createUnit("fee", 1, "player");
   const ally = createUnit("fee", 1, "player");
@@ -1903,7 +1951,7 @@ for (const [flag, message] of [
 }
 
 vm.runInContext(`
-  beginRun();
+  __beginTestRun();
   startBattle();
   const tapHero = G.battle.player[0];
   const tapFoe = G.battle.enemies[0];
@@ -1932,7 +1980,7 @@ for (const [flag, message] of [
 }
 
 vm.runInContext(`
-  beginRun();
+  __beginTestRun();
   startBattle();
   G.mana = 0;
   updateBattleManaBar();
@@ -2018,4 +2066,4 @@ if (!vm.runInContext('globalThis.__cameraModeButton', ctx)) {
   throw new Error('Kamera-Modus wird am Zoom-Button nicht angezeigt');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits)`);

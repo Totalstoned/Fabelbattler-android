@@ -71,6 +71,7 @@
   .cardpick:hover{border-color:var(--acc);}
   .cardpick .row1{display:flex;align-items:center;gap:8px;}
   .cardpick .em{font-size:24px;}
+  .cardpick .portrait{width:44px;height:44px;border-radius:8px;border:1px solid var(--line);flex:0 0 auto;}
   .cardpick .nm{font-weight:700;font-size:13px;}
   .cardpick .rl{font-size:10px;color:var(--dim);}
   .cardpick .stats{font-size:11px;color:var(--txt);margin-top:6px;}
@@ -259,7 +260,7 @@
     <div class="draft" id="mdDraft"></div>
     <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn ghost" id="mdBack">Zurück</button>
-      <button class="btn ghost" id="mdReroll">Reroll 1 Gold</button>
+      <button class="btn ghost" id="mdReroll">Reroll 2 Gold</button>
       <button class="btn" id="mdSkip">Kampf starten</button>
     </div>
   </div>
@@ -363,6 +364,16 @@ const ROSTER = {
   hubschrauber:{name:"Hubschrauber",emoji:"🚁",role:"DPS",cls:"Stahl",cls2:"Element",hp:90,atk:14,rng:70,spd:1.0,ability:"biss"},
   kampfflugzeug:{name:"Kampfflugzeug",emoji:"✈️",role:"DPS",cls:"Stahl",cls2:"Element",hp:85,atk:17,rng:70,spd:1.0,ability:"biss"},
   drohne:{name:"Drohne",emoji:"📡",role:"DPS",cls:"Stahl",cls2:"Element",hp:60,atk:10,rng:70,spd:1.1,ability:"biss"},
+  kappa:{name:"Kappa",emoji:"🐢",role:"TANK",cls:"Wald",cls2:"Mythos",hp:165,atk:12,rng:65,spd:0.85,ability:"wassersang",origin:"japanisch"},
+  babajaga:{name:"Baba Jaga",emoji:"🧙",role:"DPS",cls:"Magie",cls2:"Dunkel",hp:105,atk:17,rng:105,spd:0.95,ability:"traumzauber",origin:"slawisch"},
+  anansi:{name:"Anansi",emoji:"🕸️",role:"BUFFER",cls:"Chaos",cls2:"Mythos",hp:100,atk:11,rng:95,spd:1.15,ability:"schattenbiss",origin:"afrikanisch"},
+  quetzalcoatl:{name:"Quetzalcoatl",emoji:"🐍",role:"DPS",cls:"Mythos",cls2:"Element",hp:135,atk:19,rng:115,spd:0.9,ability:"gewitter",origin:"aztekisch"},
+  ammit:{name:"Ammit",emoji:"🦁",role:"TANK",cls:"Mythos",cls2:"Tier",hp:190,atk:15,rng:60,spd:0.75,ability:"zehrfluch",origin:"aegyptisch"},
+  tengu:{name:"Tengu",emoji:"🪶",role:"DPS",cls:"Mythos",cls2:"Wald",hp:95,atk:18,rng:110,spd:1.2,ability:"schwingen",origin:"japanisch"},
+  selkie:{name:"Selkie",emoji:"🦭",role:"HEALER",cls:"Magie",cls2:"Wald",hp:85,atk:8,rng:115,spd:1.05,ability:"wassersang",origin:"keltisch"},
+  yama:{name:"Yama",emoji:"⚖️",role:"TANK",cls:"Geist",cls2:"Dunkel",hp:200,atk:14,rng:80,spd:0.7,ability:"sensenstreich",origin:"indisch"},
+  oni:{name:"Oni",emoji:"👹",role:"DPS",cls:"Kaiju",cls2:"Dunkel",hp:175,atk:22,rng:70,spd:0.95,ability:"rissbiss",origin:"japanisch"},
+  mamiwata:{name:"Mami Wata",emoji:"🌊",role:"HEALER",cls:"Magie",cls2:"Element",hp:90,atk:9,rng:120,spd:1.0,ability:"feensegen",origin:"afrikanisch"},
   teddy:{name:"Teddy",emoji:"🧸",role:"DPS",cls:"Tier",cls2:"Wald",hp:95,atk:12,rng:52,spd:0.92,ability:"biss"}
 };
 const RACE_PACKS = {
@@ -690,6 +701,12 @@ const TOAST_MAX = 3;
 const TOAST_DEDUP_MS = 700;
 let toastLog = [];
 const CORE_UNITS = ["bigfoot","chupacabra","fee"];
+const START_TEAM_MIN = 3;
+const TEAM_GROWTH_CAP = 10;
+const REROLL_BASE = 2;
+const REROLL_MAX = 4;
+let rerollCount = 0;
+function rerollCost(){ return Math.min(REROLL_BASE+rerollCount,REROLL_MAX); }
 const MOB_CAP = 500;
 const MOB_ARCHETYPES = {
   kriecher:{name:"Kriecher",emoji:"🦠",hp:9,atk:2.2,spd:0.9,rng:40,color:0x8b5cf6,scale:0.42},
@@ -720,8 +737,9 @@ function mobWaveSize(wave,side){
   const bonus = side === "enemy" ? 1 : 0;
   return Math.min(MOB_CAP,Math.max(0,Math.round(raw)+bonus));
 }
-const GRID = {cols:8,rows:6};
+const GRID = {cols:18,rows:14};
 const TILE = 1.35;
+const MAP_SPEED = 2.2;
 let synergyLinks = [];
 let draftTimer = null;
 let draftReturnPhase = "prep";
@@ -753,7 +771,7 @@ const cameraDesired = new THREE.Vector3(0,0,0);
 let cameraShake = 0;
 camera.position.copy(CAMERA_OFFSET);
 camera.lookAt(0,0,0);
-const DEFAULT_VIEW = 11.6;
+const DEFAULT_VIEW = 14.5;
 let cameraView = DEFAULT_VIEW;
 let targetView = DEFAULT_VIEW;
 const cameraPan = new THREE.Vector3(0,0,0);
@@ -866,7 +884,7 @@ function resize(){
   camera.updateProjectionMatrix();
 }
 function zoomCamera(delta){
-  targetView = clamp(targetView+delta,7.2,17);
+  targetView = clamp(targetView+delta,7.2,34);
 }
 // Der Modus wechselt beim Ziehen stillschweigend; der Zoom-Button zeigt ihn jetzt
 // sichtbar an, damit klar ist, ob die Kamera dem Fokus folgt oder frei steht.
@@ -986,18 +1004,23 @@ function beginRun(){
   document.getElementById("menuOverlay").classList.remove("show");
   closeInfo();
   G.team = [];
-  G.teamSize = CORE_UNITS.length;
-  CORE_UNITS.forEach(key => G.team.push(createUnit(key,1,"player")));
+  G.teamSize = START_TEAM_MIN;
   G.wave = 1;
   G.gold = 20;
   G.mana = 30;
   G.items = {heal:2,shield:1,nova:1};
   G.battle = null;
   G.selectedUnitId = null;
+  rerollCount = 0;
   G.phase = "prep";
   setBattleMode(true);
   syncUnits();
   updateHud();
+  updateTeamList();
+  updateSynergies();
+  updateButtons();
+  openDraft();
+  showToast("Wähle "+START_TEAM_MIN+" Wesen – danach kommt pro Runde 1 dazu");
   updateTeamList();
   updateSynergies();
   updateButtons();
@@ -1017,7 +1040,7 @@ function buildArena(){
   // Kamera und weites Seitenverhaeltnis duerfen keinen dunklen Rand zeigen.
   const groundMap = stoneTexture('#242b34',true);
   groundMap.wrapS = groundMap.wrapT = THREE.RepeatWrapping;
-  groundMap.repeat.set(36,36);
+  groundMap.repeat.set(48,48);
   const base = new THREE.Mesh(
     new THREE.PlaneGeometry(220,220),
     new THREE.MeshStandardMaterial({map:groundMap,roughness:1})
@@ -1053,7 +1076,8 @@ function buildArena(){
   // durchgehende Flaeche, auf der sich beide Seiten frei begegnen koennen.
   const ringGeo = new THREE.RingGeometry(0.36,0.44,32);
   const ringMat = new THREE.MeshBasicMaterial({color:0x2b3442,transparent:true,opacity:0.8,side:THREE.DoubleSide});
-  [[-2.9,-2.7],[-2.9,2.7],[2.9,-2.7],[2.9,2.7]].forEach(pos => {
+  const cx = GRID.cols*TILE*0.34, cz = GRID.rows*TILE*0.34;
+  [[-cx,-cz],[-cx,cz],[cx,-cz],[cx,cz]].forEach(pos => {
     const ring = new THREE.Mesh(ringGeo,ringMat);
     ring.rotation.x = -Math.PI/2;
     ring.position.set(pos[0],0.018,pos[1]);
@@ -1096,6 +1120,109 @@ function makeTextSprite(text,color,scale){
   sprite.renderOrder = 20;
   return sprite;
 }
+
+// Prozedurale Wesen-Grafiken: jede Kultur bringt eigene Muster, Farben und
+// Silhouetten mit. Alles wird lokal auf einem Canvas gezeichnet – offline,
+// ohne externe Bilddateien und ohneempio-Rechte an fremden Assets.
+const ORIGIN_META = {
+  nordisch:{label:"Nordisch",bg:["#102c3b","#1d5566"],accent:"#9fe8ff",pattern:"runen"},
+  japanisch:{label:"Japanisch",bg:["#2a1424","#6b2438"],accent:"#ffd166",pattern:"sonne"},
+  arabisch:{label:"Arabisch",bg:["#1d2b3f","#4b4a7a"],accent:"#f2d98c",pattern:"stern"},
+  keltisch:{label:"Keltisch",bg:["#132b1c","#2c5d38"],accent:"#b7f08a",pattern:"knoten"},
+  slawisch:{label:"Slawisch",bg:["#20283b","#4b5c7d"],accent:"#bcd0e8",pattern:"frost"},
+  afrikanisch:{label:"Afrikanisch",bg:["#3b2316","#8a5223"],accent:"#ffd166",pattern:"sonne"},
+  griechisch:{label:"Griechisch",bg:["#1c2c3d","#3c6380"],accent:"#e6edf5",pattern:"saeule"},
+  aztekisch:{label:"Aztekisch",bg:["#2c1a16","#7a3a24"],accent:"#f2c14e",pattern:"treppe"},
+  aegyptisch:{label:"Ägyptisch",bg:["#332615","#8a6a2c"],accent:"#fde68a",pattern:"sonne"},
+  indisch:{label:"Indisch",bg:["#2d1b3d","#6b3f7a"],accent:"#ffb6e6",pattern:"lotus"},
+  suedamerikanisch:{label:"Südamerika",bg:["#16302a","#356b4f"],accent:"#9bffb1",pattern:"treppe"},
+  alien:{label:"Kosmisch",bg:["#101a30","#26386b"],accent:"#a5b4fc",pattern:"stern"}
+};
+const ORIGIN_BY_KEY = {
+  bigfoot:"nordisch", chupacabra:"suedamerikanisch", fee:"keltisch", kappa:"japanisch",
+  babajaga:"slawisch", anansi:"afrikanisch", quetzalcoatl:"aztekisch", ammit:"aegyptisch",
+  tengu:"japanisch", selkie:"keltisch", yama:"indisch", oni:"japanisch", mamiwata:"afrikanisch",
+  godzilla:"japanisch", mothra:"japanisch", kingkong:"afrikanisch", medusa:"griechisch",
+  hydra:"griechisch", dschinn:"arabisch", lilith:"arabisch", kraken:"nordisch",
+  yeti:"nordisch", nessie:"keltisch", lilith2:"griechisch", teddy:"keltisch"
+};
+function unitOrigin(key){
+  if(ORIGIN_BY_KEY[key]) return ORIGIN_BY_KEY[key];
+  const u = ROSTER[key];
+  if(!u) return "nordisch";
+  if(u.race === "Alien") return "alien";
+  if(u.cls === "Kaiju") return "japanisch";
+  if(u.cls === "Dunkel" || u.cls === "Geist") return "slawisch";
+  if(u.cls === "Magie") return "arabisch";
+  if(u.cls === "Wald") return "keltisch";
+  if(u.cls === "Mythos") return "griechisch";
+  if(u.cls === "Stahl") return "nordisch";
+  if(u.cls === "Element") return "indisch";
+  return "aztekisch";
+}
+function drawPortraitCanvas(key){
+  const canvas = document.createElement("canvas");
+  canvas.width = 128; canvas.height = 128;
+  const c = canvas.getContext("2d");
+  const meta = ORIGIN_META[unitOrigin(key)] || ORIGIN_META.nordisch;
+  const bg = c.createLinearGradient(0,0,128,128);
+  bg.addColorStop(0,meta.bg[0]); bg.addColorStop(1,meta.bg[1]);
+  c.fillStyle = bg; c.fillRect(0,0,128,128);
+  c.save();
+  c.globalAlpha = 0.25; c.strokeStyle = meta.accent; c.lineWidth = 2;
+  if(meta.pattern === "sonne"){
+    for(let i=0;i<16;i++){ const a=i*Math.PI/8; c.beginPath(); c.moveTo(64+Math.cos(a)*34,64+Math.sin(a)*34); c.lineTo(64+Math.cos(a)*60,64+Math.sin(a)*60); c.stroke(); }
+  } else if(meta.pattern === "stern"){
+    for(let i=0;i<8;i++){ c.beginPath(); c.moveTo(24+i*12,14); c.lineTo(30+i*12,28); c.lineTo(36+i*12,14); c.stroke(); }
+  } else if(meta.pattern === "frost"){
+    for(let i=0;i<6;i++){ c.beginPath(); c.moveTo(10+i*22,0); c.lineTo(22+i*22,128); c.stroke(); }
+  } else if(meta.pattern === "knoten"){
+    for(let i=0;i<5;i++){ c.beginPath(); c.arc(28+i*18,64,18,0,Math.PI*2); c.stroke(); }
+  } else if(meta.pattern === "treppe"){
+    for(let i=0;i<5;i++){ c.strokeRect(8+i*12,8+i*12,112-i*24,112-i*24); }
+  } else if(meta.pattern === "lotus"){
+    for(let i=0;i<8;i++){ const a=i*Math.PI/4; c.beginPath(); c.ellipse(64+Math.cos(a)*26,64+Math.sin(a)*26,12,5,a,0,Math.PI*2); c.stroke(); }
+  } else {
+    for(let i=0;i<8;i++){ c.strokeRect(18+i*12,22,4,84); }
+  }
+  c.restore();
+  const style = MONSTER_STYLE[key];
+  const col = style ? "#"+style.body.toString(16).padStart(6,"0") : "#cbd5e1";
+  const glow = style ? "#"+style.glow.toString(16).padStart(6,"0") : meta.accent;
+  c.fillStyle = col;
+  c.beginPath(); c.ellipse(64,84,30,30,0,0,Math.PI*2); c.fill();
+  const type = style ? style.type : "folk";
+  if(type === "kaiju" || type === "dragon" || type === "hydra"){
+    c.beginPath(); c.moveTo(42,64); c.lineTo(28,32); c.lineTo(52,48); c.closePath(); c.fill();
+    c.beginPath(); c.moveTo(86,64); c.lineTo(100,32); c.lineTo(76,48); c.closePath(); c.fill();
+  } else if(type === "moth" || type === "pterosaur"){
+    c.beginPath(); c.ellipse(20,72,24,12,-0.5,0,Math.PI*2); c.fill();
+    c.beginPath(); c.ellipse(108,72,24,12,0.5,0,Math.PI*2); c.fill();
+  } else if(type === "folk" || type === "reaper"){
+    c.beginPath(); c.moveTo(38,58); c.lineTo(64,20); c.lineTo(90,58); c.closePath(); c.fill();
+  }
+  c.fillStyle = glow;
+  c.beginPath(); c.ellipse(54,76,6,4,0,0,Math.PI*2); c.fill();
+  c.beginPath(); c.ellipse(74,76,6,4,0,0,Math.PI*2); c.fill();
+  c.strokeStyle = meta.accent; c.lineWidth = 4; c.strokeRect(5,5,118,118);
+  c.lineWidth = 1; c.strokeRect(11,11,106,106);
+  return canvas;
+}
+const PORTRAIT_CACHE = {};
+function portraitCanvas(key){
+  if(!PORTRAIT_CACHE[key]) PORTRAIT_CACHE[key] = drawPortraitCanvas(key);
+  return PORTRAIT_CACHE[key];
+}
+function portraitUrl(key){ return portraitCanvas(key).toDataURL("image/png"); }
+function makePortraitSprite(key){
+  const texture = new THREE.CanvasTexture(portraitCanvas(key));
+  texture.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map:texture,transparent:true,depthTest:false,depthWrite:false}));
+  sprite.scale.set(0.62,0.62,1);
+  sprite.renderOrder = 21;
+  return sprite;
+}
+
 function stoneTexture(tone,tileable){
   // Prozeduraler Steinboden: warmer Grundton, Mineral-Koerner, feine Risse
   // und Vignette. Deterministischer Seed -> jedes Disable-Rerender gleich.
@@ -1275,6 +1402,16 @@ const MONSTER_STYLE = {
   hubschrauber:{type:"robot",variant:"hubschrauber",body:0x3d5a72,trim:0xc7d7e2,plate:0x243a4d,glow:0x67e8f9,glowIntensity:0.5,scale:1.05,hpY:1.75,radius:0.5},
   kampfflugzeug:{type:"robot",variant:"kampfflugzeug",body:0x3a4250,trim:0x9fb0c2,plate:0x1f2733,glow:0x93c5fd,glowIntensity:0.55,scale:1.1,hpY:1.78,radius:0.52},
   drohne:{type:"robot",variant:"drohne",body:0x4a4f5c,trim:0xb9c4cf,plate:0x2a2f38,glow:0xa5b4fc,glowIntensity:0.6,scale:0.8,hpY:1.5,radius:0.4},
+  kappa:{type:"folk",variant:"kappa",body:0x3f7a55,trim:0xa8d5a2,plate:0x1e4a34,glow:0x7fffd4,glowIntensity:0.35,scale:0.92,hpY:1.35,radius:0.42},
+  babajaga:{type:"folk",variant:"babajaga",body:0x4b2b3f,trim:0xd9a066,plate:0x241521,glow:0xff8fd0,glowIntensity:0.5,scale:0.95,hpY:1.5,radius:0.42},
+  anansi:{type:"bug",body:0x3b2a45,trim:0xc4a5d9,plate:0x1d1624,glow:0xc084fc,glowIntensity:0.6,scale:0.9,hpY:1.3,radius:0.46},
+  quetzalcoatl:{type:"dragon",body:0x3f8f62,trim:0xf2d98c,plate:0x1f5a42,glow:0x9bffb1,glowIntensity:0.55,scale:1.12,hpY:1.9,radius:0.55},
+  ammit:{type:"quadruped",variant:"bagan",body:0xb08a4f,trim:0xe3cf9c,plate:0x6b4f2c,glow:0xffd166,glowIntensity:0.3,scale:1.12,hpY:1.5,radius:0.55},
+  tengu:{type:"pterosaur",body:0x8f3c32,trim:0xe3b066,plate:0x2b1d1a,glow:0xff8a4d,glowIntensity:0.45,scale:1,hpY:1.55,radius:0.48},
+  selkie:{type:"mermaid",body:0x4f9bbd,trim:0xe6e0c8,plate:0x2b6d8a,glow:0x7fe8ff,glowIntensity:0.55,scale:0.9,hpY:1.35,radius:0.42},
+  yama:{type:"reaper",body:0x3a2440,trim:0xd6a94a,plate:0x1c1424,glow:0xff6b6b,glowIntensity:0.6,scale:1.1,hpY:1.7,radius:0.5},
+  oni:{type:"kaiju",variant:"shin",body:0xa33232,trim:0xf0c66a,plate:0x5c1f1f,glow:0xff4d3d,glowIntensity:0.7,scale:1.08,hpY:1.8,radius:0.55,plates:3,tail:0.9},
+  mamiwata:{type:"mermaid",body:0x2f7fa8,trim:0xf2d98c,plate:0x1f5570,glow:0x67e8f9,glowIntensity:0.7,scale:0.94,hpY:1.38,radius:0.44},
   teddy:{type:"beast",variant:"teddy",body:0x9a6a43,trim:0xd9b98a,plate:0x5a3b28,glow:0xf2c14e,glowIntensity:0.12,scale:0.72,hpY:1.05,radius:0.36}
 };
 const RACE_STYLE = {
@@ -2034,6 +2171,9 @@ function makeCharacter(u){
   const label = makeTextSprite(u.name+" L"+u.level,u.side === "player" ? "#e6edf5" : "#ff9a9a",0.8);
   label.position.y = hpY+0.43;
   group.add(label);
+  const portrait = makePortraitSprite(u.key);
+  portrait.position.y = hpY+0.94;
+  group.add(portrait);
   group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,animPhase:Math.random()*Math.PI*2,walk:0};
   return group;
 }
@@ -2261,7 +2401,7 @@ function mobAction(u,b,dt){
   const dx = front.gx-u.grid.gx, dy = front.gy-u.grid.gy;
   const d = Math.hypot(dx,dy);
   if(d > 0.9){
-    const step = Math.min((0.4+u.spd*0.5)*dt,d-0.85);
+    const step = Math.min((0.4+u.spd*0.5)*MAP_SPEED*dt,d-0.85);
     const drift = Math.sin(u.id*1.7+b.time*2)*0.12;
     u.grid.gx = clamp(u.grid.gx+dx/d*step-drift*dy/Math.max(0.01,d),0,GRID.cols-1);
     u.grid.gy = clamp(u.grid.gy+dy/d*step+drift*dx/Math.max(0.01,d),0,GRID.rows-1);
@@ -2575,7 +2715,7 @@ function moveToward(u,target,dt,b){
   const d = Math.hypot(dx,dy);
   if(d < 0.02) return;
   const slow = hasStatus(u,"slow") ? (1-(u.statusPower.slow||0.3)) : 1;
-  const speed = (0.55+u.spd*0.35)*slow;
+  const speed = (0.55+u.spd*0.35)*MAP_SPEED*slow;
   const step = Math.min(speed*dt,d);
   moveUnit(u,dx/d*step,dy/d*step,b);
 }
@@ -2800,6 +2940,10 @@ function winBattle(){
     showToast("Team-Level-Up! Mindestlevel: "+minLvl);
   }
   G.wave++;
+  if(G.teamSize < TEAM_GROWTH_CAP){
+    G.teamSize++;
+    showToast("Neues Wesen verfügbar: Team wächst auf "+G.teamSize+" (max "+TEAM_GROWTH_CAP+")");
+  }
   showToast("Welle "+cleared+" besiegt! +"+reward+" Gold"+(bossGold ? " (Boss +"+bossGold+")" : eliteGold ? " (Elite +"+eliteGold+")" : "")+" · "+duration+"s · Helden "+survivors+"/"+heroTotal);
   syncUnits();
   updateHud();
@@ -2807,6 +2951,7 @@ function winBattle(){
   updateSynergies();
   updateButtons();
   if(draftTimer){ clearTimeout(draftTimer); draftTimer = null; }
+  if(G.phase === "prep" && G.team.length < G.teamSize) openDraft();
 }
 function loseBattle(){
   const b = G.battle;
@@ -3570,12 +3715,14 @@ function draftKeys(){
 }
 function rerollDraft(){
   if(G.phase !== "draft") return false;
-  if(G.gold < 1){ showToast("Zu wenig Gold für Reroll"); return false; }
-  G.gold -= 1;
+  const cost = rerollCost();
+  if(G.gold < cost){ showToast("Zu wenig Gold für Reroll ("+cost+")"); return false; }
+  G.gold -= cost;
+  rerollCount++;
   draftOffer = [];
   renderDraftCards();
   updateHud();
-  showToast("Draft neu gewürfelt (−1 Gold)");
+  showToast("Draft neu gewürfelt (−"+cost+" Gold)");
   return true;
 }
 function draftPickLevel(){
@@ -3593,14 +3740,14 @@ function draftPreviewStats(key,lvl){
 function renderDraftCards(){
   renderDraftFilters();
   document.getElementById("mdTitle").textContent = "Wähle dein Team";
-  document.getElementById("mdSub").textContent = G.team.length+"/"+G.teamSize+" gewählt · 2 Gold pro Wesen · Reroll 1 Gold · Gold: "+G.gold+
-    " · Gegnerteam: "+G.teamSize+" Einheiten";
+  document.getElementById("mdSub").textContent = G.team.length+"/"+G.teamSize+" gewählt · 2 Gold pro Wesen · Reroll "+rerollCost()+" Gold · Gold: "+G.gold+
+    " · Runde "+G.wave+" · "+G.teamSize+" Einheiten pro Seite (jede Runde +1)";
   const start = document.getElementById("mdSkip");
   start.disabled = G.team.length < G.teamSize;
   start.textContent = G.team.length >= G.teamSize ? "Kampf starten" : "Noch "+(G.teamSize-G.team.length)+" wählen";
   const reroll = document.getElementById("mdReroll");
-  reroll.disabled = G.gold < 1 || G.team.length >= G.teamSize;
-  reroll.textContent = "Reroll 1 Gold";
+  reroll.disabled = G.gold < rerollCost() || G.team.length >= G.teamSize;
+  reroll.textContent = "Reroll "+rerollCost()+" Gold";
   const draft = document.getElementById("mdDraft");
   draft.innerHTML = '';
   const previewLevel = draftPickLevel();
@@ -3614,10 +3761,11 @@ function renderDraftCards(){
     card.className = "cardpick";
     card.innerHTML = `
       <div class="row1">
+        <img class="portrait" src="${portraitUrl(key)}" alt="">
         <span class="em">${unit.emoji}</span>
         <div>
           <div class="nm">${unit.name}</div>
-          <div class="rl">${ROLE_META[unit.role].label} · ${race ? race.label : unit.race} · ${classes.map(c => c.label).join(" / ")}</div>
+          <div class="rl">${ROLE_META[unit.role].label} · ${race ? race.label : unit.race} · ${ORIGIN_META[unitOrigin(key)].label} · ${classes.map(c => c.label).join(" / ")}</div>
         </div>
       </div>
       <div class="stats">Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk} · ${ABILITY_DESC[unit.ability]}</div>
@@ -3627,6 +3775,7 @@ function renderDraftCards(){
       if(G.team.length >= G.teamSize){ showToast("Team ist bereits voll"); return; }
       if(G.gold < 2){ showToast("Zu wenig Gold – Wesen nicht verfügbar"); return; }
       G.gold -= 2;
+      rerollCount = 0;
       const pickLevel = draftPickLevel();
       G.team.push(createUnit(key,pickLevel,"player"));
       G.selectedUnitId = G.team[G.team.length-1].id;
@@ -3650,6 +3799,7 @@ function openDraft(){
   if(draftTimer){ clearTimeout(draftTimer); draftTimer = null; }
   draftReturnPhase = G.phase === "battle" ? "battle" : "prep";
   draftOffer = [];
+  rerollCount = 0;
   G.phase = "draft";
   document.getElementById("overlay").classList.add("show");
   renderDraftCards();
@@ -3695,12 +3845,12 @@ window.addEventListener("load", () => {
   document.getElementById("menuStart").onclick = beginRun;
   document.getElementById("menuSettings").onclick = () => openInfo(
     "Einstellungen",
-    "Teamgröße für beide Seiten festlegen. Das Gegnerteam erhält immer dieselbe Anzahl an Einheiten und orientiert sich an deinen Klassen.",
+    "Teamgröße für beide Seiten festlegen. Das Gegnerteam erhält immer dieselbe Anzahl. Du wählst dein Team selbst; pro gewonnener Runde kommt 1 Wesen dazu (bis 10). Reroll kostet 2, dann 3, dann 4 Gold.",
     '<label class="tiny">Teamgröße: <select id="setTeamSize"><option value="3">3 gegen 3</option><option value="4">4 gegen 4</option><option value="5">5 gegen 5</option><option value="6">6 gegen 6</option></select></label>'
   );
   document.getElementById("menuCredits").onclick = () => openInfo(
     "Credits",
-    "Wesen, Klassen und Fähigkeiten basieren auf Volkskunde, Mythologie und Filmlore. Quellen: Wikipedia, Britannica, Goethezeitportal, Österreichisches Volksliedwerk, HBO Max, Toho/Legendary Monsterpedia und Wikizilla. Unsichere Wesen (Duden, Fernrisswolf, Krötenmönch, Nachzehrer-Schreibweise) sind als Design-Annahmen markiert.",
+    "Wesen, Klassen und Fähigkeiten basieren auf Volkskunde, Mythologie und Filmlore aus aller Welt (Nordisch, Japanisch, Arabisch, Keltisch, Slawisch, Afrikanisch, Griechisch, Aztekisch, Ägyptisch, Indisch). Die Wesen-Grafiken werden lokal aus diesen Motiven gezeichnet. Quellen: Wikipedia, Britannica, Goethezeitportal, Österreichisches Volksliedwerk, HBO Max, Toho/Legendary Monsterpedia und Wikizilla. Unsichere Wesen (Duden, Fernrisswolf, Krötenmönch, Nachzehrer-Schreibweise) sind als Design-Annahmen markiert.",
     ""
   );
   document.getElementById("infoClose").onclick = closeInfo;
