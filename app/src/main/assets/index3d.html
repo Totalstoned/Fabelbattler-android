@@ -270,8 +270,8 @@
   <span class="enemyhp" id="enemyHpBar" title="Verbleibende HP und Schilde aller Gegner inklusive Schwarm; grün, wenn der Sieg nah ist">☠ <span class="track"><i id="enemyHpFill"></i></span> <b id="enemyHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b> <span class="spell-ready" id="manaHealReady" title="Heilregen ab 40 Mana verfügbar">✚40</span> <span class="spell-ready" id="manaNovaReady" title="Fabel-Blitz ab 70 Mana verfügbar">✺70</span></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
-  <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 Gegner <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
-  <span class="bossbar friendly" id="playerBossBar" title="Lebenspunkte des eigenen Boss">👑 Team <span class="track"><i id="playerBossBarFill"></i></span> <b id="playerBossBarPct">100%</b></span>
+  <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 Gegner <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarHp">0/0</b> <b id="bossBarPct">100%</b></span>
+  <span class="bossbar friendly" id="playerBossBar" title="Lebenspunkte des eigenen Boss">👑 Team <span class="track"><i id="playerBossBarFill"></i></span> <b id="playerBossBarHp">0/0</b> <b id="playerBossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
@@ -2987,6 +2987,7 @@ function updateBossBar(){
   const pct = clamp(boss.hp/boss.maxHp*100,0,100);
   bar.classList.toggle("critical",pct <= 25);
   document.getElementById("bossBarFill").style.width = pct.toFixed(1)+'%';
+  document.getElementById("bossBarHp").textContent = Math.ceil(Math.max(0,boss.hp))+'/'+Math.ceil(boss.maxHp);
   document.getElementById("bossBarPct").textContent = Math.ceil(pct)+'%';
 }
 function updatePlayerBossBar(){
@@ -2998,6 +2999,7 @@ function updatePlayerBossBar(){
   const pct = clamp(boss.hp/boss.maxHp*100,0,100);
   bar.classList.toggle("critical",pct <= 25);
   document.getElementById("playerBossBarFill").style.width = pct.toFixed(1)+'%';
+  document.getElementById("playerBossBarHp").textContent = Math.ceil(Math.max(0,boss.hp))+'/'+Math.ceil(boss.maxHp);
   document.getElementById("playerBossBarPct").textContent = Math.ceil(pct)+'%';
 }
 function updateBattleStatus(){

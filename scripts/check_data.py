@@ -182,9 +182,12 @@ for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
 for token in ['id="battleGoldGain"', 'battleGoldGainUntil', 'battle-info.gold b.gain']:
     if token not in src:
         problems.append('Gold-Gewinn-Feedback in der Kampfleiste fehlt: ' + token)
-for token in ['playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'function updatePlayerBossBar']:
+for token in ['playerBossBar', 'playerBossBarFill', 'playerBossBarHp', 'playerBossBarPct', 'function updatePlayerBossBar']:
     if token not in src:
         problems.append('Eigener Boss-Lebensbalken fehlt: ' + token)
+for token in ['bossBar', 'bossBarFill', 'bossBarHp', 'bossBarPct', 'function updateBossBar']:
+    if token not in src:
+        problems.append('Gegner-Boss-Lebensbalken fehlt: ' + token)
 
 for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', 'swarmStacks(sideUnits(G.battle,"player").length)']:
     if token not in src:
