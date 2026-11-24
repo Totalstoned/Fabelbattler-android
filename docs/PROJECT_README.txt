@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-23
-Aktuelle Version: v1.72-b72
+Stand: 2026-11-24
+Aktuelle Version: v1.73-b73
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,16 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.73-b73 2026-11-24  (Fokus-Ziel: Level und Rolle)
+   - Die Fokus-Ziel-Anzeige in der Kampfleiste zeigt jetzt zusaetzlich
+     "Lv N · Rolle" (Gegner-Helden: Tank/DPS/Heiler/Puffer, Mobs: Schwarm).
+     Im Kampfmodus sind Teamliste und Einheiten-Panel ausgeblendet; die
+     Bedrohung des aktuellen Ziels war bisher nur ueber Name/HP/ATK
+     abschaetzbar. Neuer Token focusTargetMeta in updateFocusTarget(),
+     zurueckgesetzt ohne Ziel, bei totem Ziel/Fokus und ausserhalb des Kampfes.
+   - check_data.py prueft den Token, check_runtime.js prueft Level/Rolle
+     fuer Gegner-Helden und Schwarm-Mobs sowie das Zuruecksetzen.
 
 v1.72-b72 2026-11-24  (Realistischer Steinboden)
    - User-Wunsch: "grafisch jetzt viel realistischer". Der bisher glatte

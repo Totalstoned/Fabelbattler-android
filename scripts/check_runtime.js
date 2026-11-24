@@ -116,7 +116,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetMeta', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -1147,18 +1147,21 @@ vm.runInContext(`
   G.selectedUnitId = targetHero.id;
   const targetBar = document.getElementById("focusTarget");
   const targetName = document.getElementById("focusTargetName");
+  const targetMeta = document.getElementById("focusTargetMeta");
   const targetValue = document.getElementById("focusTargetHp");
   const targetFx = document.getElementById("focusTargetStatus");
   const targetAtk = document.getElementById("focusTargetAtk");
   targetHero.target = null;
   updateFocusTarget();
   globalThis.__targetNone = !targetBar.classList.contains("show") && targetName.textContent === "–" &&
-    targetFx.textContent === "" && targetAtk.textContent === "0";
+    targetFx.textContent === "" && targetAtk.textContent === "0" &&
+    targetMeta.textContent === "Lv – · –";
   targetHero.target = targetFoe;
   targetFoe.shield = 0;
   updateFocusTarget();
   globalThis.__targetShow = targetBar.classList.contains("show") &&
     targetName.textContent === targetFoe.emoji+" "+targetFoe.name &&
+    targetMeta.textContent === "Lv "+targetFoe.level+" · "+((ROLE_META[targetFoe.role]||{}).label || targetFoe.role) &&
     targetValue.textContent === Math.ceil(targetFoe.hp)+"/"+Math.ceil(targetFoe.maxHp) &&
     targetAtk.textContent === String(Math.round(targetFoe.atk)) &&
     !targetBar.classList.contains("critical");
@@ -1178,6 +1181,16 @@ vm.runInContext(`
   targetFoe.atk += 7;
   updateFocusTarget();
   globalThis.__targetAtkLive = targetAtk.textContent === String(Math.round(targetFoe.atk));
+  const mobTarget = (G.battle.enemyMobs||[])[0];
+  if(mobTarget){
+    targetHero.target = mobTarget;
+    updateFocusTarget();
+    globalThis.__targetMetaMob = targetMeta.textContent === "Lv "+mobTarget.level+" · Schwarm";
+    targetHero.target = targetFoe;
+    updateFocusTarget();
+  } else {
+    globalThis.__targetMetaMob = true;
+  }
   targetFoe.isDead = true;
   updateFocusTarget();
   globalThis.__targetDead = !targetBar.classList.contains("show") && targetName.textContent === "–";
@@ -1191,7 +1204,7 @@ vm.runInContext(`
   updateFocusTarget();
   globalThis.__targetHide = !targetBar.classList.contains("show") &&
     !targetBar.classList.contains("critical") && targetName.textContent === "–" && targetValue.textContent === "0/0" &&
-    targetFx.textContent === "" && targetAtk.textContent === "0";
+    targetFx.textContent === "" && targetAtk.textContent === "0" && targetMeta.textContent === "Lv – · –";
 `, ctx);
 
 vm.runInContext(`
@@ -1235,6 +1248,7 @@ for (const [flag, message] of [
   ['__focusCdHide', 'Fokus-Cooldown verschwindet nicht außerhalb des Kampfes'],
   ['__targetNone', 'Fokus-Ziel erscheint ohne Ziel'],
   ['__targetShow', 'Fokus-Ziel zeigt Namen, Rest-HP und Angriff nicht'],
+  ['__targetMetaMob', 'Fokus-Ziel zeigt Level und Rolle (Schwarm) nicht'],
   ['__targetCritical', 'Fokus-Ziel markiert kritische HP nicht'],
   ['__targetShield', 'Fokus-Ziel zeigt den Schild nicht'],
   ['__targetStatus', 'Fokus-Ziel zeigt aktive Statuseffekte nicht'],
@@ -1341,4 +1355,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielmeta+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);

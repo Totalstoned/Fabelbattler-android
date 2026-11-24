@@ -155,6 +155,7 @@
   .battle-info.focustarget.show{display:inline-block;}
   .battle-info.focustarget b{color:#ffd166;}
   .battle-info.focustarget.critical b{color:#ff6b6b;animation:bossWarn .7s ease-in-out infinite;}
+  .battle-info.focustarget #focusTargetMeta{color:#c9b6ff;font-size:10px;}
   .battle-info.focusmeta{display:none;color:#c9b6ff;}
   .battle-info.focusmeta.show{display:inline-block;}
   .battle-info.focusbar .fx,.battle-info.focustarget .fx{font-size:10px;opacity:.85;margin-left:5px;}
@@ -265,7 +266,7 @@
   <span class="battle-info focusmeta" id="focusMeta" title="Level und Rolle des fokussierten Wesens">Lv – · –</span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild, Angriff, Level, Rolle und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b> · ⚔ <b id="focusAtkValue">0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
-  <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Rest-HP, Schild, Angriff und Statuseffekten">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetHp">0/0</b> · ⚔ <b id="focusTargetAtk">0</b><span class="fx" id="focusTargetStatus"></span></span>
+  <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Level, Rolle, Rest-HP, Schild, Angriff und Statuseffekten">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetMeta">Lv – · –</b> <b id="focusTargetHp">0/0</b> · ⚔ <b id="focusTargetAtk">0</b><span class="fx" id="focusTargetStatus"></span></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="enemyhp" id="enemyHpBar" title="Verbleibende HP und Schilde aller Gegner inklusive Schwarm; grün, wenn der Sieg nah ist">☠ <span class="track"><i id="enemyHpFill"></i></span> <b id="enemyHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b> <span class="spell-ready" id="manaHealReady" title="Heilregen ab 40 Mana verfügbar">✚40</span> <span class="spell-ready" id="manaNovaReady" title="Fabel-Blitz ab 70 Mana verfügbar">✺70</span></span>
@@ -3221,12 +3222,14 @@ function updateFocusTarget(){
   if(SIM.headless) return;
   const bar = document.getElementById("focusTarget");
   const name = document.getElementById("focusTargetName");
+  const meta = document.getElementById("focusTargetMeta");
   const value = document.getElementById("focusTargetHp");
   const fx = document.getElementById("focusTargetStatus");
   const atk = document.getElementById("focusTargetAtk");
   bar.classList.remove("show");
   bar.classList.remove("critical");
   name.textContent = "–";
+  meta.textContent = "Lv – · –";
   value.textContent = "0/0";
   fx.textContent = "";
   atk.textContent = "0";
@@ -3238,6 +3241,10 @@ function updateFocusTarget(){
   bar.classList.add("show");
   bar.classList.toggle("critical",ratio <= 0.25);
   name.textContent = (target.emoji ? target.emoji+" " : "")+target.name;
+  // Im Kampfmodus sind Teamliste und Einheiten-Panel ausgeblendet: Level und
+  // Rolle des Ziels bleiben so als Bedrohungs-Einschaetzung ablesbar.
+  const roleLabel = (ROLE_META[target.role]||{}).label || (target.isMob ? "Schwarm" : target.role) || "–";
+  meta.textContent = "Lv "+(target.level||1)+" · "+roleLabel;
   value.textContent = Math.ceil(Math.max(0,target.hp))+"/"+Math.ceil(target.maxHp)+
     (target.shield > 0 ? " ⛨"+Math.ceil(target.shield) : "");
   fx.textContent = activeStatusKeys(target).map(k => STATUS_META[k].emoji+Math.ceil(target.statuses[k])+"s").join(" ");
