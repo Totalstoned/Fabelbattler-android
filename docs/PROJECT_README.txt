@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.71-b71
+Aktuelle Version: v1.72-b72
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -51,6 +51,15 @@ MainActivity.kt (Immersive-Sticky + Legacy-Flags). Vom User nach v1.14 bestaetig
 =====================================================================
 2) VERSIONEN / CHANGELOG (chronologisch)
 =====================================================================
+v1.72-b72 2026-11-24  (Boss-Tod-Feedback)
+   - Bosse starben bisher wie normale Schwarm-Mobs: kein Kamera-Shake,
+     kein eigener Hinweis. killUnit() verstaerkt jetzt Shake und
+     Schockwelle und zeigt „👑 Gegner-Boss besiegt!“ bzw.
+     „👑 Team-Boss gefallen!“. Normale Mobs bleiben still, Helden
+     behalten ihren Tod-Toast.
+   - check_runtime.js prueft stillen Mob-Tod, Boss-Toast, Boss-Shake
+     und eigene Schockwelle; alle drei Checks gruen.
+
 v1.0-b1   2026-11-18  8d59814/cc70c62
   - Android-WebView-Grundgeruest und Three.js-Szene; APKs werden nach App-Version benannt.
 

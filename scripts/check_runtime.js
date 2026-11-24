@@ -96,6 +96,10 @@ if (!html.includes('id="bossBar"') || !html.includes('function updateBossBar')) 
 if (!html.includes('id="playerBossBar"') || !html.includes('function updatePlayerBossBar')) {
   throw new Error('Eigener Boss-Lebensbalken in der Kampfleiste fehlt');
 }
+if (!html.includes('addShake(0.35)') || !html.includes('Gegner-Boss besiegt!') ||
+    !html.includes('Team-Boss gefallen!')) {
+  throw new Error('Boss-Tod-Feedback (Shake/Hinweis) fehlt');
+}
 if (!html.includes('id="battleStatus"') || !html.includes('function updateBattleStatus') ||
     !html.includes('id="statusEnemies"') || !html.includes('id="statusHeroes"')) {
   throw new Error('Kampf-Status (Gegner/Helden) in der Kampfleiste fehlt');
@@ -998,6 +1002,44 @@ for (const [flag, message] of [
   ['__normalFxCheck', 'Normale Mobs erzeugen ungewollt Treffer-Effekte'],
   ['__eliteFxCheck', 'Elite-Mobs zeigen keine Trefferzahl, Partikel oder Schockwelle'],
   ['__bossFxCheck', 'Boss-Mobs zeigen keine Trefferzahl oder Schockwelle'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+  beginRun();
+  G.wave = 10;
+  startBattle();
+  const deathToasts = [];
+  const origDeathToast = showToast;
+  showToast = function(msg){ deathToasts.push(msg); };
+  const deathBoss = G.battle.enemyMobs.find(m => m.isBoss);
+  const deathNormal = G.battle.enemyMobs.find(m => !m.isElite && !m.isBoss);
+  cameraShake = 0;
+  const deathWavesBefore = G.shockwaves.length;
+  killUnit(deathNormal, null);
+  globalThis.__normalDeathQuiet = deathToasts.length === 0 && cameraShake === 0;
+  killUnit(deathBoss, null);
+  globalThis.__bossDeathToast = deathToasts.length === 1 && /Gegner-Boss besiegt/.test(deathToasts[0]);
+  globalThis.__bossDeathShake = cameraShake >= 0.3;
+  globalThis.__bossDeathWave = G.shockwaves.length > deathWavesBefore;
+  killUnit(createMob("brute", "player", 10, "boss"), null);
+  globalThis.__ownBossDeathToast = deathToasts.length === 2 && /Team-Boss gefallen/.test(deathToasts[1]);
+  showToast = origDeathToast;
+  clearEffects();
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__normalDeathQuiet', 'Normale Mobs erzeugen beim Tod ungewollt Toast/Shake'],
+  ['__bossDeathToast', 'Gegner-Boss-Tod zeigt keinen eigenen Hinweis'],
+  ['__bossDeathShake', 'Boss-Tod hat keinen verstärkten Kamera-Shake'],
+  ['__bossDeathWave', 'Boss-Tod zeigt keine Schockwelle'],
+  ['__ownBossDeathToast', 'Eigener Boss-Tod zeigt keinen eigenen Hinweis'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }

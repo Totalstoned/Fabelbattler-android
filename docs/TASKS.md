@@ -216,6 +216,15 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **37. Boss-Tod-Feedback** (v1.72)
+   Bosse starben bisher wie normale Schwarm-Mobs: ohne Kamera-Shake und ohne
+   Hinweis, obwohl sie den Hoehepunkt einer Welle darstellen. `killUnit()`
+   verstaerkt jetzt Shake und Schockwelle und zeigt einen eigenen Toast
+   („👑 Gegner-Boss besiegt!“ bzw. „👑 Team-Boss gefallen!“). Normale Mobs
+   bleiben ohne Toast/Shake; Helden behalten ihren bisherigen Tod-Hinweis.
+   *Erledigt:* `check_runtime.js` prueft stillen Mob-Tod, eigenen Toast und
+   Shake bei Gegner-/Team-Boss; alle drei Checks gruen.
+
 - [x] **36. Feste Signatur fuer funktionierende App-Updates** (v1.71)
   Der User meldete, dass die Installation abbricht, statt die alte App zu
   aktualisieren. Ursache: `assembleDebug` auf den GitHub-Runnern erzeugte bei
