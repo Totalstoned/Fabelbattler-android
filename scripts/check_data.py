@@ -278,6 +278,9 @@ for token in ['function stoneTexture', "map:stoneTexture('#333b45')", 'new THREE
 for token in ['function moveToward', 'gx = clamp(gx,0,GRID.cols-1)', 'gy = clamp(gy,0,GRID.rows-1)']:
     if token not in src:
         problems.append('Freie Bewegung über das ganze Kampffeld fehlt: ' + token)
+for token in ['function damageTextScale', 'damageTextScale(dmg,target,!!opts.crit)']:
+    if token not in src:
+        problems.append('Skalierte Trefferzahlen fehlen: ' + token)
 
 if problems:
     for p in problems[:30]:

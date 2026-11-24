@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-23
-Aktuelle Version: v1.74-b74
+Stand: 2026-11-24
+Aktuelle Version: v1.75-b75
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,14 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.75-b75 2026-11-24  (Skalierte Trefferzahlen)
+   - Neue damageTextScale(dmg,target,crit): 3D-Schadenszahlen wachsen mit der
+     Schadenshoehe (bis 25 % der Max-HP des Ziels) und bei Krits (+0,4).
+     Auch Schild-Absorptionen skalieren; kleine Treffer bleiben dezent.
+     Damit fallen schwere Schlaege im Schwarm sofort auf.
+   - check_data.py prueft die Tokens, check_runtime.js vergleicht die
+     Sprite-Groesse von kleinem, grossem und kritischem Treffer.
 
 v1.74-b74 2026-11-24  (Kompakte Kampf-UI)
    - User: "die ui muss angepasst werden" -> Option "weniger Overlay, mehr Feld".

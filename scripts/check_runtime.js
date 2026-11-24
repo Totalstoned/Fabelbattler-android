@@ -1054,6 +1054,35 @@ for (const [flag, message] of [
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
+  clearEffects();
+  beginRun();
+  startBattle();
+  const dsUnit = G.battle.player[0];
+  const lastScale = () => G.effects.length ? G.effects[G.effects.length-1].scale.x : 0;
+  dsUnit.hp = dsUnit.maxHp;
+  dsUnit.shield = 0;
+  applyDamage(dsUnit, dsUnit.maxHp*0.02, null, {});
+  const dsSmall = lastScale();
+  dsUnit.hp = dsUnit.maxHp;
+  applyDamage(dsUnit, dsUnit.maxHp*0.24, null, {});
+  const dsBig = lastScale();
+  dsUnit.hp = dsUnit.maxHp;
+  applyDamage(dsUnit, dsUnit.maxHp*0.02, null, {crit:true});
+  const dsCrit = lastScale();
+  globalThis.__damageScaleCheck = typeof damageTextScale === "function" &&
+    dsSmall > 0 && dsBig > dsSmall*1.2 && dsCrit > dsSmall*1.4;
+  clearEffects();
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__damageScaleCheck', ctx)) {
+  throw new Error('Trefferzahlen skalieren nicht mit Schadensgröße und Krit');
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
   beginRun();
   startBattle();
   const bar = document.getElementById("focusHp");
@@ -1349,4 +1378,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls+trefferzahlen-skaliert, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);

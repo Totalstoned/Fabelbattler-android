@@ -2235,9 +2235,14 @@ function castAura(u,b){
 }
 // Normale Schwarm-Mobs bleiben effektfrei; Elite und Boss bekommen sichtbares Treffer-Feedback.
 function hasDamageFx(u){ return !!u && (!u.isMob || u.isElite || u.isBoss); }
-function pushEffect(u,text,color){
+// Große Schläge und Krits bekommen größere Zahlen, damit sie im Schwarm auffallen.
+function damageTextScale(dmg,target,crit){
+  const rel = clamp(dmg/Math.max(1,target && target.maxHp || 1)*4,0,1);
+  return 0.7+rel*0.25+(crit ? 0.4 : 0);
+}
+function pushEffect(u,text,color,scale){
   if(SIM.headless || !hasDamageFx(u)) return;
-  const sprite = makeTextSprite(text,color,0.7);
+  const sprite = makeTextSprite(text,color,scale || 0.7);
   const p = worldPos(u.grid.gx,u.grid.gy);
   sprite.position.set(p.x+(Math.random()-0.5)*0.28,1.6,p.z+(Math.random()-0.5)*0.28);
   sprite.userData.life = 0.9;
@@ -2406,7 +2411,7 @@ function applyDamage(target,amount,source,opts={}){
     target.shield -= absorbed;
     dmg -= absorbed;
     if(absorbed > 1 && opts.number !== false){
-      pushEffect(target,"⛨ "+Math.round(absorbed),"#8fb5ff");
+      pushEffect(target,"⛨ "+Math.round(absorbed),"#8fb5ff",damageTextScale(absorbed,target,false));
       // Komplett blockierte Treffer bekommen einen eigenen blauen Impuls,
       // sonst sieht ein absorbierter Schlag wie ein ausbleibender Treffer aus.
       if(dmg <= 0){
@@ -2420,7 +2425,9 @@ function applyDamage(target,amount,source,opts={}){
     target.hitFlash = 0.15;
     if(!target.isMob) addShake(clamp(dmg/Math.max(1,target.maxHp)*0.5,0.012,0.16));
     if(opts.number !== false){
-      pushEffect(target,(opts.crit ? "★ " : "")+"-"+Math.round(dmg),source && source.side === "enemy" ? "#ff8a8a" : "#ffd166");
+      pushEffect(target,(opts.crit ? "★ " : "")+"-"+Math.round(dmg),
+        source && source.side === "enemy" ? "#ff8a8a" : "#ffd166",
+        damageTextScale(dmg,target,!!opts.crit));
       if(dmg > target.maxHp*0.06) spawnShockwave(target,opts.crit ? "#fff2a8" : "#ffb86b",0.75);
     }
     if(source && source.modsEffective.lifesteal > 0) healUnit(source,dmg*source.modsEffective.lifesteal);
