@@ -243,6 +243,9 @@ for token in ['id="focusMeta"', 'function updateFocusMeta']:
 for token in ['focusTarget', 'focusTargetName', 'focusTargetMeta', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'function updateFocusTarget', 'activeStatusKeys(target).map']:
     if token not in src:
         problems.append('Fokus-Ziel in der Kampfleiste fehlt: ' + token)
+for token in ['focusTargetCd', 'const targetSpell = SPELLS[target.spell]', 'const rest = Math.max(0,target.spellCd||0)', '"bereit"', 'cdEl.classList.toggle("ready",rest <= 0)', '.battle-info.focustarget .cd.ready']:
+    if token not in src:
+        problems.append('Zauber-Abklingzeit des Fokus-Ziels fehlt: ' + token)
 for token in ['eliteInfo', 'statusElites', 'enemyMobs.filter(m => m.isElite)', 'battle-info.status .elites.show',
               'eliteInfoPlayer', 'statusElitesPlayer', 'playerMobs.filter(m => m.isElite)',
               'battle-info.status .elites.friendly']:

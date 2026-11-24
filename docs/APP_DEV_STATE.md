@@ -75,3 +75,4 @@ Letztes Update: 2026-11-24
 
 - Autonomer 10-Minuten-Loop bis **1.20.0**: `scripts/auto-improve.sh` (600 s) + `scripts/auto-integrate.sh` (automatischer PR-Merge), Versionsschritt via `scripts/bump_version.py`. User-Anleitung: `Patch.txt`. Stopp/Start in `docs/AUTO_IMPROVE.txt`.
 - Kampf-Feedback (v1.00.1): `battleEndFx()` zeigt Sieg/Niederlage im 3D-Feld (PR #158); `check_data.py`/`check_runtime.js` sichern beide Pfade.
+- Fokus-Ziel (v1.00.2): Die Kampfleiste zeigt im Fokus-Ziel jetzt auch den gegnerischen Zauber mit Restzeit oder „bereit" (rot). Im Kampfmodus sind Gegner-Panel und HUD ausgeblendet; damit bleibt ablesbar, wann z. B. ein gegnerischer Heiler wieder wirken kann. Mobs haben keinen Zauber und bleiben ohne Anzeige; `check_data.py` und `check_runtime.js` sichern Anzeige, Bereitschaft, Live-Updates und Zurücksetzen.

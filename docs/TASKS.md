@@ -333,6 +333,15 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* `check_data.py` prüft die Pan-Tokens, `check_runtime.js` prüft
   Verschiebung, Clamping und Reset; alle drei Checks in beiden Kopien grün.
 
+- [x] **42. Zauber-Abklingzeit des Fokus-Ziels** (v1.00.2-b1002)
+  `updateFocusTarget()` ergänzt die Fokus-Ziel-Anzeige in der Kampfleiste um den
+  gegnerischen Zauber (`focusTargetCd`): Restzeit in Sekunden oder „bereit" in Rot,
+  damit die Bedrohung durch einen gegnerischen Heiler/Schadenszauber früh erkennbar
+  ist. Mobs besitzen keinen Zauber und bleiben ohne Anzeige; bei totem Ziel/Fokus
+  und außerhalb des Kampfes wird der Wert zurückgesetzt.
+  *Erledigt:* `check_data.py` prüft die Tokens, `check_runtime.js` prüft Anzeige,
+  Bereitschaft, Live-Update, Mobs und Zurücksetzen; alle drei Checks grün.
+
 - [x] **41. Autonomer 10-Minuten-Loop und User-Anleitung** (v1.00.1-b1001)
   `auto-improve.sh` läuft nun alle 600 Sekunden, `bump_version.py` zählt die
   Version bis 1.20.0 hoch und `auto-integrate.sh` merged validierte CLEAN-PRs

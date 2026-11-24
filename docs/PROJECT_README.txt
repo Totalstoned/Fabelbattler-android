@@ -646,3 +646,12 @@ sondern mit den uebrigen Loop-PRs zusammen in v1.55-b56 integriert.]
     erlaubt, Check-Invarianten dann in beiden Check-Skripten mitziehen.
   - CI 45435233440 gruen; APK /root/projects/FABELBATTLER/1.00.1.apk
     SHA-256 8403861dc36a12a7c579d17fdb019042852a7194af5112243e536ee926acf348
+
+2026-11-24 16:40 UTC – v1.00.2-b1002 (Zauber-Abklingzeit des Fokus-Ziels):
+  - Die Fokus-Ziel-Anzeige der Kampfleiste nennt jetzt auch den Zauber des
+    aktuellen Ziels mit Restzeit oder „bereit" (rot markiert). Im Kampfmodus
+    sind Gegner-Panel und HUD ausgeblendet; damit ist z. B. erkennbar, wann ein
+    gegnerischer Heiler wieder wirken kann. Mobs bleiben ohne Zauber-Anzeige.
+  - Neue UI-Tokens werden in check_data.py und check_runtime.js geprueft
+    (Anzeige, Bereitschaft, Live-Update, Mobs, Zuruecksetzen); alle drei Checks
+    gruen. Keine Aenderung an Einheiten-, Zauber- oder Gegnerzahlen.
