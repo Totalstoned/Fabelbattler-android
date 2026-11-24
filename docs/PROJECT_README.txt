@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.75-b75
+Aktuelle Version: v1.00.0-b1000
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -617,3 +617,20 @@ Automatisierung ab 2026-11-22 (15-Minuten-Verbesserung):
 
 [Hinweis: Der Eliten-Zaehler aus PR #125 wurde nicht als eigenes v1.49 ausgeliefert,
 sondern mit den uebrigen Loop-PRs zusammen in v1.55-b56 integriert.]
+
+2026-11-24 16:05 UTC – Versions-Reset 1.00.0-b1000, Kamera-Pan, PR-Sammel-Integration:
+  - User: "entferne alle vorherigen apks und nenne die jetztige apk 1.00.0".
+    36 alte APKs geloescht; nur noch fabelbattler-v1.00.0-b1000.apk liegt im
+    Projektordner. VersionName 1.00.0, VersionCode 1000 (Schema
+    major*1000 + minor*10 + patch, damit spaetere Updates aufsteigend bleiben).
+  - Kamera frei bewegbar: panCameraPixels() mit Maus-Drag und Ein-Finger-Touch,
+    touch-action:none, Begrenzung auf das Feld, Tap-Auswahl bleibt erhalten.
+    Auto-Follow pausiert waehrend des Pans; ⌖/Doppelklick/0 setzt alles zurueck.
+    check_data.py und check_runtime.js pruefen Pan, Clamping und Reset.
+  - Offene PRs #134-#157 als Union in main integriert (Boss-/Eliten-Feedback,
+    Zielring, HP-Anzeigen, Heiltrank-Zielwahl, Toast-Limit, Trefferzahlen,
+    Support-Cooldown-Test). Doppelte UI-IDs aus der Union bereinigt.
+  - CI 45432629832 gruen; APK /root/projects/FABELBATTLER/fabelbattler-v1.00.0-b1000.apk
+    SHA-256 347450d19c7da28fc49323c6247e0716160d0d203450124c913f01ed2f6b0703
+  - Externe Quelle /root/fabelbattler/index3d.html synchronisiert; alle drei
+    Checks dort und in der WebView-Datei gruen.

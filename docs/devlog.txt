@@ -5,6 +5,21 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-24 16:05  v1.00.0-b1000  (Versions-Reset, Kamera-Pan, PR-Union)
+  - User: "entferne alle vorherigen apks und nenne die jetztige apk 1.00.0".
+    36 APKs geloescht, nur fabelbattler-v1.00.0-b1000.apk im Projektordner.
+    VersionCode 1000 = major*1000 + minor*10 + patch -> kuenftige Updates
+    1.00.1, 1.01.1 ... 1.99.9, 2.00.1 bleiben aufsteigend sortierbar.
+  - Kamera: panCameraPixels() (Maus-Drag / ein Finger), touch-action:none,
+    Clamp auf das Feld; Tap-Auswahl unveraendert. Auto-Follow pausiert beim
+    Pan, ⌖/Doppelklick/0 setzt Zoom + Position zurueck.
+  - PRs #134-#157 per Union integriert, doppelte UI-IDs bereinigt;
+    check_data.py/check_runtime.js um Pan-Tokens und Laufzeit-Test erweitert.
+  - CI 45432629832 gruen, aapt meldet versionCode 1000 / versionName 1.00.0.
+  - Feste Signatur via app/debug.p12: Upgrades ab v1.71 ohne Deinstallation;
+    nur uralte Builds (<= v1.70) brauchen einmalig ein uninstall.
+
+
 2026-11-24 02:59  v1.74-b74  (kompakte Kampf-UI)
   - User: "die ui muss angepasst werden" -> Rueckfrage: "weniger Overlay,
     mehr Feld" (Option 1).

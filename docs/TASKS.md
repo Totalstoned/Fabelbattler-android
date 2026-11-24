@@ -323,3 +323,12 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   skaliert mit Elite-/Boss-Größe und verschwindet ohne Ziel oder bei dessen Tod.
   *Erledigt:* `check_runtime.js` prüft Position, Sichtbarkeit und das Ausblenden
   bei totem/fehlendem Ziel; alle drei Checks grün.
+
+- [x] **39. Freie Kamera-Bewegung und Versions-Reset** (v1.00.0-b1000)
+  `panCameraPixels()` verschiebt die Kamera per Maus-Drag oder Ein-Finger-Touch,
+  begrenzt auf das Schlachtfeld; `touch-action:none` verhindert WebView-Scroll.
+  Die Tap-Auswahl bleibt erhalten, das Auto-Follow pausiert während des Pans
+  und `⌖`/Doppelklick/`0` setzen Zoom und Position zurück. Alle 36 alten APKs
+  wurden gelöscht, die Versionsnummer auf 1.00.0 (Build 1000) zurückgesetzt.
+  *Erledigt:* `check_data.py` prüft die Pan-Tokens, `check_runtime.js` prüft
+  Verschiebung, Clamping und Reset; alle drei Checks in beiden Kopien grün.
