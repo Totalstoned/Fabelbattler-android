@@ -14,3 +14,5 @@
 - [x] **51. Bigfoot-Atlas drehbar eingebaut**: 4x2-Sheet aus der Wikimedia-Referenz im WebView-Atlas-Panel; Ziehen/Pfeile wechseln 8 Blickwinkel, das prozedurale 3D-Modell bleibt unverändert. Neue Prüfungen in `check_data.py` und `check_runtime.js`, alle drei Checks grün.
 
 - [x] **52. Status-Formen statt nur Farbe**: Statusringe im 3D-Feld unterscheiden Schaden/Kontrolle/Verstärkung durch Dreieck/Viereck/Sechseck; Einheiten-Info mit Symbolen und Legende. Geometriewechsel, Spott und Legende in beiden Checks abgesichert, alle drei Checks grün.
+
+- [x] **53. Nachkampf-Auswertung**: Kompaktes, schließbares Panel mit HP-Schaden, Heilung und Top-Einheit aus pro Welle gesammelten Heldenwerten; kein Einfluss auf Headless, Zufall oder Kampfwerte. Panel, Zählung und Reset in `check_data.py`/`check_runtime.js` geprüft, alle drei Checks grün.

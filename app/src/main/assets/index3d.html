@@ -79,6 +79,16 @@
   .toasts{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;z-index:99;}
   .toast{background:rgba(30,38,50,.62);border:1px solid var(--line);padding:5px 10px;border-radius:10px;font-size:11px;animation:pop .3s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
   @keyframes pop{from{opacity:0;transform:translateY(8px);}to{opacity:1;}}
+  /* Nachkampf-Auswertung: bleibt unter Draft/Info-Overlays (z-index 50) und über dem Feld. */
+  .battle-report{display:none;position:fixed;top:46px;left:50%;transform:translateX(-50%);z-index:45;
+    max-width:min(560px,94vw);padding:7px 10px;border-radius:10px;border:1px solid var(--line);
+    background:rgba(17,22,30,.92);color:var(--txt);font-size:11px;text-align:center;
+    box-shadow:0 8px 24px rgba(0,0,0,.45);}
+  .battle-report.show{display:block;}
+  .battle-report b{color:var(--gold);}
+  .battle-report .report-win{color:#9ff0bd;}
+  .battle-report .report-loss{color:#ff8a8a;}
+  .battle-report .btn{padding:2px 7px;min-width:0;margin-left:6px;font-size:11px;}
   .overlay{position:fixed;inset:0;background:rgba(8,10,14,.86);display:none;align-items:center;
     justify-content:center;z-index:50;padding:16px;}
   .overlay.show{display:flex;}
@@ -326,6 +336,10 @@
   <button class="btn ghost" id="btnBattleExit">Vollbild aus</button>
 </div>
 <div class="toasts" id="toasts"></div>
+<div class="battle-report" id="battleReport" role="status" aria-live="polite" title="Auswertung der letzten Welle: HP-Schaden, Heilung und stärkstes Wesen (Schaden + Heilung)">
+  <span id="battleReportTitle"></span> · ⚔ Schaden <b id="battleReportDamage">0</b> · ✚ Heilung <b id="battleReportHeal">0</b> · ★ Top <b id="battleReportTop">–</b>
+  <button class="btn ghost" id="btnReportClose" title="Auswertung schließen">×</button>
+</div>
 <script src="./vendor/three.min.js"></script>
 <script>
 "use strict";
@@ -735,7 +749,7 @@ const SYNERGY = {
   Stahl:m=>{m.shieldPct+=0.12;m.dr+=0.08;},
   Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
-const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null};
+const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null,lastReport:null};
 const SIM = {headless:false};
 const TOAST_MAX = 3;
 const TOAST_DEDUP_MS = 700;
@@ -2614,10 +2628,24 @@ function updateParticles(dt){
   });
   G.particles = G.particles.filter(p=>p.life>0);
 }
+// Pro Welle werden nur echte Helden-Schäden/Heilungen gezählt – ohne neue
+// Zufälligkeit und ohne 3D-Effekte, damit der Headless-Smoke-Test stumm bleibt.
+function noteBattleDamage(source,target,dmg){
+  const b = G.battle;
+  if(!b || !b.stats || !source || source.isMob || source.side !== "player" ||
+     !target || target.side !== "enemy" || dmg <= 0) return;
+  b.stats.damage[source.id] = (b.stats.damage[source.id]||0)+dmg;
+}
+function noteBattleHeal(u,amount){
+  const b = G.battle;
+  if(!b || !b.stats || !u || u.isMob || u.side !== "player" || amount <= 0) return;
+  b.stats.heal[u.id] = (b.stats.heal[u.id]||0)+amount;
+}
 function healUnit(u,amount){
   if(u.isDead || amount <= 0) return 0;
   const real = Math.min(amount,u.maxHp-u.hp);
   u.hp += real;
+  noteBattleHeal(u,real);
   if(real > 1){
     pushEffect(u,"+"+Math.round(real),"#4ade80");
     spawnBurst(u,"#4ade80",10,0.7);
@@ -2749,6 +2777,7 @@ function applyDamage(target,amount,source,opts={}){
   }
   if(dmg > 0){
     target.hp -= dmg;
+    noteBattleDamage(source,target,dmg);
     target.hitFlash = 0.15;
     if(!target.isMob) addShake(clamp(dmg/Math.max(1,target.maxHp)*0.5,0.012,0.16));
     if(opts.number !== false){
@@ -2951,6 +2980,40 @@ function battleEndFx(units,color,burstColor){
   });
   addShake(0.18);
 }
+// Auswertung aus den pro Welle gesammelten Werten; Top-Einheit nach Schaden+Heilung.
+function battleReportData(win){
+  const b = G.battle;
+  const stats = b && b.stats ? b.stats : {damage:{},heal:{}};
+  let damage = 0, heal = 0, top = null, topValue = -1;
+  if(b) b.player.forEach(u => {
+    const d = stats.damage[u.id] || 0;
+    const h = stats.heal[u.id] || 0;
+    damage += d;
+    heal += h;
+    if(d+h > topValue){ topValue = d+h; top = u; }
+  });
+  const report = {win:!!win,wave:G.wave,damage:Math.round(damage),heal:Math.round(heal),
+    top:top && topValue > 0 ? top.emoji+" "+top.name+" "+Math.round(topValue) : "–"};
+  G.lastReport = report;
+  return report;
+}
+function showBattleReport(win){
+  const r = battleReportData(win);
+  if(SIM.headless) return r;
+  const title = document.getElementById("battleReportTitle");
+  title.textContent = (r.win ? "Welle "+r.wave+" besiegt" : "Niederlage in Welle "+r.wave);
+  title.className = r.win ? "report-win" : "report-loss";
+  document.getElementById("battleReportDamage").textContent = String(r.damage);
+  document.getElementById("battleReportHeal").textContent = String(r.heal);
+  document.getElementById("battleReportTop").textContent = r.top;
+  document.getElementById("battleReport").classList.add("show");
+  return r;
+}
+function hideBattleReport(){
+  G.lastReport = null;
+  if(SIM.headless) return;
+  document.getElementById("battleReport").classList.remove("show");
+}
 function simulateBattle(dt){
   const previous = SIM.headless;
   SIM.headless = true;
@@ -3002,6 +3065,7 @@ function winBattle(){
   const duration = b ? Math.floor(b.time) : 0;
   const survivors = b ? b.player.filter(u => !u.isDead).length : 0;
   const heroTotal = b ? b.player.length : G.team.length;
+  showBattleReport(true);
   G.phase = "prep";
   G.battle = null;
   clearEffects();
@@ -3038,6 +3102,7 @@ function loseBattle(){
   const survivors = b ? b.player.filter(u => !u.isDead).length : 0;
   const heroTotal = b ? b.player.length : G.team.length;
   const foesLeft = b ? sideUnits(b,"enemy").filter(u => !u.isDead).length : 0;
+  showBattleReport(false);
   G.phase = "defeat";
   G.battle = null;
   clearEffects();
@@ -3095,6 +3160,7 @@ function startBattle(){
   G.team = G.team.slice(0,G.teamSize);
   G.phase = "battle";
   setBattleMode(true);
+  hideBattleReport();
   clearEffects();
   reviveTeam();
   G.team.forEach((u,i) => {
@@ -3107,7 +3173,7 @@ function startBattle(){
   const playerMobs = buildMobSwarm("player",G.wave);
   const enemyMobs = buildMobSwarm("enemy",G.wave);
   G.battle = {player:G.team,enemies:enemyTeam,playerMobs:playerMobs,enemyMobs:enemyMobs,time:0,mobCache:null,
-    kills:0,killsTotal:enemyTeam.length+enemyMobs.length};
+    kills:0,killsTotal:enemyTeam.length+enemyMobs.length,stats:{damage:{},heal:{}}};
   if(!findUnitById(G.selectedUnitId)) G.selectedUnitId = G.team[0] ? G.team[0].id : null;
   enemyTeam.forEach(recalcUnit);
   G.team.forEach(recalcUnit);
@@ -4017,6 +4083,7 @@ window.addEventListener("load", () => {
   document.getElementById("btnItemShield").onclick = () => useItem("shield");
   document.getElementById("btnItemNova").onclick = () => useItem("nova");
   document.getElementById("btnBattleExit").onclick = () => setBattleMode(false);
+  document.getElementById("btnReportClose").onclick = hideBattleReport;
   document.getElementById("btnPrevUnit").onclick = () => cycleFocus(-1);
   document.getElementById("btnNextUnit").onclick = () => cycleFocus(1);
   document.getElementById("btnZoomReset").onclick = resetCameraZoom;

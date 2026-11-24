@@ -381,6 +381,17 @@ for token in ['id="atlasFrame"', 'background-image:url("creatures/bigfoot/turnta
 if not (path.parent / 'creatures' / 'bigfoot' / 'turntable.png').is_file():
     problems.append('Bigfoot-Turntable-Datei fehlt im Assetordner')
 
+# Nachkampf-Auswertung: Zaehlung und Panel muessen im WebView-Build zusammen liegen.
+for token in ['id="battleReport"', 'id="battleReportTitle"', 'id="battleReportDamage"',
+              'id="battleReportHeal"', 'id="battleReportTop"', 'id="btnReportClose"',
+              'function noteBattleDamage', 'function noteBattleHeal', 'function battleReportData',
+              'function showBattleReport', 'function hideBattleReport',
+              'stats:{damage:{},heal:{}}', 'noteBattleDamage(source,target,dmg)',
+              'noteBattleHeal(u,real)', 'showBattleReport(true)', 'showBattleReport(false)',
+              'hideBattleReport();']:
+    if token not in src:
+        problems.append('Nachkampf-Auswertung fehlt in index3d.html: ' + token)
+
 if problems:
     for p in problems[:30]:
         print('FEHLER:', p)

@@ -4,7 +4,7 @@ Letzter Scan: 2026-11-24 17:37 UTC
 
 Erzeugt von `scripts/idea_scout.py` – kostenlos, ohne API-Key. Der 10-Minuten-Agent startet jeden Lauf mit `python3 scripts/idea_scout.py --pick`.
 
-Autonomer Stand 2026-11-24: Der `--pick`-Vorschlag (Boss/Elite-Intent, Task 49) und die Idee „Status-Icons erhalten Formen“ (Task 52) sind geliefert; dazwischen wurde der Bigfoot-Atlas (Task 51) eingebaut. Der Scout schlägt weiterhin den Boss-Intent vor – die nächste offene Idee ist die kurze Nachkampf-Auswertung (Schaden, Heilung, Top-Einheit). Diesen Lauf wurde nichts heruntergeladen, das Budget bleibt bei 0,5 MiB / 2048 MiB.
+Autonomer Stand 2026-11-24: Der `--pick`-Vorschlag (Boss/Elite-Intent, Task 49), die Idee „Status-Icons erhalten Formen“ (Task 52), der Bigfoot-Atlas (Task 51) und die kurze Nachkampf-Auswertung (Task 53) sind geliefert. Der Scout schlägt weiterhin den bereits umgesetzten Boss-Intent vor – die nächste offene Idee ist der Mikro-Hit-Stop bei Krit und Kill (nur visuell). Diesen Lauf wurde nichts heruntergeladen, das Budget bleibt bei 0,5 MiB / 2048 MiB.
 
 ## Priorisiert (höchste Priorität zuerst)
 
@@ -20,11 +20,11 @@ Autonomer Stand 2026-11-24: Der `--pick`-Vorschlag (Boss/Elite-Intent, Task 49) 
 
 ## Nächster konkreter Schritt
 
-**Kurze Nachkampf-Auswertung (Schaden, Heilung, Top-Einheit)**
+**Mikro-Hit-Stop bei Krit und Kill (nur visuell)**
 
-Nach Sieg/Niederlage ein kompaktes Panel mit summiertem Schaden, Heilung und der stärksten Einheit anzeigen; deterministisch aus vorhandenen Kampfwerten, ohne Headless-Verhalten zu ändern.
+Kritische Treffer und Todesstöße kurz (ein paar Frame-Ticks) visuell einfrieren, ohne Simulationszeit, Cooldowns oder Headless-Ergebnisse zu verändern.
 
-Warum: Die beiden höchstbewerteten Ideen (Boss-Intent, Status-Formen) sind umgesetzt; die Auswertung macht den Rundenausgang nachvollziehbar. Quelle: game-mechanics/concepts/post-battle-scoreboard.
+Warum: Die drei höchstbewerteten Ideen (Boss-Intent, Status-Formen, Nachkampf-Auswertung) sind umgesetzt; der Hit-Stop ist die nächste noch offene Idee mit gutem Nutzen/Aufwand-Verhältnis. Quelle: game-mechanics/concepts/hit-stop.
 
 ## Web- und Git-Funde
 
