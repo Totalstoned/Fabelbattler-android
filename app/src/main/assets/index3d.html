@@ -2384,8 +2384,13 @@ function killUnit(u,source){
   }
   pushEffect(u,"☠","#e5484d");
   spawnBurst(u,"#e5484d",18,1.4);
-  spawnShockwave(u,"#e5484d",1.3);
-  if(!u.isMob){
+  spawnShockwave(u,"#e5484d",u.isBoss ? 2 : 1.3);
+  // Bosse sind der seltene Höhepunkt einer Welle: ihr Tod bekommt einen
+  // stärkeren Shake und einen eigenen Hinweis statt eines normalen Mob-Tods.
+  if(u.isBoss){
+    addShake(0.35);
+    showToast(u.side === "enemy" ? "👑 Gegner-Boss besiegt!" : "👑 Team-Boss gefallen!");
+  } else if(!u.isMob){
     addShake(0.2);
     showToast("☠ "+u.name+" fällt!");
   }
