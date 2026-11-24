@@ -347,6 +347,8 @@ v1.71-b71 2026-11-24  (Feste APK-Signatur fuer Updates)
    - Fix: festes PKCS#12-Keystore app/debug.p12 (Alias androiddebugkey, Passwort
      android, 10000 Tage) im Repo, in build.gradle unter signingConfigs.debug
      verdrahtet und beiden Build-Types zugewiesen.
+   - Verifiziert: zwei CI-Laeufe (45297750257, 45298018791) liefern identische
+     Zertifikats-SHA-256 2f24169d...24748, gleich dem festen Keystore.
    - Wichtig: die bereits installierte App ist mit einem alten Zufallskey
      signiert und muss EINMAL manuell deinstalliert werden. Danach funktionieren
      alle weiteren Updates ohne Deinstallation.

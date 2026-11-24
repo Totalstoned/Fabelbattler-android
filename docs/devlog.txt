@@ -15,7 +15,11 @@ Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
     signingConfigs.debug in build.gradle, beiden Build-Types zugewiesen.
   - Einschraenkung: die installierte App hat noch einen alten Zufallskey und
     muss EINMAL manuell deinstalliert werden; danach greifen In-Place-Updates.
-  - Naechster Schritt: CI-Build pruefen, zwei APKs auf gleiche Signatur testen.
+  - VERIFIZIERT: CI 45297750257 gruen, APK-Zertifikat SHA-256
+    2f24169d42220c5ab1ee3b2da723b8853ee750b95d9d6405b14303ac59724748 entspricht
+    exakt app/debug.p12. Zweiter unabhaengiger Lauf 45298018791 ergab denselben
+    Hash -> In-Place-Updates funktionieren ab dieser Version.
+  - Naechster Schritt: User installiert v1.71 (alte App einmal deinstallieren).
 
 2026-11-24 00:25  v1.70-b70  (Versionssprung)
   - User: "benneng 1.59 1.60 1.70 der app" -> nach Rueckfrage: direkt 1.70.
