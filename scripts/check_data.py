@@ -179,6 +179,22 @@ for token in ['const START_TEAM_MIN = 3;', 'const TEAM_GROWTH_CAP = 10;',
         problems.append('Startauswahl/Teamwachstum/Reroll 2-3-4 fehlt: ' + token)
 if 'Reroll 1 Gold' in src:
     problems.append('Alter Reroll-Preis (1 Gold) ist noch im UI vorhanden')
+status_shape_block = extract_block('STATUS_SHAPES')
+status_shapes = keys(status_shape_block)
+for shape in ['danger', 'control', 'boost']:
+    if shape not in status_shapes:
+        problems.append('Status-Form fehlt: ' + shape)
+segments = re.findall(r'\bsegments\s*:\s*(\d+)', status_shape_block)
+if len(segments) != 3 or len(set(segments)) != 3:
+    problems.append('Status-Formen brauchen drei verschiedene Segmentzahlen')
+status_meta_block = extract_block('STATUS_META')
+for status_key in statuses:
+    if not re.search(r'\b' + re.escape(status_key) + r'\s*:\s*\{[^{}]*\bshape\s*:\s*"(?:danger|control|boost)"', status_meta_block):
+        problems.append('Status ohne Form (farbblind nicht unterscheidbar): ' + status_key)
+for token in ['const STATUS_RING_GEOMETRIES = {}', 'function dominantStatusKey', 'function statusShapeLegend',
+              'Ringformen im Feld: ${statusShapeLegend()}']:
+    if token not in src:
+        problems.append('Status-Formen im Feld/UI fehlen: ' + token)
 for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'updateMobVisuals', 'hudMobs', 'mdReroll', 'rerollDraft', 'slice(0,3)', 'mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'draftFilterRole', 'draftSynergyText', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'function useItem', 'ELITE_EVERY', 'BOSS_EVERY', 'MOB_TIERS', 'mobTierFor', 'isBoss', 'isElite', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'function updateBattleStatus']:
     if token not in src:
         problems.append('Mob-System fehlt: ' + token)

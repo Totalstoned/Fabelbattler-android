@@ -510,16 +510,27 @@ const RACE_SYNERGY = {
   Assassine:m=>{m.crit+=0.15;m.spd*=1.12;},
   Alien:m=>{m.splash+=0.12;m.burn+=0.025;}
 };
+const STATUS_SHAPES = {
+  danger:{glyph:"▲",segments:3,label:"Schaden"},
+  control:{glyph:"◆",segments:4,label:"Kontrolle"},
+  boost:{glyph:"⬢",segments:6,label:"Verstärkung"}
+};
+// Statusringe im 3D-Feld unterscheiden sich nicht nur farblich, sondern auch
+// in der Form: Dreieck = Schaden, Viereck = Kontrolle, Sechseck = Verstärkung.
+const STATUS_RING_GEOMETRIES = {};
+for(const key in STATUS_SHAPES){
+  STATUS_RING_GEOMETRIES[key] = new THREE.TorusGeometry(1,0.026,8,STATUS_SHAPES[key].segments);
+}
 const STATUS_META = {
-  burn:{label:"Brand",emoji:"🔥",hex:0xff6b4a,css:"#ff6b4a"},
-  slow:{label:"Langsam",emoji:"❄",hex:0x67e8f9,css:"#67e8f9"},
-  root:{label:"Wurzel",emoji:"🌿",hex:0x86efac,css:"#86efac"},
-  stun:{label:"Betäubt",emoji:"💫",hex:0xfde68a,css:"#fde68a"},
-  charm:{label:"Verwirrt",emoji:"💜",hex:0xd8b4fe,css:"#d8b4fe"},
-  weaken:{label:"Geschwächt",emoji:"▼",hex:0xfca5a5,css:"#fca5a5"},
-  atkBuff:{label:"Gestärkt",emoji:"▲",hex:0xfcd34d,css:"#fcd34d"},
-  defBuff:{label:"Gepanzert",emoji:"⛨",hex:0x8fb5ff,css:"#8fb5ff"},
-  taunt:{label:"Spott",emoji:"↯",hex:0xfb923c,css:"#fb923c"}
+  burn:{label:"Brand",emoji:"🔥",hex:0xff6b4a,css:"#ff6b4a",shape:"danger"},
+  slow:{label:"Langsam",emoji:"❄",hex:0x67e8f9,css:"#67e8f9",shape:"control"},
+  root:{label:"Wurzel",emoji:"🌿",hex:0x86efac,css:"#86efac",shape:"control"},
+  stun:{label:"Betäubt",emoji:"💫",hex:0xfde68a,css:"#fde68a",shape:"control"},
+  charm:{label:"Verwirrt",emoji:"💜",hex:0xd8b4fe,css:"#d8b4fe",shape:"control"},
+  weaken:{label:"Geschwächt",emoji:"▼",hex:0xfca5a5,css:"#fca5a5",shape:"danger"},
+  atkBuff:{label:"Gestärkt",emoji:"▲",hex:0xfcd34d,css:"#fcd34d",shape:"boost"},
+  defBuff:{label:"Gepanzert",emoji:"⛨",hex:0x8fb5ff,css:"#8fb5ff",shape:"boost"},
+  taunt:{label:"Spott",emoji:"↯",hex:0xfb923c,css:"#fb923c",shape:"boost"}
 };
 const ABILITY_DESC = {
   goldspinnen:"Stroh zu Gold: Bonus-Gold und kleine Schilde",
@@ -2142,9 +2153,10 @@ function makeCharacter(u){
   selectGlow.visible = false;
   group.add(selectGlow);
   const statusRing = new THREE.Mesh(
-    new THREE.TorusGeometry(shadowRadius+0.45,0.022,8,28),
+    STATUS_RING_GEOMETRIES.boost,
     new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending,depthWrite:false})
   );
+  statusRing.scale.setScalar(shadowRadius+0.45);
   statusRing.rotation.x = Math.PI/2;
   statusRing.position.y = 0.09;
   statusRing.visible = false;
@@ -3255,11 +3267,14 @@ function updateVisuals(time,dt){
     group.userData.cdFill.scale.x = Math.max(0.001,cdRatio);
     group.userData.cdFill.position.x = -(1-cdRatio)*0.43;
     group.userData.cdFill.material.color.setHex(cdRatio >= 1 ? 0x86efac : 0x67e8f9);
-    const statusHex = dominantStatus(u);
-    const ringHex = statusHex !== null ? statusHex : (u.modsEffective && u.modsEffective.taunt ? STATUS_META.taunt.hex : null);
-    group.userData.statusRing.visible = !u.isDead && ringHex !== null;
-    if(ringHex !== null){
-      group.userData.statusRing.material.color.setHex(ringHex);
+    const statusKey = dominantStatusKey(u) ||
+      (u.modsEffective && u.modsEffective.taunt ? "taunt" : null);
+    const statusMeta = statusKey ? STATUS_META[statusKey] : null;
+    group.userData.statusRing.visible = !u.isDead && statusMeta !== null;
+    if(statusMeta){
+      const shapeGeometry = STATUS_RING_GEOMETRIES[statusMeta.shape];
+      if(group.userData.statusRing.geometry !== shapeGeometry) group.userData.statusRing.geometry = shapeGeometry;
+      group.userData.statusRing.material.color.setHex(statusMeta.hex);
       group.userData.statusRing.material.opacity = 0.45+Math.sin(time*5+u.id)*0.25;
       group.userData.statusRing.rotation.z -= dt*1.6;
     }
@@ -3286,11 +3301,18 @@ function activeStatusKeys(u){
 }
 function statusText(u){
   const keys = activeStatusKeys(u);
-  return keys.length ? keys.map(k => STATUS_META[k].emoji+" "+STATUS_META[k].label+" "+u.statuses[k].toFixed(1)+"s").join(" · ") : "keine Effekte";
+  return keys.length ? keys.map(k => STATUS_SHAPES[STATUS_META[k].shape].glyph+" "+STATUS_META[k].emoji+" "+STATUS_META[k].label+" "+u.statuses[k].toFixed(1)+"s").join(" · ") : "keine Effekte";
+}
+function statusShapeLegend(){
+  return Object.keys(STATUS_SHAPES).map(k => STATUS_SHAPES[k].glyph+" "+STATUS_SHAPES[k].label).join(" · ");
+}
+function dominantStatusKey(u){
+  const keys = activeStatusKeys(u);
+  return keys.length ? keys[0] : null;
 }
 function dominantStatus(u){
-  const keys = activeStatusKeys(u);
-  return keys.length ? STATUS_META[keys[0]].hex : null;
+  const key = dominantStatusKey(u);
+  return key ? STATUS_META[key].hex : null;
 }
 function cooldownText(u){
   const sp = SPELLS[u.spell];
@@ -3314,6 +3336,7 @@ function abilityInfoHtml(u){
     `<div class="spell">Zauber: ${sp.name||"—"} · ${range} · CD ${sp.cd||"—"}s</div>`+
     `<div class="cd">${cooldownText(u)}</div>`+
     `<div class="statuses">Status: ${statusText(u)}</div>`+
+    `<div class="tiny">Ringformen im Feld: ${statusShapeLegend()}</div>`+
     `<div>${tags ? tags+"<br>" : ""}HP ${Math.round(u.hp)}/${u.maxHp} · ATK ${Math.round(u.atk)} · Tempo ${u.spd.toFixed(2)}</div></div>`;
 }
 function updateUnitInfo(){
