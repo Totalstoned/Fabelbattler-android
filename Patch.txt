@@ -23,6 +23,9 @@ Jede Datei ist nach ihrer Version benannt, zum Beispiel:
 
     1.00.0.apk
     1.00.1.apk
+    1.00.2.apk
+    1.00.3.apk
+    1.00.4.apk
 
 Es gibt kein "v" davor und kein "-b1001" dahinter. Die neueste Datei steht
 immer unten, wenn du den Ordner sortierst.
@@ -30,7 +33,7 @@ immer unten, wenn du den Ordner sortierst.
 ------------------------------------------------------------
 3. Wie installiere ich die App?
 ------------------------------------------------------------
-Schritt 1: Die Datei "1.00.1.apk" auf das Android-Gerät übertragen.
+Schritt 1: Die neueste Datei (z. B. "1.00.4.apk") auf das Android-Gerät übertragen.
 Schritt 2: Die Datei antippen. Android fragt, ob Installieren erlaubt ist.
 Schritt 3: "Installieren" antippen.
 Schritt 4: App öffnen.
@@ -40,13 +43,14 @@ Deshalb genügt ein normales Update. Nur wenn auf dem Gerät noch eine sehr alte
 Version (1.70 oder älter) liegt, musst du diese einmalig deinstallieren.
 
 ------------------------------------------------------------
-4. Was ist neu in 1.00.1?
+4. Was ist neu in 1.00.2?
 ------------------------------------------------------------
 Schritt 1: Sieg und Niederlage sind jetzt im Schlachtfeld sichtbar.
            Bei einem Sieg leuchten goldene Ringe und Partikel über den
            überlebenden Helden. Bei einer Niederlage sind sie rot.
 Schritt 2: Die Kamera kann frei bewegt werden (siehe Schritt 6).
-Schritt 3: Die APK heißt jetzt nur noch "1.00.1.apk".
+Schritt 3: Die ⌖-Kamera-Taste zeigt jetzt „⌖ Folgen" oder „⌖ Frei" an.
+           Die APK heißt nur noch "1.00.2.apk" (ohne v und ohne -b).
 Schritt 4: Alle alten APKs aus dem Ordner wurden beim Umstellungspunkt
            entfernt; seitdem sammeln sich die Versionen wieder an.
 
@@ -92,7 +96,8 @@ Schritt 4: Unten in der Kampfleiste siehst du Zeit, Gold, Gegnerzahl,
 Schritt 5: Mit "Heilregen (40)" heilst du das Team, sobald 40 Mana voll sind.
            Mit "Blitz (70)" schleuderst du einen Zauber, sobald 70 Mana voll sind.
 Schritt 6: Nach einem Sieg öffnet sich der Draft. Du wählst eine von drei
-           Karten oder zahlst 1 Gold für einen neuen Reroll.
+           Karten oder würfelst neu: Reroll kostet 2 Gold, dann 3, dann 4
+           (danach bleibt es bei 4).
 Schritt 7: Mit "Nächste Welle" geht es weiter. Alle 5 Wellen gibt es Eliten,
            alle 10 Wellen Bosse.
 
