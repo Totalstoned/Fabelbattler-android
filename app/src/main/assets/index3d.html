@@ -24,7 +24,7 @@
   @media(max-width:820px){.main{grid-template-columns:1fr;}}
   #scene{width:100%;aspect-ratio:720/460;border-radius:14px;border:1px solid var(--line);
        background:#0b0e13;overflow:hidden;}
-  #scene canvas{width:100%;height:100%;display:block;}
+  #scene canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab;}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;}
   .panel h2{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin:0 0 8px;}
   .btn{width:100%;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;
@@ -274,18 +274,13 @@
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild, Angriff, Level, Rolle und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b> · ⚔ <b id="focusAtkValue">0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
   <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Level, Rolle, Rest-HP, Schild, Angriff und Statuseffekten">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetMeta">Lv – · –</b> <b id="focusTargetHp">0/0</b> · ⚔ <b id="focusTargetAtk">0</b><span class="fx" id="focusTargetStatus"></span></span>
-  <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
   <span class="enemyhp" id="enemyHpBar" title="Verbleibende HP und Schilde aller Gegner inklusive Schwarm als Prozent und absolute Werte; grün, wenn der Sieg nah ist">☠ <span class="track"><i id="enemyHpFill"></i></span> <b id="enemyHpPct">100%</b> · <b class="abs" id="enemyHpValue">0/0</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP plus Schild aller Helden im Verhältnis zur maximalen Team-HP">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpValue">0/0</b> <b id="teamHpPct">100%</b></span>
-  <span class="enemyhp" id="enemyHpBar" title="Verbleibende HP und Schilde aller Gegner inklusive Schwarm; grün, wenn der Sieg nah ist">☠ <span class="track"><i id="enemyHpFill"></i></span> <b id="enemyHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b> <span class="spell-ready" id="manaHealReady" title="Heilregen ab 40 Mana verfügbar">✚40</span> <span class="spell-ready" id="manaNovaReady" title="Fabel-Blitz ab 70 Mana verfügbar">✺70</span></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 Gegner <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarHp">0/0</b> <b id="bossBarPct">100%</b></span>
   <span class="bossbar friendly" id="playerBossBar" title="Lebenspunkte des eigenen Boss">👑 Team <span class="track"><i id="playerBossBarFill"></i></span> <b id="playerBossBarHp">0/0</b> <b id="playerBossBarPct">100%</b></span>
-  <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
-  <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 Gegner <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
-  <span class="bossbar friendly" id="playerBossBar" title="Lebenspunkte des eigenen Boss">👑 Team <span class="track"><i id="playerBossBarFill"></i></span> <b id="playerBossBarPct">100%</b></span>
-  <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · ⌖ Zoom zurück · Wesen tippen</span>
+  <span class="battle-info" style="color:var(--dim)">Ziehen: Kamera · Rad/2 Finger: Zoom · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
   <button class="btn heal" id="btnBattleHeal">Heilregen (40)</button>
@@ -295,7 +290,7 @@
   <button class="btn nova" id="btnItemNova">Splitter</button>
   <button class="btn ghost" id="btnPrevUnit" title="Vorheriges Wesen">◀</button>
   <button class="btn ghost" id="btnNextUnit" title="Nächstes Wesen">▶</button>
-  <button class="btn ghost" id="btnZoomReset" title="Kamera auf Standard-Zoom zurücksetzen (Doppelklick oder 0)">⌖ Zoom</button>
+  <button class="btn ghost" id="btnZoomReset" title="Kamera zurücksetzen: Zoom und Position (Doppelklick oder 0)">⌖ Zoom</button>
   <button class="btn ghost" id="btnBattleInfo">Fähigkeit</button>
   <button class="btn ghost" id="btnBattleExit">Vollbild aus</button>
 </div>
@@ -760,6 +755,10 @@ camera.lookAt(0,0,0);
 const DEFAULT_VIEW = 11.6;
 let cameraView = DEFAULT_VIEW;
 let targetView = DEFAULT_VIEW;
+const cameraPan = new THREE.Vector3(0,0,0);
+let cameraFollow = true;
+const PAN_LIMIT_X = GRID.cols*TILE*0.6;
+const PAN_LIMIT_Z = GRID.rows*TILE*0.6;
 scene.add(new THREE.HemisphereLight(0xcfe6ff,0x141018,0.85));
 scene.add(new THREE.AmbientLight(0xb9c7e0,0.55));
 const keyLight = new THREE.DirectionalLight(0xfff2e2,2.4);
@@ -867,44 +866,77 @@ function resize(){
 function zoomCamera(delta){
   targetView = clamp(targetView+delta,7.2,17);
 }
+function panCameraPixels(dx,dy){
+  const rect = renderer.domElement.getBoundingClientRect();
+  const w = Math.max(1,rect.width||1), h = Math.max(1,rect.height||1);
+  const s = cameraView/Math.max(w,h)*0.7;
+  cameraPan.x = clamp(cameraPan.x-(dx-dy)*s,-PAN_LIMIT_X,PAN_LIMIT_X);
+  cameraPan.z = clamp(cameraPan.z+(dx+dy)*s,-PAN_LIMIT_Z,PAN_LIMIT_Z);
+  cameraFollow = false;
+}
 function resetCameraZoom(){
   targetView = DEFAULT_VIEW;
+  cameraPan.set(0,0,0);
+  cameraFollow = true;
 }
 function touchDistance(e){
   const a=e.touches[0], b=e.touches[1];
   return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
 }
 let pinchDistance=0;
+let panMoved = false;
 renderer.domElement.addEventListener("wheel",e=>{
   e.preventDefault();
   zoomCamera(Math.sign(e.deltaY)*0.75);
 },{passive:false});
+let touchPanLast = null;
 renderer.domElement.addEventListener("touchstart",e=>{
-  if(e.touches.length===2) pinchDistance=touchDistance(e);
+  if(e.touches.length===2){ pinchDistance=touchDistance(e); touchPanLast=null; panMoved=true; }
+  else if(e.touches.length===1){ touchPanLast={x:e.touches[0].clientX,y:e.touches[0].clientY}; panMoved=false; }
 },{passive:true});
 renderer.domElement.addEventListener("touchmove",e=>{
-  if(e.touches.length!==2) return;
-  e.preventDefault();
-  const d=touchDistance(e);
-  if(pinchDistance) targetView=clamp(targetView*(pinchDistance/d),7.2,17);
-  pinchDistance=d;
+  if(e.touches.length===2){
+    e.preventDefault();
+    const d=touchDistance(e);
+    if(pinchDistance) targetView=clamp(targetView*(pinchDistance/d),7.2,17);
+    pinchDistance=d; touchPanLast=null; panMoved=true;
+    return;
+  }
+  if(e.touches.length===1 && touchPanLast && !pinchDistance){
+    e.preventDefault();
+    const t=e.touches[0];
+    const dx=t.clientX-touchPanLast.x, dy=t.clientY-touchPanLast.y;
+    if(dx || dy){ panCameraPixels(dx,dy); touchPanLast={x:t.clientX,y:t.clientY}; panMoved=true; }
+  }
 },{passive:false});
 renderer.domElement.addEventListener("touchend",e=>{
   if(e.touches.length<2) pinchDistance=0;
+  if(e.touches.length===0) touchPanLast=null;
 },{passive:true});
 const raycaster = new THREE.Raycaster();
 const pointerNdc = new THREE.Vector2();
 let tapStart = null;
 renderer.domElement.addEventListener("pointerdown",e=>{
-  tapStart = {x:e.clientX,y:e.clientY,t:performance.now()};
+  tapStart = {x:e.clientX,y:e.clientY,t:performance.now(),lastX:e.clientX,lastY:e.clientY};
+  panMoved = false;
 });
+renderer.domElement.addEventListener("pointermove",e=>{
+  if(!tapStart || e.pointerType === "touch" || pinchDistance) return;
+  const dx=e.clientX-tapStart.x, dy=e.clientY-tapStart.y;
+  if(Math.hypot(dx,dy)>6) panMoved=true;
+  if(panMoved){
+    panCameraPixels(e.clientX-tapStart.lastX,e.clientY-tapStart.lastY);
+    tapStart.lastX=e.clientX; tapStart.lastY=e.clientY;
+  }
+});
+renderer.domElement.addEventListener("pointercancel",()=>{ tapStart=null; panMoved=false; });
 renderer.domElement.addEventListener("pointerup",e=>{
   if(!tapStart) return;
   const dx=e.clientX-tapStart.x;
   const dy=e.clientY-tapStart.y;
   const elapsed=performance.now()-tapStart.t;
   tapStart=null;
-  if(pinchDistance || Math.hypot(dx,dy)>10 || elapsed>600) return;
+  if(pinchDistance || panMoved || Math.hypot(dx,dy)>10 || elapsed>600){ panMoved=false; return; }
   const rect=renderer.domElement.getBoundingClientRect();
   pointerNdc.x=((e.clientX-rect.left)/rect.width)*2-1;
   pointerNdc.y=-((e.clientY-rect.top)/rect.height)*2+1;
@@ -2886,11 +2918,9 @@ function updateVisuals(time,dt){
   motes.rotation.y = time*0.02;
   const focusUnit = findUnitById(G.selectedUnitId);
   const focusGroup = focusUnit && !focusUnit.isDead ? unitGroups.get(focusUnit.id) : null;
-  if(focusGroup){
-    cameraDesired.set(focusGroup.position.x*0.35,0,focusGroup.position.z*0.35);
-  } else {
-    cameraDesired.set(0,0,0);
-  }
+  const followX = cameraFollow && focusGroup ? focusGroup.position.x*0.35 : 0;
+  const followZ = cameraFollow && focusGroup ? focusGroup.position.z*0.35 : 0;
+  cameraDesired.set(followX+cameraPan.x,0,followZ+cameraPan.z);
   const focusTarget = G.phase === "battle" && focusUnit && !focusUnit.isDead ? focusUnit.target : null;
   if(focusTarget && !focusTarget.isDead && focusTarget.grid){
     const tp = worldPos(focusTarget.grid.gx,focusTarget.grid.gy);

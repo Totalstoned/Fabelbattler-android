@@ -199,6 +199,11 @@ for token in ['id="btnZoomReset"', 'function resetCameraZoom', 'targetView = DEF
               'addEventListener("dblclick",resetCameraZoom)', 'if(e.key==="0") resetCameraZoom();']:
     if token not in src:
         problems.append('Zoom-Reset in der Kampfleiste fehlt: ' + token)
+for token in ['const cameraPan = new THREE.Vector3(0,0,0);', 'let cameraFollow = true;',
+              'function panCameraPixels', 'cameraPan.x = clamp(', 'cameraPan.z = clamp(',
+              'touch-action:none', 'addEventListener("pointermove"']:
+    if token not in src:
+        problems.append('Freie Kamera-Bewegung (Pan) fehlt: ' + token)
 
 for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', 'swarmStacks(sideUnits(G.battle,"player").length)']:
     if token not in src:
