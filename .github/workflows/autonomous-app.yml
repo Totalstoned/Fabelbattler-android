@@ -2,7 +2,7 @@ name: Fabelbattler Autonomous Agent
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 concurrency:
@@ -62,14 +62,14 @@ jobs:
             - UE5-Daten und C++-Gerüst liegen außerhalb dieses Repos nur als spätere Option.
 
             Regeln:
-            - Der Workflow läuft alle 15 Minuten; bleibe daher strikt unter 12 Minuten und wähle wirklich nur ein kleines Ziel.
+            - Der Workflow läuft alle 10 Minuten; bleibe daher strikt unter 9 Minuten und wähle wirklich nur ein kleines Ziel.
             - Pro Lauf nur ein abgeschlossenes, kleines Ziel.
             - Keine Engine-Installation, keine großen Dependency-Neuerungen, keine Secrets oder Tokens in Dateien.
             - Kein Wechsel der Engine; Three.js/WebView bleibt der aktive Pfad.
             - Ändere bevorzugt app/src/main/assets/index3d.html und bei Bedarf vorhandene Repo-Dateien.
-            - Bei jeder App-Änderung APP_VERSION_CODE in gradle.properties um 1 erhöhen und APP_VERSION_NAME bei Bedarf aktualisieren.
+            - Bei jeder App-Änderung `python3 scripts/bump_version.py` ausführen (1.00.1 -> 1.00.2 ... 1.20.0, VersionCode = major*1000+minor*10+patch). Bei 1.20.0 stoppen.
             - Validiere nach Änderungen mit: python3 scripts/check_js.py app/src/main/assets/index3d.html, python3 scripts/check_data.py app/src/main/assets/index3d.html und node scripts/check_runtime.js app/src/main/assets/index3d.html
-            - Erstelle einen Commit und einen Pull Request mit kurzer, konkreter Beschreibung.
+            - Erstelle einen Commit und einen Pull Request mit kurzer, konkreter Beschreibung. Der lokale 10-Minuten-Loop integriert CLEAN-PRs automatisch nach erneuter Validierung.
             - Falls die Änderung nicht sicher abgeschlossen werden kann, ändere nichts und erkläre den Grund im Issue-Kommentar.
 
             Am Ende sollt du auf jeden Fall einen kurzen Issue-Kommentar mit dem gewählten Ziel, dem Ergebnis und dem nächsten Schritt schreiben.

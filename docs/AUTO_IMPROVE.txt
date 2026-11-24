@@ -1,0 +1,56 @@
+Fabelbattler – automatische Verbesserung alle 10 Minuten
+=========================================================
+
+Stand: 2026-11-24 16:35 UTC
+Ziel: eigenständige Entwicklung von 1.00.1 bis 1.20.0 ohne Rückfrage.
+
+1) LOKALER LOOP (läuft)
+   - Skript:  /root/fabelbattler/android/scripts/auto-improve.sh
+   - Prozess: Hintergrund, Intervall 600 s (10 Minuten)
+   - Jeder Lauf: frischer Git-Worktree von main, genau EIN kleines Ziel,
+     Validierung mit check_js/check_data/check_runtime, Commit, Push, PR.
+   - Direkt danach: scripts/auto-integrate.sh. Der Integrator validiert
+     offene PRs erneut und mergt CLEAN-PRs per Squash automatisch.
+     Konflikte/rote Checks => PR bleibt offen mit Kommentar, nächster
+     Lauf versucht es erneut. Nach Merge: externe index3d.html-Kopie
+     und neueste APK werden automatisch nachgezogen.
+   - Versionssprung: python3 scripts/bump_version.py
+     (1.00.1 -> 1.00.2 -> ... -> 1.00.9 -> 1.01.0 ... 1.20.0).
+     VersionCode = major*1000 + minor*10 + patch. Bei 1.20.0 Stopp.
+   - Der Agent darf kreativ sein und recherchieren: neue Einheiten/Zauber,
+     Balance-Vergleiche, Animationen, UI. Feste Check-Invarianten müssen
+     eingehalten oder in check_data.py UND check_runtime.js mitgezogen werden.
+   - Der Prompt enthält die Liste offener PRs (Duplikat-Schutz).
+   - Der Agent arbeitet ausschließlich im Worktree; der Hauptcheckout wird
+     bei Verunreinigung verworfen. Branch-Erkennung über Basis-Commit.
+   - Log:  /root/projects/FABELBATTLER/auto-improve.log
+   - Stopp: touch /root/projects/FABELBATTLER/auto-improve.stop
+   - Einmal testen: cd /root/fabelbattler/android && ./scripts/auto-improve.sh once
+   - Start/Restart: cd /root/fabelbattler/android && nohup ./scripts/auto-improve.sh &
+
+2) GITHUB-ACTIONS-CRON (alle 10 Minuten, ohne Guthaben blockiert)
+   - .github/workflows/autonomous-app.yml: cron */10 * * * *
+   - Repo-Secret OPENCODE_API_KEY gesetzt, zusätzlich als OPENAI_API_KEY
+     weitergereicht, Modell openai/gpt-4o-mini.
+   - Blockade: OpenAI-Konto ohne Guthaben (insufficient_quota).
+     Nach Aufladen läuft der Cron ohne weitere Aenderung.
+
+AKTUELLER STAND
+   - App v1.00.1 (Commit ab927aa). CI 45435233440 gruen.
+   - APK: /root/projects/FABELBATTLER/1.00.1.apk
+     SHA-256 8403861dc36a12a7c579d17fdb019042852a7194af5112243e536ee926acf348
+   - APK-Name ohne Präfix/Suffix: <VERSION>.apk. Die 36 alten APKs wurden
+     beim Reset entfernt; 1.00.0.apk und 1.00.1.apk liegen wieder im Ordner.
+   - PRs #134-#158 sind integriert bzw. manuell uebernommen; der Loop
+     integriert neue CLEAN-PRs automatisch. Fortschritt: Issue #1.
+   - Fixe Signatur via app/debug.p12; Upgrades ab v1.71 ohne Deinstallation.
+   - User-Anleitung: /root/projects/FABELBATTLER/Patch.txt
+     (jeder Schritt einzeln fuer Neulinge erklaert).
+
+REGELN FUER DEN AGENTEN (verankert in AGENTS.md)
+   - Pro Lauf genau ein kleines, abgeschlossenes Ziel.
+   - Keine Engine-, Sprach- oder Dependency-Wechsel.
+   - Nach jeder index3d.html-Aenderung externe Kopie synchronisieren.
+   - Alle drei Checks in beiden Kopien muessen gruen sein.
+   - Docs, devlog, Patch.txt und Issue #1 aktualisieren.
+   - Antworten auf Deutsch und kurz. Kein direkter Geraetezugriff.

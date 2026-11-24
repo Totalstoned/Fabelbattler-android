@@ -1,0 +1,132 @@
+PATCH.txt – Fabelbattler Schritt für Schritt (für Neulinge)
+=========================================================
+
+Dieses Dokument erklärt jeden Schritt einzeln und einfach. Du brauchst keine
+Programmierkenntnisse, um die App zu installieren oder die Versionsnachrichten
+zu verstehen.
+
+------------------------------------------------------------
+1. Was ist Fabelbattler?
+------------------------------------------------------------
+Fabelbattler ist ein Auto-Battler für Android. Du stellst ein Team aus
+Märchen-, Tier- und Krypto-Wesen zusammen. Im Kampf läuft die Schlacht von
+allein. Du kannst währenddessen Zauber auslösen und die Kamera bewegen.
+
+------------------------------------------------------------
+2. Wo finde ich die App?
+------------------------------------------------------------
+Die fertigen APK-Dateien liegen hier:
+
+    /root/projects/FABELBATTLER/
+
+Jede Datei ist nach ihrer Version benannt, zum Beispiel:
+
+    1.00.0.apk
+    1.00.1.apk
+
+Es gibt kein "v" davor und kein "-b1001" dahinter. Die neueste Datei steht
+immer unten, wenn du den Ordner sortierst.
+
+------------------------------------------------------------
+3. Wie installiere ich die App?
+------------------------------------------------------------
+Schritt 1: Die Datei "1.00.1.apk" auf das Android-Gerät übertragen.
+Schritt 2: Die Datei antippen. Android fragt, ob Installieren erlaubt ist.
+Schritt 3: "Installieren" antippen.
+Schritt 4: App öffnen.
+
+Wichtig: Seit Version 1.71 verwenden alle APKs denselben Signatur-Schlüssel.
+Deshalb genügt ein normales Update. Nur wenn auf dem Gerät noch eine sehr alte
+Version (1.70 oder älter) liegt, musst du diese einmalig deinstallieren.
+
+------------------------------------------------------------
+4. Was ist neu in 1.00.1?
+------------------------------------------------------------
+Schritt 1: Sieg und Niederlage sind jetzt im Schlachtfeld sichtbar.
+           Bei einem Sieg leuchten goldene Ringe und Partikel über den
+           überlebenden Helden. Bei einer Niederlage sind sie rot.
+Schritt 2: Die Kamera kann frei bewegt werden (siehe Schritt 6).
+Schritt 3: Die APK heißt jetzt nur noch "1.00.1.apk".
+Schritt 4: Alle alten APKs aus dem Ordner wurden beim Umstellungspunkt
+           entfernt; seitdem sammeln sich die Versionen wieder an.
+
+------------------------------------------------------------
+5. Wie spiele ich?
+------------------------------------------------------------
+Schritt 1: Die App startet mit dem festen Team Bigfoot, Chupacabra und Fee.
+Schritt 2: Tippe auf "Kampf starten", um die erste Welle zu beginnen.
+Schritt 3: Die Wesen laufen automatisch aufeinander zu und kämpfen.
+Schritt 4: Unten in der Kampfleiste siehst du Zeit, Gold, Gegnerzahl,
+           Team-HP, Gegner-HP, Mana und den ausgewählten Helden.
+Schritt 5: Mit "Heilregen (40)" heilst du das Team, sobald 40 Mana voll sind.
+           Mit "Blitz (70)" schleuderst du einen Zauber, sobald 70 Mana voll sind.
+Schritt 6: Nach einem Sieg öffnet sich der Draft. Du wählst eine von drei
+           Karten oder zahlst 1 Gold für einen neuen Reroll.
+Schritt 7: Mit "Nächste Welle" geht es weiter. Alle 5 Wellen gibt es Eliten,
+           alle 10 Wellen Bosse.
+
+------------------------------------------------------------
+6. Wie bewege ich die Kamera?
+------------------------------------------------------------
+Schritt 1: Mausrad oder zwei Finger → hinein- und herauszoomen.
+Schritt 2: Mit der Maus auf freies Feld klicken, halten und ziehen →
+           die Kamera bewegt sich nach links, rechts, oben oder unten.
+Schritt 3: Auf dem Handy mit einem Finger über das Feld wischen →
+           genauso freie Bewegung.
+Schritt 4: Ein kurzer Tap auf ein Wesen wählt es aus. Ziehen wählt nicht aus.
+Schritt 5: Der "⌖ Zoom"-Button, ein Doppelklick oder die Taste "0" setzen
+           Zoom und Kameraposition zurück.
+
+------------------------------------------------------------
+7. Wie entstehen neue Versionen?
+------------------------------------------------------------
+Schritt 1: Alle 10 Minuten startet der Entwicklungs-Loop automatisch.
+Schritt 2: Er sucht sich genau eine kleine Verbesserung aus (zum Beispiel
+           eine Animation, ein neues Wesen, eine bessere Anzeige).
+Schritt 3: Er ändert die Spiellogik und erhöht die Version um genau eine
+           Stufe: 1.00.1 → 1.00.2 → 1.00.3 und so weiter.
+Schritt 4: Er prüft die App mit drei automatischen Tests.
+Schritt 5: Nur wenn alle drei Tests grün sind, wird die Änderung übernommen.
+Schritt 6: GitHub baut daraus eine neue APK (sogenannte CI).
+Schritt 7: Die neue APK wird in den Ordner /root/projects/FABELBATTLER/
+           gelegt, zum Beispiel als "1.00.2.apk".
+Schritt 8: Das Entwicklungsprotokoll wird aktualisiert.
+
+------------------------------------------------------------
+8. Wann ist Schluss?
+------------------------------------------------------------
+Schritt 1: Das Ziel ist Version 1.20.0.
+Schritt 2: Danach wird kein Update mehr automatisch erstellt.
+Schritt 3: Der Loop stoppt sich selbst, damit nichts überschrieben wird.
+Schritt 4: Zu diesem Zeitpunkt bekommst du eine neue Absegnung (Freigabe).
+
+------------------------------------------------------------
+9. Wo kann ich nachsehen?
+------------------------------------------------------------
+Schritt 1: Fortschritt und Entscheidungen: GitHub-Issue #1 des Repos
+           Totalstoned/Fabelbattler-android.
+Schritt 2: Tageschronik: /root/projects/FABELBATTLER/devlog.txt
+Schritt 3: Diese Anleitung: /root/projects/FABELBATTLER/Patch.txt
+Schritt 4: Technischer Stand: /root/projects/FABELBATTLER/APP_DEV_STATE.md
+Schritt 5: Aufgabenliste: /root/projects/FABELBATTLER/TASKS.md
+Schritt 6: Loop-Protokoll: /root/projects/FABELBATTLER/auto-improve.log
+
+------------------------------------------------------------
+10. Wie stoppe oder starte ich den Loop?
+------------------------------------------------------------
+Schritt 1: Stoppen: Datei "/root/projects/FABELBATTLER/auto-improve.stop"
+           anlegen. Der Loop beendet sich nach spätestens 30 Sekunden.
+Schritt 2: Weiter starten: Die Stopp-Datei löschen, dann im Repo
+           /root/fabelbattler/android den Befehl
+           "nohup ./scripts/auto-improve.sh &" ausführen.
+Schritt 3: Einmalig testen: "./scripts/auto-improve.sh once".
+
+------------------------------------------------------------
+11. Was passiert bei einem Problem?
+------------------------------------------------------------
+Schritt 1: Ein Test ist rot → die Änderung wird verworfen, keine APK.
+Schritt 2: Ein Pull Request hat Konflikte → er bleibt offen und bekommt
+           einen Kommentar; der nächste 10-Minuten-Lauf versucht es erneut.
+Schritt 3: Die App lässt sich nicht installieren → zuerst prüfen, ob noch
+           eine Version ≤ 1.70 installiert ist, und diese deinstallieren.
+Schritt 4: Unsicher? → Issue #1 schreiben; der Agent liest dort mit.

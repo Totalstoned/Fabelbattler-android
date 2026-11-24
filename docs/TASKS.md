@@ -332,3 +332,11 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   wurden gelöscht, die Versionsnummer auf 1.00.0 (Build 1000) zurückgesetzt.
   *Erledigt:* `check_data.py` prüft die Pan-Tokens, `check_runtime.js` prüft
   Verschiebung, Clamping und Reset; alle drei Checks in beiden Kopien grün.
+
+- [x] **41. Autonomer 10-Minuten-Loop und User-Anleitung** (v1.00.1-b1001)
+  `auto-improve.sh` läuft nun alle 600 Sekunden, `bump_version.py` zählt die
+  Version bis 1.20.0 hoch und `auto-integrate.sh` merged validierte CLEAN-PRs
+  automatisch. AGENTS.md, `docs/AUTO_IMPROVE.txt`, `Patch.txt` und Issue #1
+  enthalten die verankerten Regeln. Neue Einheiten/Recherche sind erlaubt,
+  sofern die Check-Invarianten in beiden Skripten mitgezogen werden.
+  *Erledigt:* alle drei Checks grün, `1.00.1.apk` gebaut und geprüft.

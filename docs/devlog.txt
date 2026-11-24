@@ -5,6 +5,23 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-24 16:35  v1.00.1-b1001  (autonomer 10-Minuten-Loop)
+  - User: "beschreibe die agents/devlog/alles so, dass wirklich alle 10
+    Minuten an der App gearbeitet wird", "selbstständig bis 1.20.0",
+    "Patch.txt für Neulinge".
+  - scripts/auto-improve.sh: INTERVAL 900 -> 600, Prompt erlaubt kreative
+    Recherche und neue Einheiten/Zauber (Check-Invarianten mitziehen),
+    Versionssprung nur noch via scripts/bump_version.py (1.00.1 -> 1.00.2
+    ... 1.20.0, VersionCode major*1000+minor*10+patch).
+  - NEU scripts/auto-integrate.sh: validiert offene PRs im Worktree, merged
+    CLEAN-PRs per Squash, kommentiert Konflikte/rote Checks, zieht externe
+    index3d.html-Kopie und APK nach. Wird nach jedem Loop-Lauf gerufen.
+  - GitHub-Cron */15 -> */10; AGENTS.md, docs/AUTO_IMPROVE.txt, Patch.txt,
+    TASKS.md und PROJECT_README.txt mit den neuen Regeln verankert.
+  - PR #158 (sichtbares Kampfende) manuell uebernommen; 1.00.1.apk ohne
+    "-b..." gebaut, CI 45435233440 gruen, SHA-256 8403861d...926acf348.
+
+
 2026-11-24 16:05  v1.00.0-b1000  (Versions-Reset, Kamera-Pan, PR-Union)
   - User: "entferne alle vorherigen apks und nenne die jetztige apk 1.00.0".
     36 APKs geloescht, nur fabelbattler-v1.00.0-b1000.apk im Projektordner.

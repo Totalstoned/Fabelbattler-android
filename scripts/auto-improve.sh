@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fabelbattler: alle 15 Minuten eine kleine, isolierte Verbesserung.
+# Fabelbattler: alle 10 Minuten eine kleine, isolierte Verbesserung.
 # Stopp:  touch /root/projects/FABELBATTLER/auto-improve.stop
 # Log:    /root/projects/FABELBATTLER/auto-improve.log
 set -uo pipefail
@@ -11,7 +11,7 @@ STOP="$OUT/auto-improve.stop"
 LOCK=/tmp/opencode/fabel-improve.lock
 GH_BIN=/tmp/opencode/gh/gh_2.104.0_linux_arm64/bin/gh
 GH_REPO=Totalstoned/Fabelbattler-android
-INTERVAL=900
+INTERVAL=600
 MODEL=opencode/big-pickle
 ONCE=0
 [ "${1:-}" = "once" ] && ONCE=1
@@ -52,15 +52,14 @@ run_iteration(){
   PROMPT=$(cat <<'EOF'
 Du arbeitest autonom an Fabelbattler. Lies zuerst docs/APP_DEV_STATE.md, docs/TASKS.md und docs/PROJECT_README.txt.
 
-Wähle GENAU EIN kleines, abgeschlossenes Ziel mit klarem Nutzen. Bevorzugt: Darstellung, Animation, Kampf-Feedback, UI-Klarheit, Balance oder Testabdeckung. Behalte den bestehenden Stack (Three.js, JavaScript, Kotlin-WebView) unverändert – keine Engine-, Sprach- oder Dependency-Wechsel, keine großen Umstrukturierungen.
+Wähle GENAU EIN kleines, abgeschlossenes Ziel mit klarem Nutzen. Bevorzugt: Darstellung, Animation, Kampf-Feedback, UI-Klarheit, Balance, neue Einheiten/Zauber oder Testabdeckung. Du darfst kreativ sein und im Internet recherchieren (z. B. Mythen, Tiere, Kampfbilanz anderer Auto-Battler). Behalte den bestehenden Stack (Three.js, JavaScript, Kotlin-WebView) unverändert – keine Engine-, Sprach- oder Dependency-Wechsel, keine großen Umstrukturierungen. Neue Einheiten duerfen ergaenzt werden, aber die festen Invarianten in scripts/check_data.py und scripts/check_runtime.js (u. a. 113 Einheiten, 51 Zauber, 18 Gegner-Keys, MOB_CAP=500, CORE_UNITS, keine Barbar-Rasse) muessen entweder eingehalten oder in BEIDEN Checks bewusst mitgezogen werden.
 
 Regeln:
 - Ändere nach Möglichkeit app/src/main/assets/index3d.html und bei Bedarf scripts/ oder docs/.
-- Bei jeder Änderung an index3d.html: APP_VERSION_CODE in gradle.properties um 1 erhöhen und APP_VERSION_NAME passend aktualisieren (aktuelle Version steht in docs/APP_DEV_STATE.md).
+- Bei jeder Änderung an index3d.html: `python3 scripts/bump_version.py` ausfuehren. Das setzt APP_VERSION_NAME auf die naechste Stufe (1.00.1 -> 1.00.2 ... 1.00.9 -> 1.01.0 ... 1.20.0) und APP_VERSION_CODE auf major*1000+minor*10+patch. Bei 1.20.0 keine weitere Aenderung mehr machen (Ziel erreicht).
 - Validiere mit: python3 scripts/check_js.py app/src/main/assets/index3d.html && python3 scripts/check_data.py app/src/main/assets/index3d.html && node scripts/check_runtime.js app/src/main/assets/index3d.html
 - Wenn ein Check fehlschlägt: beheben oder die Änderung verwerfen. Never commit a broken build.
 - Bleibe auf dem aktuellen Branch (auto-improve/*). Wechsle NICHT zu main und erstelle keinen neuen Branch.
-- Bei einer Änderung an index3d.html: APP_VERSION_CODE in gradle.properties um GENAU 1 erhöhen (nie mehr), ausgehend vom dortigen Wert.
 - Erstelle einen Commit mit kurzer deutscher Nachricht. Pushe NICHT und erstelle KEinen PR – das macht das umgebende Skript.
 - Falls nichts Sicheres zu tun ist: keine Änderung, kein Commit.
 
@@ -101,8 +100,9 @@ Der Hauptcheckout /root/fabelbattler/android ist tabu und darf nicht veraendert 
           local SUBJ
           SUBJ=$(cd "$WT" && git log -1 --pretty=%s)
           if "$GH_BIN" pr create --repo "$GH_REPO" --base main --head "$BRANCH" \
-               --title "$SUBJ" --body "Autonomer 15-Minuten-Lauf $TS. Alle Checks im Worktree grün. Bitte prüfen und mergen." >>"$LOG" 2>&1; then
+               --title "$SUBJ" --body "Autonomer 10-Minuten-Lauf $TS. Alle Checks im Worktree grün; automatische Integration durch den Loop." >>"$LOG" 2>&1; then
             log "PR für $BRANCH erstellt"
+            bash scripts/auto-integrate.sh >>"$LOG" 2>&1 || log "Auto-Integration fehlgeschlagen"
           else
             log "PR für $BRANCH fehlgeschlagen – Branch bleibt gepusht"
           fi

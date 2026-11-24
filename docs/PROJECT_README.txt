@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.00.0-b1000
+Aktuelle Version: v1.00.1-b1001
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -634,3 +634,15 @@ sondern mit den uebrigen Loop-PRs zusammen in v1.55-b56 integriert.]
     SHA-256 347450d19c7da28fc49323c6247e0716160d0d203450124c913f01ed2f6b0703
   - Externe Quelle /root/fabelbattler/index3d.html synchronisiert; alle drei
     Checks dort und in der WebView-Datei gruen.
+
+2026-11-24 16:35 UTC – autonomer 10-Minuten-Loop bis 1.20.0:
+  - User will selbststaendige Weiterentwicklung ohne Rueckfrage, alle 10
+    Minuten, von 1.00.1 bis 1.20.0 (1.00.2, 1.00.3, ... 1.01.0 ... 1.20.0).
+  - scripts/auto-improve.sh INTERVAL=600; scripts/bump_version.py setzt
+    VersionName/Code; scripts/auto-integrate.sh merged CLEAN-PRs automatisch
+    und zieht externe Kopie plus APK nach. GitHub-Cron */10.
+  - Regeln in AGENTS.md, docs/AUTO_IMPROVE.txt, Patch.txt (Neulinge),
+    TASKS.md und Issue #1 verankert. Kreative Recherche und neue Einheiten
+    erlaubt, Check-Invarianten dann in beiden Check-Skripten mitziehen.
+  - CI 45435233440 gruen; APK /root/projects/FABELBATTLER/1.00.1.apk
+    SHA-256 8403861dc36a12a7c579d17fdb019042852a7194af5112243e536ee926acf348
