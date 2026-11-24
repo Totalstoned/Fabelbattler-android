@@ -157,6 +157,8 @@ function fb_announce_special_mobs() {
                 : (m.side === "player" ? "#67e8f9" : "#ffd166");
             fb_shock(m, col, m.isBoss ? 1.6 : 1.1);
             fb_burst(m, col, m.isBoss ? 20 : 12, m.isBoss ? 1.2 : 0.9);
+            fb_vfx_spawn(m.isBoss ? "boss" : "crit", m.grid.gx, m.grid.gy,
+                m.isBoss ? 1.1 : 0.7, 0.9);
         }
     }
 }
@@ -207,9 +209,11 @@ function fb_start_battle() {
 
 function fb_battle_end_fx(units, color, burstColor) {
     if (global.SIM.headless) return;
+    var kind = color === "#ffd166" ? "victory" : "defeat";
     for (var i = 0; i < array_length(units); i++) {
         fb_shock(units[i], color, 1.25);
         fb_burst(units[i], burstColor, 8, 0.9);
+        fb_vfx_spawn(kind, units[i].grid.gx, units[i].grid.gy, 0.9, 0.85);
     }
     fb_add_shake(0.18);
 }

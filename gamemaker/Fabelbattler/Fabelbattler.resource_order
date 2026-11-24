@@ -32,14 +32,3194 @@
       "path": "scripts/scr_draw/scr_draw.yy"
     },
     {
-      "name": "obj_game",
+      "name": "scr_vfx",
       "order": 6,
+      "path": "scripts/scr_vfx/scr_vfx.yy"
+    },
+    {
+      "name": "obj_game",
+      "order": 7,
       "path": "objects/obj_game/obj_game.yy"
     },
     {
       "name": "Room1",
-      "order": 7,
+      "order": 8,
       "path": "rooms/Room1/Room1.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_1",
+      "order": 9,
+      "path": "sprites/spr_arc_swoosh_water_1/spr_arc_swoosh_water_1.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_10",
+      "order": 10,
+      "path": "sprites/spr_arc_swoosh_water_10/spr_arc_swoosh_water_10.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_11",
+      "order": 11,
+      "path": "sprites/spr_arc_swoosh_water_11/spr_arc_swoosh_water_11.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_2",
+      "order": 12,
+      "path": "sprites/spr_arc_swoosh_water_2/spr_arc_swoosh_water_2.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_3",
+      "order": 13,
+      "path": "sprites/spr_arc_swoosh_water_3/spr_arc_swoosh_water_3.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_4",
+      "order": 14,
+      "path": "sprites/spr_arc_swoosh_water_4/spr_arc_swoosh_water_4.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_5",
+      "order": 15,
+      "path": "sprites/spr_arc_swoosh_water_5/spr_arc_swoosh_water_5.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_6",
+      "order": 16,
+      "path": "sprites/spr_arc_swoosh_water_6/spr_arc_swoosh_water_6.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_7",
+      "order": 17,
+      "path": "sprites/spr_arc_swoosh_water_7/spr_arc_swoosh_water_7.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_8",
+      "order": 18,
+      "path": "sprites/spr_arc_swoosh_water_8/spr_arc_swoosh_water_8.yy"
+    },
+    {
+      "name": "spr_arc_swoosh_water_9",
+      "order": 19,
+      "path": "sprites/spr_arc_swoosh_water_9/spr_arc_swoosh_water_9.yy"
+    },
+    {
+      "name": "spr_ball_of_electricity_1",
+      "order": 20,
+      "path": "sprites/spr_ball_of_electricity_1/spr_ball_of_electricity_1.yy"
+    },
+    {
+      "name": "spr_ball_of_electricity_2",
+      "order": 21,
+      "path": "sprites/spr_ball_of_electricity_2/spr_ball_of_electricity_2.yy"
+    },
+    {
+      "name": "spr_ball_of_electricity_3",
+      "order": 22,
+      "path": "sprites/spr_ball_of_electricity_3/spr_ball_of_electricity_3.yy"
+    },
+    {
+      "name": "spr_ball_of_electricity_4",
+      "order": 23,
+      "path": "sprites/spr_ball_of_electricity_4/spr_ball_of_electricity_4.yy"
+    },
+    {
+      "name": "spr_ball_of_electricity_5",
+      "order": 24,
+      "path": "sprites/spr_ball_of_electricity_5/spr_ball_of_electricity_5.yy"
+    },
+    {
+      "name": "spr_ball_of_electricity_6",
+      "order": 25,
+      "path": "sprites/spr_ball_of_electricity_6/spr_ball_of_electricity_6.yy"
+    },
+    {
+      "name": "spr_ball_of_electricity_7",
+      "order": 26,
+      "path": "sprites/spr_ball_of_electricity_7/spr_ball_of_electricity_7.yy"
+    },
+    {
+      "name": "spr_camp_fire",
+      "order": 27,
+      "path": "sprites/spr_camp_fire/spr_camp_fire.yy"
+    },
+    {
+      "name": "spr_candle_flickering",
+      "order": 28,
+      "path": "sprites/spr_candle_flickering/spr_candle_flickering.yy"
+    },
+    {
+      "name": "spr_candle_flickering_1",
+      "order": 29,
+      "path": "sprites/spr_candle_flickering_1/spr_candle_flickering_1.yy"
+    },
+    {
+      "name": "spr_candle_flickering_2",
+      "order": 30,
+      "path": "sprites/spr_candle_flickering_2/spr_candle_flickering_2.yy"
+    },
+    {
+      "name": "spr_candle_flickering_3",
+      "order": 31,
+      "path": "sprites/spr_candle_flickering_3/spr_candle_flickering_3.yy"
+    },
+    {
+      "name": "spr_candle_flickering_4",
+      "order": 32,
+      "path": "sprites/spr_candle_flickering_4/spr_candle_flickering_4.yy"
+    },
+    {
+      "name": "spr_candle_flickering_5",
+      "order": 33,
+      "path": "sprites/spr_candle_flickering_5/spr_candle_flickering_5.yy"
+    },
+    {
+      "name": "spr_candle_flickering_6",
+      "order": 34,
+      "path": "sprites/spr_candle_flickering_6/spr_candle_flickering_6.yy"
+    },
+    {
+      "name": "spr_candle_flickering_7",
+      "order": 35,
+      "path": "sprites/spr_candle_flickering_7/spr_candle_flickering_7.yy"
+    },
+    {
+      "name": "spr_candle_still",
+      "order": 36,
+      "path": "sprites/spr_candle_still/spr_candle_still.yy"
+    },
+    {
+      "name": "spr_candle_still_1",
+      "order": 37,
+      "path": "sprites/spr_candle_still_1/spr_candle_still_1.yy"
+    },
+    {
+      "name": "spr_candle_still_2",
+      "order": 38,
+      "path": "sprites/spr_candle_still_2/spr_candle_still_2.yy"
+    },
+    {
+      "name": "spr_candle_still_3",
+      "order": 39,
+      "path": "sprites/spr_candle_still_3/spr_candle_still_3.yy"
+    },
+    {
+      "name": "spr_candle_still_4",
+      "order": 40,
+      "path": "sprites/spr_candle_still_4/spr_candle_still_4.yy"
+    },
+    {
+      "name": "spr_candle_still_5",
+      "order": 41,
+      "path": "sprites/spr_candle_still_5/spr_candle_still_5.yy"
+    },
+    {
+      "name": "spr_candle_still_6",
+      "order": 42,
+      "path": "sprites/spr_candle_still_6/spr_candle_still_6.yy"
+    },
+    {
+      "name": "spr_circle_swoosh",
+      "order": 43,
+      "path": "sprites/spr_circle_swoosh/spr_circle_swoosh.yy"
+    },
+    {
+      "name": "spr_circle_swoosh_water_1",
+      "order": 44,
+      "path": "sprites/spr_circle_swoosh_water_1/spr_circle_swoosh_water_1.yy"
+    },
+    {
+      "name": "spr_circle_swoosh_water_10",
+      "order": 45,
+      "path": "sprites/spr_circle_swoosh_water_10/spr_circle_swoosh_water_10.yy"
+    },
+    {
+      "name": "spr_circle_swoosh_water_2",
+      "order": 46,
+      "path": "sprites/spr_circle_swoosh_water_2/spr_circle_swoosh_water_2.yy"
+    },
+    {
+      "name": "spr_circle_swoosh_water_3",
+      "order": 47,
+      "path": "sprites/spr_circle_swoosh_water_3/spr_circle_swoosh_water_3.yy"
+    },
+    {
+      "name": "spr_circle_swoosh_water_4",
+      "order": 48,
+      "path": "sprites/spr_circle_swoosh_water_4/spr_circle_swoosh_water_4.yy"
+    },
+    {
+      "name": "spr_circle_swoosh_water_5",
+      "order": 49,
+      "path": "sprites/spr_circle_swoosh_water_5/spr_circle_swoosh_water_5.yy"
+    },
+    {
+      "name": "spr_circle_swoosh_water_6",
+      "order": 50,
+      "path": "sprites/spr_circle_swoosh_water_6/spr_circle_swoosh_water_6.yy"
+    },
+    {
+      "name": "spr_circle_swoosh_water_7",
+      "order": 51,
+      "path": "sprites/spr_circle_swoosh_water_7/spr_circle_swoosh_water_7.yy"
+    },
+    {
+      "name": "spr_circle_swoosh_water_8",
+      "order": 52,
+      "path": "sprites/spr_circle_swoosh_water_8/spr_circle_swoosh_water_8.yy"
+    },
+    {
+      "name": "spr_circle_swoosh_water_9",
+      "order": 53,
+      "path": "sprites/spr_circle_swoosh_water_9/spr_circle_swoosh_water_9.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up",
+      "order": 54,
+      "path": "sprites/spr_electric_explosion_with_build_up/spr_electric_explosion_with_build_up.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_1",
+      "order": 55,
+      "path": "sprites/spr_electric_explosion_with_build_up_1/spr_electric_explosion_with_build_up_1.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_10",
+      "order": 56,
+      "path": "sprites/spr_electric_explosion_with_build_up_10/spr_electric_explosion_with_build_up_10.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_11",
+      "order": 57,
+      "path": "sprites/spr_electric_explosion_with_build_up_11/spr_electric_explosion_with_build_up_11.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_12",
+      "order": 58,
+      "path": "sprites/spr_electric_explosion_with_build_up_12/spr_electric_explosion_with_build_up_12.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_13",
+      "order": 59,
+      "path": "sprites/spr_electric_explosion_with_build_up_13/spr_electric_explosion_with_build_up_13.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_14",
+      "order": 60,
+      "path": "sprites/spr_electric_explosion_with_build_up_14/spr_electric_explosion_with_build_up_14.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_15",
+      "order": 61,
+      "path": "sprites/spr_electric_explosion_with_build_up_15/spr_electric_explosion_with_build_up_15.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_16",
+      "order": 62,
+      "path": "sprites/spr_electric_explosion_with_build_up_16/spr_electric_explosion_with_build_up_16.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_17",
+      "order": 63,
+      "path": "sprites/spr_electric_explosion_with_build_up_17/spr_electric_explosion_with_build_up_17.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_18",
+      "order": 64,
+      "path": "sprites/spr_electric_explosion_with_build_up_18/spr_electric_explosion_with_build_up_18.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_2",
+      "order": 65,
+      "path": "sprites/spr_electric_explosion_with_build_up_2/spr_electric_explosion_with_build_up_2.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_3",
+      "order": 66,
+      "path": "sprites/spr_electric_explosion_with_build_up_3/spr_electric_explosion_with_build_up_3.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_4",
+      "order": 67,
+      "path": "sprites/spr_electric_explosion_with_build_up_4/spr_electric_explosion_with_build_up_4.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_5",
+      "order": 68,
+      "path": "sprites/spr_electric_explosion_with_build_up_5/spr_electric_explosion_with_build_up_5.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_6",
+      "order": 69,
+      "path": "sprites/spr_electric_explosion_with_build_up_6/spr_electric_explosion_with_build_up_6.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_7",
+      "order": 70,
+      "path": "sprites/spr_electric_explosion_with_build_up_7/spr_electric_explosion_with_build_up_7.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_8",
+      "order": 71,
+      "path": "sprites/spr_electric_explosion_with_build_up_8/spr_electric_explosion_with_build_up_8.yy"
+    },
+    {
+      "name": "spr_electric_explosion_with_build_up_9",
+      "order": 72,
+      "path": "sprites/spr_electric_explosion_with_build_up_9/spr_electric_explosion_with_build_up_9.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up",
+      "order": 73,
+      "path": "sprites/spr_electric_explosion_without_build_up/spr_electric_explosion_without_build_up.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up_1",
+      "order": 74,
+      "path": "sprites/spr_electric_explosion_without_build_up_1/spr_electric_explosion_without_build_up_1.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up_10",
+      "order": 75,
+      "path": "sprites/spr_electric_explosion_without_build_up_10/spr_electric_explosion_without_build_up_10.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up_2",
+      "order": 76,
+      "path": "sprites/spr_electric_explosion_without_build_up_2/spr_electric_explosion_without_build_up_2.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up_3",
+      "order": 77,
+      "path": "sprites/spr_electric_explosion_without_build_up_3/spr_electric_explosion_without_build_up_3.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up_4",
+      "order": 78,
+      "path": "sprites/spr_electric_explosion_without_build_up_4/spr_electric_explosion_without_build_up_4.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up_5",
+      "order": 79,
+      "path": "sprites/spr_electric_explosion_without_build_up_5/spr_electric_explosion_without_build_up_5.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up_6",
+      "order": 80,
+      "path": "sprites/spr_electric_explosion_without_build_up_6/spr_electric_explosion_without_build_up_6.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up_7",
+      "order": 81,
+      "path": "sprites/spr_electric_explosion_without_build_up_7/spr_electric_explosion_without_build_up_7.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up_8",
+      "order": 82,
+      "path": "sprites/spr_electric_explosion_without_build_up_8/spr_electric_explosion_without_build_up_8.yy"
+    },
+    {
+      "name": "spr_electric_explosion_without_build_up_9",
+      "order": 83,
+      "path": "sprites/spr_electric_explosion_without_build_up_9/spr_electric_explosion_without_build_up_9.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb",
+      "order": 84,
+      "path": "sprites/spr_explosion_with_bomb/spr_explosion_with_bomb.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_1",
+      "order": 85,
+      "path": "sprites/spr_explosion_with_bomb_1/spr_explosion_with_bomb_1.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_10",
+      "order": 86,
+      "path": "sprites/spr_explosion_with_bomb_10/spr_explosion_with_bomb_10.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_11",
+      "order": 87,
+      "path": "sprites/spr_explosion_with_bomb_11/spr_explosion_with_bomb_11.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_12",
+      "order": 88,
+      "path": "sprites/spr_explosion_with_bomb_12/spr_explosion_with_bomb_12.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_13",
+      "order": 89,
+      "path": "sprites/spr_explosion_with_bomb_13/spr_explosion_with_bomb_13.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_14",
+      "order": 90,
+      "path": "sprites/spr_explosion_with_bomb_14/spr_explosion_with_bomb_14.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_15",
+      "order": 91,
+      "path": "sprites/spr_explosion_with_bomb_15/spr_explosion_with_bomb_15.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_16",
+      "order": 92,
+      "path": "sprites/spr_explosion_with_bomb_16/spr_explosion_with_bomb_16.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_17",
+      "order": 93,
+      "path": "sprites/spr_explosion_with_bomb_17/spr_explosion_with_bomb_17.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_18",
+      "order": 94,
+      "path": "sprites/spr_explosion_with_bomb_18/spr_explosion_with_bomb_18.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_19",
+      "order": 95,
+      "path": "sprites/spr_explosion_with_bomb_19/spr_explosion_with_bomb_19.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_2",
+      "order": 96,
+      "path": "sprites/spr_explosion_with_bomb_2/spr_explosion_with_bomb_2.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_20",
+      "order": 97,
+      "path": "sprites/spr_explosion_with_bomb_20/spr_explosion_with_bomb_20.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_21",
+      "order": 98,
+      "path": "sprites/spr_explosion_with_bomb_21/spr_explosion_with_bomb_21.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_22",
+      "order": 99,
+      "path": "sprites/spr_explosion_with_bomb_22/spr_explosion_with_bomb_22.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_23",
+      "order": 100,
+      "path": "sprites/spr_explosion_with_bomb_23/spr_explosion_with_bomb_23.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_3",
+      "order": 101,
+      "path": "sprites/spr_explosion_with_bomb_3/spr_explosion_with_bomb_3.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_4",
+      "order": 102,
+      "path": "sprites/spr_explosion_with_bomb_4/spr_explosion_with_bomb_4.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_5",
+      "order": 103,
+      "path": "sprites/spr_explosion_with_bomb_5/spr_explosion_with_bomb_5.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_6",
+      "order": 104,
+      "path": "sprites/spr_explosion_with_bomb_6/spr_explosion_with_bomb_6.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_7",
+      "order": 105,
+      "path": "sprites/spr_explosion_with_bomb_7/spr_explosion_with_bomb_7.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_8",
+      "order": 106,
+      "path": "sprites/spr_explosion_with_bomb_8/spr_explosion_with_bomb_8.yy"
+    },
+    {
+      "name": "spr_explosion_with_bomb_9",
+      "order": 107,
+      "path": "sprites/spr_explosion_with_bomb_9/spr_explosion_with_bomb_9.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb",
+      "order": 108,
+      "path": "sprites/spr_explosion_without_bomb/spr_explosion_without_bomb.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_1",
+      "order": 109,
+      "path": "sprites/spr_explosion_without_bomb_1/spr_explosion_without_bomb_1.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_10",
+      "order": 110,
+      "path": "sprites/spr_explosion_without_bomb_10/spr_explosion_without_bomb_10.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_11",
+      "order": 111,
+      "path": "sprites/spr_explosion_without_bomb_11/spr_explosion_without_bomb_11.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_12",
+      "order": 112,
+      "path": "sprites/spr_explosion_without_bomb_12/spr_explosion_without_bomb_12.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_13",
+      "order": 113,
+      "path": "sprites/spr_explosion_without_bomb_13/spr_explosion_without_bomb_13.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_14",
+      "order": 114,
+      "path": "sprites/spr_explosion_without_bomb_14/spr_explosion_without_bomb_14.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_15",
+      "order": 115,
+      "path": "sprites/spr_explosion_without_bomb_15/spr_explosion_without_bomb_15.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_16",
+      "order": 116,
+      "path": "sprites/spr_explosion_without_bomb_16/spr_explosion_without_bomb_16.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_2",
+      "order": 117,
+      "path": "sprites/spr_explosion_without_bomb_2/spr_explosion_without_bomb_2.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_3",
+      "order": 118,
+      "path": "sprites/spr_explosion_without_bomb_3/spr_explosion_without_bomb_3.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_4",
+      "order": 119,
+      "path": "sprites/spr_explosion_without_bomb_4/spr_explosion_without_bomb_4.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_5",
+      "order": 120,
+      "path": "sprites/spr_explosion_without_bomb_5/spr_explosion_without_bomb_5.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_6",
+      "order": 121,
+      "path": "sprites/spr_explosion_without_bomb_6/spr_explosion_without_bomb_6.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_7",
+      "order": 122,
+      "path": "sprites/spr_explosion_without_bomb_7/spr_explosion_without_bomb_7.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_8",
+      "order": 123,
+      "path": "sprites/spr_explosion_without_bomb_8/spr_explosion_without_bomb_8.yy"
+    },
+    {
+      "name": "spr_explosion_without_bomb_9",
+      "order": 124,
+      "path": "sprites/spr_explosion_without_bomb_9/spr_explosion_without_bomb_9.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_1",
+      "order": 125,
+      "path": "sprites/spr_fire_test_camp_fire_1/spr_fire_test_camp_fire_1.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_10",
+      "order": 126,
+      "path": "sprites/spr_fire_test_camp_fire_10/spr_fire_test_camp_fire_10.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_11",
+      "order": 127,
+      "path": "sprites/spr_fire_test_camp_fire_11/spr_fire_test_camp_fire_11.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_2",
+      "order": 128,
+      "path": "sprites/spr_fire_test_camp_fire_2/spr_fire_test_camp_fire_2.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_3",
+      "order": 129,
+      "path": "sprites/spr_fire_test_camp_fire_3/spr_fire_test_camp_fire_3.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_4",
+      "order": 130,
+      "path": "sprites/spr_fire_test_camp_fire_4/spr_fire_test_camp_fire_4.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_5",
+      "order": 131,
+      "path": "sprites/spr_fire_test_camp_fire_5/spr_fire_test_camp_fire_5.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_6",
+      "order": 132,
+      "path": "sprites/spr_fire_test_camp_fire_6/spr_fire_test_camp_fire_6.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_7",
+      "order": 133,
+      "path": "sprites/spr_fire_test_camp_fire_7/spr_fire_test_camp_fire_7.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_8",
+      "order": 134,
+      "path": "sprites/spr_fire_test_camp_fire_8/spr_fire_test_camp_fire_8.yy"
+    },
+    {
+      "name": "spr_fire_test_camp_fire_9",
+      "order": 135,
+      "path": "sprites/spr_fire_test_camp_fire_9/spr_fire_test_camp_fire_9.yy"
+    },
+    {
+      "name": "spr_flame_swoosh",
+      "order": 136,
+      "path": "sprites/spr_flame_swoosh/spr_flame_swoosh.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_1",
+      "order": 137,
+      "path": "sprites/spr_flame_swoosh_1/spr_flame_swoosh_1.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_10",
+      "order": 138,
+      "path": "sprites/spr_flame_swoosh_10/spr_flame_swoosh_10.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_11",
+      "order": 139,
+      "path": "sprites/spr_flame_swoosh_11/spr_flame_swoosh_11.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_12",
+      "order": 140,
+      "path": "sprites/spr_flame_swoosh_12/spr_flame_swoosh_12.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_13",
+      "order": 141,
+      "path": "sprites/spr_flame_swoosh_13/spr_flame_swoosh_13.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_14",
+      "order": 142,
+      "path": "sprites/spr_flame_swoosh_14/spr_flame_swoosh_14.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_15",
+      "order": 143,
+      "path": "sprites/spr_flame_swoosh_15/spr_flame_swoosh_15.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_16",
+      "order": 144,
+      "path": "sprites/spr_flame_swoosh_16/spr_flame_swoosh_16.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_17",
+      "order": 145,
+      "path": "sprites/spr_flame_swoosh_17/spr_flame_swoosh_17.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_18",
+      "order": 146,
+      "path": "sprites/spr_flame_swoosh_18/spr_flame_swoosh_18.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_19",
+      "order": 147,
+      "path": "sprites/spr_flame_swoosh_19/spr_flame_swoosh_19.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_2",
+      "order": 148,
+      "path": "sprites/spr_flame_swoosh_2/spr_flame_swoosh_2.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_20",
+      "order": 149,
+      "path": "sprites/spr_flame_swoosh_20/spr_flame_swoosh_20.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_21",
+      "order": 150,
+      "path": "sprites/spr_flame_swoosh_21/spr_flame_swoosh_21.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_22",
+      "order": 151,
+      "path": "sprites/spr_flame_swoosh_22/spr_flame_swoosh_22.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_23",
+      "order": 152,
+      "path": "sprites/spr_flame_swoosh_23/spr_flame_swoosh_23.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_24",
+      "order": 153,
+      "path": "sprites/spr_flame_swoosh_24/spr_flame_swoosh_24.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_25",
+      "order": 154,
+      "path": "sprites/spr_flame_swoosh_25/spr_flame_swoosh_25.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_26",
+      "order": 155,
+      "path": "sprites/spr_flame_swoosh_26/spr_flame_swoosh_26.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_27",
+      "order": 156,
+      "path": "sprites/spr_flame_swoosh_27/spr_flame_swoosh_27.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_28",
+      "order": 157,
+      "path": "sprites/spr_flame_swoosh_28/spr_flame_swoosh_28.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_29",
+      "order": 158,
+      "path": "sprites/spr_flame_swoosh_29/spr_flame_swoosh_29.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_3",
+      "order": 159,
+      "path": "sprites/spr_flame_swoosh_3/spr_flame_swoosh_3.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_30",
+      "order": 160,
+      "path": "sprites/spr_flame_swoosh_30/spr_flame_swoosh_30.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_31",
+      "order": 161,
+      "path": "sprites/spr_flame_swoosh_31/spr_flame_swoosh_31.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_32",
+      "order": 162,
+      "path": "sprites/spr_flame_swoosh_32/spr_flame_swoosh_32.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_33",
+      "order": 163,
+      "path": "sprites/spr_flame_swoosh_33/spr_flame_swoosh_33.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_34",
+      "order": 164,
+      "path": "sprites/spr_flame_swoosh_34/spr_flame_swoosh_34.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_35",
+      "order": 165,
+      "path": "sprites/spr_flame_swoosh_35/spr_flame_swoosh_35.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_36",
+      "order": 166,
+      "path": "sprites/spr_flame_swoosh_36/spr_flame_swoosh_36.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_37",
+      "order": 167,
+      "path": "sprites/spr_flame_swoosh_37/spr_flame_swoosh_37.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_4",
+      "order": 168,
+      "path": "sprites/spr_flame_swoosh_4/spr_flame_swoosh_4.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_5",
+      "order": 169,
+      "path": "sprites/spr_flame_swoosh_5/spr_flame_swoosh_5.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_6",
+      "order": 170,
+      "path": "sprites/spr_flame_swoosh_6/spr_flame_swoosh_6.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_7",
+      "order": 171,
+      "path": "sprites/spr_flame_swoosh_7/spr_flame_swoosh_7.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_8",
+      "order": 172,
+      "path": "sprites/spr_flame_swoosh_8/spr_flame_swoosh_8.yy"
+    },
+    {
+      "name": "spr_flame_swoosh_9",
+      "order": 173,
+      "path": "sprites/spr_flame_swoosh_9/spr_flame_swoosh_9.yy"
+    },
+    {
+      "name": "spr_incense_smoke",
+      "order": 174,
+      "path": "sprites/spr_incense_smoke/spr_incense_smoke.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_1",
+      "order": 175,
+      "path": "sprites/spr_incense_smoke_trail_1/spr_incense_smoke_trail_1.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_10",
+      "order": 176,
+      "path": "sprites/spr_incense_smoke_trail_10/spr_incense_smoke_trail_10.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_11",
+      "order": 177,
+      "path": "sprites/spr_incense_smoke_trail_11/spr_incense_smoke_trail_11.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_12",
+      "order": 178,
+      "path": "sprites/spr_incense_smoke_trail_12/spr_incense_smoke_trail_12.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_13",
+      "order": 179,
+      "path": "sprites/spr_incense_smoke_trail_13/spr_incense_smoke_trail_13.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_14",
+      "order": 180,
+      "path": "sprites/spr_incense_smoke_trail_14/spr_incense_smoke_trail_14.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_15",
+      "order": 181,
+      "path": "sprites/spr_incense_smoke_trail_15/spr_incense_smoke_trail_15.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_16",
+      "order": 182,
+      "path": "sprites/spr_incense_smoke_trail_16/spr_incense_smoke_trail_16.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_17",
+      "order": 183,
+      "path": "sprites/spr_incense_smoke_trail_17/spr_incense_smoke_trail_17.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_2",
+      "order": 184,
+      "path": "sprites/spr_incense_smoke_trail_2/spr_incense_smoke_trail_2.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_3",
+      "order": 185,
+      "path": "sprites/spr_incense_smoke_trail_3/spr_incense_smoke_trail_3.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_4",
+      "order": 186,
+      "path": "sprites/spr_incense_smoke_trail_4/spr_incense_smoke_trail_4.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_5",
+      "order": 187,
+      "path": "sprites/spr_incense_smoke_trail_5/spr_incense_smoke_trail_5.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_6",
+      "order": 188,
+      "path": "sprites/spr_incense_smoke_trail_6/spr_incense_smoke_trail_6.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_7",
+      "order": 189,
+      "path": "sprites/spr_incense_smoke_trail_7/spr_incense_smoke_trail_7.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_8",
+      "order": 190,
+      "path": "sprites/spr_incense_smoke_trail_8/spr_incense_smoke_trail_8.yy"
+    },
+    {
+      "name": "spr_incense_smoke_trail_9",
+      "order": 191,
+      "path": "sprites/spr_incense_smoke_trail_9/spr_incense_smoke_trail_9.yy"
+    },
+    {
+      "name": "spr_lightning_bolt",
+      "order": 192,
+      "path": "sprites/spr_lightning_bolt/spr_lightning_bolt.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_1",
+      "order": 193,
+      "path": "sprites/spr_lightning_bolt_1/spr_lightning_bolt_1.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_10",
+      "order": 194,
+      "path": "sprites/spr_lightning_bolt_10/spr_lightning_bolt_10.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_11",
+      "order": 195,
+      "path": "sprites/spr_lightning_bolt_11/spr_lightning_bolt_11.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_12",
+      "order": 196,
+      "path": "sprites/spr_lightning_bolt_12/spr_lightning_bolt_12.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_13",
+      "order": 197,
+      "path": "sprites/spr_lightning_bolt_13/spr_lightning_bolt_13.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_2",
+      "order": 198,
+      "path": "sprites/spr_lightning_bolt_2/spr_lightning_bolt_2.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_3",
+      "order": 199,
+      "path": "sprites/spr_lightning_bolt_3/spr_lightning_bolt_3.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_4",
+      "order": 200,
+      "path": "sprites/spr_lightning_bolt_4/spr_lightning_bolt_4.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_5",
+      "order": 201,
+      "path": "sprites/spr_lightning_bolt_5/spr_lightning_bolt_5.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_6",
+      "order": 202,
+      "path": "sprites/spr_lightning_bolt_6/spr_lightning_bolt_6.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_7",
+      "order": 203,
+      "path": "sprites/spr_lightning_bolt_7/spr_lightning_bolt_7.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_8",
+      "order": 204,
+      "path": "sprites/spr_lightning_bolt_8/spr_lightning_bolt_8.yy"
+    },
+    {
+      "name": "spr_lightning_bolt_9",
+      "order": 205,
+      "path": "sprites/spr_lightning_bolt_9/spr_lightning_bolt_9.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh",
+      "order": 206,
+      "path": "sprites/spr_lightning_swoosh/spr_lightning_swoosh.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_1",
+      "order": 207,
+      "path": "sprites/spr_lightning_swoosh_1/spr_lightning_swoosh_1.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_10",
+      "order": 208,
+      "path": "sprites/spr_lightning_swoosh_10/spr_lightning_swoosh_10.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_11",
+      "order": 209,
+      "path": "sprites/spr_lightning_swoosh_11/spr_lightning_swoosh_11.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_12",
+      "order": 210,
+      "path": "sprites/spr_lightning_swoosh_12/spr_lightning_swoosh_12.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_13",
+      "order": 211,
+      "path": "sprites/spr_lightning_swoosh_13/spr_lightning_swoosh_13.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_14",
+      "order": 212,
+      "path": "sprites/spr_lightning_swoosh_14/spr_lightning_swoosh_14.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_15",
+      "order": 213,
+      "path": "sprites/spr_lightning_swoosh_15/spr_lightning_swoosh_15.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_16",
+      "order": 214,
+      "path": "sprites/spr_lightning_swoosh_16/spr_lightning_swoosh_16.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_17",
+      "order": 215,
+      "path": "sprites/spr_lightning_swoosh_17/spr_lightning_swoosh_17.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_18",
+      "order": 216,
+      "path": "sprites/spr_lightning_swoosh_18/spr_lightning_swoosh_18.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_19",
+      "order": 217,
+      "path": "sprites/spr_lightning_swoosh_19/spr_lightning_swoosh_19.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_2",
+      "order": 218,
+      "path": "sprites/spr_lightning_swoosh_2/spr_lightning_swoosh_2.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_20",
+      "order": 219,
+      "path": "sprites/spr_lightning_swoosh_20/spr_lightning_swoosh_20.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_21",
+      "order": 220,
+      "path": "sprites/spr_lightning_swoosh_21/spr_lightning_swoosh_21.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_22",
+      "order": 221,
+      "path": "sprites/spr_lightning_swoosh_22/spr_lightning_swoosh_22.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_23",
+      "order": 222,
+      "path": "sprites/spr_lightning_swoosh_23/spr_lightning_swoosh_23.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_24",
+      "order": 223,
+      "path": "sprites/spr_lightning_swoosh_24/spr_lightning_swoosh_24.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_25",
+      "order": 224,
+      "path": "sprites/spr_lightning_swoosh_25/spr_lightning_swoosh_25.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_26",
+      "order": 225,
+      "path": "sprites/spr_lightning_swoosh_26/spr_lightning_swoosh_26.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_27",
+      "order": 226,
+      "path": "sprites/spr_lightning_swoosh_27/spr_lightning_swoosh_27.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_28",
+      "order": 227,
+      "path": "sprites/spr_lightning_swoosh_28/spr_lightning_swoosh_28.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_29",
+      "order": 228,
+      "path": "sprites/spr_lightning_swoosh_29/spr_lightning_swoosh_29.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_3",
+      "order": 229,
+      "path": "sprites/spr_lightning_swoosh_3/spr_lightning_swoosh_3.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_30",
+      "order": 230,
+      "path": "sprites/spr_lightning_swoosh_30/spr_lightning_swoosh_30.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_31",
+      "order": 231,
+      "path": "sprites/spr_lightning_swoosh_31/spr_lightning_swoosh_31.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_32",
+      "order": 232,
+      "path": "sprites/spr_lightning_swoosh_32/spr_lightning_swoosh_32.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_33",
+      "order": 233,
+      "path": "sprites/spr_lightning_swoosh_33/spr_lightning_swoosh_33.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_34",
+      "order": 234,
+      "path": "sprites/spr_lightning_swoosh_34/spr_lightning_swoosh_34.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_35",
+      "order": 235,
+      "path": "sprites/spr_lightning_swoosh_35/spr_lightning_swoosh_35.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_36",
+      "order": 236,
+      "path": "sprites/spr_lightning_swoosh_36/spr_lightning_swoosh_36.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_37",
+      "order": 237,
+      "path": "sprites/spr_lightning_swoosh_37/spr_lightning_swoosh_37.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_4",
+      "order": 238,
+      "path": "sprites/spr_lightning_swoosh_4/spr_lightning_swoosh_4.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_5",
+      "order": 239,
+      "path": "sprites/spr_lightning_swoosh_5/spr_lightning_swoosh_5.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_6",
+      "order": 240,
+      "path": "sprites/spr_lightning_swoosh_6/spr_lightning_swoosh_6.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_7",
+      "order": 241,
+      "path": "sprites/spr_lightning_swoosh_7/spr_lightning_swoosh_7.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_8",
+      "order": 242,
+      "path": "sprites/spr_lightning_swoosh_8/spr_lightning_swoosh_8.yy"
+    },
+    {
+      "name": "spr_lightning_swoosh_9",
+      "order": 243,
+      "path": "sprites/spr_lightning_swoosh_9/spr_lightning_swoosh_9.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_1",
+      "order": 244,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_1/spr_magic_sparkle_explosion_with_build_up_1.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_10",
+      "order": 245,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_10/spr_magic_sparkle_explosion_with_build_up_10.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_11",
+      "order": 246,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_11/spr_magic_sparkle_explosion_with_build_up_11.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_12",
+      "order": 247,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_12/spr_magic_sparkle_explosion_with_build_up_12.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_13",
+      "order": 248,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_13/spr_magic_sparkle_explosion_with_build_up_13.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_14",
+      "order": 249,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_14/spr_magic_sparkle_explosion_with_build_up_14.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_15",
+      "order": 250,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_15/spr_magic_sparkle_explosion_with_build_up_15.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_16",
+      "order": 251,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_16/spr_magic_sparkle_explosion_with_build_up_16.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_17",
+      "order": 252,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_17/spr_magic_sparkle_explosion_with_build_up_17.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_18",
+      "order": 253,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_18/spr_magic_sparkle_explosion_with_build_up_18.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_19",
+      "order": 254,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_19/spr_magic_sparkle_explosion_with_build_up_19.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_2",
+      "order": 255,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_2/spr_magic_sparkle_explosion_with_build_up_2.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_20",
+      "order": 256,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_20/spr_magic_sparkle_explosion_with_build_up_20.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_21",
+      "order": 257,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_21/spr_magic_sparkle_explosion_with_build_up_21.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_22",
+      "order": 258,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_22/spr_magic_sparkle_explosion_with_build_up_22.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_23",
+      "order": 259,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_23/spr_magic_sparkle_explosion_with_build_up_23.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_24",
+      "order": 260,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_24/spr_magic_sparkle_explosion_with_build_up_24.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_25",
+      "order": 261,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_25/spr_magic_sparkle_explosion_with_build_up_25.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_26",
+      "order": 262,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_26/spr_magic_sparkle_explosion_with_build_up_26.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_27",
+      "order": 263,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_27/spr_magic_sparkle_explosion_with_build_up_27.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_28",
+      "order": 264,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_28/spr_magic_sparkle_explosion_with_build_up_28.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_29",
+      "order": 265,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_29/spr_magic_sparkle_explosion_with_build_up_29.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_3",
+      "order": 266,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_3/spr_magic_sparkle_explosion_with_build_up_3.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_30",
+      "order": 267,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_30/spr_magic_sparkle_explosion_with_build_up_30.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_31",
+      "order": 268,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_31/spr_magic_sparkle_explosion_with_build_up_31.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_32",
+      "order": 269,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_32/spr_magic_sparkle_explosion_with_build_up_32.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_33",
+      "order": 270,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_33/spr_magic_sparkle_explosion_with_build_up_33.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_34",
+      "order": 271,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_34/spr_magic_sparkle_explosion_with_build_up_34.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_35",
+      "order": 272,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_35/spr_magic_sparkle_explosion_with_build_up_35.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_36",
+      "order": 273,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_36/spr_magic_sparkle_explosion_with_build_up_36.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_37",
+      "order": 274,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_37/spr_magic_sparkle_explosion_with_build_up_37.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_38",
+      "order": 275,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_38/spr_magic_sparkle_explosion_with_build_up_38.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_39",
+      "order": 276,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_39/spr_magic_sparkle_explosion_with_build_up_39.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_4",
+      "order": 277,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_4/spr_magic_sparkle_explosion_with_build_up_4.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_40",
+      "order": 278,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_40/spr_magic_sparkle_explosion_with_build_up_40.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_41",
+      "order": 279,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_41/spr_magic_sparkle_explosion_with_build_up_41.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_5",
+      "order": 280,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_5/spr_magic_sparkle_explosion_with_build_up_5.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_6",
+      "order": 281,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_6/spr_magic_sparkle_explosion_with_build_up_6.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_7",
+      "order": 282,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_7/spr_magic_sparkle_explosion_with_build_up_7.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_8",
+      "order": 283,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_8/spr_magic_sparkle_explosion_with_build_up_8.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_with_build_up_9",
+      "order": 284,
+      "path": "sprites/spr_magic_sparkle_explosion_with_build_up_9/spr_magic_sparkle_explosion_with_build_up_9.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_1",
+      "order": 285,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_1/spr_magic_sparkle_explosion_without_build_up_1.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_10",
+      "order": 286,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_10/spr_magic_sparkle_explosion_without_build_up_10.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_11",
+      "order": 287,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_11/spr_magic_sparkle_explosion_without_build_up_11.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_12",
+      "order": 288,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_12/spr_magic_sparkle_explosion_without_build_up_12.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_13",
+      "order": 289,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_13/spr_magic_sparkle_explosion_without_build_up_13.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_14",
+      "order": 290,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_14/spr_magic_sparkle_explosion_without_build_up_14.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_15",
+      "order": 291,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_15/spr_magic_sparkle_explosion_without_build_up_15.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_16",
+      "order": 292,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_16/spr_magic_sparkle_explosion_without_build_up_16.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_17",
+      "order": 293,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_17/spr_magic_sparkle_explosion_without_build_up_17.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_18",
+      "order": 294,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_18/spr_magic_sparkle_explosion_without_build_up_18.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_19",
+      "order": 295,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_19/spr_magic_sparkle_explosion_without_build_up_19.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_2",
+      "order": 296,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_2/spr_magic_sparkle_explosion_without_build_up_2.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_20",
+      "order": 297,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_20/spr_magic_sparkle_explosion_without_build_up_20.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_21",
+      "order": 298,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_21/spr_magic_sparkle_explosion_without_build_up_21.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_22",
+      "order": 299,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_22/spr_magic_sparkle_explosion_without_build_up_22.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_23",
+      "order": 300,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_23/spr_magic_sparkle_explosion_without_build_up_23.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_24",
+      "order": 301,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_24/spr_magic_sparkle_explosion_without_build_up_24.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_25",
+      "order": 302,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_25/spr_magic_sparkle_explosion_without_build_up_25.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_26",
+      "order": 303,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_26/spr_magic_sparkle_explosion_without_build_up_26.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_3",
+      "order": 304,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_3/spr_magic_sparkle_explosion_without_build_up_3.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_4",
+      "order": 305,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_4/spr_magic_sparkle_explosion_without_build_up_4.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_5",
+      "order": 306,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_5/spr_magic_sparkle_explosion_without_build_up_5.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_6",
+      "order": 307,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_6/spr_magic_sparkle_explosion_without_build_up_6.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_7",
+      "order": 308,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_7/spr_magic_sparkle_explosion_without_build_up_7.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_8",
+      "order": 309,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_8/spr_magic_sparkle_explosion_without_build_up_8.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_explosion_without_build_up_9",
+      "order": 310,
+      "path": "sprites/spr_magic_sparkle_explosion_without_build_up_9/spr_magic_sparkle_explosion_without_build_up_9.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_with_build_up",
+      "order": 311,
+      "path": "sprites/spr_magic_sparkle_with_build_up/spr_magic_sparkle_with_build_up.yy"
+    },
+    {
+      "name": "spr_magic_sparkle_without_build_up",
+      "order": 312,
+      "path": "sprites/spr_magic_sparkle_without_build_up/spr_magic_sparkle_without_build_up.yy"
+    },
+    {
+      "name": "spr_plumes_of_smoke",
+      "order": 313,
+      "path": "sprites/spr_plumes_of_smoke/spr_plumes_of_smoke.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__1",
+      "order": 314,
+      "path": "sprites/spr_puff_of_smoke__front__1/spr_puff_of_smoke__front__1.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__10",
+      "order": 315,
+      "path": "sprites/spr_puff_of_smoke__front__10/spr_puff_of_smoke__front__10.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__11",
+      "order": 316,
+      "path": "sprites/spr_puff_of_smoke__front__11/spr_puff_of_smoke__front__11.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__12",
+      "order": 317,
+      "path": "sprites/spr_puff_of_smoke__front__12/spr_puff_of_smoke__front__12.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__13",
+      "order": 318,
+      "path": "sprites/spr_puff_of_smoke__front__13/spr_puff_of_smoke__front__13.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__14",
+      "order": 319,
+      "path": "sprites/spr_puff_of_smoke__front__14/spr_puff_of_smoke__front__14.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__2",
+      "order": 320,
+      "path": "sprites/spr_puff_of_smoke__front__2/spr_puff_of_smoke__front__2.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__3",
+      "order": 321,
+      "path": "sprites/spr_puff_of_smoke__front__3/spr_puff_of_smoke__front__3.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__4",
+      "order": 322,
+      "path": "sprites/spr_puff_of_smoke__front__4/spr_puff_of_smoke__front__4.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__5",
+      "order": 323,
+      "path": "sprites/spr_puff_of_smoke__front__5/spr_puff_of_smoke__front__5.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__6",
+      "order": 324,
+      "path": "sprites/spr_puff_of_smoke__front__6/spr_puff_of_smoke__front__6.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__7",
+      "order": 325,
+      "path": "sprites/spr_puff_of_smoke__front__7/spr_puff_of_smoke__front__7.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__8",
+      "order": 326,
+      "path": "sprites/spr_puff_of_smoke__front__8/spr_puff_of_smoke__front__8.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__front__9",
+      "order": 327,
+      "path": "sprites/spr_puff_of_smoke__front__9/spr_puff_of_smoke__front__9.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__1",
+      "order": 328,
+      "path": "sprites/spr_puff_of_smoke__side__1/spr_puff_of_smoke__side__1.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__10",
+      "order": 329,
+      "path": "sprites/spr_puff_of_smoke__side__10/spr_puff_of_smoke__side__10.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__11",
+      "order": 330,
+      "path": "sprites/spr_puff_of_smoke__side__11/spr_puff_of_smoke__side__11.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__2",
+      "order": 331,
+      "path": "sprites/spr_puff_of_smoke__side__2/spr_puff_of_smoke__side__2.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__3",
+      "order": 332,
+      "path": "sprites/spr_puff_of_smoke__side__3/spr_puff_of_smoke__side__3.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__4",
+      "order": 333,
+      "path": "sprites/spr_puff_of_smoke__side__4/spr_puff_of_smoke__side__4.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__5",
+      "order": 334,
+      "path": "sprites/spr_puff_of_smoke__side__5/spr_puff_of_smoke__side__5.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__6",
+      "order": 335,
+      "path": "sprites/spr_puff_of_smoke__side__6/spr_puff_of_smoke__side__6.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__7",
+      "order": 336,
+      "path": "sprites/spr_puff_of_smoke__side__7/spr_puff_of_smoke__side__7.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__8",
+      "order": 337,
+      "path": "sprites/spr_puff_of_smoke__side__8/spr_puff_of_smoke__side__8.yy"
+    },
+    {
+      "name": "spr_puff_of_smoke__side__9",
+      "order": 338,
+      "path": "sprites/spr_puff_of_smoke__side__9/spr_puff_of_smoke__side__9.yy"
+    },
+    {
+      "name": "spr_running_on_land",
+      "order": 339,
+      "path": "sprites/spr_running_on_land/spr_running_on_land.yy"
+    },
+    {
+      "name": "spr_running_on_water",
+      "order": 340,
+      "path": "sprites/spr_running_on_water/spr_running_on_water.yy"
+    },
+    {
+      "name": "spr_running_test_land_1",
+      "order": 341,
+      "path": "sprites/spr_running_test_land_1/spr_running_test_land_1.yy"
+    },
+    {
+      "name": "spr_running_test_land_2",
+      "order": 342,
+      "path": "sprites/spr_running_test_land_2/spr_running_test_land_2.yy"
+    },
+    {
+      "name": "spr_running_test_land_3",
+      "order": 343,
+      "path": "sprites/spr_running_test_land_3/spr_running_test_land_3.yy"
+    },
+    {
+      "name": "spr_running_test_land_4",
+      "order": 344,
+      "path": "sprites/spr_running_test_land_4/spr_running_test_land_4.yy"
+    },
+    {
+      "name": "spr_running_test_land_5",
+      "order": 345,
+      "path": "sprites/spr_running_test_land_5/spr_running_test_land_5.yy"
+    },
+    {
+      "name": "spr_running_test_water_1",
+      "order": 346,
+      "path": "sprites/spr_running_test_water_1/spr_running_test_water_1.yy"
+    },
+    {
+      "name": "spr_running_test_water_2",
+      "order": 347,
+      "path": "sprites/spr_running_test_water_2/spr_running_test_water_2.yy"
+    },
+    {
+      "name": "spr_running_test_water_3",
+      "order": 348,
+      "path": "sprites/spr_running_test_water_3/spr_running_test_water_3.yy"
+    },
+    {
+      "name": "spr_running_test_water_4",
+      "order": 349,
+      "path": "sprites/spr_running_test_water_4/spr_running_test_water_4.yy"
+    },
+    {
+      "name": "spr_running_test_water_5",
+      "order": 350,
+      "path": "sprites/spr_running_test_water_5/spr_running_test_water_5.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact",
+      "order": 351,
+      "path": "sprites/spr_shooting_fireball_without_impact/spr_shooting_fireball_without_impact.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_1",
+      "order": 352,
+      "path": "sprites/spr_shooting_fireball_without_impact_1/spr_shooting_fireball_without_impact_1.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_10",
+      "order": 353,
+      "path": "sprites/spr_shooting_fireball_without_impact_10/spr_shooting_fireball_without_impact_10.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_10345",
+      "order": 354,
+      "path": "sprites/spr_shooting_fireball_without_impact_10345/spr_shooting_fireball_without_impact_10345.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_11",
+      "order": 355,
+      "path": "sprites/spr_shooting_fireball_without_impact_11/spr_shooting_fireball_without_impact_11.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_11346",
+      "order": 356,
+      "path": "sprites/spr_shooting_fireball_without_impact_11346/spr_shooting_fireball_without_impact_11346.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_12",
+      "order": 357,
+      "path": "sprites/spr_shooting_fireball_without_impact_12/spr_shooting_fireball_without_impact_12.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_12347",
+      "order": 358,
+      "path": "sprites/spr_shooting_fireball_without_impact_12347/spr_shooting_fireball_without_impact_12347.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_13",
+      "order": 359,
+      "path": "sprites/spr_shooting_fireball_without_impact_13/spr_shooting_fireball_without_impact_13.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_13348",
+      "order": 360,
+      "path": "sprites/spr_shooting_fireball_without_impact_13348/spr_shooting_fireball_without_impact_13348.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_1344",
+      "order": 361,
+      "path": "sprites/spr_shooting_fireball_without_impact_1344/spr_shooting_fireball_without_impact_1344.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_14",
+      "order": 362,
+      "path": "sprites/spr_shooting_fireball_without_impact_14/spr_shooting_fireball_without_impact_14.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_14349",
+      "order": 363,
+      "path": "sprites/spr_shooting_fireball_without_impact_14349/spr_shooting_fireball_without_impact_14349.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_15",
+      "order": 364,
+      "path": "sprites/spr_shooting_fireball_without_impact_15/spr_shooting_fireball_without_impact_15.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_15350",
+      "order": 365,
+      "path": "sprites/spr_shooting_fireball_without_impact_15350/spr_shooting_fireball_without_impact_15350.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_16",
+      "order": 366,
+      "path": "sprites/spr_shooting_fireball_without_impact_16/spr_shooting_fireball_without_impact_16.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_16351",
+      "order": 367,
+      "path": "sprites/spr_shooting_fireball_without_impact_16351/spr_shooting_fireball_without_impact_16351.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_17",
+      "order": 368,
+      "path": "sprites/spr_shooting_fireball_without_impact_17/spr_shooting_fireball_without_impact_17.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_17352",
+      "order": 369,
+      "path": "sprites/spr_shooting_fireball_without_impact_17352/spr_shooting_fireball_without_impact_17352.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_18",
+      "order": 370,
+      "path": "sprites/spr_shooting_fireball_without_impact_18/spr_shooting_fireball_without_impact_18.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_18353",
+      "order": 371,
+      "path": "sprites/spr_shooting_fireball_without_impact_18353/spr_shooting_fireball_without_impact_18353.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_2",
+      "order": 372,
+      "path": "sprites/spr_shooting_fireball_without_impact_2/spr_shooting_fireball_without_impact_2.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_2354",
+      "order": 373,
+      "path": "sprites/spr_shooting_fireball_without_impact_2354/spr_shooting_fireball_without_impact_2354.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_3",
+      "order": 374,
+      "path": "sprites/spr_shooting_fireball_without_impact_3/spr_shooting_fireball_without_impact_3.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_3355",
+      "order": 375,
+      "path": "sprites/spr_shooting_fireball_without_impact_3355/spr_shooting_fireball_without_impact_3355.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_4",
+      "order": 376,
+      "path": "sprites/spr_shooting_fireball_without_impact_4/spr_shooting_fireball_without_impact_4.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_4356",
+      "order": 377,
+      "path": "sprites/spr_shooting_fireball_without_impact_4356/spr_shooting_fireball_without_impact_4356.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_5",
+      "order": 378,
+      "path": "sprites/spr_shooting_fireball_without_impact_5/spr_shooting_fireball_without_impact_5.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_5357",
+      "order": 379,
+      "path": "sprites/spr_shooting_fireball_without_impact_5357/spr_shooting_fireball_without_impact_5357.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_6",
+      "order": 380,
+      "path": "sprites/spr_shooting_fireball_without_impact_6/spr_shooting_fireball_without_impact_6.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_6358",
+      "order": 381,
+      "path": "sprites/spr_shooting_fireball_without_impact_6358/spr_shooting_fireball_without_impact_6358.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_7",
+      "order": 382,
+      "path": "sprites/spr_shooting_fireball_without_impact_7/spr_shooting_fireball_without_impact_7.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_7359",
+      "order": 383,
+      "path": "sprites/spr_shooting_fireball_without_impact_7359/spr_shooting_fireball_without_impact_7359.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_8",
+      "order": 384,
+      "path": "sprites/spr_shooting_fireball_without_impact_8/spr_shooting_fireball_without_impact_8.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_8360",
+      "order": 385,
+      "path": "sprites/spr_shooting_fireball_without_impact_8360/spr_shooting_fireball_without_impact_8360.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_9",
+      "order": 386,
+      "path": "sprites/spr_shooting_fireball_without_impact_9/spr_shooting_fireball_without_impact_9.yy"
+    },
+    {
+      "name": "spr_shooting_fireball_without_impact_9361",
+      "order": 387,
+      "path": "sprites/spr_shooting_fireball_without_impact_9361/spr_shooting_fireball_without_impact_9361.yy"
+    },
+    {
+      "name": "spr_shooting_fireballs_without_impact_version_2",
+      "order": 388,
+      "path": "sprites/spr_shooting_fireballs_without_impact_version_2/spr_shooting_fireballs_without_impact_version_2.yy"
+    },
+    {
+      "name": "spr_slime_explosion",
+      "order": 389,
+      "path": "sprites/spr_slime_explosion/spr_slime_explosion.yy"
+    },
+    {
+      "name": "spr_slime_explosion_1",
+      "order": 390,
+      "path": "sprites/spr_slime_explosion_1/spr_slime_explosion_1.yy"
+    },
+    {
+      "name": "spr_slime_explosion_10",
+      "order": 391,
+      "path": "sprites/spr_slime_explosion_10/spr_slime_explosion_10.yy"
+    },
+    {
+      "name": "spr_slime_explosion_11",
+      "order": 392,
+      "path": "sprites/spr_slime_explosion_11/spr_slime_explosion_11.yy"
+    },
+    {
+      "name": "spr_slime_explosion_12",
+      "order": 393,
+      "path": "sprites/spr_slime_explosion_12/spr_slime_explosion_12.yy"
+    },
+    {
+      "name": "spr_slime_explosion_13",
+      "order": 394,
+      "path": "sprites/spr_slime_explosion_13/spr_slime_explosion_13.yy"
+    },
+    {
+      "name": "spr_slime_explosion_14",
+      "order": 395,
+      "path": "sprites/spr_slime_explosion_14/spr_slime_explosion_14.yy"
+    },
+    {
+      "name": "spr_slime_explosion_15",
+      "order": 396,
+      "path": "sprites/spr_slime_explosion_15/spr_slime_explosion_15.yy"
+    },
+    {
+      "name": "spr_slime_explosion_16",
+      "order": 397,
+      "path": "sprites/spr_slime_explosion_16/spr_slime_explosion_16.yy"
+    },
+    {
+      "name": "spr_slime_explosion_2",
+      "order": 398,
+      "path": "sprites/spr_slime_explosion_2/spr_slime_explosion_2.yy"
+    },
+    {
+      "name": "spr_slime_explosion_3",
+      "order": 399,
+      "path": "sprites/spr_slime_explosion_3/spr_slime_explosion_3.yy"
+    },
+    {
+      "name": "spr_slime_explosion_4",
+      "order": 400,
+      "path": "sprites/spr_slime_explosion_4/spr_slime_explosion_4.yy"
+    },
+    {
+      "name": "spr_slime_explosion_5",
+      "order": 401,
+      "path": "sprites/spr_slime_explosion_5/spr_slime_explosion_5.yy"
+    },
+    {
+      "name": "spr_slime_explosion_6",
+      "order": 402,
+      "path": "sprites/spr_slime_explosion_6/spr_slime_explosion_6.yy"
+    },
+    {
+      "name": "spr_slime_explosion_7",
+      "order": 403,
+      "path": "sprites/spr_slime_explosion_7/spr_slime_explosion_7.yy"
+    },
+    {
+      "name": "spr_slime_explosion_8",
+      "order": 404,
+      "path": "sprites/spr_slime_explosion_8/spr_slime_explosion_8.yy"
+    },
+    {
+      "name": "spr_slime_explosion_9",
+      "order": 405,
+      "path": "sprites/spr_slime_explosion_9/spr_slime_explosion_9.yy"
+    },
+    {
+      "name": "spr_small_flame",
+      "order": 406,
+      "path": "sprites/spr_small_flame/spr_small_flame.yy"
+    },
+    {
+      "name": "spr_small_flame_1",
+      "order": 407,
+      "path": "sprites/spr_small_flame_1/spr_small_flame_1.yy"
+    },
+    {
+      "name": "spr_small_flame_2",
+      "order": 408,
+      "path": "sprites/spr_small_flame_2/spr_small_flame_2.yy"
+    },
+    {
+      "name": "spr_small_flame_3",
+      "order": 409,
+      "path": "sprites/spr_small_flame_3/spr_small_flame_3.yy"
+    },
+    {
+      "name": "spr_small_flame_4",
+      "order": 410,
+      "path": "sprites/spr_small_flame_4/spr_small_flame_4.yy"
+    },
+    {
+      "name": "spr_small_flame_5",
+      "order": 411,
+      "path": "sprites/spr_small_flame_5/spr_small_flame_5.yy"
+    },
+    {
+      "name": "spr_small_flame_6",
+      "order": 412,
+      "path": "sprites/spr_small_flame_6/spr_small_flame_6.yy"
+    },
+    {
+      "name": "spr_small_flame_7",
+      "order": 413,
+      "path": "sprites/spr_small_flame_7/spr_small_flame_7.yy"
+    },
+    {
+      "name": "spr_small_flame_8",
+      "order": 414,
+      "path": "sprites/spr_small_flame_8/spr_small_flame_8.yy"
+    },
+    {
+      "name": "spr_small_flame_9",
+      "order": 415,
+      "path": "sprites/spr_small_flame_9/spr_small_flame_9.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_1",
+      "order": 416,
+      "path": "sprites/spr_small_plumes_of_smoke_1/spr_small_plumes_of_smoke_1.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_10",
+      "order": 417,
+      "path": "sprites/spr_small_plumes_of_smoke_10/spr_small_plumes_of_smoke_10.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_11",
+      "order": 418,
+      "path": "sprites/spr_small_plumes_of_smoke_11/spr_small_plumes_of_smoke_11.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_12",
+      "order": 419,
+      "path": "sprites/spr_small_plumes_of_smoke_12/spr_small_plumes_of_smoke_12.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_13",
+      "order": 420,
+      "path": "sprites/spr_small_plumes_of_smoke_13/spr_small_plumes_of_smoke_13.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_14",
+      "order": 421,
+      "path": "sprites/spr_small_plumes_of_smoke_14/spr_small_plumes_of_smoke_14.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_15",
+      "order": 422,
+      "path": "sprites/spr_small_plumes_of_smoke_15/spr_small_plumes_of_smoke_15.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_16",
+      "order": 423,
+      "path": "sprites/spr_small_plumes_of_smoke_16/spr_small_plumes_of_smoke_16.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_2",
+      "order": 424,
+      "path": "sprites/spr_small_plumes_of_smoke_2/spr_small_plumes_of_smoke_2.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_3",
+      "order": 425,
+      "path": "sprites/spr_small_plumes_of_smoke_3/spr_small_plumes_of_smoke_3.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_4",
+      "order": 426,
+      "path": "sprites/spr_small_plumes_of_smoke_4/spr_small_plumes_of_smoke_4.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_5",
+      "order": 427,
+      "path": "sprites/spr_small_plumes_of_smoke_5/spr_small_plumes_of_smoke_5.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_6",
+      "order": 428,
+      "path": "sprites/spr_small_plumes_of_smoke_6/spr_small_plumes_of_smoke_6.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_7",
+      "order": 429,
+      "path": "sprites/spr_small_plumes_of_smoke_7/spr_small_plumes_of_smoke_7.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_8",
+      "order": 430,
+      "path": "sprites/spr_small_plumes_of_smoke_8/spr_small_plumes_of_smoke_8.yy"
+    },
+    {
+      "name": "spr_small_plumes_of_smoke_9",
+      "order": 431,
+      "path": "sprites/spr_small_plumes_of_smoke_9/spr_small_plumes_of_smoke_9.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__1",
+      "order": 432,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__1/spr_small_puff_of_smoke__vertical__1.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__10",
+      "order": 433,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__10/spr_small_puff_of_smoke__vertical__10.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__11",
+      "order": 434,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__11/spr_small_puff_of_smoke__vertical__11.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__12",
+      "order": 435,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__12/spr_small_puff_of_smoke__vertical__12.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__13",
+      "order": 436,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__13/spr_small_puff_of_smoke__vertical__13.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__14",
+      "order": 437,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__14/spr_small_puff_of_smoke__vertical__14.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__15",
+      "order": 438,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__15/spr_small_puff_of_smoke__vertical__15.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__16",
+      "order": 439,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__16/spr_small_puff_of_smoke__vertical__16.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__17",
+      "order": 440,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__17/spr_small_puff_of_smoke__vertical__17.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__18",
+      "order": 441,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__18/spr_small_puff_of_smoke__vertical__18.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__19",
+      "order": 442,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__19/spr_small_puff_of_smoke__vertical__19.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__2",
+      "order": 443,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__2/spr_small_puff_of_smoke__vertical__2.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__20",
+      "order": 444,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__20/spr_small_puff_of_smoke__vertical__20.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__21",
+      "order": 445,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__21/spr_small_puff_of_smoke__vertical__21.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__22",
+      "order": 446,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__22/spr_small_puff_of_smoke__vertical__22.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__23",
+      "order": 447,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__23/spr_small_puff_of_smoke__vertical__23.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__3",
+      "order": 448,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__3/spr_small_puff_of_smoke__vertical__3.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__4",
+      "order": 449,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__4/spr_small_puff_of_smoke__vertical__4.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__5",
+      "order": 450,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__5/spr_small_puff_of_smoke__vertical__5.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__6",
+      "order": 451,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__6/spr_small_puff_of_smoke__vertical__6.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__7",
+      "order": 452,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__7/spr_small_puff_of_smoke__vertical__7.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__8",
+      "order": 453,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__8/spr_small_puff_of_smoke__vertical__8.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke__vertical__9",
+      "order": 454,
+      "path": "sprites/spr_small_puff_of_smoke__vertical__9/spr_small_puff_of_smoke__vertical__9.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke_front",
+      "order": 455,
+      "path": "sprites/spr_small_puff_of_smoke_front/spr_small_puff_of_smoke_front.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke_side",
+      "order": 456,
+      "path": "sprites/spr_small_puff_of_smoke_side/spr_small_puff_of_smoke_side.yy"
+    },
+    {
+      "name": "spr_small_puff_of_smoke_vertical",
+      "order": 457,
+      "path": "sprites/spr_small_puff_of_smoke_vertical/spr_small_puff_of_smoke_vertical.yy"
+    },
+    {
+      "name": "spr_small_spark",
+      "order": 458,
+      "path": "sprites/spr_small_spark/spr_small_spark.yy"
+    },
+    {
+      "name": "spr_small_spark_1",
+      "order": 459,
+      "path": "sprites/spr_small_spark_1/spr_small_spark_1.yy"
+    },
+    {
+      "name": "spr_small_spark_10",
+      "order": 460,
+      "path": "sprites/spr_small_spark_10/spr_small_spark_10.yy"
+    },
+    {
+      "name": "spr_small_spark_11",
+      "order": 461,
+      "path": "sprites/spr_small_spark_11/spr_small_spark_11.yy"
+    },
+    {
+      "name": "spr_small_spark_2",
+      "order": 462,
+      "path": "sprites/spr_small_spark_2/spr_small_spark_2.yy"
+    },
+    {
+      "name": "spr_small_spark_3",
+      "order": 463,
+      "path": "sprites/spr_small_spark_3/spr_small_spark_3.yy"
+    },
+    {
+      "name": "spr_small_spark_4",
+      "order": 464,
+      "path": "sprites/spr_small_spark_4/spr_small_spark_4.yy"
+    },
+    {
+      "name": "spr_small_spark_5",
+      "order": 465,
+      "path": "sprites/spr_small_spark_5/spr_small_spark_5.yy"
+    },
+    {
+      "name": "spr_small_spark_6",
+      "order": 466,
+      "path": "sprites/spr_small_spark_6/spr_small_spark_6.yy"
+    },
+    {
+      "name": "spr_small_spark_7",
+      "order": 467,
+      "path": "sprites/spr_small_spark_7/spr_small_spark_7.yy"
+    },
+    {
+      "name": "spr_small_spark_8",
+      "order": 468,
+      "path": "sprites/spr_small_spark_8/spr_small_spark_8.yy"
+    },
+    {
+      "name": "spr_small_spark_9",
+      "order": 469,
+      "path": "sprites/spr_small_spark_9/spr_small_spark_9.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh",
+      "order": 470,
+      "path": "sprites/spr_smoke_swoosh/spr_smoke_swoosh.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_1",
+      "order": 471,
+      "path": "sprites/spr_smoke_swoosh_1/spr_smoke_swoosh_1.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_10",
+      "order": 472,
+      "path": "sprites/spr_smoke_swoosh_10/spr_smoke_swoosh_10.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_11",
+      "order": 473,
+      "path": "sprites/spr_smoke_swoosh_11/spr_smoke_swoosh_11.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_12",
+      "order": 474,
+      "path": "sprites/spr_smoke_swoosh_12/spr_smoke_swoosh_12.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_13",
+      "order": 475,
+      "path": "sprites/spr_smoke_swoosh_13/spr_smoke_swoosh_13.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_14",
+      "order": 476,
+      "path": "sprites/spr_smoke_swoosh_14/spr_smoke_swoosh_14.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_15",
+      "order": 477,
+      "path": "sprites/spr_smoke_swoosh_15/spr_smoke_swoosh_15.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_16",
+      "order": 478,
+      "path": "sprites/spr_smoke_swoosh_16/spr_smoke_swoosh_16.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_17",
+      "order": 479,
+      "path": "sprites/spr_smoke_swoosh_17/spr_smoke_swoosh_17.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_18",
+      "order": 480,
+      "path": "sprites/spr_smoke_swoosh_18/spr_smoke_swoosh_18.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_19",
+      "order": 481,
+      "path": "sprites/spr_smoke_swoosh_19/spr_smoke_swoosh_19.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_2",
+      "order": 482,
+      "path": "sprites/spr_smoke_swoosh_2/spr_smoke_swoosh_2.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_20",
+      "order": 483,
+      "path": "sprites/spr_smoke_swoosh_20/spr_smoke_swoosh_20.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_21",
+      "order": 484,
+      "path": "sprites/spr_smoke_swoosh_21/spr_smoke_swoosh_21.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_22",
+      "order": 485,
+      "path": "sprites/spr_smoke_swoosh_22/spr_smoke_swoosh_22.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_23",
+      "order": 486,
+      "path": "sprites/spr_smoke_swoosh_23/spr_smoke_swoosh_23.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_24",
+      "order": 487,
+      "path": "sprites/spr_smoke_swoosh_24/spr_smoke_swoosh_24.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_25",
+      "order": 488,
+      "path": "sprites/spr_smoke_swoosh_25/spr_smoke_swoosh_25.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_26",
+      "order": 489,
+      "path": "sprites/spr_smoke_swoosh_26/spr_smoke_swoosh_26.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_27",
+      "order": 490,
+      "path": "sprites/spr_smoke_swoosh_27/spr_smoke_swoosh_27.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_28",
+      "order": 491,
+      "path": "sprites/spr_smoke_swoosh_28/spr_smoke_swoosh_28.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_29",
+      "order": 492,
+      "path": "sprites/spr_smoke_swoosh_29/spr_smoke_swoosh_29.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_3",
+      "order": 493,
+      "path": "sprites/spr_smoke_swoosh_3/spr_smoke_swoosh_3.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_30",
+      "order": 494,
+      "path": "sprites/spr_smoke_swoosh_30/spr_smoke_swoosh_30.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_31",
+      "order": 495,
+      "path": "sprites/spr_smoke_swoosh_31/spr_smoke_swoosh_31.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_32",
+      "order": 496,
+      "path": "sprites/spr_smoke_swoosh_32/spr_smoke_swoosh_32.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_33",
+      "order": 497,
+      "path": "sprites/spr_smoke_swoosh_33/spr_smoke_swoosh_33.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_34",
+      "order": 498,
+      "path": "sprites/spr_smoke_swoosh_34/spr_smoke_swoosh_34.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_35",
+      "order": 499,
+      "path": "sprites/spr_smoke_swoosh_35/spr_smoke_swoosh_35.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_36",
+      "order": 500,
+      "path": "sprites/spr_smoke_swoosh_36/spr_smoke_swoosh_36.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_37",
+      "order": 501,
+      "path": "sprites/spr_smoke_swoosh_37/spr_smoke_swoosh_37.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_4",
+      "order": 502,
+      "path": "sprites/spr_smoke_swoosh_4/spr_smoke_swoosh_4.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_5",
+      "order": 503,
+      "path": "sprites/spr_smoke_swoosh_5/spr_smoke_swoosh_5.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_6",
+      "order": 504,
+      "path": "sprites/spr_smoke_swoosh_6/spr_smoke_swoosh_6.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_7",
+      "order": 505,
+      "path": "sprites/spr_smoke_swoosh_7/spr_smoke_swoosh_7.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_8",
+      "order": 506,
+      "path": "sprites/spr_smoke_swoosh_8/spr_smoke_swoosh_8.yy"
+    },
+    {
+      "name": "spr_smoke_swoosh_9",
+      "order": 507,
+      "path": "sprites/spr_smoke_swoosh_9/spr_smoke_swoosh_9.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity",
+      "order": 508,
+      "path": "sprites/spr_spark_of_electricity/spr_spark_of_electricity.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity_1",
+      "order": 509,
+      "path": "sprites/spr_spark_of_electricity_1/spr_spark_of_electricity_1.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity_10",
+      "order": 510,
+      "path": "sprites/spr_spark_of_electricity_10/spr_spark_of_electricity_10.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity_2",
+      "order": 511,
+      "path": "sprites/spr_spark_of_electricity_2/spr_spark_of_electricity_2.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity_3",
+      "order": 512,
+      "path": "sprites/spr_spark_of_electricity_3/spr_spark_of_electricity_3.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity_4",
+      "order": 513,
+      "path": "sprites/spr_spark_of_electricity_4/spr_spark_of_electricity_4.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity_5",
+      "order": 514,
+      "path": "sprites/spr_spark_of_electricity_5/spr_spark_of_electricity_5.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity_6",
+      "order": 515,
+      "path": "sprites/spr_spark_of_electricity_6/spr_spark_of_electricity_6.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity_7",
+      "order": 516,
+      "path": "sprites/spr_spark_of_electricity_7/spr_spark_of_electricity_7.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity_8",
+      "order": 517,
+      "path": "sprites/spr_spark_of_electricity_8/spr_spark_of_electricity_8.yy"
+    },
+    {
+      "name": "spr_spark_of_electricity_9",
+      "order": 518,
+      "path": "sprites/spr_spark_of_electricity_9/spr_spark_of_electricity_9.yy"
+    },
+    {
+      "name": "spr_splash_front_1",
+      "order": 519,
+      "path": "sprites/spr_splash_front_1/spr_splash_front_1.yy"
+    },
+    {
+      "name": "spr_splash_front_10",
+      "order": 520,
+      "path": "sprites/spr_splash_front_10/spr_splash_front_10.yy"
+    },
+    {
+      "name": "spr_splash_front_11",
+      "order": 521,
+      "path": "sprites/spr_splash_front_11/spr_splash_front_11.yy"
+    },
+    {
+      "name": "spr_splash_front_12",
+      "order": 522,
+      "path": "sprites/spr_splash_front_12/spr_splash_front_12.yy"
+    },
+    {
+      "name": "spr_splash_front_13",
+      "order": 523,
+      "path": "sprites/spr_splash_front_13/spr_splash_front_13.yy"
+    },
+    {
+      "name": "spr_splash_front_14",
+      "order": 524,
+      "path": "sprites/spr_splash_front_14/spr_splash_front_14.yy"
+    },
+    {
+      "name": "spr_splash_front_2",
+      "order": 525,
+      "path": "sprites/spr_splash_front_2/spr_splash_front_2.yy"
+    },
+    {
+      "name": "spr_splash_front_3",
+      "order": 526,
+      "path": "sprites/spr_splash_front_3/spr_splash_front_3.yy"
+    },
+    {
+      "name": "spr_splash_front_4",
+      "order": 527,
+      "path": "sprites/spr_splash_front_4/spr_splash_front_4.yy"
+    },
+    {
+      "name": "spr_splash_front_5",
+      "order": 528,
+      "path": "sprites/spr_splash_front_5/spr_splash_front_5.yy"
+    },
+    {
+      "name": "spr_splash_front_6",
+      "order": 529,
+      "path": "sprites/spr_splash_front_6/spr_splash_front_6.yy"
+    },
+    {
+      "name": "spr_splash_front_7",
+      "order": 530,
+      "path": "sprites/spr_splash_front_7/spr_splash_front_7.yy"
+    },
+    {
+      "name": "spr_splash_front_8",
+      "order": 531,
+      "path": "sprites/spr_splash_front_8/spr_splash_front_8.yy"
+    },
+    {
+      "name": "spr_splash_front_9",
+      "order": 532,
+      "path": "sprites/spr_splash_front_9/spr_splash_front_9.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up",
+      "order": 533,
+      "path": "sprites/spr_star_explosion_with_build_up/spr_star_explosion_with_build_up.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_1",
+      "order": 534,
+      "path": "sprites/spr_star_explosion_with_build_up_1/spr_star_explosion_with_build_up_1.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_10",
+      "order": 535,
+      "path": "sprites/spr_star_explosion_with_build_up_10/spr_star_explosion_with_build_up_10.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_11",
+      "order": 536,
+      "path": "sprites/spr_star_explosion_with_build_up_11/spr_star_explosion_with_build_up_11.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_12",
+      "order": 537,
+      "path": "sprites/spr_star_explosion_with_build_up_12/spr_star_explosion_with_build_up_12.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_13",
+      "order": 538,
+      "path": "sprites/spr_star_explosion_with_build_up_13/spr_star_explosion_with_build_up_13.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_14",
+      "order": 539,
+      "path": "sprites/spr_star_explosion_with_build_up_14/spr_star_explosion_with_build_up_14.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_15",
+      "order": 540,
+      "path": "sprites/spr_star_explosion_with_build_up_15/spr_star_explosion_with_build_up_15.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_16",
+      "order": 541,
+      "path": "sprites/spr_star_explosion_with_build_up_16/spr_star_explosion_with_build_up_16.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_17",
+      "order": 542,
+      "path": "sprites/spr_star_explosion_with_build_up_17/spr_star_explosion_with_build_up_17.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_18",
+      "order": 543,
+      "path": "sprites/spr_star_explosion_with_build_up_18/spr_star_explosion_with_build_up_18.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_19",
+      "order": 544,
+      "path": "sprites/spr_star_explosion_with_build_up_19/spr_star_explosion_with_build_up_19.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_2",
+      "order": 545,
+      "path": "sprites/spr_star_explosion_with_build_up_2/spr_star_explosion_with_build_up_2.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_20",
+      "order": 546,
+      "path": "sprites/spr_star_explosion_with_build_up_20/spr_star_explosion_with_build_up_20.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_21",
+      "order": 547,
+      "path": "sprites/spr_star_explosion_with_build_up_21/spr_star_explosion_with_build_up_21.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_22",
+      "order": 548,
+      "path": "sprites/spr_star_explosion_with_build_up_22/spr_star_explosion_with_build_up_22.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_3",
+      "order": 549,
+      "path": "sprites/spr_star_explosion_with_build_up_3/spr_star_explosion_with_build_up_3.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_4",
+      "order": 550,
+      "path": "sprites/spr_star_explosion_with_build_up_4/spr_star_explosion_with_build_up_4.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_5",
+      "order": 551,
+      "path": "sprites/spr_star_explosion_with_build_up_5/spr_star_explosion_with_build_up_5.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_6",
+      "order": 552,
+      "path": "sprites/spr_star_explosion_with_build_up_6/spr_star_explosion_with_build_up_6.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_7",
+      "order": 553,
+      "path": "sprites/spr_star_explosion_with_build_up_7/spr_star_explosion_with_build_up_7.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_8",
+      "order": 554,
+      "path": "sprites/spr_star_explosion_with_build_up_8/spr_star_explosion_with_build_up_8.yy"
+    },
+    {
+      "name": "spr_star_explosion_with_build_up_9",
+      "order": 555,
+      "path": "sprites/spr_star_explosion_with_build_up_9/spr_star_explosion_with_build_up_9.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up",
+      "order": 556,
+      "path": "sprites/spr_star_explosion_without_build_up/spr_star_explosion_without_build_up.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_1",
+      "order": 557,
+      "path": "sprites/spr_star_explosion_without_build_up_1/spr_star_explosion_without_build_up_1.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_10",
+      "order": 558,
+      "path": "sprites/spr_star_explosion_without_build_up_10/spr_star_explosion_without_build_up_10.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_11",
+      "order": 559,
+      "path": "sprites/spr_star_explosion_without_build_up_11/spr_star_explosion_without_build_up_11.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_12",
+      "order": 560,
+      "path": "sprites/spr_star_explosion_without_build_up_12/spr_star_explosion_without_build_up_12.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_13",
+      "order": 561,
+      "path": "sprites/spr_star_explosion_without_build_up_13/spr_star_explosion_without_build_up_13.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_14",
+      "order": 562,
+      "path": "sprites/spr_star_explosion_without_build_up_14/spr_star_explosion_without_build_up_14.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_2",
+      "order": 563,
+      "path": "sprites/spr_star_explosion_without_build_up_2/spr_star_explosion_without_build_up_2.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_3",
+      "order": 564,
+      "path": "sprites/spr_star_explosion_without_build_up_3/spr_star_explosion_without_build_up_3.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_4",
+      "order": 565,
+      "path": "sprites/spr_star_explosion_without_build_up_4/spr_star_explosion_without_build_up_4.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_5",
+      "order": 566,
+      "path": "sprites/spr_star_explosion_without_build_up_5/spr_star_explosion_without_build_up_5.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_6",
+      "order": 567,
+      "path": "sprites/spr_star_explosion_without_build_up_6/spr_star_explosion_without_build_up_6.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_7",
+      "order": 568,
+      "path": "sprites/spr_star_explosion_without_build_up_7/spr_star_explosion_without_build_up_7.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_8",
+      "order": 569,
+      "path": "sprites/spr_star_explosion_without_build_up_8/spr_star_explosion_without_build_up_8.yy"
+    },
+    {
+      "name": "spr_star_explosion_without_build_up_9",
+      "order": 570,
+      "path": "sprites/spr_star_explosion_without_build_up_9/spr_star_explosion_without_build_up_9.yy"
+    },
+    {
+      "name": "spr_water_arc_swoosh",
+      "order": 571,
+      "path": "sprites/spr_water_arc_swoosh/spr_water_arc_swoosh.yy"
+    },
+    {
+      "name": "spr_water_droplet",
+      "order": 572,
+      "path": "sprites/spr_water_droplet/spr_water_droplet.yy"
+    },
+    {
+      "name": "spr_water_droplet_1",
+      "order": 573,
+      "path": "sprites/spr_water_droplet_1/spr_water_droplet_1.yy"
+    },
+    {
+      "name": "spr_water_droplet_10",
+      "order": 574,
+      "path": "sprites/spr_water_droplet_10/spr_water_droplet_10.yy"
+    },
+    {
+      "name": "spr_water_droplet_11",
+      "order": 575,
+      "path": "sprites/spr_water_droplet_11/spr_water_droplet_11.yy"
+    },
+    {
+      "name": "spr_water_droplet_12",
+      "order": 576,
+      "path": "sprites/spr_water_droplet_12/spr_water_droplet_12.yy"
+    },
+    {
+      "name": "spr_water_droplet_13",
+      "order": 577,
+      "path": "sprites/spr_water_droplet_13/spr_water_droplet_13.yy"
+    },
+    {
+      "name": "spr_water_droplet_14",
+      "order": 578,
+      "path": "sprites/spr_water_droplet_14/spr_water_droplet_14.yy"
+    },
+    {
+      "name": "spr_water_droplet_15",
+      "order": 579,
+      "path": "sprites/spr_water_droplet_15/spr_water_droplet_15.yy"
+    },
+    {
+      "name": "spr_water_droplet_16",
+      "order": 580,
+      "path": "sprites/spr_water_droplet_16/spr_water_droplet_16.yy"
+    },
+    {
+      "name": "spr_water_droplet_17",
+      "order": 581,
+      "path": "sprites/spr_water_droplet_17/spr_water_droplet_17.yy"
+    },
+    {
+      "name": "spr_water_droplet_18",
+      "order": 582,
+      "path": "sprites/spr_water_droplet_18/spr_water_droplet_18.yy"
+    },
+    {
+      "name": "spr_water_droplet_19",
+      "order": 583,
+      "path": "sprites/spr_water_droplet_19/spr_water_droplet_19.yy"
+    },
+    {
+      "name": "spr_water_droplet_2",
+      "order": 584,
+      "path": "sprites/spr_water_droplet_2/spr_water_droplet_2.yy"
+    },
+    {
+      "name": "spr_water_droplet_20",
+      "order": 585,
+      "path": "sprites/spr_water_droplet_20/spr_water_droplet_20.yy"
+    },
+    {
+      "name": "spr_water_droplet_21",
+      "order": 586,
+      "path": "sprites/spr_water_droplet_21/spr_water_droplet_21.yy"
+    },
+    {
+      "name": "spr_water_droplet_22",
+      "order": 587,
+      "path": "sprites/spr_water_droplet_22/spr_water_droplet_22.yy"
+    },
+    {
+      "name": "spr_water_droplet_23",
+      "order": 588,
+      "path": "sprites/spr_water_droplet_23/spr_water_droplet_23.yy"
+    },
+    {
+      "name": "spr_water_droplet_24",
+      "order": 589,
+      "path": "sprites/spr_water_droplet_24/spr_water_droplet_24.yy"
+    },
+    {
+      "name": "spr_water_droplet_3",
+      "order": 590,
+      "path": "sprites/spr_water_droplet_3/spr_water_droplet_3.yy"
+    },
+    {
+      "name": "spr_water_droplet_4",
+      "order": 591,
+      "path": "sprites/spr_water_droplet_4/spr_water_droplet_4.yy"
+    },
+    {
+      "name": "spr_water_droplet_5",
+      "order": 592,
+      "path": "sprites/spr_water_droplet_5/spr_water_droplet_5.yy"
+    },
+    {
+      "name": "spr_water_droplet_6",
+      "order": 593,
+      "path": "sprites/spr_water_droplet_6/spr_water_droplet_6.yy"
+    },
+    {
+      "name": "spr_water_droplet_7",
+      "order": 594,
+      "path": "sprites/spr_water_droplet_7/spr_water_droplet_7.yy"
+    },
+    {
+      "name": "spr_water_droplet_8",
+      "order": 595,
+      "path": "sprites/spr_water_droplet_8/spr_water_droplet_8.yy"
+    },
+    {
+      "name": "spr_water_droplet_9",
+      "order": 596,
+      "path": "sprites/spr_water_droplet_9/spr_water_droplet_9.yy"
+    },
+    {
+      "name": "spr_water_splash",
+      "order": 597,
+      "path": "sprites/spr_water_splash/spr_water_splash.yy"
+    },
+    {
+      "name": "spr_water_swoosh",
+      "order": 598,
+      "path": "sprites/spr_water_swoosh/spr_water_swoosh.yy"
+    },
+    {
+      "name": "spr_water_swoosh_1",
+      "order": 599,
+      "path": "sprites/spr_water_swoosh_1/spr_water_swoosh_1.yy"
+    },
+    {
+      "name": "spr_water_swoosh_10",
+      "order": 600,
+      "path": "sprites/spr_water_swoosh_10/spr_water_swoosh_10.yy"
+    },
+    {
+      "name": "spr_water_swoosh_11",
+      "order": 601,
+      "path": "sprites/spr_water_swoosh_11/spr_water_swoosh_11.yy"
+    },
+    {
+      "name": "spr_water_swoosh_12",
+      "order": 602,
+      "path": "sprites/spr_water_swoosh_12/spr_water_swoosh_12.yy"
+    },
+    {
+      "name": "spr_water_swoosh_13",
+      "order": 603,
+      "path": "sprites/spr_water_swoosh_13/spr_water_swoosh_13.yy"
+    },
+    {
+      "name": "spr_water_swoosh_14",
+      "order": 604,
+      "path": "sprites/spr_water_swoosh_14/spr_water_swoosh_14.yy"
+    },
+    {
+      "name": "spr_water_swoosh_15",
+      "order": 605,
+      "path": "sprites/spr_water_swoosh_15/spr_water_swoosh_15.yy"
+    },
+    {
+      "name": "spr_water_swoosh_16",
+      "order": 606,
+      "path": "sprites/spr_water_swoosh_16/spr_water_swoosh_16.yy"
+    },
+    {
+      "name": "spr_water_swoosh_17",
+      "order": 607,
+      "path": "sprites/spr_water_swoosh_17/spr_water_swoosh_17.yy"
+    },
+    {
+      "name": "spr_water_swoosh_18",
+      "order": 608,
+      "path": "sprites/spr_water_swoosh_18/spr_water_swoosh_18.yy"
+    },
+    {
+      "name": "spr_water_swoosh_19",
+      "order": 609,
+      "path": "sprites/spr_water_swoosh_19/spr_water_swoosh_19.yy"
+    },
+    {
+      "name": "spr_water_swoosh_2",
+      "order": 610,
+      "path": "sprites/spr_water_swoosh_2/spr_water_swoosh_2.yy"
+    },
+    {
+      "name": "spr_water_swoosh_20",
+      "order": 611,
+      "path": "sprites/spr_water_swoosh_20/spr_water_swoosh_20.yy"
+    },
+    {
+      "name": "spr_water_swoosh_21",
+      "order": 612,
+      "path": "sprites/spr_water_swoosh_21/spr_water_swoosh_21.yy"
+    },
+    {
+      "name": "spr_water_swoosh_22",
+      "order": 613,
+      "path": "sprites/spr_water_swoosh_22/spr_water_swoosh_22.yy"
+    },
+    {
+      "name": "spr_water_swoosh_23",
+      "order": 614,
+      "path": "sprites/spr_water_swoosh_23/spr_water_swoosh_23.yy"
+    },
+    {
+      "name": "spr_water_swoosh_24",
+      "order": 615,
+      "path": "sprites/spr_water_swoosh_24/spr_water_swoosh_24.yy"
+    },
+    {
+      "name": "spr_water_swoosh_25",
+      "order": 616,
+      "path": "sprites/spr_water_swoosh_25/spr_water_swoosh_25.yy"
+    },
+    {
+      "name": "spr_water_swoosh_26",
+      "order": 617,
+      "path": "sprites/spr_water_swoosh_26/spr_water_swoosh_26.yy"
+    },
+    {
+      "name": "spr_water_swoosh_27",
+      "order": 618,
+      "path": "sprites/spr_water_swoosh_27/spr_water_swoosh_27.yy"
+    },
+    {
+      "name": "spr_water_swoosh_28",
+      "order": 619,
+      "path": "sprites/spr_water_swoosh_28/spr_water_swoosh_28.yy"
+    },
+    {
+      "name": "spr_water_swoosh_29",
+      "order": 620,
+      "path": "sprites/spr_water_swoosh_29/spr_water_swoosh_29.yy"
+    },
+    {
+      "name": "spr_water_swoosh_3",
+      "order": 621,
+      "path": "sprites/spr_water_swoosh_3/spr_water_swoosh_3.yy"
+    },
+    {
+      "name": "spr_water_swoosh_30",
+      "order": 622,
+      "path": "sprites/spr_water_swoosh_30/spr_water_swoosh_30.yy"
+    },
+    {
+      "name": "spr_water_swoosh_31",
+      "order": 623,
+      "path": "sprites/spr_water_swoosh_31/spr_water_swoosh_31.yy"
+    },
+    {
+      "name": "spr_water_swoosh_32",
+      "order": 624,
+      "path": "sprites/spr_water_swoosh_32/spr_water_swoosh_32.yy"
+    },
+    {
+      "name": "spr_water_swoosh_33",
+      "order": 625,
+      "path": "sprites/spr_water_swoosh_33/spr_water_swoosh_33.yy"
+    },
+    {
+      "name": "spr_water_swoosh_34",
+      "order": 626,
+      "path": "sprites/spr_water_swoosh_34/spr_water_swoosh_34.yy"
+    },
+    {
+      "name": "spr_water_swoosh_35",
+      "order": 627,
+      "path": "sprites/spr_water_swoosh_35/spr_water_swoosh_35.yy"
+    },
+    {
+      "name": "spr_water_swoosh_36",
+      "order": 628,
+      "path": "sprites/spr_water_swoosh_36/spr_water_swoosh_36.yy"
+    },
+    {
+      "name": "spr_water_swoosh_37",
+      "order": 629,
+      "path": "sprites/spr_water_swoosh_37/spr_water_swoosh_37.yy"
+    },
+    {
+      "name": "spr_water_swoosh_38",
+      "order": 630,
+      "path": "sprites/spr_water_swoosh_38/spr_water_swoosh_38.yy"
+    },
+    {
+      "name": "spr_water_swoosh_4",
+      "order": 631,
+      "path": "sprites/spr_water_swoosh_4/spr_water_swoosh_4.yy"
+    },
+    {
+      "name": "spr_water_swoosh_5",
+      "order": 632,
+      "path": "sprites/spr_water_swoosh_5/spr_water_swoosh_5.yy"
+    },
+    {
+      "name": "spr_water_swoosh_6",
+      "order": 633,
+      "path": "sprites/spr_water_swoosh_6/spr_water_swoosh_6.yy"
+    },
+    {
+      "name": "spr_water_swoosh_7",
+      "order": 634,
+      "path": "sprites/spr_water_swoosh_7/spr_water_swoosh_7.yy"
+    },
+    {
+      "name": "spr_water_swoosh_8",
+      "order": 635,
+      "path": "sprites/spr_water_swoosh_8/spr_water_swoosh_8.yy"
+    },
+    {
+      "name": "spr_water_swoosh_9",
+      "order": 636,
+      "path": "sprites/spr_water_swoosh_9/spr_water_swoosh_9.yy"
+    },
+    {
+      "name": "spr_water_tornado",
+      "order": 637,
+      "path": "sprites/spr_water_tornado/spr_water_tornado.yy"
+    },
+    {
+      "name": "spr_water_tornado_1",
+      "order": 638,
+      "path": "sprites/spr_water_tornado_1/spr_water_tornado_1.yy"
+    },
+    {
+      "name": "spr_water_tornado_2",
+      "order": 639,
+      "path": "sprites/spr_water_tornado_2/spr_water_tornado_2.yy"
+    },
+    {
+      "name": "spr_water_tornado_3",
+      "order": 640,
+      "path": "sprites/spr_water_tornado_3/spr_water_tornado_3.yy"
+    },
+    {
+      "name": "spr_water_tornado_4",
+      "order": 641,
+      "path": "sprites/spr_water_tornado_4/spr_water_tornado_4.yy"
+    },
+    {
+      "name": "spr_water_tornado_5",
+      "order": 642,
+      "path": "sprites/spr_water_tornado_5/spr_water_tornado_5.yy"
+    },
+    {
+      "name": "spt_ball_of_electricity",
+      "order": 643,
+      "path": "sprites/spt_ball_of_electricity/spt_ball_of_electricity.yy"
     }
   ]
 }

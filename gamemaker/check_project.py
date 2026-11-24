@@ -73,8 +73,10 @@ yyp = check_json(yyp_path)
 if yyp.get('%Name') != NAME:
     fail('Projektname in .yyp falsch')
 resources = yyp.get('resources', [])
-if len(resources) != 8:
-    fail(f'Erwarte 8 Ressourcen, gefunden {len(resources)}')
+expected_paths = sorted(str(p.relative_to(PROJ)) for p in PROJ.rglob('*.yy'))
+actual_paths = sorted(r.get('id', {}).get('path', '') for r in resources)
+if actual_paths != expected_paths:
+    fail(f'.yyp und Dateien weichen ab: {len(actual_paths)} registriert, {len(expected_paths)} vorhanden')
 for entry in resources:
     rid = entry.get('id', {})
     rel = rid.get('path', '')
@@ -85,7 +87,8 @@ for entry in resources:
         fail(f'Ressourcenname passt nicht zu Pfad: {rel}')
 
 order = check_json(PROJ / f'{NAME}.resource_order')
-if len(order.get('ResourceOrderSettings', [])) != len(resources):
+order_paths = sorted(o.get('path', '') for o in order.get('ResourceOrderSettings', []))
+if order_paths != actual_paths:
     fail('resource_order ist nicht mit .yyp abgeglichen')
 
 obj = check_json(PROJ / 'objects/obj_game/obj_game.yy')
@@ -142,9 +145,22 @@ for marker, expected in [('global.ROSTER = {', 123), ('global.SPELLS = {', 51), 
 if 'global.MOB_CAP = 500' not in data:
     fail('MOB_CAP ist nicht 500')
 
+sprites = len(list((PROJ / 'sprites').glob('*/*.yy')))
+if sprites != 635:
+    fail(f'Erwarte 635 VFX-Sprites, gefunden {sprites}')
+vfx = (PROJ / 'scripts/scr_vfx/scr_vfx.gml').read_text(encoding='utf8')
+if 'global.VFX_SPRITES' not in vfx or 'function fb_vfx_draw()' not in vfx:
+    fail('VFX-Brücke scr_vfx.gml ist unvollständig')
+referenced = set(re.findall(r'\b(?:spr|spt)_[A-Za-z0-9_]+\b', vfx))
+sprite_dirs = {p.name for p in (PROJ / 'sprites').iterdir() if p.is_dir()}
+missing_sprites = sorted(referenced - sprite_dirs)
+if missing_sprites:
+    fail('VFX-Sprites fehlen: ' + ', '.join(missing_sprites))
+
 if errors:
     for err in errors:
         print('FEHLER:', err)
     sys.exit(1)
-print(f'OK GameMaker-Projekt: {len(resources)} Ressourcen, {len(gml_files)} GML-Dateien, '
-      f'{len(defined)} Funktionen, 123 Einheiten / 51 Zauber / 18 Gegner-Keys / MOB_CAP 500')
+print(f'OK GameMaker-Projekt: {len(resources)} Ressourcen ({sprites} VFX-Sprites), '
+      f'{len(gml_files)} GML-Dateien, {len(defined)} Funktionen, '
+      '123 Einheiten / 51 Zauber / 18 Gegner-Keys / MOB_CAP 500')

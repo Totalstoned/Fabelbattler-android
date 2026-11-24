@@ -10,7 +10,7 @@ PROJ = ROOT / 'Fabelbattler'
 NAME = 'Fabelbattler'
 
 SCRIPTS = [
-    'scr_data', 'scr_core', 'scr_units', 'scr_battle', 'scr_run', 'scr_draw'
+    'scr_data', 'scr_core', 'scr_units', 'scr_battle', 'scr_run', 'scr_draw', 'scr_vfx'
 ]
 
 SCRIPT_YY = {
@@ -24,7 +24,7 @@ SCRIPT_YY = {
 }
 
 EVENTS = [
-    (0, 0, 'Create_0.gml', 'fb_data_init();\nfb_state_init();\n'),
+    (0, 0, 'Create_0.gml', 'fb_data_init();\nfb_vfx_init();\nfb_state_init();\n'),
     (0, 3, 'Step_0.gml', 'fb_step(delta_time / 1000000);\n'),
     (0, 8, 'Draw_0.gml', 'fb_draw();\n'),
 ]
@@ -101,7 +101,10 @@ def build_room():
 def build_yyp():
     paths = [f'scripts/{n}/{n}.yy' for n in SCRIPTS]
     paths += ['objects/obj_game/obj_game.yy', 'rooms/Room1/Room1.yy']
+    paths += sorted(str(p.relative_to(PROJ)) for p in (PROJ / 'sprites').glob('*/*.yy'))
     resources = [{'id': {'name': Path(p).stem, 'path': p}} for p in paths]
+    folders_path = ROOT / 'vfx_folders.json'
+    folders = json.loads(folders_path.read_text(encoding='utf8')) if folders_path.is_file() else []
     yyp = {
         '$GMProject': 'v1',
         '%Name': NAME,
@@ -112,7 +115,7 @@ def build_yyp():
         }],
         'configs': {'children': [], 'name': 'Default'},
         'defaultScriptType': 1,
-        'Folders': [],
+        'Folders': folders,
         'ForcedPrefabProjectReferences': [],
         'IncludedFiles': [],
         'isEcma': False,

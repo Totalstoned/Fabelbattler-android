@@ -1,0 +1,386 @@
+[
+  {
+    "$GMFolder": "",
+    "%Name": "Sprites",
+    "folderPath": "folders/Sprites.yy",
+    "name": "Sprites",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Animated VFX",
+    "folderPath": "folders/Sprites/Animated VFX.yy",
+    "name": "Animated VFX",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Electricity",
+    "folderPath": "folders/Sprites/Animated VFX/Electricity.yy",
+    "name": "Electricity",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Explosions",
+    "folderPath": "folders/Sprites/Animated VFX/Explosions.yy",
+    "name": "Explosions",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Fire",
+    "folderPath": "folders/Sprites/Animated VFX/Fire.yy",
+    "name": "Fire",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Smoke",
+    "folderPath": "folders/Sprites/Animated VFX/Smoke.yy",
+    "name": "Smoke",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Water",
+    "folderPath": "folders/Sprites/Animated VFX/Water.yy",
+    "name": "Water",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Single Sprites",
+    "folderPath": "folders/Sprites/Single Sprites.yy",
+    "name": "Single Sprites",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Electricity",
+    "folderPath": "folders/Sprites/Single Sprites/Electricity.yy",
+    "name": "Electricity",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Ball_Of_Electricity",
+    "folderPath": "folders/Sprites/Single Sprites/Electricity/Ball_Of_Electricity.yy",
+    "name": "Ball_Of_Electricity",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Lightning_Bolt",
+    "folderPath": "folders/Sprites/Single Sprites/Electricity/Lightning_Bolt.yy",
+    "name": "Lightning_Bolt",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Lightning_Swoosh",
+    "folderPath": "folders/Sprites/Single Sprites/Electricity/Lightning_Swoosh.yy",
+    "name": "Lightning_Swoosh",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Small_Spark",
+    "folderPath": "folders/Sprites/Single Sprites/Electricity/Small_Spark.yy",
+    "name": "Small_Spark",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Spark_Of_Electricity",
+    "folderPath": "folders/Sprites/Single Sprites/Electricity/Spark_Of_Electricity.yy",
+    "name": "Spark_Of_Electricity",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Explosions",
+    "folderPath": "folders/Sprites/Single Sprites/Explosions.yy",
+    "name": "Explosions",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Electric_Explosion_With_Build_Up",
+    "folderPath": "folders/Sprites/Single Sprites/Explosions/Electric_Explosion_With_Build_Up.yy",
+    "name": "Electric_Explosion_With_Build_Up",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Electric_Explosion_Without_Build_Up",
+    "folderPath": "folders/Sprites/Single Sprites/Explosions/Electric_Explosion_Without_Build_Up.yy",
+    "name": "Electric_Explosion_Without_Build_Up",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Explosion_With_Bomb",
+    "folderPath": "folders/Sprites/Single Sprites/Explosions/Explosion_With_Bomb.yy",
+    "name": "Explosion_With_Bomb",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Explosion_Without_Bomb",
+    "folderPath": "folders/Sprites/Single Sprites/Explosions/Explosion_Without_Bomb.yy",
+    "name": "Explosion_Without_Bomb",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Magic_Sparkle_With_Build_Up",
+    "folderPath": "folders/Sprites/Single Sprites/Explosions/Magic_Sparkle_With_Build_Up.yy",
+    "name": "Magic_Sparkle_With_Build_Up",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Magic_Sparkle_Without_Build_Up",
+    "folderPath": "folders/Sprites/Single Sprites/Explosions/Magic_Sparkle_Without_Build_Up.yy",
+    "name": "Magic_Sparkle_Without_Build_Up",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Slime_Explosion",
+    "folderPath": "folders/Sprites/Single Sprites/Explosions/Slime_Explosion.yy",
+    "name": "Slime_Explosion",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Star_Explosion_With_Build_Up",
+    "folderPath": "folders/Sprites/Single Sprites/Explosions/Star_Explosion_With_Build_Up.yy",
+    "name": "Star_Explosion_With_Build_Up",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Star_Explosion_Without_Build_Up",
+    "folderPath": "folders/Sprites/Single Sprites/Explosions/Star_Explosion_Without_Build_Up.yy",
+    "name": "Star_Explosion_Without_Build_Up",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Fire",
+    "folderPath": "folders/Sprites/Single Sprites/Fire.yy",
+    "name": "Fire",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Camp_Fire",
+    "folderPath": "folders/Sprites/Single Sprites/Fire/Camp_Fire.yy",
+    "name": "Camp_Fire",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Candle_Flickering",
+    "folderPath": "folders/Sprites/Single Sprites/Fire/Candle_Flickering.yy",
+    "name": "Candle_Flickering",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Candle_Still",
+    "folderPath": "folders/Sprites/Single Sprites/Fire/Candle_Still.yy",
+    "name": "Candle_Still",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Flame_Swoosh",
+    "folderPath": "folders/Sprites/Single Sprites/Fire/Flame_Swoosh.yy",
+    "name": "Flame_Swoosh",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Shooting_Fireball_Without_Impact_Version_2",
+    "folderPath": "folders/Sprites/Single Sprites/Fire/Shooting_Fireball_Without_Impact_Version_2.yy",
+    "name": "Shooting_Fireball_Without_Impact_Version_2",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Shooting_Fireball_Without_Impact",
+    "folderPath": "folders/Sprites/Single Sprites/Fire/Shooting_Fireball_Without_Impact.yy",
+    "name": "Shooting_Fireball_Without_Impact",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Small_Flame",
+    "folderPath": "folders/Sprites/Single Sprites/Fire/Small_Flame.yy",
+    "name": "Small_Flame",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Smoke",
+    "folderPath": "folders/Sprites/Single Sprites/Smoke.yy",
+    "name": "Smoke",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Incense_Smoke",
+    "folderPath": "folders/Sprites/Single Sprites/Smoke/Incense_Smoke.yy",
+    "name": "Incense_Smoke",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Plumes_Of_Smoke",
+    "folderPath": "folders/Sprites/Single Sprites/Smoke/Plumes_Of_Smoke.yy",
+    "name": "Plumes_Of_Smoke",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Running_On_Land",
+    "folderPath": "folders/Sprites/Single Sprites/Smoke/Running_On_Land.yy",
+    "name": "Running_On_Land",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Small_Puff_Of_Smoke_(Front)",
+    "folderPath": "folders/Sprites/Single Sprites/Smoke/Small_Puff_Of_Smoke_(Front).yy",
+    "name": "Small_Puff_Of_Smoke_(Front)",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Small_Puff_Of_Smoke_(Side)",
+    "folderPath": "folders/Sprites/Single Sprites/Smoke/Small_Puff_Of_Smoke_(Side).yy",
+    "name": "Small_Puff_Of_Smoke_(Side)",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Small_Puff_Of_Smoke_(Vertical)",
+    "folderPath": "folders/Sprites/Single Sprites/Smoke/Small_Puff_Of_Smoke_(Vertical).yy",
+    "name": "Small_Puff_Of_Smoke_(Vertical)",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Smoke_Swoosh",
+    "folderPath": "folders/Sprites/Single Sprites/Smoke/Smoke_Swoosh.yy",
+    "name": "Smoke_Swoosh",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Water",
+    "folderPath": "folders/Sprites/Single Sprites/Water.yy",
+    "name": "Water",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Running_On_Water",
+    "folderPath": "folders/Sprites/Single Sprites/Water/Running_On_Water.yy",
+    "name": "Running_On_Water",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Water_Arc_Swoosh",
+    "folderPath": "folders/Sprites/Single Sprites/Water/Water_Arc_Swoosh.yy",
+    "name": "Water_Arc_Swoosh",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Water_Circle_Swoosh",
+    "folderPath": "folders/Sprites/Single Sprites/Water/Water_Circle_Swoosh.yy",
+    "name": "Water_Circle_Swoosh",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Water_Droplet",
+    "folderPath": "folders/Sprites/Single Sprites/Water/Water_Droplet.yy",
+    "name": "Water_Droplet",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Water_Splash",
+    "folderPath": "folders/Sprites/Single Sprites/Water/Water_Splash.yy",
+    "name": "Water_Splash",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Water_Swoosh",
+    "folderPath": "folders/Sprites/Single Sprites/Water/Water_Swoosh.yy",
+    "name": "Water_Swoosh",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  },
+  {
+    "$GMFolder": "",
+    "%Name": "Water_Tornado",
+    "folderPath": "folders/Sprites/Single Sprites/Water/Water_Tornado.yy",
+    "name": "Water_Tornado",
+    "resourceType": "GMFolder",
+    "resourceVersion": "2.0"
+  }
+]

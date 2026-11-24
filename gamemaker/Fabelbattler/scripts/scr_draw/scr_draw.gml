@@ -300,6 +300,7 @@ function fb_draw() {
         return;
     }
     fb_draw_field();
+    fb_vfx_draw();
     fb_draw_effects();
     fb_draw_hud();
     if (global.G.phase === "draft") fb_draw_draft();

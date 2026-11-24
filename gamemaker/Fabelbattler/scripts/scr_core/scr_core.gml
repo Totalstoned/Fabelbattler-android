@@ -64,7 +64,7 @@ function fb_state_init() {
     global.G = {
         team: [], wave: 1, gold: 20, mana: 30, maxMana: 100,
         phase: "menu", battle: undefined, uid: 0,
-        effects: [], particles: [], shockwaves: [],
+        effects: [], particles: [], shockwaves: [], vfx: [],
         teamSize: 4, items: { heal: 2, shield: 1, nova: 1 },
         selectedUnitId: undefined
     };
@@ -104,6 +104,7 @@ function fb_effect(u, text, color, scale) {
         gx: u.grid.gx, gy: u.grid.gy, text: text, color: fb_hex(color),
         life: 0.9, max: 0.9, scale: scale === undefined ? 0.7 : scale
     });
+    fb_vfx_spawn_effect(text, color, u.grid.gx, u.grid.gy);
 }
 
 function fb_burst(u, color, count, strength) {
@@ -138,6 +139,7 @@ function fb_clear_effects() {
     g.effects = [];
     g.particles = [];
     g.shockwaves = [];
+    g.vfx = [];
     global.shake = 0;
 }
 
@@ -163,6 +165,7 @@ function fb_tick_effects(dt) {
         if (g.shockwaves[i].life <= 0) array_delete(g.shockwaves, i, 1);
     }
     global.shake = max(0, global.shake - dt);
+    fb_vfx_tick(dt);
 }
 
 function fb_has_status(u, key) { return fb_get(u.statuses, key, 0) > 0; }

@@ -184,3 +184,8 @@ Schritt 4: 1.20.0 ist die letzte geplante Version – der automatische
 
 Hinweis zur 1.20.0-Quellversion: Das GameMaker-Projekt enthält jetzt das
 korrekte Draw-Event (`Draw_0.gml`); `gamemaker/check_project.py` prüft es.
+
+
+Der VFX-Pack ist jetzt im GameMaker-Projekt enthalten: Zauber-, Treffer-,
+Heil-, Schild-, Explosions- und Boss-Effekte nutzen echte Sprites statt
+reiner Kreise. Die Android-APK bleibt unverändert 1.20.0.apk.
