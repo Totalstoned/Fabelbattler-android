@@ -131,6 +131,11 @@ if (!html.includes('const STATUS_RING_GEOMETRIES = {}') || !html.includes('funct
     !html.includes('shape:"control"') || !html.includes('shape:"boost"')) {
   throw new Error('Status-Formen (Dreieck/Viereck/Sechseck) fuer Farbblinde fehlen');
 }
+if (!html.includes('id="battleReport"') || !html.includes('function showBattleReport') ||
+    !html.includes('function battleReportData') || !html.includes('hideBattleReport();') ||
+    !html.includes('showBattleReport(true)') || !html.includes('showBattleReport(false)')) {
+  throw new Error('Nachkampf-Auswertung (Schaden/Heilung/Top) fehlt');
+}
 if (!html.includes('id="heroAlert"') || !html.includes('id="heroAlertCount"') ||
     !html.includes('function updateHeroAlert')) {
   throw new Error('Warnung für kritische Helden in der Kampfleiste fehlt');
@@ -147,7 +152,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'atlasOverlay', 'atlasFrame', 'atlasAngle', 'atlasPrev', 'atlasNext', 'atlasClose']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'atlasOverlay', 'atlasFrame', 'atlasAngle', 'atlasPrev', 'atlasNext', 'atlasClose', 'battleReport', 'battleReportTitle', 'battleReportDamage', 'battleReportHeal', 'battleReportTop', 'btnReportClose']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 // Toasts werden im Headless-Modus unterdrückt. Der Zähler macht das prüfbar,
@@ -2167,4 +2172,43 @@ if (!vm.runInContext('globalThis.__atlasCheck', ctx)) {
   throw new Error('Drehbarer Bigfoot-Atlas zeigt die falschen Blickwinkel');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas)`);
+vm.runInContext(`
+  __beginTestRun();
+  G.teamSize = G.team.length;
+  startBattle();
+  const rpHitter = G.battle.player[0];
+  const rpAlly = G.battle.player[2] || G.battle.player[1] || rpHitter;
+  const rpFoe = G.battle.enemies[0];
+  rpFoe.shield = 0;
+  const rpHpBefore = rpFoe.hp;
+  applyDamage(rpFoe, 13, rpHitter, {});
+  const rpDealt = Math.round(rpHpBefore - rpFoe.hp);
+  rpAlly.hp = Math.max(1, rpAlly.maxHp - 25);
+  const rpHealed = Math.round(healUnit(rpAlly, 9));
+  const rpReport = battleReportData(true);
+  showBattleReport(true);
+  const rpPanel = document.getElementById("battleReport");
+  const rpShown = rpPanel.classList.contains("show") &&
+    document.getElementById("battleReportTitle").textContent.indexOf("besiegt") >= 0 &&
+    Number(document.getElementById("battleReportDamage").textContent) === rpReport.damage &&
+    Number(document.getElementById("battleReportHeal").textContent) === rpReport.heal &&
+    document.getElementById("battleReportTop").textContent === rpReport.top;
+  const rpNumbers = rpDealt > 0 && rpReport.damage >= rpDealt && rpReport.heal >= rpHealed &&
+    rpReport.top.indexOf(rpHitter.name) >= 0;
+  hideBattleReport();
+  const rpHidden = !rpPanel.classList.contains("show") && G.lastReport === null;
+  G.phase = "menu";
+  G.battle = null;
+  startBattle();
+  const rpFresh = battleReportData(true);
+  globalThis.__reportCheck = rpNumbers && rpShown && rpHidden &&
+    rpFresh.damage === 0 && rpFresh.heal === 0 && rpFresh.top === "–";
+  G.phase = "menu";
+  G.battle = null;
+  hideBattleReport();
+`, ctx);
+if (!vm.runInContext('globalThis.__reportCheck', ctx)) {
+  throw new Error('Nachkampf-Auswertung zaehlt Schaden/Heilung oder setzt das Panel nicht zurueck');
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung)`);
