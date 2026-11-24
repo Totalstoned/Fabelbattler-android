@@ -279,7 +279,7 @@
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
   <button class="btn heal" id="btnBattleHeal">Heilregen (40)</button>
   <button class="btn nova" id="btnBattleNova">Blitz (70)</button>
-  <button class="btn heal" id="btnItemHeal">Trank</button>
+  <button class="btn heal" id="btnItemHeal" title="Heilt den verwundetsten Helden um 35 %">Trank</button>
   <button class="btn" id="btnItemShield">Schild</button>
   <button class="btn nova" id="btnItemNova">Splitter</button>
   <button class="btn ghost" id="btnPrevUnit" title="Vorheriges Wesen">◀</button>
@@ -3286,11 +3286,15 @@ function updateButtons(){
   document.getElementById("btnBattleNova").disabled = !inBattle || G.mana < 70;
   const itemBtns = {btnItemHeal:"heal",btnItemShield:"shield",btnItemNova:"nova"};
   const itemLabels = {heal:"Trank",shield:"Schild",nova:"Splitter"};
+  // Der Trank wäre bei voller HP wirkungslos (useItem("heal") bricht dann ab);
+  // deaktivieren und Grund im Tooltip nennen statt einen Klick ohne Rückmeldung zuzulassen.
+  const healNeeded = inBattle && G.battle.player.some(u => !u.isDead && u.hp < u.maxHp);
   Object.keys(itemBtns).forEach(id => {
     const kind = itemBtns[id];
     const b = document.getElementById(id);
-    b.disabled = !inBattle || !(G.items[kind] > 0);
+    b.disabled = !inBattle || !(G.items[kind] > 0) || (kind === "heal" && !healNeeded);
     b.textContent = itemLabels[kind]+" ×"+(G.items[kind]||0);
+    if(kind === "heal") b.title = healNeeded ? "Heilt den verwundetsten Helden um 35 %" : "Alle Helden bei voller HP – Trank wird nicht verbraucht";
   });
   let hint = "";
   if(menu) hint = "Menü: Start, Einstellungen oder Credits wählen.";

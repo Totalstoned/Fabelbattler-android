@@ -252,6 +252,16 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Alle zukuenftigen APKs tragen dieselbe Signatur. Die aktuell installierte
   App muss wegen des alten Zufallskeys EINMAL deinstalliert werden.
 
+- [x] **37. Trank-Button bei voller HP deaktivieren** (v1.72)
+   `updateButtons()` deaktiviert den Trank-Button im Kampf, solange kein
+   lebender Held verwundet ist, und erklärt den Grund im Tooltip. Bisher
+   blieb der Button aktiv, obwohl `useItem("heal")` den Klick ohne Wirkung
+   und ohne Rückmeldung abbrach. Der Tooltip nennt jetzt auch die Wirkung
+   (35 % Heilung für den verwundetsten Helden).
+   *Erledigt:* `check_data.py` prüft die Tokens; `check_runtime.js` prüft
+   deaktiviert/aktiv je nach HP, leeren Bestand und dass kein Trank
+   verbraucht wird; alle drei Checks grün.
+
 - [x] **35. Versionssprung auf 1.70** (v1.70)
   User-Wunsch: „benneng 1.59 1.60 1.70 der app" → direkt 1.70, keine
   Zwischenversionen. `APP_VERSION_NAME=1.70`, `APP_VERSION_CODE=70` (bewusst

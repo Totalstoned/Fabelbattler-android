@@ -406,6 +406,44 @@ if (!vm.runInContext('globalThis.__novaItemCheck', ctx)) {
 }
 
 vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  const healBtn = document.getElementById("btnItemHeal");
+  G.items.heal = 1;
+  G.battle.player.forEach(u => { u.hp = u.maxHp; u.shield = 0; u.isDead = false; });
+  updateButtons();
+  globalThis.__healBtnFull = healBtn.disabled === true && /voller HP/.test(healBtn.title);
+  G.battle.player[0].hp = G.battle.player[0].maxHp * 0.5;
+  updateButtons();
+  globalThis.__healBtnWounded = healBtn.disabled === false && /35 %/.test(healBtn.title);
+  const fullItemCount = G.items.heal;
+  G.battle.player[0].hp = G.battle.player[0].maxHp;
+  updateButtons();
+  globalThis.__healBtnNoConsume = healBtn.disabled === true && useItem("heal") === false && G.items.heal === fullItemCount;
+  G.items.heal = 0;
+  G.battle.player[0].hp = G.battle.player[0].maxHp * 0.5;
+  updateButtons();
+  globalThis.__healBtnEmpty = healBtn.disabled === true;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__healBtnFull', ctx)) {
+  throw new Error('Trank-Button ist bei voller HP nicht deaktiviert und erklärt nicht den Grund');
+}
+if (!vm.runInContext('globalThis.__healBtnWounded', ctx)) {
+  throw new Error('Trank-Button bleibt bei verwundetem Helden deaktiviert');
+}
+if (!vm.runInContext('globalThis.__healBtnNoConsume', ctx)) {
+  throw new Error('Wirkungsloser Heiltrank wird doch verbraucht');
+}
+if (!vm.runInContext('globalThis.__healBtnEmpty', ctx)) {
+  throw new Error('Trank-Button ist ohne Trank aktiv');
+}
+
+vm.runInContext(`
   const w1 = mobWaveSize(1,"enemy"), w20 = mobWaveSize(20,"enemy"), w40 = mobWaveSize(40,"enemy");
   globalThis.__mobSizeCheck = w1 >= 4 && w20 > w1 && w40 === 500 && mobWaveSize(40,"player") === 500;
   G.phase = "menu";
@@ -1462,3 +1500,4 @@ for (const [flag, message] of [
 }
 
 console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, heal-btn, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)})`);
