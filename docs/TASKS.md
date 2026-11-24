@@ -179,6 +179,10 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
 - [x] **29. Toasts im Kampf oben** (v1.45)
   Die Toasts lagen mit `bottom:14px` und `z-index:99` direkt über der Kampfleiste und verdeckten Timer, Kampfstatus, Fokus- und Mana-Anzeige. `body.battle-mode .toasts` setzt sie auf `top:14px` (`bottom:auto`, `pointer-events:none`); außerhalb des Kampfes bleibt die alte Position.
   *Erledigt:* `check_runtime.js` prüft die CSS-Regel; `check_data.py` und die Kampf-Simulation bleiben grün.
+- [x] **38. Fokus-Ziel mit Level und Rolle** (v1.73)
+  Die Fokus-Ziel-Anzeige ergänzt `focusTargetMeta` um „Lv N · Tank/DPS/Heiler/Puffer" bzw. „Lv N · Schwarm" für Mobs. Im Kampfmodus sind Teamliste und Einheiten-Panel ausgeblendet; die Bedrohung des aktuellen Ziels ist so direkt ablesbar. Ohne Ziel, bei totem Ziel/Fokus und außerhalb des Kampfes wird der Wert zurückgesetzt.
+  *Erledigt:* `check_runtime.js` prüft Level/Rolle für Gegner-Helden und Schwarm-Mobs sowie das Zurücksetzen; `check_data.py` prüft den UI-Token.
+
 - [x] **30. Fokus-Ziel in der Kampfleiste** (v1.46, erweitert v1.51)
   `updateFocusTarget()` zeigt ➤ Ziel mit Namen, Rest-HP, Schild und Angriffswert des
   Wesens, das der per ◀/▶ fokussierte Held aktuell angreift. Bei kritischem Ziel

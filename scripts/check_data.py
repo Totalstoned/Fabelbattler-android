@@ -221,7 +221,7 @@ for token in ['focusCd', 'focusCdValue', 'function updateFocusCooldown']:
 for token in ['id="focusMeta"', 'function updateFocusMeta']:
     if token not in src:
         problems.append('Fokus-Level/Rolle in der Kampfleiste fehlt: ' + token)
-for token in ['focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'function updateFocusTarget', 'activeStatusKeys(target).map']:
+for token in ['focusTarget', 'focusTargetName', 'focusTargetMeta', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'function updateFocusTarget', 'activeStatusKeys(target).map']:
     if token not in src:
         problems.append('Fokus-Ziel in der Kampfleiste fehlt: ' + token)
 for token in ['eliteInfo', 'statusElites', 'enemyMobs.filter(m => m.isElite)', 'battle-info.status .elites.show']:
