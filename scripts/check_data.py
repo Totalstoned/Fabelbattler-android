@@ -356,6 +356,15 @@ for token in ['function damageTextScale', 'damageTextScale(dmg,target,!!opts.cri
     if token not in src:
         problems.append('Skalierte Trefferzahlen fehlen: ' + token)
 
+# Bigfoot-Prototyp des drehbaren Wesen-Atlasses: Sheet und Anbindung muessen
+# im WebView-Build zusammen vorhanden sein (sonst bleibt die Zelle schwarz).
+for token in ['id="atlasFrame"', 'background-image:url("creatures/bigfoot/turntable.png")',
+              'background-size:400% 200%', 'function setAtlasFrame']:
+    if token not in src:
+        problems.append('Bigfoot-Turntable fehlt in index3d.html: ' + token)
+if not (path.parent / 'creatures' / 'bigfoot' / 'turntable.png').is_file():
+    problems.append('Bigfoot-Turntable-Datei fehlt im Assetordner')
+
 if problems:
     for p in problems[:30]:
         print('FEHLER:', p)

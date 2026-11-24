@@ -192,6 +192,16 @@
   body.battle-mode .modal{max-width:min(860px,96vw);width:100%;border-radius:18px 18px 0 0;
        padding:16px 16px 18px;box-shadow:0 -12px 40px rgba(0,0,0,.55);}
   body.battle-mode .draft{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;}
+  .creature-atlas .modal{max-width:min(420px,96vw);text-align:center;}
+  body.battle-mode .creature-atlas .modal{max-width:min(420px,96vw);border-radius:16px;}
+  .creature-atlas .atlas-frame{width:min(300px,76vw);aspect-ratio:1;margin:8px auto 10px;
+      border:1px solid var(--line);border-radius:12px;background-color:#0b0e13;
+      background-image:url("creatures/bigfoot/turntable.png");
+      background-size:400% 200%;background-repeat:no-repeat;background-position:0% 0%;
+      touch-action:none;cursor:ew-resize;}
+  .creature-atlas .atlas-angle{color:var(--gold);font-size:12px;margin-bottom:6px;}
+  .creature-atlas .atlas-actions{display:flex;gap:8px;justify-content:center;}
+  .creature-atlas .atlas-actions .btn{width:auto;min-width:88px;}
 </style>
 </head>
 <body>
@@ -253,6 +263,19 @@
     <p class="tiny" id="infoText" style="margin:0 0 12px;text-align:left"></p>
     <div id="infoExtra"></div>
     <button class="btn ghost" id="infoClose" style="margin-top:10px">Zurück</button>
+  </div>
+</div>
+<div class="overlay creature-atlas" id="atlasOverlay">
+  <div class="modal">
+    <h3 id="atlasTitle">Bigfoot · 8 Ansichten</h3>
+    <div class="atlas-angle" id="atlasAngle">0° · Front</div>
+    <div class="atlas-frame" id="atlasFrame" title="Horizontal ziehen, um das Wesen zu drehen"></div>
+    <div class="atlas-actions">
+      <button class="btn ghost" id="atlasPrev">◀ Links</button>
+      <button class="btn ghost" id="atlasNext">Rechts ▶</button>
+    </div>
+    <p class="tiny" style="margin:10px 0 0">Atlas aus Wikimedia-Referenz · 4×2 Cells · Ziehen dreht in 45°-Schritten</p>
+    <button class="btn ghost" id="atlasClose" style="margin-top:10px">Zurück</button>
   </div>
 </div>
 <div class="overlay" id="overlay">
@@ -998,6 +1021,9 @@ function openInfo(title,text,extraHtml){
   document.getElementById("infoTitle").textContent = title;
   document.getElementById("infoText").innerHTML = text;
   document.getElementById("infoExtra").innerHTML = extraHtml || "";
+  const atlasBtn = document.getElementById("btnAtlasFromInfo");
+  if(atlasBtn && atlasInfoKey) atlasBtn.onclick = () => openCreatureAtlas(atlasInfoKey);
+  atlasInfoKey = null;
   const sel = document.getElementById("setTeamSize");
   if(sel){
     sel.value = String(G.teamSize);
@@ -1006,6 +1032,41 @@ function openInfo(title,text,extraHtml){
   document.getElementById("infoOverlay").classList.add("show");
 }
 function closeInfo(){ document.getElementById("infoOverlay").classList.remove("show"); }
+// Drehbarer Wesen-Atlas: Der 4x2-Sheet liegt lokal im WebView-Assetordner.
+// Jede Zelle ist eine feste Blickrichtung; Ziehen/Pfeile wechseln die Zelle.
+const ATLAS_CREATURES = {bigfoot:{label:"Bigfoot",image:"creatures/bigfoot/turntable.png"}};
+const ATLAS_VIEWS = ["0° · Front","45° · rechts vorne","90° · rechte Seite","135° · rechts hinten",
+  "180° · Rücken","225° · links hinten","270° · linke Seite","315° · links vorne"];
+let atlasView = 0;
+let atlasInfoKey = null;
+function setAtlasFrame(frame){
+  atlasView = ((frame % ATLAS_VIEWS.length) + ATLAS_VIEWS.length) % ATLAS_VIEWS.length;
+  const col = atlasView % 4, row = Math.floor(atlasView / 4);
+  document.getElementById("atlasFrame").style.backgroundPosition =
+    Math.round(col*100/3)+"% "+row*100+"%";
+  document.getElementById("atlasAngle").textContent = ATLAS_VIEWS[atlasView];
+  return atlasView;
+}
+function rotateCreatureAtlas(dir){ return setAtlasFrame(atlasView+dir); }
+function openCreatureAtlas(key){
+  const info = ATLAS_CREATURES[key];
+  if(!info){ showToast("Für dieses Wesen gibt es noch keinen Atlas"); return false; }
+  document.getElementById("atlasTitle").textContent = info.label+" · 8 Ansichten";
+  document.getElementById("atlasOverlay").classList.add("show");
+  setAtlasFrame(0);
+  return true;
+}
+function closeCreatureAtlas(){ document.getElementById("atlasOverlay").classList.remove("show"); }
+const atlasFrameEl = document.getElementById("atlasFrame");
+let atlasDragX = null;
+atlasFrameEl.addEventListener("pointerdown",e=>{ atlasDragX = e.clientX; });
+atlasFrameEl.addEventListener("pointermove",e=>{
+  if(atlasDragX === null) return;
+  const dx = e.clientX-atlasDragX;
+  if(Math.abs(dx) >= 30){ rotateCreatureAtlas(dx > 0 ? -1 : 1); atlasDragX = e.clientX; }
+});
+atlasFrameEl.addEventListener("pointerup",()=>{ atlasDragX = null; });
+atlasFrameEl.addEventListener("pointercancel",()=>{ atlasDragX = null; });
 function beginRun(){
   document.getElementById("menuOverlay").classList.remove("show");
   closeInfo();
@@ -3258,7 +3319,10 @@ function abilityInfoHtml(u){
 function updateUnitInfo(){
   const el = document.getElementById("unitInfoBody");
   const u = findUnitById(G.selectedUnitId);
-  el.innerHTML = u ? abilityInfoHtml(u) : "Tippe auf ein Wesen, um Fähigkeit und Zauber zu sehen.";
+  const atlas = u && ATLAS_CREATURES[u.key]
+    ? '<button class="btn ghost" id="btnAtlasFromUnit" style="margin-top:8px">🌀 8 Ansichten drehen</button>' : '';
+  el.innerHTML = u ? abilityInfoHtml(u)+atlas : "Tippe auf ein Wesen, um Fähigkeit und Zauber zu sehen.";
+  if(atlas) document.getElementById("btnAtlasFromUnit").onclick = () => openCreatureAtlas(u.key);
 }
 function selectUnit(u){
   if(!u) return;
@@ -3936,8 +4000,13 @@ window.addEventListener("load", () => {
   document.getElementById("btnBattleInfo").onclick = () => {
     const u = findUnitById(G.selectedUnitId) || G.battle?.player.find(x => !x.isDead) || G.team[0];
     if(!u){ showToast("Kein Wesen verfügbar"); return; }
-    openInfo(u.name+" · Fähigkeit", abilityInfoHtml(u), "");
+    atlasInfoKey = u.key && ATLAS_CREATURES[u.key] ? u.key : null;
+    openInfo(u.name+" · Fähigkeit", abilityInfoHtml(u), atlasInfoKey
+      ? '<button class="btn ghost" id="btnAtlasFromInfo" style="margin-top:10px">🌀 8 Ansichten drehen</button>' : "");
   };
+  document.getElementById("atlasPrev").onclick = () => rotateCreatureAtlas(-1);
+  document.getElementById("atlasNext").onclick = () => rotateCreatureAtlas(1);
+  document.getElementById("atlasClose").onclick = closeCreatureAtlas;
   document.getElementById("btnHeal").onclick = () => {
     if(G.mana < 40 || !G.battle || G.phase !== "battle") return;
     G.mana -= 40;
