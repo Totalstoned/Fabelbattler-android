@@ -8,3 +8,5 @@
   - Autonomie (1.20.0): `scripts/idea_scout.py` sammelt kostenlos Ideen aus DuckDuckGo/Wikipedia/GitHub, `scripts/download_budget.py` erlaubt 2 GiB Download pro UTC-Tag ohne Rückfrage, `AUTO_MODEL` schaltet auf freie Modelle um, `scripts/creature_reference.py` lädt Wesenbilder für drehbare 3D-Turntables.
 
   - Grafik-Pipeline (1.20.0): `creature_reference.py` + `make_turntable.py` erzeugen aus Wikimedia-Bildern 8-Winkel-Atlanten; Prototyp: `creatures/bigfoot/turntable.png`.
+
+  - Release-Sync (1.20.0): Der Integrator merged PRs auch bei der Endmarke (Version bleibt 1.20.0), `download-apk.sh` aktualisiert `1.20.0.apk` bei explizitem CI-Lauf; PR #161 mit Elite/Boss-Intent ist enthalten.

@@ -14,3 +14,5 @@
 - 2026-11-24: `auto-model` ist umgesetzt: `AUTO_MODEL=<id>` in `scripts/auto-improve.sh` erlaubt kostenlose opencode-Modelle, Standard bleibt big-pickle.
 
 - 2026-11-24: `auto-integrate.sh` integriert PRs jetzt auch bei der fixierten Endmarke 1.20.0 (Version bleibt 1.20.0, APK weiterhin `1.20.0.apk`); gestoppt wird nur bei Versionen über 1.20.0. Vorher blieben PRs nach Erreichen der Endmarke liegen.
+
+- 2026-11-24: Release-Sync 1.20.0: PR #161 (Elite/Boss-Intent im Fokus-Panel) per Squash integriert, `download-apk.sh` aktualisiert die fixierte `1.20.0.apk` bei explizitem CI-Lauf. CI 45455130556 grün, APK SHA-256 `3ce86427fbdf0d86d492ef9839f7c315de3e1e78c3ed048679e2237e70aacb35`, alle drei Checks in beiden index3d-Kopien grün.

@@ -8,3 +8,5 @@
 2026-11-24: Ideen-Scout, Download-Budget (2 GiB/Tag), AUTO_MODEL und Creature-Reference-Pipeline ergänzt; der 10-Minuten-Loop wird mit dem KI-9000-Prompt neu gestartet. Version bleibt 1.20.0.
 
 2026-11-24: Bigfoot-Turntable erzeugt (ImageMagick-Fallback, 8 Winkel). Bild-Gen war ohne Guthaben; Asset liegt in app/src/main/assets/creatures/bigfoot/.
+
+2026-11-24: Integrator bei 1.20.0 freigeschaltet, PR #161 (Elite/Boss-Intent) squash-gemergt, APK bei fixierter Version neu geladen (CI 45455130556, SHA-256 3ce86427fbdf0d86d492ef9839f7c315de3e1e78c3ed048679e2237e70aacb35). Alle Checks in beiden Kopien grün.

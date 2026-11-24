@@ -179,7 +179,8 @@ Schritt 3: Das Spiel startet mit Leertaste; R würfelt den Draft neu,
            H heilt, N ist der Fabel-Blitz, 1/2/3 sind die Items,
            ◀▶ wechselt den fokussierten Helden.
 Schritt 4: 1.20.0 ist die letzte geplante Version – der automatische
-           10-Minuten-Loop bleibt deshalb gestoppt.
+           10-Minuten-Loop läuft weiter, baut aber keine neue Versionsnummer.
+           Neue Verbesserungen landen direkt in 1.20.0.apk.
 
 
 Hinweis zur 1.20.0-Quellversion: Das GameMaker-Projekt enthält jetzt das
@@ -202,3 +203,10 @@ Für Bigfoot liegt jetzt ein erster drehbarer 8-Winkel-Bildatlas im Projekt
 (`creatures/bigfoot/turntable.png`). Die Bildgenerierung hatte kein Guthaben,
 deshalb wurde er lokal aus dem Wikimedia-Referenzbild abgeleitet. Der Einbau
 in die 3D-Engine folgt im nächsten autonomen Lauf.
+
+
+Neu in dieser 1.20.0.apk: Das Fokus-Panel zeigt bei Eliten und Bossen,
+wann deren nächster Angriff kommt („bereit“, Restzeit, „nähert sich“ oder
+„blockiert“). Normale Schwarm-Mobs bleiben ohne Anzeige, damit die Leiste
+lesbar bleibt. Die Datei 1.20.0.apk wurde mit diesem Stand überschrieben;
+die alten APK-Dateien bleiben unverändert liegen.
