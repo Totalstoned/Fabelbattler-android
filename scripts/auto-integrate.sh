@@ -26,10 +26,14 @@ cd "$REPO" || exit 1
 log(){ echo "$(date -u +%FT%TZ) [integrate] $*" >> "$LOG"; }
 
 VERSION="$(grep '^APP_VERSION_NAME=' gradle.properties | cut -d= -f2)"
-if [ "$VERSION" = "1.20.0" ]; then
-  log "Zielversion 1.20.0 erreicht – keine weitere Integration"
+MAX_VERSION=1.20.0
+# Die Endmarke bleibt fixiert, weitere Aenderungen werden weiterhin als
+# 1.20.0.apk gebaut und integriert. Nur Versionen UEBER der Endmarke stoppen.
+if [ "$(printf '%s\n%s\n' "$MAX_VERSION" "$VERSION" | sort -V | head -1)" != "$VERSION" ]; then
+  log "Version $VERSION ueber der Endmarke $MAX_VERSION – keine weitere Integration"
   exit 0
 fi
+log "Integration bei Endmarke $VERSION aktiv (Version bleibt fixiert)"
 
 if ! git -c url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf=git@github.com: fetch -q origin main; then
   log "Fetch fehlgeschlagen – Integration übersprungen"

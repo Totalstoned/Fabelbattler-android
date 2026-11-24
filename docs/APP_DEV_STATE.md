@@ -10,3 +10,5 @@
 - 2026-11-24: `creature-turntable`-Prototyp: Wikimedia-Referenz `bigfoot/reference.jpg` (Public Domain) geladen, Bildgenerierung hatte kein Guthaben, deshalb mit `scripts/make_turntable.py` ein 1024x512-Atlas aus 8 Blickwinkeln erzeugt (`bigfoot/turntable.png`). Einbau in index3d.html ist der nächste Schritt.
 
 - 2026-11-24: `auto-model` ist umgesetzt: `AUTO_MODEL=<id>` in `scripts/auto-improve.sh` erlaubt kostenlose opencode-Modelle, Standard bleibt big-pickle.
+
+- 2026-11-24: `auto-integrate.sh` integriert PRs jetzt auch bei der fixierten Endmarke 1.20.0 (Version bleibt 1.20.0, APK weiterhin `1.20.0.apk`); gestoppt wird nur bei Versionen über 1.20.0. Vorher blieben PRs nach Erreichen der Endmarke liegen.
