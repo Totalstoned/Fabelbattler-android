@@ -216,6 +216,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **40. Absolute Gegner-HP in der Kampfleiste** (v1.75)
+  Der Gegner-Stärkebalken zeigte nur Prozent; beim 500er-Schwarm war nicht erkennbar,
+  wie viel HP noch tatsächlich übrig waren. `enemyHpValue` zeigt jetzt Rest-HP inkl.
+  Schild und Gesamt-HP (`shortHp()` kompakt ab 1000 als k), außerhalb des Kampfes 0/0.
+  *Erledigt:* `check_runtime.js` prüft Full/Damage/Schild/Tod/Kompakt/Hide,
+  `check_data.py` prüft die Tokens; alle drei Checks grün.
+
 - [x] **39. Weniger UI-Overlay im Kampf** (v1.74)
   User wollte mehr freies Schlachtfeld. Kampfleiste 0.94->0.42 Alpha plus
   Backdrop-Blur, kompaktere Buttons/Statusbalken, Toasts 0.96->0.62.

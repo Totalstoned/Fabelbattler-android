@@ -121,6 +121,7 @@
   .enemyhp .track{width:64px;height:6px;background:#0b0e13;border:1px solid #7f4a3b;border-radius:4px;overflow:hidden;}
   .enemyhp .track i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#e05a45,#ffb86b);transition:width .15s;}
   .enemyhp b{min-width:30px;text-align:right;}
+  .enemyhp b.abs{min-width:58px;color:#ffd166;text-align:left;}
   .enemyhp.closing{color:#9ff0bd;}
   .enemyhp.closing .track{border-color:#2f6b47;}
   .enemyhp.closing .track i{background:linear-gradient(90deg,#2f9e60,#4ade80);}
@@ -268,7 +269,7 @@
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
   <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Rest-HP, Schild, Angriff und Statuseffekten">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetHp">0/0</b> · ⚔ <b id="focusTargetAtk">0</b><span class="fx" id="focusTargetStatus"></span></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP und Schilde des Teams">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpPct">100%</b></span>
-  <span class="enemyhp" id="enemyHpBar" title="Verbleibende HP und Schilde aller Gegner inklusive Schwarm; grün, wenn der Sieg nah ist">☠ <span class="track"><i id="enemyHpFill"></i></span> <b id="enemyHpPct">100%</b></span>
+  <span class="enemyhp" id="enemyHpBar" title="Verbleibende HP und Schilde aller Gegner inklusive Schwarm als Prozent und absolute Werte; grün, wenn der Sieg nah ist">☠ <span class="track"><i id="enemyHpFill"></i></span> <b id="enemyHpPct">100%</b> · <b class="abs" id="enemyHpValue">0/0</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b> <span class="spell-ready" id="manaHealReady" title="Heilregen ab 40 Mana verfügbar">✚40</span> <span class="spell-ready" id="manaNovaReady" title="Fabel-Blitz ab 70 Mana verfügbar">✺70</span></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 Gegner <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
@@ -3100,6 +3101,12 @@ function updateTeamHpBar(){
   document.getElementById("teamHpFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("teamHpPct").textContent = Math.ceil(pct)+'%';
 }
+// Kompakte HP-Zahl für die Kampfleiste: ab 1000 wird auf k gerundet.
+function shortHp(n){
+  const v = Math.max(0,Math.round(n));
+  if(v < 1000) return String(v);
+  return (v/1000).toFixed(v >= 10000 ? 0 : 1).replace(/\.0$/,'')+'k';
+}
 // Gegner-Stärke inklusive Schwarm: zeigt, wie nah der Sieg ist (grün ab ≤ 25 % Rest-HP).
 function updateEnemyHpBar(){
   if(SIM.headless) return;
@@ -3107,6 +3114,7 @@ function updateEnemyHpBar(){
   if(G.phase !== "battle" || !G.battle){
     bar.classList.remove("show");
     bar.classList.remove("closing");
+    document.getElementById("enemyHpValue").textContent = "0/0";
     return;
   }
   const foes = sideUnits(G.battle,"enemy");
@@ -3117,6 +3125,7 @@ function updateEnemyHpBar(){
   bar.classList.toggle("closing",pct <= 25);
   document.getElementById("enemyHpFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("enemyHpPct").textContent = Math.ceil(pct)+'%';
+  document.getElementById("enemyHpValue").textContent = shortHp(current)+'/'+shortHp(maxHp);
 }
 function updateBattleManaBar(){
   if(SIM.headless) return;

@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.74-b74
+Aktuelle Version: v1.75-b75
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,14 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.75-b75 2026-11-24  (Absolute Gegner-HP in der Kampfleiste)
+   - Der Gegner-Stärkebalken zeigte nur Prozent. Neue Anzeige enemyHpValue
+     (b.abs) nennt Rest-HP inklusive Schild und Gesamt-HP; shortHp() formatiert
+     ab 1000 kompakt als k, damit die Leiste schmal bleibt.
+   - Außerhalb des Kampfes wird der Wert auf 0/0 zurückgesetzt.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Full-, Schadens-,
+     Schild-, Todes-, Kompakt- und Hide-Zustand. Alle drei Checks gruen.
 
 v1.74-b74 2026-11-24  (Kompakte Kampf-UI)
    - User: "die ui muss angepasst werden" -> Option "weniger Overlay, mehr Feld".
