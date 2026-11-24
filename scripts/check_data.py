@@ -185,6 +185,9 @@ for token in ['id="battleGoldGain"', 'battleGoldGainUntil', 'battle-info.gold b.
 for token in ['playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'function updatePlayerBossBar']:
     if token not in src:
         problems.append('Eigener Boss-Lebensbalken fehlt: ' + token)
+for token in ['id="btnItemHeal" title="Heilt den verwundetsten Helden um 35 %"', 'healNeeded', 'Alle Helden bei voller HP', 'kind === "heal" && !healNeeded']:
+    if token not in src:
+        problems.append('Trank-Button ohne verwundeten Helden fehlt: ' + token)
 
 for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', 'swarmStacks(sideUnits(G.battle,"player").length)']:
     if token not in src:

@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.71-b71
+Aktuelle Version: v1.72-b72
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,15 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.72-b72 2026-11-24  (Trank-Button bei voller HP)
+   - Im Kampfmodus sind HUD und Einheiten-Panel ausgeblendet; der Trank-Button
+     blieb aber aktiv, obwohl useItem("heal") bei voller HP wirkungslos
+     abbrach. updateButtons() deaktiviert ihn jetzt, solange kein lebender
+     Held verwundet ist, und nennt den Grund im Tooltip. Der Tooltip zeigt
+     zusaetzlich die Wirkung (35 % Heilung des verwundetsten Helden).
+   - check_data.py prueft die Tokens; check_runtime.js prueft deaktiviert/
+     aktiv je nach HP, leeren Bestand und dass kein Trank verbraucht wird.
 
 v1.71-b71 2026-11-24  (Feste APK-Signatur fuer Updates)
    - Ursache fuer abbrechende Installation: assembleDebug nutzte auf den
