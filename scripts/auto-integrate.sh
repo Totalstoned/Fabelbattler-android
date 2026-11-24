@@ -60,6 +60,17 @@ for n in $PRS; do
     continue
   fi
 
+  PRVER="$(grep '^APP_VERSION_NAME=' "$WT/gradle.properties" 2>/dev/null | cut -d= -f2)"
+  MAINVER="$(grep '^APP_VERSION_NAME=' gradle.properties | cut -d= -f2)"
+  if [ -n "$PRVER" ] && [ "$PRVER" != "$MAINVER" ] && \
+     [ "$(printf '%s\n%s\n' "$MAINVER" "$PRVER" | sort -V | head -1)" = "$PRVER" ]; then
+    $GH_BIN pr comment "$n" --repo "$GH_REPO" \
+      --body "Automatische Integration übersprungen: PR-Version $PRVER ist nicht neuer als main ($MAINVER). Bitte auf main rebasen und `scripts/bump_version.py` erneut ausführen." >>"$LOG" 2>&1 || true
+    log "PR #$n Version $PRVER <= $MAINVER – zurückgestellt"
+    git worktree remove --force "$WT" >/dev/null 2>&1 || rm -rf "$WT"
+    continue
+  fi
+
   if (cd "$WT" && python3 scripts/check_js.py app/src/main/assets/index3d.html \
        && python3 scripts/check_data.py app/src/main/assets/index3d.html \
        && node scripts/check_runtime.js app/src/main/assets/index3d.html) >>"$LOG" 2>&1; then
