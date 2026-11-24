@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.72-b72
+Aktuelle Version: v1.73-b73
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,13 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.73-b73 2026-11-24  (Weich animierte 3D-Lebensbalken)
+   - hpBarRatio() interpoliert den 3D-HP-Balken pro Frame gegen die echte HP
+     (hpShown im userData). Bisher sprang der Balken bei jedem Treffer sofort;
+     jetzt bleibt Schaden und Heilung kurz sichtbar, der Kampf ist leichter
+     abzulesen. Kein Engine-/Stack-Wechsel, keine Aenderung der Kampflogik.
+   - check_data.py prueft die Tokens, check_runtime.js die gestaffelte Annaherung.
 
 v1.72-b72 2026-11-24  (Realistischer Steinboden)
    - User-Wunsch: "grafisch jetzt viel realistischer". Der bisher glatte

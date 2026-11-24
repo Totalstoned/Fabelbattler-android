@@ -216,6 +216,15 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **38. Weich animierte 3D-Lebensbalken** (v1.73)
+  `hpBarRatio()` interpoliert den angezeigten HP-Anteil (`hpShown` im `userData` der
+  Einheit) pro Frame gegen die echte HP. Bisher sprangen die Balken bei jedem
+  Treffer sofort auf den neuen Wert; jetzt bleibt Schaden und Heilung im 3D-Feld
+  kurz sichtbar und die Entwicklung des Kampfes ist leichter abzulesen.
+  *Erledigt:* `check_data.py` prüft die Tokens, `check_runtime.js` prüft, dass der
+  Balken nach Halbierung der HP zuerst dazwischen liegt und sich dann dem Zielwert
+  annähert.
+
 - [x] **37. Realistischer Steinboden** (v1.72)
   User: „so grafisch jetzt viel realistischer". Neue `stoneTexture()` erzeugt
   prozedurale Stein-Kacheln (Koerner, Risse, Vignette, zwei Toene), die Arena

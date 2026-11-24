@@ -253,6 +253,21 @@ if (!vm.runInContext('globalThis.__animCheck', ctx)) {
 }
 
 vm.runInContext(`
+  const barUnit = createUnit("bigfoot",1,"player");
+  const barGroup = makeCharacter(barUnit);
+  barUnit.hp = barUnit.maxHp*0.5;
+  const firstBar = hpBarRatio(barUnit,barGroup,0.016);
+  let settledBar = firstBar;
+  for (let i = 0; i < 40; i++) settledBar = hpBarRatio(barUnit,barGroup,0.016);
+  globalThis.__hpBarEaseCheck = firstBar > 0.5 && firstBar < 1 &&
+    settledBar < firstBar && Math.abs(settledBar-0.5) < 0.01;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__hpBarEaseCheck', ctx)) {
+  throw new Error('3D-Lebensbalken springt statt weich zu folgen');
+}
+
+vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();

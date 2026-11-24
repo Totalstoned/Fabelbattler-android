@@ -1949,7 +1949,7 @@ function makeCharacter(u){
   const label = makeTextSprite(u.name+" L"+u.level,u.side === "player" ? "#e6edf5" : "#ff9a9a",0.8);
   label.position.y = hpY+0.43;
   group.add(label);
-  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,animPhase:Math.random()*Math.PI*2,walk:0};
+  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,animPhase:Math.random()*Math.PI*2,walk:0};
   return group;
 }
 function syncUnits(){
@@ -2751,6 +2751,14 @@ function attackPulse(u,dur){
   if(!(u.animAttack > 0)) return 0;
   return Math.sin(clamp(1-u.animAttack/(dur||0.3),0,1)*Math.PI);
 }
+// 3D-Lebensbalken folgt der HP weich, damit Schaden und Heilung kurz sichtbar bleiben.
+function hpBarRatio(u,group,dt){
+  const target = clamp(u.hp/u.maxHp,0,1);
+  const shown = group.userData.hpShown;
+  const ratio = shown === undefined ? target : shown+(target-shown)*Math.min(1,dt*10);
+  group.userData.hpShown = ratio;
+  return ratio;
+}
 function poseCharacter(u,group,time,dt,deathT){
   const d = group.userData;
   const model = d.model;
@@ -2832,7 +2840,7 @@ function updateVisuals(time,dt){
       group.visible = true;
     }
     poseCharacter(u,group,time,dt,deathT);
-    const ratio = clamp(u.hp/u.maxHp,0,1);
+    const ratio = hpBarRatio(u,group,dt);
     group.userData.fill.scale.x = Math.max(0.001,ratio);
     group.userData.fill.position.x = -(1-ratio)*0.43;
     group.userData.fill.material.color.setHex(ratio > 0.5 ? 0x4ade80 : ratio > 0.25 ? 0xf2c14e : 0xe5484d);
