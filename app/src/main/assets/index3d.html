@@ -185,6 +185,10 @@
   .battle-info.focusmeta{display:none;color:#c9b6ff;}
   .battle-info.focusmeta.show{display:inline-block;}
   .battle-info.focusbar .fx,.battle-info.focustarget .fx{font-size:10px;opacity:.85;margin-left:5px;}
+  .battle-info.nextwave{display:none;color:#c9b6ff;}
+  .battle-info.nextwave.show{display:inline-block;}
+  .battle-info.nextwave.elite{color:#ffd166;}
+  .battle-info.nextwave.boss{color:#ff6b6b;}
   .battle-info.gold{display:none;color:var(--gold);}
   .battle-info.gold.show{display:inline-block;}
   .battle-info.gold b{color:#fff3c4;}
@@ -307,6 +311,7 @@
 </div>
 <div class="battle-bar" id="battleBar">
   <span class="battle-info" id="battleInfo">Welle 1 · 0/4</span>
+  <span class="battle-info nextwave" id="nextWavePreview" title="Art, Gegnerzahl und Goldbelohnung der nächsten Welle – aus denselben Regeln wie der Kampf berechnet"></span>
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
   <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll; +N zeigt gerade erhaltenes Gold">◆ <b id="battleGoldValue">0</b><b class="gain" id="battleGoldGain"></b></span>
   <span class="battle-info dudes" id="battleDudes" title="Aktiver Duden-Bonus: mehr HP und ATK für alle Spieler-Einheiten">● Duden <b id="battleDudesValue">+0 %</b></span>
@@ -792,6 +797,18 @@ function mobWaveSize(wave,side){
   const raw = 4 + 3*(wave-1) + 0.6*(wave-1)*(wave-1);
   const bonus = side === "enemy" ? 1 : 0;
   return Math.min(MOB_CAP,Math.max(0,Math.round(raw)+bonus));
+}
+// Vorschau wie bei einer Rundenkarte: Art, Gegnerzahl und Gold stehen vor dem
+// Kampf fest und kommen aus denselben Regeln wie buildMobSwarm()/winBattle().
+function nextWavePreview(wave){
+  const w = Math.max(1,Math.floor(Number(wave)||1));
+  const count = mobWaveSize(w,"enemy");
+  const isBoss = w % BOSS_EVERY === 0;
+  const isElite = !isBoss && w % ELITE_EVERY === 0;
+  const elites = isElite ? Math.max(2,Math.floor(count/50)) : 0;
+  const gold = 5+w*2+elites*2+(isBoss?15:0);
+  const kind = isBoss ? "👑 Boss" : isElite ? "✨ Elite×"+elites : "Standard";
+  return {wave:w,kind,count,elites,gold,isBoss,isElite};
 }
 const GRID = {cols:18,rows:14};
 const TILE = 1.35;
@@ -3523,6 +3540,12 @@ function updateHud(){
   document.getElementById("battleInfo").textContent = "Welle "+G.wave+" · "+G.team.length+"/"+G.teamSize+
     (G.battle ? " · Kampf" : "")+(focus ? " · Fokus: "+focus.emoji+" "+focus.name : "")+
     (G.battle && G.battle.enemyMobs && G.battle.enemyMobs.some(m => m.isBoss) ? " · 👑 Boss" : "");
+  const preview = G.phase === "battle" ? null : nextWavePreview(G.wave);
+  const previewEl = document.getElementById("nextWavePreview");
+  previewEl.classList.toggle("show",!!preview);
+  previewEl.classList.toggle("elite",!!preview && preview.isElite);
+  previewEl.classList.toggle("boss",!!preview && preview.isBoss);
+  previewEl.textContent = preview ? "⇢ Welle "+preview.wave+": "+preview.kind+" · "+preview.count+" Mobs · +"+preview.gold+" Gold" : "";
   updateBattleTimer();
 }
 function updateManaBar(){

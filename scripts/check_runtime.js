@@ -161,8 +161,11 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'atlasOverlay', 'atlasFrame', 'atlasAngle', 'atlasPrev', 'atlasNext', 'atlasClose', 'battleReport', 'battleReportTitle', 'battleReportDamage', 'battleReportHeal', 'battleReportTop', 'btnReportClose']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'atlasOverlay', 'atlasFrame', 'atlasAngle', 'atlasPrev', 'atlasNext', 'atlasClose', 'battleReport', 'battleReportTitle', 'battleReportDamage', 'battleReportHeal', 'battleReportTop', 'btnReportClose', 'nextWavePreview']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
+}
+if (!html.includes('function nextWavePreview') || !html.includes('G.phase === "battle" ? null : nextWavePreview(G.wave)')) {
+  throw new Error('Wellen-Vorschau fehlt oder ist nicht an den Prep-HUD angebunden');
 }
 // Toasts werden im Headless-Modus unterdrückt. Der Zähler macht das prüfbar,
 // ohne auf das Aussehen des echten DOM-Containers angewiesen zu sein.
@@ -2324,4 +2327,49 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop)`);
+vm.runInContext(`
+  const nw1 = nextWavePreview(1);
+  const nw5 = nextWavePreview(5);
+  const nw10 = nextWavePreview(10);
+  const nwCap = nextWavePreview(999);
+  globalThis.__nwSelf = nw1.wave === 1 && !nw1.isElite && !nw1.isBoss &&
+    nw1.count === mobWaveSize(1,"enemy") && nw1.gold === 5+1*2;
+  globalThis.__nwElite = nw5.isElite && !nw5.isBoss &&
+    nw5.elites === Math.max(2,Math.floor(mobWaveSize(5,"enemy")/50)) &&
+    nw5.gold === 5+5*2+nw5.elites*2;
+  globalThis.__nwBoss = nw10.isBoss && !nw10.isElite && nw10.gold === 5+10*2+15;
+  globalThis.__nwCap = nwCap.count === MOB_CAP;
+  const nwEl = document.getElementById("nextWavePreview");
+  G.phase = "prep";
+  G.battle = null;
+  G.wave = 3;
+  updateHud();
+  globalThis.__nwShown = nwEl.classList.contains("show") &&
+    nwEl.textContent.indexOf("Welle 3: Standard") >= 0 &&
+    nwEl.textContent.indexOf("+11 Gold") >= 0;
+  G.wave = 10;
+  updateHud();
+  globalThis.__nwBossShown = nwEl.classList.contains("boss") &&
+    nwEl.textContent.indexOf("👑 Boss") >= 0;
+  G.wave = 1;
+  G.phase = "battle";
+  G.battle = {player:[],enemies:[],playerMobs:[],enemyMobs:[],time:0};
+  updateHud();
+  globalThis.__nwHidden = !nwEl.classList.contains("show") && nwEl.textContent === "";
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__nwSelf', 'Wellen-Vorschau fuer Standardrunden stimmt nicht mit den Kampfregeln ueberein'],
+  ['__nwElite', 'Wellen-Vorschau zeigt Elite-Runde oder Gold falsch an'],
+  ['__nwBoss', 'Wellen-Vorschau zeigt Boss-Runde oder Gold falsch an'],
+  ['__nwCap', 'Wellen-Vorschau ignoriert die Mob-Obergrenze'],
+  ['__nwShown', 'Wellen-Vorschau erscheint nicht im Prep-HUD'],
+  ['__nwBossShown', 'Boss-Vorschau wird nicht hervorgehoben'],
+  ['__nwHidden', 'Wellen-Vorschau bleibt im laufenden Kampf sichtbar'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau)`);
