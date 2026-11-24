@@ -216,6 +216,10 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **40. Heil- und Schild-Ring im 3D-Feld** (v1.75)
+  `healUnit()` und `shieldUnit()` rufen `spawnShockwave()` auf, damit Heilung und Schilde auch zwischen hunderten Mobs als grüner/blauer Bodenring am Empfänger erkennbar sind. Bei voller HP, auf normalen Mobs und im Headless-Modus bleibt das Feld effektfrei (bestehende `hasDamageFx()`-Sperre).
+  *Erledigt:* `check_data.py` prüft die beiden Tokens, `check_runtime.js` prüft Farbe und Empfänger der Ringe sowie das Ausbleiben bei voller HP und normalen Mobs.
+
 - [x] **39. Weniger UI-Overlay im Kampf** (v1.74)
   User wollte mehr freies Schlachtfeld. Kampfleiste 0.94->0.42 Alpha plus
   Backdrop-Blur, kompaktere Buttons/Statusbalken, Toasts 0.96->0.62.

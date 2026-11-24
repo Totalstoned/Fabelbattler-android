@@ -1018,6 +1018,42 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   clearEffects();
+  const supportHero = createUnit("fee", 1, "player");
+  supportHero.hp = supportHero.maxHp * 0.5;
+  G.shockwaves.length = 0;
+  healUnit(supportHero, supportHero.maxHp * 0.2);
+  globalThis.__healRingCheck = supportHero.hp > supportHero.maxHp * 0.5 &&
+    G.shockwaves.length === 1 && G.shockwaves[0].obj.material.color.getHex() === 0x4ade80;
+  const fullHero = createUnit("fee", 1, "player");
+  G.shockwaves.length = 0;
+  healUnit(fullHero, fullHero.maxHp * 0.2);
+  globalThis.__healFullQuietCheck = G.shockwaves.length === 0;
+  G.shockwaves.length = 0;
+  shieldUnit(supportHero, supportHero.maxHp * 0.2);
+  globalThis.__shieldRingCheck = supportHero.shield > 0 &&
+    G.shockwaves.length === 1 && G.shockwaves[0].obj.material.color.getHex() === 0x8fb5ff;
+  const fxMob = createMob("kriecher", "enemy", 1, "normal");
+  fxMob.hp = fxMob.maxHp * 0.5;
+  G.shockwaves.length = 0;
+  healUnit(fxMob, fxMob.maxHp * 0.2);
+  shieldUnit(fxMob, fxMob.maxHp * 0.2);
+  globalThis.__supportMobQuietCheck = G.shockwaves.length === 0;
+  clearEffects();
+`, ctx);
+
+for (const [flag, message] of [
+  ['__healRingCheck', 'Heilung zeigt keinen gruenen Bodenring im 3D-Feld'],
+  ['__healFullQuietCheck', 'Heilung bei voller HP erzeugt einen unnoetigen Ring'],
+  ['__shieldRingCheck', 'Schild zeigt keinen blauen Bodenring im 3D-Feld'],
+  ['__supportMobQuietCheck', 'Heilung/Schild erzeugt bei normalen Mobs ungewollt Effekte'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
   beginRun();
   startBattle();
   const sbBlocked = G.battle.player[0];
@@ -1349,4 +1385,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, heal+schild-ring, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);

@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-23
-Aktuelle Version: v1.74-b74
+Stand: 2026-11-24
+Aktuelle Version: v1.75-b75
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,15 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.75-b75 2026-11-24  (Heil- und Schild-Ring im 3D-Feld)
+   - Heilung (healUnit) und Schilde (shieldUnit) erzeugen jetzt einen
+     gruenen/blauen Bodenschockwellen-Ring am Empfaenger. Bisher waren
+     Support-Wirkungen im 500er-Schwarm nur als kleine Partikel sichtbar.
+   - Effekte bleiben auf Wesen mit hasDamageFx() begrenzt; Heilung bei
+     voller HP erzeugt weiterhin keinen Ring. Keine UI-/Logik-Aenderung.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Farbe,
+     Empfaenger und Effektfreiheit (volle HP, normale Mobs).
 
 v1.74-b74 2026-11-24  (Kompakte Kampf-UI)
    - User: "die ui muss angepasst werden" -> Option "weniger Overlay, mehr Feld".
