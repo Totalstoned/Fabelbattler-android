@@ -444,6 +444,24 @@ vm.runInContext(`
   G.battle.player[0].hp = G.battle.player[0].maxHp * 0.5;
   updateButtons();
   globalThis.__healBtnEmpty = healBtn.disabled === true;
+  G.battle.player.forEach(u => { u.hp = u.maxHp; u.shield = 0; });
+  // Der verwundete Held hat viel Schild, ein anderer ist bei voller HP ohne
+  // Schild: die Zielwahl darf nicht vom Schild irritiert werden.
+  const wounded = G.battle.player[0];
+  wounded.hp = wounded.maxHp * 0.4;
+  wounded.shield = wounded.maxHp * 0.8;
+  const hpBefore = wounded.hp;
+  G.items.heal = 2;
+  const potionsBefore = G.items.heal;
+  const healToasts = [];
+  const origHealToast = showToast;
+  showToast = function(msg){ healToasts.push(msg); };
+  let healUsed = false;
+  try { healUsed = useItem("heal"); } finally { showToast = origHealToast; }
+  const actualHeal = Math.round(wounded.hp - hpBefore);
+  globalThis.__healTargetCheck = healUsed && G.items.heal === potionsBefore - 1 && actualHeal > 0;
+  globalThis.__healToastCheck = healToasts.length === 1 &&
+    healToasts[0] === "Heiltrank "+wounded.emoji+" +"+actualHeal+" HP";
   G.phase = "menu";
   G.battle = null;
 `, ctx);
@@ -459,6 +477,12 @@ if (!vm.runInContext('globalThis.__healBtnNoConsume', ctx)) {
 }
 if (!vm.runInContext('globalThis.__healBtnEmpty', ctx)) {
   throw new Error('Trank-Button ist ohne Trank aktiv');
+}
+if (!vm.runInContext('globalThis.__healTargetCheck', ctx)) {
+  throw new Error('Heiltrank trifft nicht den verwundeten Helden');
+}
+if (!vm.runInContext('globalThis.__healToastCheck', ctx)) {
+  throw new Error('Heiltrank-Toast zeigt nicht die tatsächliche Heilung');
 }
 
 vm.runInContext(`

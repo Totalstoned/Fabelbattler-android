@@ -58,6 +58,7 @@ Letztes Update: 2026-11-24
 - GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
 - UI (v1.75): Gegner-Stärkebalken zeigt neben Prozent auch absolute Rest-HP inkl. Schild (`enemyHpValue`, `shortHp()`); ab 1000 kompakt als k, außerhalb des Kampfes 0/0. Damit ist der Schadensfortschritt auch beim 500er-Schwarm ablesbar; `check_data.py` und `check_runtime.js` prüfen die Werte.
 - UI (v1.74): Kampfleiste und Toasts halbtransparent mit Blur, schmalere Buttons/Balken – mehr freies Schlachtfeld.
+- Kampf-Item (v1.75): Der Heiltrank wählt sein Ziel jetzt nach der niedrigsten HP-Ratio ohne Schild; ein verwundeter, aber stark geschützter Held wird nicht mehr übergangen. `healUnit()` liefert die tatsächliche Heilung zurück und der Toast nennt sie in HP statt pauschal „+35 %“. `check_runtime.js` prüft Zielwahl, Verbrauch und Toast-Wert.
 - Grafik (v1.73): Steinboden als 220x220-Ebene mit 36x wiederholter Textur, Fog/Hintergrund auf Steinton – der Boden deckt den ganzen Bildschirm ab.
 - Grafik (v1.72): prozedurale Steintexturen auf allen 48 Kacheln, sichtbare Plattenkante und warmes Key-Licht; keine Trennlinie.
 - Kampffeld (v1.56): keine Trennlinie und keine farblichen Seitenhälften mehr; `buildArena()` erzeugt nur noch den durchgehenden Schachboden mit Eck-Ringen. `moveUnit()` bleibt seitenunabhängig (Clamp auf das ganze GRID), `check_runtime.js` misst die minimale Annäherung (0,99 Felder).

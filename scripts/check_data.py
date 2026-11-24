@@ -203,6 +203,10 @@ for token in ['id="btnZoomReset"', 'function resetCameraZoom', 'targetView = DEF
 for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', 'swarmStacks(sideUnits(G.battle,"player").length)']:
     if token not in src:
         problems.append('Duden-Bonus in der Kampfleiste fehlt: ' + token)
+for token in ['a.hp/a.maxHp - b.hp/b.maxHp', 'const healed = healUnit(ally,ally.maxHp*0.35);',
+              'Heiltrank "+ally.emoji+" +"+Math.round(healed)+" HP"', 'return real;']:
+    if token not in src:
+        problems.append('Heiltrank-Zielwahl oder echte Heilungsanzeige fehlt: ' + token)
 for token in ['function loseBattle', 'Niederlage in Welle', 'Gegner "+foesLeft+" übrig']:
     if token not in src:
         problems.append('Niederlage-Zusammenfassung fehlt: ' + token)
