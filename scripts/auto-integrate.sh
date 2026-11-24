@@ -55,7 +55,7 @@ for n in $PRS; do
   WT="/tmp/opencode/fabel-prcheck-$n"
   git worktree remove --force "$WT" >/dev/null 2>&1 || true
   git worktree prune >/dev/null 2>&1
-  if ! git fetch -q origin "refs/pull/$n/head:refs/remotes/pr/$n"; then
+  if ! git -c url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf=git@github.com: fetch -q origin "refs/pull/$n/head:refs/remotes/pr/$n"; then
     log "PR #$n konnte nicht gefetcht werden"
     continue
   fi
