@@ -165,6 +165,8 @@
   .battle-info.focustarget b{color:#ffd166;}
   .battle-info.focustarget.critical b{color:#ff6b6b;animation:bossWarn .7s ease-in-out infinite;}
   .battle-info.focustarget #focusTargetMeta{color:#c9b6ff;font-size:10px;}
+  .battle-info.focustarget .cd{color:#8fb5ff;margin-left:5px;}
+  .battle-info.focustarget .cd.ready{color:#ff8080;}
   .battle-info.focusmeta{display:none;color:#c9b6ff;}
   .battle-info.focusmeta.show{display:inline-block;}
   .battle-info.focusbar .fx,.battle-info.focustarget .fx{font-size:10px;opacity:.85;margin-left:5px;}
@@ -275,7 +277,7 @@
   <span class="battle-info focusmeta" id="focusMeta" title="Level und Rolle des fokussierten Wesens">Lv – · –</span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild, Angriff, Level, Rolle und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b> · ⚔ <b id="focusAtkValue">0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
-  <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Level, Rolle, Rest-HP, Schild, Angriff und Statuseffekten">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetMeta">Lv – · –</b> <b id="focusTargetHp">0/0</b> · ⚔ <b id="focusTargetAtk">0</b><span class="fx" id="focusTargetStatus"></span></span>
+  <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Level, Rolle, Rest-HP, Schild, Angriff, Statuseffekten und Zauber-Abklingzeit">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetMeta">Lv – · –</b> <b id="focusTargetHp">0/0</b> · ⚔ <b id="focusTargetAtk">0</b><span class="cd" id="focusTargetCd" title="Zauber des Ziels: bereit (rot) oder Restzeit"></span><span class="fx" id="focusTargetStatus"></span></span>
   <span class="enemyhp" id="enemyHpBar" title="Verbleibende HP und Schilde aller Gegner inklusive Schwarm als Prozent und absolute Werte; grün, wenn der Sieg nah ist">☠ <span class="track"><i id="enemyHpFill"></i></span> <b id="enemyHpPct">100%</b> · <b class="abs" id="enemyHpValue">0/0</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP plus Schild aller Helden im Verhältnis zur maximalen Team-HP">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpValue">0/0</b> <b id="teamHpPct">100%</b></span>
   <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b> <span class="spell-ready" id="manaHealReady" title="Heilregen ab 40 Mana verfügbar">✚40</span> <span class="spell-ready" id="manaNovaReady" title="Fabel-Blitz ab 70 Mana verfügbar">✺70</span></span>
@@ -3578,6 +3580,7 @@ function updateFocusTarget(){
   const value = document.getElementById("focusTargetHp");
   const fx = document.getElementById("focusTargetStatus");
   const atk = document.getElementById("focusTargetAtk");
+  const cdEl = document.getElementById("focusTargetCd");
   bar.classList.remove("show");
   bar.classList.remove("critical");
   name.textContent = "–";
@@ -3585,6 +3588,8 @@ function updateFocusTarget(){
   value.textContent = "0/0";
   fx.textContent = "";
   atk.textContent = "0";
+  cdEl.textContent = "";
+  cdEl.classList.remove("ready");
   if(G.phase !== "battle" || !G.battle) return;
   const u = findUnitById(G.selectedUnitId);
   if(!u || u.isDead || !u.target || u.target.isDead) return;
@@ -3601,6 +3606,14 @@ function updateFocusTarget(){
     (target.shield > 0 ? " ⛨"+Math.ceil(target.shield) : "");
   fx.textContent = activeStatusKeys(target).map(k => STATUS_META[k].emoji+Math.ceil(target.statuses[k])+"s").join(" ");
   atk.textContent = String(Math.round(target.atk || 0));
+  // Im Kampf ist das Gegner-Panel ausgeblendet: die Zauber-Bereitschaft des
+  // Ziels bleibt so als Bedrohung ablesbar (z. B. Heiler kurz vor der Heilung).
+  const targetSpell = SPELLS[target.spell];
+  if(targetSpell){
+    const rest = Math.max(0,target.spellCd||0);
+    cdEl.textContent = "✧ "+targetSpell.name+" "+(rest > 0 ? rest.toFixed(1)+"s" : "bereit");
+    cdEl.classList.toggle("ready",rest <= 0);
+  }
 }
 function updateButtons(){
   if(SIM.headless) return;

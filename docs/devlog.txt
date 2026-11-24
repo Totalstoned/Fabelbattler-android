@@ -5,7 +5,19 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
-2026-11-24 17:15  v1.00.3-b1003  (grosse Karte, Grafiken, Startauswahl)
+2026-11-24 16:45  v1.00.4-b1004  (Ziel-Cooldown, PR #160 Union)
+  - PR #160 ("Fokus-Ziel zeigt Zauber-Cooldown in der Kampfleiste") war auf
+    1.00.2 aufgebaut und haette die 1.00.3-Userfeatures zurueckgesetzt.
+    Nur das eigentliche Feature wurde uebernommen: CSS .cd/.cd.ready,
+    Span #focusTargetCd, updateFocusTarget() mit SPELLS[target.spell] und
+    target.spellCd. Check-Invarianten und Runtime-Tests mitgezogen.
+  - scripts/auto-integrate.sh: Token auch beim PR-Ref-Fetch (git -c
+    url.https://x-access-token:...insteadOf=git@github.com:) – bisher
+    scheiterte der Integrations-Fetch an fehlendem SSH-Key.
+  - Kampf-Logik unverändert: 123 Einheiten, 18x14 Karte, Start-Draft,
+    Teamwachstum, Reroll 2/3/4. Alle Checks in beiden Kopien gruen.
+
+2026-11-24 16:38  v1.00.3-b1003  (grosse Karte, Grafiken, Startauswahl)
   - User: "mach die map viel größer und benutze Grafiken für die Monster und
     Märchengestalten von überall"; Units am Start wählen; pro Runde 1 Einheit
     dazu; Reroll 2 Gold, dann 3, dann 4.

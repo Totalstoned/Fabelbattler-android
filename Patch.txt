@@ -70,6 +70,17 @@ Schritt 6: Gefällt dir die Auswahl nicht, klicke auf „Reroll". Der erste
            bei 4, bis du ein Wesen wählst oder eine neue Runde beginnt.
 
 ------------------------------------------------------------
+4c. Was ist neu in 1.00.4?
+------------------------------------------------------------
+Schritt 1: Wenn du im Kampf ein Wesen auswaehlst, siehst du rechts in der
+           Leiste jetzt nicht nur das Ziel, sondern auch dessen Zauber.
+Schritt 2: Steht "bereit" in Rot, kann der Gegner gleich zaubern – sei
+           vorsichtig. Bei einer Restzeit (z. B. "0.7s") weisst du, wann
+           der Zauber kommt.
+Schritt 3: Der automatische Helper kann neue Verbesserungen jetzt noch
+           zuverlaessiger einbauen (GitHub-Zugriff mit Token).
+
+------------------------------------------------------------
 5. Wie spiele ich?
 ------------------------------------------------------------
 Schritt 1: Die App startet mit dem Draft: Wähle drei Wesen (Bigfoot,

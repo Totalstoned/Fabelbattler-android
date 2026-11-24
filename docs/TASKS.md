@@ -356,3 +356,7 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Mami Wata). `beginRun()` öffnet den Start-Draft, jeder Sieg erhöht die
   Teamgröße um 1 (bis 10), Reroll kostet 2 → 3 → 4 Gold.
   *Erledigt:* 123 Einheiten, alle Checks in beiden Kopien grün, CI 45438758594.
+- [x] **44. Fokus-Ziel zeigt Zauber-Cooldown** (v1.00.4-b1004)
+  PR #160 als Union mit 1.00.3 integriert: `#focusTargetCd` zeigt den
+  Zauber des Ziels und die Restzeit (rot bei "bereit"). Integrator-Fetch
+  nutzt jetzt den GH-Token. Alle Checks gruen.

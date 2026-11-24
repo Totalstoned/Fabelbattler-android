@@ -14,7 +14,7 @@ Letztes Update: 2026-11-24
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
 - Kamera: Rad/2-Finger zoomt, Ziehen (Maus oder ein Finger) bewegt das Feld frei; Auto-Follow auf das gewählte Wesen. ⌖ / Doppelklick / `0` setzt Zoom und Position zurück.
-- Version **1.00.3**, Build **1003**; APK `/root/projects/FABELBATTLER/1.00.3.apk` (CI 45438758594). APK-Name nur `<VERSION>.apk` ohne `v`/`-b`. Signatur fest über `app/debug.p12`.
+- Version **1.00.4**, Build **1004**; APK `/root/projects/FABELBATTLER/1.00.4.apk`. APK-Name nur `<VERSION>.apk` ohne `v`/`-b`. Signatur fest über `app/debug.p12`.
 - Letztes geprüftes APK: `/root/projects/FABELBATTLER/1.00.3.apk` (aapt: versionCode 1003, versionName 1.00.3, SHA-256 6520c015d75fb684…e).
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`. `check_runtime.js` prüft seit v1.74 zusätzlich pro Tick, dass Simulation keine Effekte/Partikel/Schockwellen/Toasts erzeugt (inkl. Gegenprobe des Toast-Zählers).
 - `CORE_UNITS = ["bigfoot","chupacabra","fee"]` bleibt als Empfehlung (Tank/DPS/Heiler); der Startteam wird jetzt frei gewählt, erster Kampf 3 gegen 3.
@@ -79,3 +79,5 @@ Letztes Update: 2026-11-24
 - Karte: **18×14 Felder** (vorher 8×6, gut fünfmal so groß); `MAP_SPEED = 2.2` hält den Kampf tempo. Die Kamera pannt über das ganze Feld.
 - Wesen-Grafiken: `drawPortraitCanvas()` zeichnet lokal Porträts mit Mustern aus nordischer, japanischer, arabischer, keltischer, slawischer, afrikanischer, griechischer, aztekischer, ägyptischer und indischer Volkskunde. Zehn neue Wesen (Kappa, Baba Jaga, Anansi, Quetzalcoatl, Ammit, Tengu, Selkie, Yama, Oni, Mami Wata).
 - Start und Runden: `beginRun()` öffnet sofort den Draft (3 Wesen zum Start, 2 Gold each); nach jedem Sieg wächst `G.teamSize` um 1 (bis 10) und der Draft öffnet automatisch. Reroll kostet **2 → 3 → 4 Gold** (danach 4), zurückgesetzt nach Pick oder neuem Draft.
+
+- Fokus-Ziel zeigt jetzt die Zauber-Abklingzeit des Ziels (`focusTargetCd`, rot = bereit) in der Kampfleiste (PR #160, Union mit 1.00.3).

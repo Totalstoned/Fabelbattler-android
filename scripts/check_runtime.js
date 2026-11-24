@@ -134,7 +134,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 // Toasts werden im Headless-Modus unterdrückt. Der Zähler macht das prüfbar,
@@ -1591,11 +1591,13 @@ vm.runInContext(`
   const targetValue = document.getElementById("focusTargetHp");
   const targetFx = document.getElementById("focusTargetStatus");
   const targetAtk = document.getElementById("focusTargetAtk");
+  const targetCd = document.getElementById("focusTargetCd");
   targetHero.target = null;
   updateFocusTarget();
   globalThis.__targetNone = !targetBar.classList.contains("show") && targetName.textContent === "–" &&
     targetFx.textContent === "" && targetAtk.textContent === "0" &&
-    targetMeta.textContent === "Lv – · –";
+    targetMeta.textContent === "Lv – · –" && targetCd.textContent === "" &&
+    !targetCd.classList.contains("ready");
   targetHero.target = targetFoe;
   targetFoe.shield = 0;
   updateFocusTarget();
@@ -1621,11 +1623,20 @@ vm.runInContext(`
   targetFoe.atk += 7;
   updateFocusTarget();
   globalThis.__targetAtkLive = targetAtk.textContent === String(Math.round(targetFoe.atk));
+  targetFoe.spellCd = 0;
+  updateFocusTarget();
+  globalThis.__targetCdReady = targetCd.textContent === "✧ "+SPELLS[targetFoe.spell].name+" bereit" &&
+    targetCd.classList.contains("ready");
+  targetFoe.spellCd = 0.7;
+  updateFocusTarget();
+  globalThis.__targetCdLive = targetCd.textContent === "✧ "+SPELLS[targetFoe.spell].name+" 0.7s" &&
+    !targetCd.classList.contains("ready");
   const mobTarget = (G.battle.enemyMobs||[])[0];
   if(mobTarget){
     targetHero.target = mobTarget;
     updateFocusTarget();
-    globalThis.__targetMetaMob = targetMeta.textContent === "Lv "+mobTarget.level+" · Schwarm";
+    globalThis.__targetMetaMob = targetMeta.textContent === "Lv "+mobTarget.level+" · Schwarm" &&
+      targetCd.textContent === "";
     targetHero.target = targetFoe;
     updateFocusTarget();
   } else {
@@ -1633,7 +1644,8 @@ vm.runInContext(`
   }
   targetFoe.isDead = true;
   updateFocusTarget();
-  globalThis.__targetDead = !targetBar.classList.contains("show") && targetName.textContent === "–";
+  globalThis.__targetDead = !targetBar.classList.contains("show") && targetName.textContent === "–" &&
+    targetCd.textContent === "" && !targetCd.classList.contains("ready");
   targetFoe.isDead = false;
   targetHero.isDead = true;
   updateFocusTarget();
@@ -1644,7 +1656,8 @@ vm.runInContext(`
   updateFocusTarget();
   globalThis.__targetHide = !targetBar.classList.contains("show") &&
     !targetBar.classList.contains("critical") && targetName.textContent === "–" && targetValue.textContent === "0/0" &&
-    targetFx.textContent === "" && targetAtk.textContent === "0" && targetMeta.textContent === "Lv – · –";
+    targetFx.textContent === "" && targetAtk.textContent === "0" && targetMeta.textContent === "Lv – · –" &&
+    targetCd.textContent === "" && !targetCd.classList.contains("ready");
 `, ctx);
 
 vm.runInContext(`
@@ -1729,6 +1742,8 @@ for (const [flag, message] of [
   ['__targetStatus', 'Fokus-Ziel zeigt aktive Statuseffekte nicht'],
   ['__targetStatusClear', 'Fokus-Ziel löscht abgelaufene Statuseffekte nicht'],
   ['__targetAtkLive', 'Fokus-Ziel zeigt den Angriffswert nicht live'],
+  ['__targetCdReady', 'Fokus-Ziel markiert einen bereiten Zauber nicht'],
+  ['__targetCdLive', 'Fokus-Ziel zeigt die Restzeit des Zaubers nicht live'],
   ['__targetDead', 'Fokus-Ziel bleibt nach dem Tod des Ziels sichtbar'],
   ['__targetFocusDead', 'Fokus-Ziel bleibt bei einem toten Fokus sichtbar'],
   ['__targetHide', 'Fokus-Ziel verschwindet nicht außerhalb des Kampfes'],
@@ -2066,4 +2081,4 @@ if (!vm.runInContext('globalThis.__cameraModeButton', ctx)) {
   throw new Error('Kamera-Modus wird am Zoom-Button nicht angezeigt');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd)`);

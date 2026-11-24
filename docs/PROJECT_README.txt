@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.00.3-b1003
+Aktuelle Version: v1.00.4-b1004
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -656,7 +656,7 @@ sondern mit den uebrigen Loop-PRs zusammen in v1.55-b56 integriert.]
     SHA-256 6d1d8d4b769b2bdfdbf87874392d4a05cb768e15855d6a621f7401536576abfc
     SHA-256 8403861dc36a12a7c579d17fdb019042852a7194af5112243e536ee926acf348
 
-2026-11-24 17:15 UTC – v1.00.3-b1003 (grosse Karte, Grafiken, Startauswahl):
+2026-11-24 16:38 UTC – v1.00.3-b1003 (grosse Karte, Grafiken, Startauswahl):
   - User will eine viel groessere Karte, Grafiken fuer Monster und
     Maerchengestalten "von ueberall", Startauswahl, +1 Einheit pro Runde
     und Reroll 2/3/4 Gold.
@@ -668,3 +668,15 @@ sondern mit den uebrigen Loop-PRs zusammen in v1.55-b56 integriert.]
     Reroll-Preise, Portraits, grosse Karte) angepasst; alle Checks gruen.
   - CI 45438758594 gruen; APK /root/projects/FABELBATTLER/1.00.3.apk
     SHA-256 6520c015d75fb684582a504d16bef02750ba38e5a6344ba0f688de7d4db6e19c
+
+2026-11-24 16:45  v1.00.4-b1004  (Ziel-Cooldown, PR #160 Union)
+  - PR #160 ("Fokus-Ziel zeigt Zauber-Cooldown in der Kampfleiste") war auf
+    1.00.2 aufgebaut und haette die 1.00.3-Userfeatures zurueckgesetzt.
+    Nur das eigentliche Feature wurde uebernommen: CSS .cd/.cd.ready,
+    Span #focusTargetCd, updateFocusTarget() mit SPELLS[target.spell] und
+    target.spellCd. Check-Invarianten und Runtime-Tests mitgezogen.
+  - scripts/auto-integrate.sh: Token auch beim PR-Ref-Fetch (git -c
+    url.https://x-access-token:...insteadOf=git@github.com:) – bisher
+    scheiterte der Integrations-Fetch an fehlendem SSH-Key.
+  - Kampf-Logik unverändert: 123 Einheiten, 18x14 Karte, Start-Draft,
+    Teamwachstum, Reroll 2/3/4. Alle Checks in beiden Kopien gruen.

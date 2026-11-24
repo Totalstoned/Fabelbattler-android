@@ -1,7 +1,7 @@
 Fabelbattler – automatische Verbesserung alle 10 Minuten
 =========================================================
 
-Stand: 2026-11-24 17:15 UTC
+Stand: 2026-11-24 16:38 UTC
 Ziel: eigenständige Entwicklung von 1.00.1 bis 1.20.0 ohne Rückfrage.
 
 1) LOKALER LOOP (läuft)
@@ -36,9 +36,9 @@ Ziel: eigenständige Entwicklung von 1.00.1 bis 1.20.0 ohne Rückfrage.
      Nach Aufladen läuft der Cron ohne weitere Aenderung.
 
 AKTUELLER STAND
-   - App v1.00.3 (Commit 38fe58e). CI 45438758594 gruen.
-   - APK: /root/projects/FABELBATTLER/1.00.3.apk
-     SHA-256 6520c015d75fb684582a504d16bef02750ba38e5a6344ba0f688de7d4db6e19c
+   - App v1.00.4 (PR #160 Union). CI laeuft.
+   - APK: /root/projects/FABELBATTLER/1.00.4.apk
+     SHA-256 wird nach CI gesetzt
    - APK-Name ohne Präfix/Suffix: <VERSION>.apk (1.00.0 ... 1.00.3).
      beim Reset entfernt; 1.00.0.apk und 1.00.1.apk liegen wieder im Ordner.
    - PRs #134-#158 sind integriert bzw. manuell uebernommen; der Loop
