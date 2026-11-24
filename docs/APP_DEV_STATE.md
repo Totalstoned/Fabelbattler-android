@@ -14,7 +14,7 @@ Letztes Update: 2026-11-24
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
 - Kamera: Rad/2-Finger zoomt, Ziehen (Maus oder ein Finger) bewegt das Feld frei; Auto-Follow auf das gewählte Wesen. ⌖ / Doppelklick / `0` setzt Zoom und Position zurück.
-- Version **1.00.1**, Build **1001**; APK `/root/projects/FABELBATTLER/1.00.1.apk` (CI 45435233440). APK-Name nur `<VERSION>.apk` ohne `v`/`-b`. Signatur fest über `app/debug.p12`.
+- Version **1.00.2**, Build **1002**; APK folgt nach CI-Lauf (zuletzt geprüft: `/root/projects/FABELBATTLER/1.00.1.apk`). APK-Name nur `<VERSION>.apk` ohne `v`/`-b`. Signatur fest über `app/debug.p12`.
 - Letztes geprüftes APK: `/root/projects/FABELBATTLER/1.00.1.apk` (aapt: versionCode 1001, versionName 1.00.1).
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`. `check_runtime.js` prüft seit v1.74 zusätzlich pro Tick, dass Simulation keine Effekte/Partikel/Schockwellen/Toasts erzeugt (inkl. Gegenprobe des Toast-Zählers).
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
@@ -57,6 +57,7 @@ Letztes Update: 2026-11-24
 - Mob-Schwarm ist umgesetzt (v1.18); der User wollte explizit **beide Seiten** bis 500, nicht nur die Gegnerseite.
 - Toasts erscheinen seit v1.45 im Kampfmodus oben statt unten (`body.battle-mode .toasts`): Die Kampfleiste mit Timer, Status, Fokus, Mana und Boss-Balken wird dadurch nicht mehr von Wellen-, Tod- und Sieges-Meldungen verdeckt; Toasts sind dort zusätzlich klick-transparent.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
+- Kamera (v1.00.2): Der ⌖-Button zeigt jetzt „⌖ Folgen" bzw. „⌖ Frei" samt farbiger Markierung an. Ziehen schaltet das Auto-Follow stillschweigend ab; der Modus ist damit direkt ablesbar, und der Button erklärt den Reset per ⌖/Doppelklick/0. `check_data.py` und `check_runtime.js` prüfen beide Zustände.
 - UI (v1.75): Gegner-Stärkebalken zeigt neben Prozent auch absolute Rest-HP inkl. Schild (`enemyHpValue`, `shortHp()`); ab 1000 kompakt als k, außerhalb des Kampfes 0/0. Damit ist der Schadensfortschritt auch beim 500er-Schwarm ablesbar; `check_data.py` und `check_runtime.js` prüfen die Werte.
 - UI (v1.74): Kampfleiste und Toasts halbtransparent mit Blur, schmalere Buttons/Balken – mehr freies Schlachtfeld.
 - Kampf-Item (v1.75): Der Heiltrank wählt sein Ziel jetzt nach der niedrigsten HP-Ratio ohne Schild; ein verwundeter, aber stark geschützter Held wird nicht mehr übergangen. `healUnit()` liefert die tatsächliche Heilung zurück und der Toast nennt sie in HP statt pauschal „+35 %“. `check_runtime.js` prüft Zielwahl, Verbrauch und Toast-Wert.

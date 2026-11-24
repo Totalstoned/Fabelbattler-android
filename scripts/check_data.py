@@ -204,6 +204,12 @@ for token in ['const cameraPan = new THREE.Vector3(0,0,0);', 'let cameraFollow =
               'touch-action:none', 'addEventListener("pointermove"']:
     if token not in src:
         problems.append('Freie Kamera-Bewegung (Pan) fehlt: ' + token)
+for token in ['id="btnZoomReset" title="Kamera folgt dem Fokus – Ziehen schaltet auf frei">⌖ Folgen</button>',
+              '.btn.ghost.camfree', 'function updateCameraButton', 'let cameraModeShown = null;',
+              'b.textContent = cameraFollow ? "⌖ Folgen" : "⌖ Frei";',
+              'b.classList.toggle("camfree",!cameraFollow);', 'updateCameraButton();']:
+    if token not in src:
+        problems.append('Kamera-Modus am Zoom-Button fehlt: ' + token)
 
 for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', 'swarmStacks(sideUnits(G.battle,"player").length)']:
     if token not in src:

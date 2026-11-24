@@ -32,6 +32,7 @@
   .btn:active{transform:scale(.98);}
   .btn:disabled{opacity:.4;cursor:default;}
   .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt);}
+  .btn.ghost.camfree{border-color:#ffd166;color:#ffd166;background:rgba(255,209,102,.12);}
   .btn.heal{background:#1c3d2a;border:1px solid #2f6b47;color:#9ff0bd;}
   .btn.nova{background:#2a1d3d;border:1px solid #5b3f8a;color:#d3b8ff;}
   .btn.heal.ready:not(:disabled){background:#245338;border-color:#52c27f;color:#d7ffe8;box-shadow:0 0 0 1px rgba(82,194,127,.35),0 0 12px rgba(82,194,127,.25);}
@@ -290,7 +291,7 @@
   <button class="btn nova" id="btnItemNova">Splitter</button>
   <button class="btn ghost" id="btnPrevUnit" title="Vorheriges Wesen">◀</button>
   <button class="btn ghost" id="btnNextUnit" title="Nächstes Wesen">▶</button>
-  <button class="btn ghost" id="btnZoomReset" title="Kamera zurücksetzen: Zoom und Position (Doppelklick oder 0)">⌖ Zoom</button>
+  <button class="btn ghost" id="btnZoomReset" title="Kamera folgt dem Fokus – Ziehen schaltet auf frei">⌖ Folgen</button>
   <button class="btn ghost" id="btnBattleInfo">Fähigkeit</button>
   <button class="btn ghost" id="btnBattleExit">Vollbild aus</button>
 </div>
@@ -757,6 +758,7 @@ let cameraView = DEFAULT_VIEW;
 let targetView = DEFAULT_VIEW;
 const cameraPan = new THREE.Vector3(0,0,0);
 let cameraFollow = true;
+let cameraModeShown = null;
 const PAN_LIMIT_X = GRID.cols*TILE*0.6;
 const PAN_LIMIT_Z = GRID.rows*TILE*0.6;
 scene.add(new THREE.HemisphereLight(0xcfe6ff,0x141018,0.85));
@@ -866,6 +868,18 @@ function resize(){
 function zoomCamera(delta){
   targetView = clamp(targetView+delta,7.2,17);
 }
+// Der Modus wechselt beim Ziehen stillschweigend; der Zoom-Button zeigt ihn jetzt
+// sichtbar an, damit klar ist, ob die Kamera dem Fokus folgt oder frei steht.
+function updateCameraButton(){
+  const b = document.getElementById("btnZoomReset");
+  if(!b || cameraModeShown === cameraFollow) return;
+  cameraModeShown = cameraFollow;
+  b.textContent = cameraFollow ? "⌖ Folgen" : "⌖ Frei";
+  b.title = cameraFollow
+    ? "Kamera folgt dem Fokus – Ziehen schaltet auf frei"
+    : "Kamera frei – ⌖ / Doppelklick / 0 setzt Zoom, Position und Auto-Follow zurück";
+  b.classList.toggle("camfree",!cameraFollow);
+}
 function panCameraPixels(dx,dy){
   const rect = renderer.domElement.getBoundingClientRect();
   const w = Math.max(1,rect.width||1), h = Math.max(1,rect.height||1);
@@ -873,11 +887,13 @@ function panCameraPixels(dx,dy){
   cameraPan.x = clamp(cameraPan.x-(dx-dy)*s,-PAN_LIMIT_X,PAN_LIMIT_X);
   cameraPan.z = clamp(cameraPan.z+(dx+dy)*s,-PAN_LIMIT_Z,PAN_LIMIT_Z);
   cameraFollow = false;
+  updateCameraButton();
 }
 function resetCameraZoom(){
   targetView = DEFAULT_VIEW;
   cameraPan.set(0,0,0);
   cameraFollow = true;
+  updateCameraButton();
 }
 function touchDistance(e){
   const a=e.touches[0], b=e.touches[1];
