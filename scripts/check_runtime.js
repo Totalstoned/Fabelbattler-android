@@ -127,6 +127,7 @@ if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
 for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetMeta', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -665,39 +666,62 @@ vm.runInContext(`
   startBattle();
   updateBattleStatus();
   const eliteInfo = document.getElementById("eliteInfo");
+  const eliteInfoPlayer = document.getElementById("eliteInfoPlayer");
   globalThis.__eliteHiddenWave1 = !eliteInfo.classList.contains("show") &&
     document.getElementById("statusElites").textContent === "0/0";
+  globalThis.__elitePlayerHiddenWave1 = !eliteInfoPlayer.classList.contains("show") &&
+    document.getElementById("statusElitesPlayer").textContent === "0/0";
   G.phase = "menu";
   G.battle = null;
   beginRun();
   G.wave = 5;
   startBattle();
   const elites = G.battle.enemyMobs.filter(m => m.isElite);
+  const ownElites = G.battle.playerMobs.filter(m => m.isElite);
   updateBattleStatus();
   const eliteTotal = elites.length;
+  const ownEliteTotal = ownElites.length;
   globalThis.__eliteShow = eliteTotal > 0 && eliteInfo.classList.contains("show") &&
     document.getElementById("statusElites").textContent === eliteTotal+'/'+eliteTotal;
+  globalThis.__elitePlayerShow = ownEliteTotal > 0 && eliteInfoPlayer.classList.contains("show") &&
+    document.getElementById("statusElitesPlayer").textContent === ownEliteTotal+'/'+ownEliteTotal;
   elites[0].isDead = true;
+  ownElites[0].isDead = true;
   updateBattleStatus();
   globalThis.__eliteLive = document.getElementById("statusElites").textContent === (eliteTotal-1)+'/'+eliteTotal &&
     eliteInfo.classList.contains("show");
+  globalThis.__elitePlayerLive = document.getElementById("statusElitesPlayer").textContent === (ownEliteTotal-1)+'/'+ownEliteTotal &&
+    eliteInfoPlayer.classList.contains("show");
   G.phase = "menu";
   G.battle = null;
   updateBattleStatus();
   globalThis.__eliteHide = !eliteInfo.classList.contains("show");
+  globalThis.__elitePlayerHide = !eliteInfoPlayer.classList.contains("show");
 `, ctx);
 
 if (!vm.runInContext('globalThis.__eliteHiddenWave1', ctx)) {
   throw new Error('Eliten-Zähler erscheint in Welle 1 ohne Eliten');
 }
+if (!vm.runInContext('globalThis.__elitePlayerHiddenWave1', ctx)) {
+  throw new Error('Eigener Eliten-Zähler erscheint in Welle 1 ohne Eliten');
+}
 if (!vm.runInContext('globalThis.__eliteShow', ctx)) {
   throw new Error('Eliten-Zähler zeigt die gegnerischen Eliten nicht');
+}
+if (!vm.runInContext('globalThis.__elitePlayerShow', ctx)) {
+  throw new Error('Eigener Eliten-Zähler zeigt die eigenen Eliten nicht');
 }
 if (!vm.runInContext('globalThis.__eliteLive', ctx)) {
   throw new Error('Eliten-Zähler reagiert nicht auf getötete Eliten');
 }
+if (!vm.runInContext('globalThis.__elitePlayerLive', ctx)) {
+  throw new Error('Eigener Eliten-Zähler reagiert nicht auf getötete Eliten');
+}
 if (!vm.runInContext('globalThis.__eliteHide', ctx)) {
   throw new Error('Eliten-Zähler verschwindet nicht außerhalb des Kampfes');
+}
+if (!vm.runInContext('globalThis.__elitePlayerHide', ctx)) {
+  throw new Error('Eigener Eliten-Zähler verschwindet nicht außerhalb des Kampfes');
 }
 
 vm.runInContext(`

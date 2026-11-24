@@ -142,6 +142,8 @@
   .battle-info.status b{color:var(--gold);}
   .battle-info.status .elites{display:none;color:#ffd166;}
   .battle-info.status .elites.show{display:inline;}
+  .battle-info.status .elites.friendly{color:#7ee0d0;}
+  .battle-info.status .elites.friendly b{color:#7ee0d0;}
   .battle-info.kills{display:none;color:#ff8a8a;}
   .battle-info.kills.show{display:inline-block;}
   .battle-info.kills b{color:#ffd166;}
@@ -266,7 +268,7 @@
   <span class="battle-info" id="battleTimer">Zeit 0s</span>
   <span class="battle-info gold" id="battleGold" title="Gold für Draft und Reroll; +N zeigt gerade erhaltenes Gold">◆ <b id="battleGoldValue">0</b><b class="gain" id="battleGoldGain"></b></span>
   <span class="battle-info dudes" id="battleDudes" title="Aktiver Duden-Bonus: mehr HP und ATK für alle Spieler-Einheiten">● Duden <b id="battleDudesValue">+0 %</b></span>
-  <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner), eigene Helden und gegnerische Eliten">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b><span class="elites" id="eliteInfo" title="Lebende gegnerische Elit-Mobs"> · ✨ Elite <b id="statusElites">0/0</b></span></span>
+  <span class="battle-info status" id="battleStatus" title="Lebende Gegner gesamt, davon gegnerische Helden; Schwarm-Mobs (Spieler/Gegner), eigene Helden und Eliten beider Seiten">Gegner <b id="statusEnemies">0</b> (Helden <b id="statusFoeHeroes">0/0</b>) · Mobs <b id="statusMobs">0/0</b> · Helden <b id="statusHeroes">0/0</b><span class="elites" id="eliteInfo" title="Lebende gegnerische Elit-Mobs"> · ✨ Elite <b id="statusElites">0/0</b></span><span class="elites friendly" id="eliteInfoPlayer" title="Lebende eigene Elit-Mobs"> · ✨ Team <b id="statusElitesPlayer">0/0</b></span></span>
   <span class="battle-info kills" id="battleKills" title="In dieser Welle besiegte Gegner inklusive Schwarm">☠ <b id="battleKillsValue">0/0</b></span>
   <span class="battle-info focusmeta" id="focusMeta" title="Level und Rolle des fokussierten Wesens">Lv – · –</span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild, Angriff, Level, Rolle und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b> · ⚔ <b id="focusAtkValue">0</b><span class="fx" id="focusStatus"></span></span>
@@ -3132,26 +3134,33 @@ function updateBattleStatus(){
   if(SIM.headless) return;
   const bar = document.getElementById("battleStatus");
   const eliteInfo = document.getElementById("eliteInfo");
+  const eliteInfoPlayer = document.getElementById("eliteInfoPlayer");
   if(G.phase !== "battle" || !G.battle){
     bar.classList.remove("show");
     eliteInfo.classList.remove("show");
+    eliteInfoPlayer.classList.remove("show");
     return;
   }
   bar.classList.add("show");
   const foes = sideUnits(G.battle,"enemy").filter(u => !u.isDead).length;
   const foeHeroes = G.battle.enemies.filter(u => !u.isDead).length;
   const heroes = G.battle.player.filter(u => !u.isDead).length;
-  const mobsPlayer = (G.battle.playerMobs||[]).filter(u => !u.isDead).length;
+  const playerMobs = G.battle.playerMobs||[];
+  const mobsPlayer = playerMobs.filter(u => !u.isDead).length;
   const enemyMobs = G.battle.enemyMobs||[];
   const mobsEnemy = enemyMobs.filter(u => !u.isDead).length;
   const elitesTotal = enemyMobs.filter(m => m.isElite).length;
   const elitesAlive = enemyMobs.filter(m => m.isElite && !m.isDead).length;
+  const playerElitesTotal = playerMobs.filter(m => m.isElite).length;
+  const playerElitesAlive = playerMobs.filter(m => m.isElite && !m.isDead).length;
   document.getElementById("statusEnemies").textContent = String(foes);
   document.getElementById("statusFoeHeroes").textContent = foeHeroes+'/'+G.battle.enemies.length;
   document.getElementById("statusMobs").textContent = mobsPlayer+'/'+mobsEnemy;
   document.getElementById("statusHeroes").textContent = heroes+'/'+G.battle.player.length;
   eliteInfo.classList.toggle("show",elitesTotal > 0);
   document.getElementById("statusElites").textContent = elitesAlive+'/'+elitesTotal;
+  eliteInfoPlayer.classList.toggle("show",playerElitesTotal > 0);
+  document.getElementById("statusElitesPlayer").textContent = playerElitesAlive+'/'+playerElitesTotal;
 }
 function updateBattleKills(){
   if(SIM.headless) return;
