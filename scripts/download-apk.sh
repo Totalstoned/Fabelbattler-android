@@ -6,6 +6,12 @@ REPO="${REPO:-Totalstoned/Fabelbattler-android}"
 WORKFLOW="${WORKFLOW:-build-apk.yml}"
 OUT_DIR="${PROJECT_APK_DIR:-/root/projects/FABELBATTLER}"
 RUN_ID="${1:-}"
+# Bei fixierter Endmarke (1.20.0.apk) muss ein explizit angeforderter CI-Lauf
+# die vorhandene Datei aktualisieren; ohne Run-ID bleibt das alte Skip-Verhalten.
+OVERWRITE=0
+if [ -n "$RUN_ID" ]; then
+  OVERWRITE=1
+fi
 
 if [ -z "$RUN_ID" ]; then
   RUN_ID="$($GH_BIN run list --repo "$REPO" --workflow "$WORKFLOW" --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
@@ -24,7 +30,7 @@ if [ -z "$ARTIFACT" ]; then
 fi
 
 TARGET="$OUT_DIR/$ARTIFACT"
-if [ -e "$TARGET" ]; then
+if [ -e "$TARGET" ] && [ "$OVERWRITE" -eq 0 ]; then
   echo "$TARGET"
   exit 0
 fi
