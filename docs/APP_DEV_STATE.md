@@ -13,7 +13,7 @@ Letztes Update: 2026-11-23
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.56**, Build **57**; APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.55-b56.apk`).
+- Version **1.70**, Build **70** (Versionssprung auf User-Wunsch; Code bewusst nicht nur +1); APK folgt nach CI-Lauf (zuletzt gebaut: `/root/projects/FABELBATTLER/fabelbattler-v1.56-b57.apk`).
 - Letztes geprüftes APK: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.

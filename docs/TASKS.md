@@ -216,6 +216,12 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **35. Versionssprung auf 1.70** (v1.70)
+  User-Wunsch: „benneng 1.59 1.60 1.70 der app" → direkt 1.70, keine
+  Zwischenversionen. `APP_VERSION_NAME=1.70`, `APP_VERSION_CODE=70` (bewusst
+  kein +1). Keine Änderung an `index3d.html`; Spiellogik entspricht v1.56.
+  *Erledigt:* CI-Lauf und APK `fabelbattler-v1.70-b70.apk`, alle Checks grün.
+
 - [x] **34. Kampffläche ohne Trennstrich** (v1.56)
   User-Wunsch: „die Fläche soll ohne Trennstrich sein und die Einheiten können
   zueinander [hin]laufen". `buildArena()` erzeugte einen goldenen Mittelstreifen

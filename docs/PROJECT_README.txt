@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.56-b57
+Aktuelle Version: v1.70-b70
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,12 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.70-b70 2026-11-24  (Versionssprung auf Wunsch des Users)
+   - User wollte die App direkt "1.70" nennen (statt 1.57, 1.58, ...).
+   - APP_VERSION_NAME=1.70, APP_VERSION_CODE=70 (passend zum Namen); die
+     Regel "code +1 pro Aenderung" ist hier bewusst durchbrochen.
+   - Keine Spiellogik-Aenderung; Spielstand entspricht v1.56-b57.
 
 v1.56-b57 2026-11-23  (Feld ohne Trennstrich)
    - User-Wunsch: "Flaeche ohne Trennstrich" und die Einheiten sollen sich

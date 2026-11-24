@@ -5,6 +5,13 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-24 00:25  v1.70-b70  (Versionssprung)
+  - User: "benneng 1.59 1.60 1.70 der app" -> nach Rueckfrage: direkt 1.70.
+  - APP_VERSION_NAME=1.70, APP_VERSION_CODE=70. Die sonstige Regel "+1 pro
+    App-Aenderung" ist hier bewusst durchbrochen. Keine Spiellogik-Aenderung,
+    Stand entspricht v1.56-b57 (Feld ohne Trennstrich).
+  - Naechster Schritt: CI/APK, Docs, Issue #1.
+
 2026-11-23 23:50  v1.56-b57  (Feld ohne Trennstrich)
   - User: "die Fläche soll ohne trennstrich sein und die Einheiten können
     zueinander kaufen" -> ich lese "kaufen" als "laufen" (zueinander hinlaufen).
