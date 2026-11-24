@@ -18,3 +18,5 @@
 - [x] **53. Nachkampf-Auswertung**: Kompaktes, schließbares Panel mit HP-Schaden, Heilung und Top-Einheit aus pro Welle gesammelten Heldenwerten; kein Einfluss auf Headless, Zufall oder Kampfwerte. Panel, Zählung und Reset in `check_data.py`/`check_runtime.js` geprüft, alle drei Checks grün.
 
 - [x] **54. Visueller Hit-Stop**: Krit und sichtbarer Tod frieren Animation/Effekte für 45–120 ms ein; die Simulation läuft mit realer dt weiter, Headless bleibt unberührt, normale Mobs sind ausgenommen. Trigger, Kappung und Fortsetzung in `check_data.py`/`check_runtime.js` geprüft, alle drei Checks grün.
+
+- [x] **55. Draft zeigt Rollenlücken direkt auf den Karten**: Wesen mit einer im Team fehlenden Rolle erhalten „✓ Lücke: …“ samt grünem Rahmen; die logische Teamwahl wird nicht verändert. Rollenabgleich und gerenderte Badges in `check_runtime.js` geprüft, CSS/Hinweis in `check_data.py`, alle drei Checks grün.

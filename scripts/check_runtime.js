@@ -480,6 +480,10 @@ if (vm.runInContext('globalThis.__foeMonsterLeak', ctx)) {
 if (!html.includes('Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk}')) {
   throw new Error('Draft-Karten zeigen kein Level und keine skalierten Werte');
 }
+if (!html.includes('function draftGapLabel') || !html.includes('<span class="gap-fill">') ||
+    !html.includes('gap-fill-card')) {
+  throw new Error('Draft-Karten markieren keine fehlenden Rollen');
+}
 vm.runInContext(`
   G.phase = "draft";
   G.team = [createUnit("bigfoot",3,"player"), createUnit("fee",2,"player")];
@@ -2283,4 +2287,41 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop)`);
+vm.runInContext(`
+  G.phase = "draft";
+  G.battle = null;
+  G.team = [createUnit("bigfoot",1,"player")];
+  globalThis.__gapLabelCheck = draftGapLabel("TANK") === "" &&
+    draftGapLabel("HEALER") === "✓ Lücke: "+ROLE_META.HEALER.label;
+  const mdDraft = document.getElementById("mdDraft");
+  const origAppend = mdDraft.appendChild;
+  const cards = [];
+  mdDraft.appendChild = function(el){ cards.push(el); return el; };
+  let rendered = true;
+  draftOffer = ["fee","chupacabra","bigfoot"];
+  try { renderDraftCards(); } catch(e) { rendered = false; }
+  mdDraft.appendChild = origAppend;
+  const badgeRe = new RegExp('<span class="gap-fill">([^<]*)</span>');
+  const badges = cards.map(c => (c.innerHTML.match(badgeRe)||[])[1] || "");
+  globalThis.__gapCardsCheck = rendered && cards.length === 3 &&
+    badges.filter(Boolean).length === 2 &&
+    badges.indexOf("✓ Lücke: "+ROLE_META.HEALER.label) >= 0 &&
+    badges.indexOf("✓ Lücke: "+ROLE_META.DPS.label) >= 0 &&
+    cards.filter(c => c.className.indexOf("gap-fill-card") >= 0).length === 2;
+  G.team.push(createUnit("fee",1,"player"));
+  globalThis.__gapFilledCheck = draftGapLabel("HEALER") === "";
+  G.team = ROLES.map(r => ({role:r}));
+  globalThis.__gapAllCheck = ROLES.every(r => draftGapLabel(r) === "");
+  G.phase = "menu";
+`, ctx);
+
+for (const [flag, message] of [
+  ['__gapLabelCheck', 'Draft-Lücken-Hinweis ignoriert die Rollen des Teams'],
+  ['__gapCardsCheck', 'Draft-Karten markieren Wesen mit fehlender Rolle nicht'],
+  ['__gapFilledCheck', 'Draft-Lücken-Markierung verschwindet nicht nach dem Pick'],
+  ['__gapAllCheck', 'Draft-Lücken-Markierung bleibt bei vollständigem Team aktiv'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop)`);
