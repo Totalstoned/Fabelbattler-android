@@ -123,7 +123,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'enemyHpValue', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'bossBarHp', 'playerBossBar', 'playerBossBarFill', 'playerBossBarHp', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -454,14 +454,16 @@ vm.runInContext(`
   boss.hp = boss.maxHp * 0.5;
   updateBossBar();
   globalThis.__bossBarCheck = parseFloat(document.getElementById("bossBarFill").style.width) === 50 &&
-    document.getElementById("bossBarPct").textContent === "50%";
+    document.getElementById("bossBarPct").textContent === "50%" &&
+    document.getElementById("bossBarHp").textContent === Math.ceil(boss.maxHp * 0.5)+'/'+Math.ceil(boss.maxHp);
   const bossBar = document.getElementById("bossBar");
   globalThis.__bossBarShowCheck = bossBar.classList.contains("show") && !bossBar.classList.contains("critical");
   boss.hp = boss.maxHp * 0.2;
   updateBossBar();
   globalThis.__bossBarCriticalCheck = bossBar.classList.contains("show") && bossBar.classList.contains("critical") &&
     parseFloat(document.getElementById("bossBarFill").style.width) === 20 &&
-    document.getElementById("bossBarPct").textContent === "20%";
+    document.getElementById("bossBarPct").textContent === "20%" &&
+    document.getElementById("bossBarHp").textContent === Math.ceil(boss.maxHp * 0.2)+'/'+Math.ceil(boss.maxHp);
   boss.isDead = true;
   updateBossBar();
   globalThis.__bossBarHideCheck = !bossBar.classList.contains("show") && !bossBar.classList.contains("critical");
@@ -470,12 +472,14 @@ vm.runInContext(`
   ownBoss.hp = ownBoss.maxHp * 0.5;
   updatePlayerBossBar();
   globalThis.__ownBossBarCheck = parseFloat(document.getElementById("playerBossBarFill").style.width) === 50 &&
-    document.getElementById("playerBossBarPct").textContent === "50%";
+    document.getElementById("playerBossBarPct").textContent === "50%" &&
+    document.getElementById("playerBossBarHp").textContent === Math.ceil(ownBoss.maxHp * 0.5)+'/'+Math.ceil(ownBoss.maxHp);
   globalThis.__ownBossBarShowCheck = ownBossBar.classList.contains("show") && !ownBossBar.classList.contains("critical");
   ownBoss.hp = ownBoss.maxHp * 0.2;
   updatePlayerBossBar();
   globalThis.__ownBossBarCriticalCheck = ownBossBar.classList.contains("critical") &&
-    parseFloat(document.getElementById("playerBossBarFill").style.width) === 20;
+    parseFloat(document.getElementById("playerBossBarFill").style.width) === 20 &&
+    document.getElementById("playerBossBarHp").textContent === Math.ceil(ownBoss.maxHp * 0.2)+'/'+Math.ceil(ownBoss.maxHp);
   ownBoss.isDead = true;
   updatePlayerBossBar();
   globalThis.__ownBossBarHideCheck = !ownBossBar.classList.contains("show") && !ownBossBar.classList.contains("critical");
