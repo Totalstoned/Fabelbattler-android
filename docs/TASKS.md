@@ -216,6 +216,16 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **38. Elite-/Boss-Spawn im 3D ankündigen** (v1.73)
+  Im 500er-Schwarm waren Eliten und Bosse trotz Farbe und Größe beim Wellenstart
+  schwer zu finden. `announceSpecialMobs()` erzeugt beim Start einer Welle für
+  jedes besondere Mob eine Schockwelle, Partikel und ein Text-Schild („✨ Elite"
+  bzw. „👑 Boss") direkt am Spawnort; bei Bossen kommt ein kurzer Wackler dazu.
+  Normale Mobs bleiben effektfrei, damit die Performance erhalten bleibt.
+  *Erledigt:* `check_data.py` prüft die Tokens; `check_runtime.js` prüft, dass
+  Welle 1 keine Spawn-Effekte erzeugt, Welle 5 genau einen Effekt pro Elite
+  und Welle 10 zusätzlich den Boss-Wackler auslöst. Alle drei Checks grün.
+
 - [x] **37. Realistischer Steinboden** (v1.72)
   User: „so grafisch jetzt viel realistischer". Neue `stoneTexture()` erzeugt
   prozedurale Stein-Kacheln (Koerner, Risse, Vignette, zwei Toene), die Arena

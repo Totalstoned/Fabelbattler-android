@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.72-b72
+Aktuelle Version: v1.73-b73
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,14 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.73-b73 2026-11-24  (Elite-/Boss-Spawn im 3D angekuendigt)
+   - Beim Start einer Elite-/Boss-Welle erzeugt announceSpecialMobs() fuer jedes
+     besondere Mob eine Schockwelle, Partikel und ein Text-Schild am Spawnort
+     ("✨ Elite" bzw. "👑 Boss"); bei Bossen zusaetzlich kurzer Kamera-Wackler.
+   - Normale Schwarm-Mobs bleiben effektfrei. check_data.py prueft die Tokens,
+     check_runtime.js prueft Welle 1 (keine Effekte), Welle 5 (Eliten) und
+     Welle 10 (Boss-Wackler). Alle drei Checks gruen.
 
 v1.72-b72 2026-11-24  (Realistischer Steinboden)
    - User-Wunsch: "grafisch jetzt viel realistischer". Der bisher glatte

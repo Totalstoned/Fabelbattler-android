@@ -1011,6 +1011,49 @@ vm.runInContext(`
   G.battle = null;
   clearEffects();
   beginRun();
+  G.wave = 1;
+  startBattle();
+  globalThis.__spawnQuietWave1 = G.effects.length === 0 && G.particles.length === 0 &&
+    G.shockwaves.length === 0 && cameraShake === 0;
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  const eliteSpecials = [...G.battle.playerMobs, ...G.battle.enemyMobs].filter(m => m.isElite || m.isBoss);
+  globalThis.__spawnEliteCheck = eliteSpecials.length > 0 && !eliteSpecials.some(m => m.isBoss) &&
+    G.effects.length === eliteSpecials.length && G.particles.length === eliteSpecials.length &&
+    G.shockwaves.length === eliteSpecials.length && cameraShake === 0;
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+  beginRun();
+  G.wave = 10;
+  startBattle();
+  const bossSpecials = [...G.battle.playerMobs, ...G.battle.enemyMobs].filter(m => m.isElite || m.isBoss);
+  globalThis.__spawnBossCheck = bossSpecials.some(m => m.isBoss) &&
+    G.effects.length === bossSpecials.length &&
+    G.particles.length === bossSpecials.length &&
+    G.shockwaves.length === bossSpecials.length && cameraShake > 0;
+  clearEffects();
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__spawnQuietWave1', 'Welle 1 erzeugt ungewollte Elite-/Boss-Spawn-Effekte'],
+  ['__spawnEliteCheck', 'Eliten werden beim Spawn nicht im 3D angekündigt'],
+  ['__spawnBossCheck', 'Bosse werden beim Spawn nicht im 3D angekündigt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+  beginRun();
   startBattle();
   const sbBlocked = G.battle.player[0];
   const sbEffectsBefore = G.effects.length, sbParticlesBefore = G.particles.length;
@@ -1341,4 +1384,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls+elite-boss-spawn, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);

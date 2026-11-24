@@ -219,6 +219,9 @@ for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:
 for token in ['function hasDamageFx', 'hasDamageFx(u)', 'u.isElite', 'u.isBoss']:
     if token not in src:
         problems.append('Treffer-Feedback für Elite-/Boss-Mobs fehlt: ' + token)
+for token in ['function announceSpecialMobs', '  announceSpecialMobs();', 'pushEffect(m,m.isBoss ? "👑 Boss" : "✨ Elite",color)', 'if(specials.some(m => m.isBoss)) addShake(0.18)']:
+    if token not in src:
+        problems.append('Spawn-Ankündigung für Elite-/Boss-Mobs fehlt: ' + token)
 for token in ['function draftPickLevel', 'function draftPreviewStats', 'const previewLevel = draftPickLevel()', 'Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk}', 'const pickLevel = draftPickLevel()']:
     if token not in src:
         problems.append('Level-Vorschau im Draft fehlt: ' + token)
