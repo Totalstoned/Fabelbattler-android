@@ -26,7 +26,7 @@ SCRIPT_YY = {
 EVENTS = [
     (0, 0, 'Create_0.gml', 'fb_data_init();\nfb_state_init();\n'),
     (0, 3, 'Step_0.gml', 'fb_step(delta_time / 1000000);\n'),
-    (64, 8, 'Draw_64.gml', 'fb_draw();\n'),
+    (0, 8, 'Draw_0.gml', 'fb_draw();\n'),
 ]
 
 INSTANCE = (

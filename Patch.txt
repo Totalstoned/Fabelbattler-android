@@ -180,3 +180,7 @@ Schritt 3: Das Spiel startet mit Leertaste; R würfelt den Draft neu,
            ◀▶ wechselt den fokussierten Helden.
 Schritt 4: 1.20.0 ist die letzte geplante Version – der automatische
            10-Minuten-Loop bleibt deshalb gestoppt.
+
+
+Hinweis zur 1.20.0-Quellversion: Das GameMaker-Projekt enthält jetzt das
+korrekte Draw-Event (`Draw_0.gml`); `gamemaker/check_project.py` prüft es.
