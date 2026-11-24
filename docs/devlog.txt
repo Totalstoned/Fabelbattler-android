@@ -197,3 +197,5 @@ Konventionen
   - Ein Heartbeat = ein Ziel; der User kann aber mehrere Aenderungen pro
     Heartbeat freigeben (2026-11-23). Wenn der naechste Heartbeat schon
     startet: abwarten, nicht in den Hauptcheckout greifen.
+
+2026-11-24: 1.00.2 – Kamera-Modus am Zoom-Button (PR #159). CI 45436971464, APK 1.00.2.apk.

@@ -652,5 +652,6 @@ sondern mit den uebrigen Loop-PRs zusammen in v1.55-b56 integriert.]
   - Regeln in AGENTS.md, docs/AUTO_IMPROVE.txt, Patch.txt (Neulinge),
     TASKS.md und Issue #1 verankert. Kreative Recherche und neue Einheiten
     erlaubt, Check-Invarianten dann in beiden Check-Skripten mitziehen.
-  - CI 45435233440 gruen; APK /root/projects/FABELBATTLER/1.00.1.apk
+  - CI 45436971464 gruen; APK /root/projects/FABELBATTLER/1.00.2.apk
+    SHA-256 6d1d8d4b769b2bdfdbf87874392d4a05cb768e15855d6a621f7401536576abfc
     SHA-256 8403861dc36a12a7c579d17fdb019042852a7194af5112243e536ee926acf348

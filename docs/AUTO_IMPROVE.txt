@@ -54,3 +54,5 @@ REGELN FUER DEN AGENTEN (verankert in AGENTS.md)
    - Alle drei Checks in beiden Kopien muessen gruen sein.
    - Docs, devlog, Patch.txt und Issue #1 aktualisieren.
    - Antworten auf Deutsch und kurz. Kein direkter Geraetezugriff.
+
+2026-11-24: 1.00.2 – Kamera-Modus am Zoom-Button (PR #159). CI 45436971464, APK 1.00.2.apk.
