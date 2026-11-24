@@ -176,6 +176,9 @@ for token in ['enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'function updateEnemyHp
 for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'ready-heal', 'ready-nova', 'function updateBattleManaBar']:
     if token not in src:
         problems.append('Mana-Anzeige in der Kampfleiste fehlt: ' + token)
+for token in ['btnBattleHeal").classList.toggle("ready"', 'btnBattleNova").classList.toggle("ready"', 'btn.heal.ready:not(:disabled)', 'btn.nova.ready:not(:disabled)']:
+    if token not in src:
+        problems.append('Zauber-Buttons zeigen Bereitschaft nicht deutlich: ' + token)
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)

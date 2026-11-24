@@ -1341,4 +1341,43 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  G.mana = 0;
+  updateBattleManaBar();
+  updateButtons();
+  globalThis.__spellBtnOff = !document.getElementById("btnBattleHeal").classList.contains("ready") &&
+    !document.getElementById("btnBattleNova").classList.contains("ready") &&
+    !document.getElementById("btnHeal").classList.contains("ready") &&
+    !document.getElementById("btnNova").classList.contains("ready");
+  G.mana = 45;
+  updateBattleManaBar();
+  updateButtons();
+  globalThis.__spellBtnHealReady = document.getElementById("btnBattleHeal").classList.contains("ready") &&
+    document.getElementById("btnHeal").classList.contains("ready") &&
+    !document.getElementById("btnBattleNova").classList.contains("ready");
+  G.mana = 75;
+  updateBattleManaBar();
+  updateButtons();
+  globalThis.__spellBtnNovaReady = document.getElementById("btnBattleNova").classList.contains("ready") &&
+    document.getElementById("btnNova").classList.contains("ready");
+  G.phase = "prep";
+  G.battle = null;
+  updateButtons();
+  globalThis.__spellBtnHidePrep = !document.getElementById("btnBattleHeal").classList.contains("ready") &&
+    !document.getElementById("btnBattleNova").classList.contains("ready");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__spellBtnOff', 'Zauber-Buttons leuchten bei zu wenig Mana fälschlich als bereit'],
+  ['__spellBtnHealReady', 'Heilregen-Button zeigt Bereitschaft bei 40+ Mana nicht'],
+  ['__spellBtnNovaReady', 'Blitz-Button zeigt Bereitschaft bei 70+ Mana nicht'],
+  ['__spellBtnHidePrep', 'Zauber-Bereitschaft wird außerhalb des Kampfes nicht zurückgesetzt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
 console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);
