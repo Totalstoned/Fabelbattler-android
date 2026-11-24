@@ -146,6 +146,7 @@ vm.runInContext(`
   globalThis.__simTicks = 0;
   globalThis.__simOutcomes = {wins: 0, losses: 0};
   globalThis.__minMeetDist = 99;
+  globalThis.__stoneTiles = arena.children.filter(o => o.material && o.material.map).length;
   for (let round = 0; round < 5; round++) {
     G.phase = "menu";
     G.battle = null;
@@ -177,6 +178,9 @@ vm.runInContext(`
   if (SIM.headless) throw new Error('simulateBattle() hat den Headless-Modus nicht zurückgesetzt');
   if (!(globalThis.__minMeetDist < 2)) {
     throw new Error('Einheiten begegnen sich nicht auf dem Feld: minDist='+globalThis.__minMeetDist);
+  if (!(globalThis.__stoneTiles >= 40)) {
+    throw new Error('Steinboden fehlt: tiles='+globalThis.__stoneTiles);
+  }
   }
 
   G.phase = "menu";
@@ -1337,4 +1341,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);

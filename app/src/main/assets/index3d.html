@@ -744,7 +744,7 @@ let cameraView = 11.6;
 let targetView = 11.6;
 scene.add(new THREE.HemisphereLight(0xcfe6ff,0x141018,0.85));
 scene.add(new THREE.AmbientLight(0xb9c7e0,0.55));
-const keyLight = new THREE.DirectionalLight(0xffffff,2.4);
+const keyLight = new THREE.DirectionalLight(0xfff2e2,2.4);
 keyLight.position.set(-7,13,9);
 keyLight.castShadow = true;
 keyLight.shadow.mapSize.set(1024,1024);
@@ -944,8 +944,8 @@ function buildArena(){
   base.receiveShadow = true;
   arena.add(base);
   const tileGeo = new THREE.PlaneGeometry(TILE*0.96,TILE*0.96);
-  const matA = new THREE.MeshStandardMaterial({color:0x17202b,roughness:1});
-  const matB = new THREE.MeshStandardMaterial({color:0x1b2532,roughness:1});
+  const matA = new THREE.MeshStandardMaterial({map:stoneTexture('#333b45'),roughness:0.92,metalness:0.02});
+  const matB = new THREE.MeshStandardMaterial({map:stoneTexture('#2d353f'),roughness:0.92,metalness:0.02});
   for(let gx=0;gx<GRID.cols;gx++){
     for(let gy=0;gy<GRID.rows;gy++){
       const p = worldPos(gx,gy);
@@ -956,6 +956,16 @@ function buildArena(){
       arena.add(tile);
     }
   }
+  // Steinplatte mit sichtbarer Kante -> das Feld bekommt Tiefe, ohne dass
+  // eine Trennlinie oder Seitenfarbe entsteht.
+  const edgeMat = new THREE.MeshStandardMaterial({color:0x151d27,roughness:0.9});
+  const halfW = (GRID.cols*TILE+1.4)/2, halfD = (GRID.rows*TILE+1.4)/2;
+  [[0,-halfD,halfW*2,0.16],[0,halfD,halfW*2,0.16],[-halfW,0,0.16,halfD*2],[halfW,0,0.16,halfD*2]].forEach(part => {
+    const edge = new THREE.Mesh(new THREE.BoxGeometry(part[2],0.18,part[3]),edgeMat);
+    edge.position.set(part[0],-0.06,part[1]);
+    edge.receiveShadow = true;
+    arena.add(edge);
+  });
   // Keine Trennlinie und keine farblichen Haelften: das Feld ist eine
   // durchgehende Flaeche, auf der sich beide Seiten frei begegnen koennen.
   const ringGeo = new THREE.RingGeometry(0.36,0.44,32);
@@ -1002,6 +1012,42 @@ function makeTextSprite(text,color,scale){
   sprite.scale.set(2.4*scale,0.6*scale,1);
   sprite.renderOrder = 20;
   return sprite;
+}
+function stoneTexture(tone){
+  // Prozeduraler Steinboden: warmer Grundton, Mineral-Koerner, feine Risse
+  // und Vignette. Deterministischer Seed -> jedes Disable-Rerender gleich.
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 128;
+  const c = canvas.getContext("2d");
+  c.fillStyle = tone;
+  c.fillRect(0,0,128,128);
+  let seed = 20261124 + tone.length * 7919;
+  const rnd = () => { seed = (seed*1664525 + 1013904223) >>> 0; return seed/4294967296; };
+  for(let i=0;i<520;i++){
+    const v = 110 + Math.floor(rnd()*95);
+    c.fillStyle = 'rgba('+v+','+(v+5)+','+(v+12)+','+(0.05+rnd()*0.16).toFixed(3)+')';
+    const s = 1 + Math.floor(rnd()*4);
+    c.fillRect(Math.floor(rnd()*128),Math.floor(rnd()*128),s,s);
+  }
+  c.fillStyle = 'rgba(9,13,19,0.3)';
+  for(let i=0;i<8;i++){
+    let x = Math.floor(rnd()*128), y = Math.floor(rnd()*128);
+    for(let j=0;j<10;j++){
+      c.fillRect(x,y,2,1);
+      x = Math.max(0,Math.min(126,x+(rnd()<0.5?-1:1)));
+      y = Math.max(0,Math.min(126,y+1));
+    }
+  }
+  const shade = c.createRadialGradient(64,64,16,64,64,88);
+  shade.addColorStop(0,'rgba(255,255,255,0.06)');
+  shade.addColorStop(1,'rgba(0,0,0,0.38)');
+  c.fillStyle = shade;
+  c.fillRect(0,0,128,128);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  return texture;
 }
 function radialTexture(inner,outer){
   const canvas = document.createElement("canvas");

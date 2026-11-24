@@ -216,6 +216,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **37. Realistischer Steinboden** (v1.72)
+  User: „so grafisch jetzt viel realistischer". Neue `stoneTexture()` erzeugt
+  prozedurale Stein-Kacheln (Koerner, Risse, Vignette, zwei Toene), die Arena
+  bekommt eine sichtbare Plattenkante und ein warmes Key-Licht. Keine
+  Trennlinie. Checks sichern 48 texturierte Kacheln.
+  *Offen:* Screenshot vom Geraet zur optischen Bestaetigung.
+
 - [x] **36. Feste Signatur fuer funktionierende App-Updates** (v1.71)
   Der User meldete, dass die Installation abbricht, statt die alte App zu
   aktualisieren. Ursache: `assembleDebug` auf den GitHub-Runnern erzeugte bei

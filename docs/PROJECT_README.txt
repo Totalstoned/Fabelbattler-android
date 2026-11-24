@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.71-b71
+Aktuelle Version: v1.72-b72
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,18 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.72-b72 2026-11-24  (Realistischer Steinboden)
+   - User-Wunsch: "grafisch jetzt viel realistischer". Der bisher glatte
+     Schachboden wurde durch prozedurale Steintexturen ersetzt (Mineral-Koerner,
+     feine Risse, Vignette, zwei Stein-Toene, deterministischer Seed).
+   - Die Arena hat jetzt eine sichtbare 0.18 hoehe Steinplatten-Kante, wodurch
+     das Feld plastisch wirkt. Keine Trennlinie, keine Seitenfarben.
+   - Warmes Key-Licht (0xfff2e2) statt neutralem Weiss fuer natuerlichere
+     Schatten. Neue Checks: check_data.py verlangt die Textur-Tokens,
+     check_runtime.js zaehlt 48 texturierte Kacheln.
+   - Hinweis: die offenen PRs #134-#136 planen ebenfalls v1.72; ihre Version
+     wird bei der Integration auf den dann aktuellen Stand abgestimmt.
 
 v1.71-b71 2026-11-24  (Feste APK-Signatur fuer Updates)
    - Ursache fuer abbrechende Installation: assembleDebug nutzte auf den
