@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.73-b73
+Aktuelle Version: v1.74-b74
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,15 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.74-b74 2026-11-24  (Kompakte Kampf-UI)
+   - User: "die ui muss angepasst werden" -> Option "weniger Overlay, mehr Feld".
+   - Kampfleiste: Hintergrund 0.94 -> 0.42 mit backdrop-filter blur(7px),
+     Padding 8->5px, Gap 6->4px, Buttons 92->74px breit, Schrift 11->10px.
+     Statusballs (Boss/Team/Gegner/Mana) 84->64px, Toasts 0.96->0.62.
+   - Keine ID-, Label- oder Struktur-Aenderung; die bestehenden Check-Tokens
+     (battle-bar display:flex, toasts top/bottom, Buttons) bleiben intakt.
+   - check_runtime.js verlangt jetzt transluzente Leiste + Blur.
 
 v1.73-b73 2026-11-24  (Steinboden fuellt den Bildschirm)
    - User-Screenshot: die Arena war nur ein helles Feld in der Mitte, rundum

@@ -5,6 +5,15 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-24 02:59  v1.74-b74  (kompakte Kampf-UI)
+  - User: "die ui muss angepasst werden" -> Rueckfrage: "weniger Overlay,
+    mehr Feld" (Option 1).
+  - .battle-bar: rgba(17,22,30,.94) -> .42, backdrop-filter blur(7px),
+    bottom 12->8, gap 6->4, padding 8->5/7, max 96->94vw.
+  - .battle-info 11->10px, Status-Tracks 84->64px, Buttons 92->74px,
+    Toasts .96->.62 Alpha mit Blur. IDs/Labels/Check-Tokens unveraendert.
+  - Naechster Schritt: CI/APK, User-Screenshot, offene PRs #134-#141.
+
 2026-11-24 02:50  v1.73-b73  (Boden bis an den Bildrand)
   - User-Screenshot (Screenshot_2026-11-24-03-45-56-313_...) zeigt: helle Arena
     in der Mitte, rundherum #0d0e13 Leerraum. "der Boden sollte den ganzen

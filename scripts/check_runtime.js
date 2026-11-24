@@ -81,6 +81,9 @@ vm.createContext(ctx);
 const html = fs.readFileSync(htmlPath, 'utf8');
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
 if (!match) throw new Error(`Kein <script>-Block in ${htmlPath} gefunden`);
+if (!/\.battle-bar\{[^}]*rgba\(17,22,30,\.42\)/.test(html) || !/\.battle-bar\{[^}]*backdrop-filter:blur/.test(html)) {
+  throw new Error('Kampfleiste verdeckt das Schlachtfeld (nicht transluzent)');
+}
 if (!/body\.battle-mode\s+\.battle-bar\s*\{[^}]*display:\s*flex/.test(html)) {
   throw new Error('Kampfleiste wird im Kampfmodus nicht eingeblendet (body.battle-mode .battle-bar)');
 }

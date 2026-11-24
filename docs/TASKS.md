@@ -216,6 +216,12 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **39. Weniger UI-Overlay im Kampf** (v1.74)
+  User wollte mehr freies Schlachtfeld. Kampfleiste 0.94->0.42 Alpha plus
+  Backdrop-Blur, kompaktere Buttons/Statusbalken, Toasts 0.96->0.62.
+  Alle UI-IDs/Labels unverändert; check_runtime.js sichert Transluzenz.
+  *Offen:* Screenshot zur optischen Bestaetigung.
+
 - [x] **38. Boden fuellt den ganzen Bildschirm** (v1.73)
   Screenshot des Users: dunkler Leerraum rund um die Arena. Neue 220x220
   Stein-Ebene mit `RepeatWrapping` (36x), Fog/Hintergrund auf 0x171e27 und
