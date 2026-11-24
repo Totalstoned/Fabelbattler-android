@@ -1341,4 +1341,35 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  const tapHero = G.battle.player[0];
+  const tapFoe = G.battle.enemies[0];
+  G.selectedUnitId = tapHero.id;
+  updateFocusHp();
+  selectUnit(tapFoe);
+  const infoOverlay = document.getElementById("infoOverlay");
+  globalThis.__enemyTapInfo = infoOverlay.classList.contains("show") &&
+    document.getElementById("infoTitle").textContent === tapFoe.name+" · Gegner" &&
+    document.getElementById("infoText").innerHTML.indexOf(tapFoe.name) >= 0;
+  globalThis.__enemyTapFocus = G.selectedUnitId === tapHero.id &&
+    document.getElementById("focusHp").classList.contains("show") &&
+    document.getElementById("focusName").textContent === tapHero.emoji+" "+tapHero.name;
+  closeInfo();
+  globalThis.__enemyTapInfoClosed = !infoOverlay.classList.contains("show");
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__enemyTapInfo', 'Gegner-Tap zeigt keine Fähigkeits-Info an'],
+  ['__enemyTapFocus', 'Gegner-Tap überschreibt den Helden-Fokus in der Kampfleiste'],
+  ['__enemyTapInfoClosed', 'Gegner-Info lässt sich nicht schließen'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet+gegner-tap-info, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);

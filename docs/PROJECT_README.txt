@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.72-b72
+Aktuelle Version: v1.73-b73
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,16 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.73-b73 2026-11-24  (Gegner-Tap ohne Fokusverlust)
+   - Ein Tap auf einen gegnerischen Helden im 3D-Feld setzte bisher den
+     Helden-Fokus auf den Gegner. Da die Fokus-Anzeige der Kampfleiste nur
+     eigene Wesen kennt, wurde sie leer und ◀/▶ sprang auf den ersten Helden.
+   - selectUnit() zeigt fuer Gegner jetzt deren Faehigkeits-Info im Overlay
+     und laesst G.selectedUnitId unveraendert. Der Info-Button im Kampf
+     bleibt unveraendert.
+   - check_runtime.js prueft Overlay-Inhalt, Fokus-Erhalt und Schliessen;
+     alle drei Checks gruen.
 
 v1.72-b72 2026-11-24  (Realistischer Steinboden)
    - User-Wunsch: "grafisch jetzt viel realistischer". Der bisher glatte

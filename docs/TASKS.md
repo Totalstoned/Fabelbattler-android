@@ -216,6 +216,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **38. Gegner-Tap ohne Fokusverlust** (v1.73)
+  Ein Tap auf einen gegnerischen Helden im 3D-Feld setzte `G.selectedUnitId` auf den
+  Gegner; die Fokus-Anzeige der Kampfleiste kennt aber nur eigene Wesen und wurde
+  dadurch leer. `selectUnit()` öffnet für Gegner jetzt deren Fähigkeits-Info und lässt
+  den Helden-Fokus unverändert.
+  *Erledigt:* `check_runtime.js` prüft Info-Overlay mit Gegnername, unveränderten
+  Fokus und Schließen des Overlays.
+
 - [x] **37. Realistischer Steinboden** (v1.72)
   User: „so grafisch jetzt viel realistischer". Neue `stoneTexture()` erzeugt
   prozedurale Stein-Kacheln (Koerner, Risse, Vignette, zwei Toene), die Arena

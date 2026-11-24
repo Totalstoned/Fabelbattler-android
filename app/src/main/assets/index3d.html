@@ -2933,6 +2933,13 @@ function updateUnitInfo(){
   el.innerHTML = u ? abilityInfoHtml(u) : "Tippe auf ein Wesen, um Fähigkeit und Zauber zu sehen.";
 }
 function selectUnit(u){
+  if(!u) return;
+  if(u.side === "enemy"){
+    // Gegner-Tap zeigt dessen Fähigkeiten, ohne den Helden-Fokus zu überschreiben
+    // (die Fokus-Anzeige der Kampfleiste kennt nur eigene Wesen).
+    openInfo(u.name+" · Gegner", abilityInfoHtml(u), "");
+    return;
+  }
   G.selectedUnitId = u.id;
   updateTeamList();
   // Im Kampf zeigt die Fokus-Anzeige alle Details live; ein Toast pro ◀/▶ oder Tap
