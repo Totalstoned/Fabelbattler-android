@@ -294,3 +294,11 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* alle drei Checks in Repo- und externer Kopie grün; `check_runtime.js`
   prüft jetzt zusätzlich `focusQuiet`/`focusToastInPrep`, alle neuen IDs und
   den kombinierten Status-String.
+
+- [x] **38. Zielmarkierung im 3D-Feld** (v1.73)
+  Die Fokus-Anzeige der Kampfleiste nennt das aktuelle Ziel des fokussierten
+  Helden, im 3D-Feld war aber nicht erkennbar, wen er tatsächlich angreift.
+  Ein gemeinsamer, pulsierender Gold-Ring (`targetRing`) liegt jetzt am Ziel,
+  skaliert mit Elite-/Boss-Größe und verschwindet ohne Ziel oder bei dessen Tod.
+  *Erledigt:* `check_runtime.js` prüft Position, Sichtbarkeit und das Ausblenden
+  bei totem/fehlendem Ziel; alle drei Checks grün.

@@ -103,6 +103,9 @@ if (!html.includes('addShake(0.35)') || !html.includes('Gegner-Boss besiegt!') |
     !html.includes('Team-Boss gefallen!')) {
   throw new Error('Boss-Tod-Feedback (Shake/Hinweis) fehlt');
 }
+if (!html.includes('const targetRing = new THREE.Mesh(') || !html.includes('targetRing.visible = true')) {
+  throw new Error('Zielmarkierung des fokussierten Wesens im 3D-Feld fehlt');
+}
 if (!html.includes('id="battleStatus"') || !html.includes('function updateBattleStatus') ||
     !html.includes('id="statusEnemies"') || !html.includes('id="statusHeroes"')) {
   throw new Error('Kampf-Status (Gegner/Helden) in der Kampfleiste fehlt');
@@ -1312,6 +1315,41 @@ vm.runInContext(`
   G.battle = null;
 `, ctx);
 
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  const ringHero = G.battle.player[0];
+  const ringFoe = G.battle.enemies[0];
+  G.selectedUnitId = ringHero.id;
+  ringHero.target = ringFoe;
+  ringFoe.grid.gx = 4;
+  ringFoe.grid.gy = 5;
+  updateVisuals(1,0.016);
+  const ringPos = worldPos(4,5);
+  globalThis.__targetRingShow = targetRing.visible &&
+    Math.abs(targetRing.position.x-ringPos.x) < 0.01 &&
+    Math.abs(targetRing.position.z-ringPos.z) < 0.01 &&
+    targetRing.material.opacity > 0.4;
+  ringFoe.isDead = true;
+  updateVisuals(1,0.016);
+  globalThis.__targetRingDead = !targetRing.visible;
+  ringFoe.isDead = false;
+  ringHero.target = null;
+  updateVisuals(1,0.016);
+  globalThis.__targetRingNone = !targetRing.visible;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__targetRingShow', 'Zielmarkierung zeigt das Ziel des fokussierten Helden nicht im 3D-Feld'],
+  ['__targetRingDead', 'Zielmarkierung bleibt bei einem toten Ziel sichtbar'],
+  ['__targetRingNone', 'Zielmarkierung bleibt ohne Ziel sichtbar'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
 
 for (const [flag, message] of [
   ['__focusStart', 'Fokus-HP-Anzeige zeigt zu Kampfbeginn keine volle HP'],
@@ -1499,5 +1537,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, heal-btn, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);

@@ -774,6 +774,15 @@ scene.add(unitLayer);
 scene.add(mobLayer);
 scene.add(fxLayer);
 scene.add(synergyLayer);
+// Eine gemeinsame Zielmarkierung zeigt im 3D-Feld, wen der fokussierte Held angreift.
+const targetRing = new THREE.Mesh(
+  new THREE.RingGeometry(0.46,0.56,32),
+  new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide})
+);
+targetRing.rotation.x = -Math.PI/2;
+targetRing.renderOrder = 6;
+targetRing.visible = false;
+fxLayer.add(targetRing);
 const mobMeshes = {};
 let mobFrame = 0;
 const moteGeo = new THREE.BufferGeometry();
@@ -2805,6 +2814,17 @@ function updateVisuals(time,dt){
     cameraDesired.set(focusGroup.position.x*0.35,0,focusGroup.position.z*0.35);
   } else {
     cameraDesired.set(0,0,0);
+  }
+  const focusTarget = G.phase === "battle" && focusUnit && !focusUnit.isDead ? focusUnit.target : null;
+  if(focusTarget && !focusTarget.isDead && focusTarget.grid){
+    const tp = worldPos(focusTarget.grid.gx,focusTarget.grid.gy);
+    const pulse = 0.5+0.5*Math.sin(time*5);
+    targetRing.position.set(tp.x,0.06,tp.z);
+    targetRing.scale.setScalar((focusTarget.scale||1)*(1+0.08*pulse));
+    targetRing.material.opacity = 0.45+0.35*pulse;
+    targetRing.visible = true;
+  } else {
+    targetRing.visible = false;
   }
   cameraFocus.lerp(cameraDesired,Math.min(1,dt*2.4));
   cameraShake = Math.max(0,cameraShake-dt*1.5);
