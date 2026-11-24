@@ -5,6 +5,17 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-24 02:50  v1.73-b73  (Boden bis an den Bildrand)
+  - User-Screenshot (Screenshot_2026-11-24-03-45-56-313_...) zeigt: helle Arena
+    in der Mitte, rundherum #0d0e13 Leerraum. "der Boden sollte den ganzen
+    Bildschirm ausfuellen".
+  - stoneTexture(tone,tileable): Vignette nur fuer die 48 Arena-Kacheln.
+  - Neue 220x220-Grundebene, Textur 36x wiederholt (RepeatWrapping).
+    scene.background und Fog auf 0x171e27, Fog 80/180 statt 32/55.
+  - check_data.py verlangt die Vollbild-Tokens, check_runtime.js prueft
+    width>100 + map (vollbild true) und den korrigierten Check-Scope aus #139.
+  - "spammen" im User-Text noch unklar -> Rueckfrage.
+
 2026-11-24 01:22  v1.72-b72  (realistischer Steinboden)
   - User: "so grafisch jetzt viel realistischer".
   - stoneTexture(): 128px Canvas, deterministischer Seed, 520 Mineral-Koerner,

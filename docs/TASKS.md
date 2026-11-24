@@ -216,6 +216,12 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **38. Boden fuellt den ganzen Bildschirm** (v1.73)
+  Screenshot des Users: dunkler Leerraum rund um die Arena. Neue 220x220
+  Stein-Ebene mit `RepeatWrapping` (36x), Fog/Hintergrund auf 0x171e27 und
+  80/180 gezogen. PR #139 (Check-Scope) mit integriert.
+  *Offen:* Screenshot zur Bestaetigung, „spammen" noch ungeklaert.
+
 - [x] **37. Realistischer Steinboden** (v1.72)
   User: „so grafisch jetzt viel realistischer". Neue `stoneTexture()` erzeugt
   prozedurale Stein-Kacheln (Koerner, Risse, Vignette, zwei Toene), die Arena

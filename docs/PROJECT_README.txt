@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.72-b72
+Aktuelle Version: v1.73-b73
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,17 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.73-b73 2026-11-24  (Steinboden fuellt den Bildschirm)
+   - User-Screenshot: die Arena war nur ein helles Feld in der Mitte, rundum
+     dunkler Leerraum. Der Boden soll jetzt den ganzen Bildschirm ausfuellen.
+   - Neue 220x220-Ebene mit sich 36x wiederholender Steintextur (tileable,
+     ohne Vignette) unter der Kampfflaeche. Fog und scene.background auf den
+     Stein-ton 0x171e27 gesetzt und auf 80/180 hinausgezogen, damit auch am
+     oberen Bildrand kein dunkler Streifen entsteht.
+   - PR #139 (Steinboden-Check hatte falschen Scope) mit integriert.
+   - Offene PRs #134-#141 planen ebenfalls v1.72/v1.73; Versionen werden bei
+     ihrer Integration zusammengefuehrt.
 
 v1.72-b72 2026-11-24  (Realistischer Steinboden)
    - User-Wunsch: "grafisch jetzt viel realistischer". Der bisher glatte

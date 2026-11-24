@@ -272,9 +272,9 @@ for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block(
 for token in ['addGroundRect(0,0,0.22', 'addGroundRect(-2.9', 'addGroundRect(2.9', 'arenaPulse']:
     if token in src:
         problems.append('Trennlinie/seitliche Einfärbung in der Kampffläche vorhanden: ' + token)
-for token in ['function stoneTexture', "map:stoneTexture('#333b45')", 'new THREE.BoxGeometry(part[2],0.18,part[3])']:
+for token in ['function stoneTexture', "map:stoneTexture('#333b45')", 'new THREE.BoxGeometry(part[2],0.18,part[3])', 'new THREE.PlaneGeometry(220,220)', 'groundMap.wrapS = groundMap.wrapT = THREE.RepeatWrapping']:
     if token not in src:
-        problems.append('Realistischer Steinboden fehlt: ' + token)
+        problems.append('Steinboden (inkl. Vollbild-Flaeche) fehlt: ' + token)
 for token in ['function moveToward', 'gx = clamp(gx,0,GRID.cols-1)', 'gy = clamp(gy,0,GRID.rows-1)']:
     if token not in src:
         problems.append('Freie Bewegung über das ganze Kampffeld fehlt: ' + token)
