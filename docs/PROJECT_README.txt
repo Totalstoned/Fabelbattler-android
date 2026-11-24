@@ -18,3 +18,5 @@
    - Nachkampf-Auswertung (1.20.0): Nach Sieg oder Niederlage zeigt ein schliessbares Panel Schaden, Heilung und die staerkste Heldeneinheit der Welle. Die Werte werden pro Kampf aus echten Treffern und Heilungen gesammelt; Draft-Overlays liegen darueber, Headless und Version bleiben unverändert.
 
    - Hit-Stop (1.20.0): Kritische Treffer und sichtbare Tode halten Animation und Effekte kurz an; Simulationszeit, Cooldowns und Headless-Ergebnisse bleiben unverändert. Normale Schwarm-Mobs lösen keinen Stop aus, Boss-Töde den längsten.
+
+   - Draft-Rollenhinweis (1.20.0): Draft-Karten markieren Wesen, die eine noch fehlende Rolle schließen (grüner Badge und Rahmen). Die Auswahl bleibt bei 2 Gold pro Wesen; Team- und Kampfwerte sind unverändert.

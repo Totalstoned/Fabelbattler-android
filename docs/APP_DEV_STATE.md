@@ -1,4 +1,6 @@
 
+- 2026-11-24: Draft-Karten markieren jetzt Wesen, die eine im Team noch fehlende Rolle schließen („✓ Lücke: Heiler“) – grüner Hinweis im Kartentext und Rahmen, plus Erklärzeile im Dialog. Reine UI-Klarheit: Team-, Kampf- und Draftlogik bleiben unverändert. `check_data.py` prüft Hinweis/CSS, `check_runtime.js` prüft Rollenabgleich, Kartenbadges und Verschwinden nach Pick; alle drei Checks grün. Der Scout schlug erneut den bereits gelieferten Boss-Intent vor; der Duplikat-Merge wurde vertagt, weil der Draft-Pool bereits vorhandene Wesen ausschließt und Duplikate erst durch eine Pool-Änderung erreichbar wären. Kein Download gebucht.
+
 - 2026-11-24: Elite/Boss-Aktionsanzeige im Fokus-Panel: `focusIntent` zeigt "Angriff bereit in N,N s", "bereit", "nähert sich" oder "blockiert" – nur für Elite/Boss, aus echtem `attackCd` und Reichweite abgeleitet; `check_runtime.js` prüft die neuen Elemente.
 
 - 2026-11-24: **1.20.0 – GameMaker-Engine-Port** in `gamemaker/Fabelbattler/`: 123 Einheiten, 51 Zauber, 18 Gegner-keys, 500er-Mob-Cap und Kampf-/Draft-/Wellenlogik als 111 GML-Funktionen; Daten maschinell aus `index3d.html` exportiert (`gamemaker/export_data.js`). GameMaker-Projekt laedt im ProjectTool; Android-WebView bleibt aktiv. 1.20.0 ist die Endmarke, der Loop bleibt gestoppt.

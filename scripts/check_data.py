@@ -312,6 +312,13 @@ for token in ['spawnShockwave(u,"#4ade80",0.55)', 'spawnShockwave(u,"#8fb5ff",0.
 for token in ['function draftPickLevel', 'function draftPreviewStats', 'const previewLevel = draftPickLevel()', 'Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk}', 'const pickLevel = draftPickLevel()']:
     if token not in src:
         problems.append('Level-Vorschau im Draft fehlt: ' + token)
+# Draft-Karten markieren Wesen, die eine noch fehlende Rolle schliessen.
+for token in ['function draftGapLabel(role){', 'const gapLabel = draftGapLabel(unit.role);',
+              'card.className = "cardpick"+(gapLabel ? " gap-fill-card" : "");',
+              '<span class="gap-fill">', '.cardpick .gap-fill{', '.cardpick.gap-fill-card{',
+              '✓ markiert Wesen, die eine fehlende Rolle füllen']:
+    if token not in src:
+        problems.append('Draft-Luecken-Markierung fehlt in index3d.html: ' + token)
 if len(roster) != len(set(roster)):
     problems.append('doppelte Einheitenschlüssel')
 

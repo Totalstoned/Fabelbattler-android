@@ -75,6 +75,8 @@
   .cardpick .nm{font-weight:700;font-size:13px;}
   .cardpick .rl{font-size:10px;color:var(--dim);}
   .cardpick .stats{font-size:11px;color:var(--txt);margin-top:6px;}
+  .cardpick .gap-fill{display:inline-block;margin-left:6px;padding:0 6px;border:1px solid rgba(159,240,189,.55);border-radius:999px;color:#9ff0bd;font-size:10px;}
+  .cardpick.gap-fill-card{border-color:rgba(159,240,189,.55);}
   .cardpick .abil{font-size:10px;color:var(--acc);margin-top:2px;}
   .toasts{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;z-index:99;}
   .toast{background:rgba(30,38,50,.62);border:1px solid var(--line);padding:5px 10px;border-radius:10px;font-size:11px;animation:pop .3s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
@@ -3889,6 +3891,10 @@ function draftSynergyText(){
   return "Lücken: "+(missing.length ? missing.map(r => ROLE_META[r].label).join(", ") : "keine")+
     " · Aktiv: "+(active.length ? active.join(", ") : "noch keine")+" · Duden +"+bonus+" %";
 }
+function draftGapLabel(role){
+  if(!role || G.team.some(u => u.role === role)) return "";
+  return "✓ Lücke: "+ROLE_META[role].label;
+}
 function renderDraftFilters(){
   const box = document.getElementById("mdRoleFilters");
   if(!box) return;
@@ -3974,7 +3980,7 @@ function renderDraftCards(){
   renderDraftFilters();
   document.getElementById("mdTitle").textContent = "Wähle dein Team";
   document.getElementById("mdSub").textContent = G.team.length+"/"+G.teamSize+" gewählt · 2 Gold pro Wesen · Reroll "+rerollCost()+" Gold · Gold: "+G.gold+
-    " · Runde "+G.wave+" · "+G.teamSize+" Einheiten pro Seite (jede Runde +1)";
+    " · Runde "+G.wave+" · "+G.teamSize+" Einheiten pro Seite (jede Runde +1) · ✓ markiert Wesen, die eine fehlende Rolle füllen";
   const start = document.getElementById("mdSkip");
   start.disabled = G.team.length < G.teamSize;
   start.textContent = G.team.length >= G.teamSize ? "Kampf starten" : "Noch "+(G.teamSize-G.team.length)+" wählen";
@@ -3990,8 +3996,9 @@ function renderDraftCards(){
     const classes = [unit.cls,unit.cls2].filter(Boolean).map(c => CLASS_META[c]).filter(Boolean);
     const race = RACE_META[unit.race];
     const spell = SPELLS[unit.spell];
+    const gapLabel = draftGapLabel(unit.role);
     const card = document.createElement("div");
-    card.className = "cardpick";
+    card.className = "cardpick"+(gapLabel ? " gap-fill-card" : "");
     card.innerHTML = `
       <div class="row1">
         <img class="portrait" src="${portraitUrl(key)}" alt="">
@@ -4001,7 +4008,7 @@ function renderDraftCards(){
           <div class="rl">${ROLE_META[unit.role].label} · ${race ? race.label : unit.race} · ${ORIGIN_META[unitOrigin(key)].label} · ${classes.map(c => c.label).join(" / ")}</div>
         </div>
       </div>
-      <div class="stats">Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk} · ${ABILITY_DESC[unit.ability]}</div>
+      <div class="stats">Lv ${previewLevel} · HP ${preview.hp} · ATK ${preview.atk} · ${ABILITY_DESC[unit.ability]}${gapLabel ? ' <span class="gap-fill">'+gapLabel+'</span>' : ''}</div>
       <div class="abil" style="color:${spell ? spell.color : "#e6edf5"}">${spell ? spell.name+" · "+spell.range+" Felder" : "—"}${unit.role === "HEALER" ? " · heilt bis "+unit.healRange+" Felder" : ""} · ${classes.map(c => c.label+": "+c.desc).join(" · ")}</div>
     `;
     card.onclick = () => {

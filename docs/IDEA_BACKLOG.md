@@ -4,7 +4,7 @@ Letzter Scan: 2026-11-24 17:37 UTC
 
 Erzeugt von `scripts/idea_scout.py` – kostenlos, ohne API-Key. Der 10-Minuten-Agent startet jeden Lauf mit `python3 scripts/idea_scout.py --pick`.
 
-Autonomer Stand 2026-11-24: Der `--pick`-Vorschlag (Boss/Elite-Intent, Task 49), die Idee „Status-Icons erhalten Formen“ (Task 52), der Bigfoot-Atlas (Task 51), die kurze Nachkampf-Auswertung (Task 53) und der visuelle Mikro-Hit-Stop (Task 54) sind geliefert. Der Scout schlägt weiterhin den bereits umgesetzten Boss-Intent vor – die nächste offene Idee ist der Duplikat-Merge im Draft. Diesen Lauf wurde nichts heruntergeladen, das Budget bleibt bei 0,5 MiB / 2048 MiB.
+Autonomer Stand 2026-11-24: Der `--pick`-Vorschlag (Boss/Elite-Intent, Task 49), die Idee „Status-Icons erhalten Formen“ (Task 52), der Bigfoot-Atlas (Task 51), die kurze Nachkampf-Auswertung (Task 53), der visuelle Mikro-Hit-Stop (Task 54) und der Draft-Rollenhinweis (Task 55) sind geliefert. Der Scout schlägt weiterhin den bereits umgesetzten Boss-Intent vor. Der Duplikat-Merge bleibt offen: `draftKeys()` schließt Wesen aus, die bereits im Team sind – echte Duplikate wären erst nach einer Pool-Änderung mit Auswirkung auf Draft-Invarianten erreichbar, darum wurde dieses kleine UI-Ziel bevorzugt. Diesen Lauf wurde nichts heruntergeladen, das Budget bleibt bei 0,5 MiB / 2048 MiB.
 
 ## Priorisiert (höchste Priorität zuerst)
 
@@ -24,7 +24,7 @@ Autonomer Stand 2026-11-24: Der `--pick`-Vorschlag (Boss/Elite-Intent, Task 49),
 
 Drei identische Wesen im Draft zu einem Wesen mit höherer Stufe zusammenführen, damit Wiederholungen im Angebot einen Nutzen statt nur Goldkosten haben.
 
-Warum: Die vier besser bewerteten Ideen (Boss-Intent, Status-Formen, Nachkampf-Auswertung, Hit-Stop) sind umgesetzt; der Merge ist die nächste offene Idee mit gutem Nutzen/Aufwand-Verhältnis. Quelle: draft/autobattler-mechanics.
+Warum: Die vier besser bewerteten Ideen (Boss-Intent, Status-Formen, Nachkampf-Auswertung, Hit-Stop) sind umgesetzt; der Merge ist die nächste offene Idee mit gutem Nutzen/Aufwand-Verhältnis. Quelle: draft/autobattler-mechanics. Voraussetzung: `draftKeys()` muss Wesen mit weniger als drei Kopien wieder ins Angebot lassen; ohne diese Pool-Änderung gibt es im normalen Spiel keine Duplikate zum Verschmelzen.
 
 ## Web- und Git-Funde
 
