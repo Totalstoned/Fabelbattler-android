@@ -2909,7 +2909,16 @@ function updateVisuals(time,dt){
     group.userData.bodyMat.emissiveIntensity = group.userData.baseEmissiveIntensity+flash;
     if(flash > 0) group.userData.bodyMat.emissive.lerp(new THREE.Color(0xffffff),clamp(flash,0,1));
     group.userData.glow.material.opacity = clamp((u.isDead ? 0.08 : 0.34)+Math.sin(time*2.4+u.id*0.6)*0.07+flash*0.2,0,0.9);
-    group.userData.teamRing.material.opacity = u.isDead ? 0.12 : 0.42+Math.sin(time*1.7+u.id*0.4)*0.12;
+    // Kritische Helden bekommen einen pulsierenden roten Bodenring, damit man im
+    // 3D-Feld sofort sieht, wer Hilfe braucht (HUD und Teamliste sind im Kampf aus).
+    const criticalHero = u.side === "player" && !u.isDead &&
+      (u.hp+(u.shield||0))/u.maxHp <= 0.25;
+    const criticalPulse = Math.abs(Math.sin(time*6));
+    group.userData.teamRing.material.color.setHex(criticalHero ? 0xff2d2d :
+      (u.side === "player" ? 0x67e8f9 : 0xff6b6b));
+    group.userData.teamRing.material.opacity = u.isDead ? 0.12 : criticalHero ?
+      0.5+0.45*criticalPulse : 0.42+Math.sin(time*1.7+u.id*0.4)*0.12;
+    group.userData.teamRing.scale.setScalar(criticalHero ? 1+0.1*criticalPulse : 1);
     const isSelected = G.selectedUnitId === u.id && !u.isDead;
     group.userData.selectRing.visible = isSelected;
     group.userData.selectGlow.visible = isSelected;
