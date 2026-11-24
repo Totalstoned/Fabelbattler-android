@@ -4,7 +4,7 @@ Letzter Scan: 2026-11-24 17:37 UTC
 
 Erzeugt von `scripts/idea_scout.py` – kostenlos, ohne API-Key. Der 10-Minuten-Agent startet jeden Lauf mit `python3 scripts/idea_scout.py --pick`.
 
-Autonomer Stand 2026-11-24: Der `--pick`-Vorschlag (Boss/Elite-Intent) ist mit Task 49 bereits geliefert; diese Iteration hat stattdessen den dokumentierten Bigfoot-Atlas-Einbau (Task 51) umgesetzt. Der Atlas lag lokal vor, es wurde kein Download gebucht.
+Autonomer Stand 2026-11-24: Der `--pick`-Vorschlag (Boss/Elite-Intent, Task 49) und die Idee „Status-Icons erhalten Formen“ (Task 52) sind geliefert; dazwischen wurde der Bigfoot-Atlas (Task 51) eingebaut. Der Scout schlägt weiterhin den Boss-Intent vor – die nächste offene Idee ist die kurze Nachkampf-Auswertung (Schaden, Heilung, Top-Einheit). Diesen Lauf wurde nichts heruntergeladen, das Budget bleibt bei 0,5 MiB / 2048 MiB.
 
 ## Priorisiert (höchste Priorität zuerst)
 
@@ -20,11 +20,11 @@ Autonomer Stand 2026-11-24: Der `--pick`-Vorschlag (Boss/Elite-Intent) ist mit T
 
 ## Nächster konkreter Schritt
 
-**Boss/Elite zeigt die nächste Aktion im Fokus-Panel**
+**Kurze Nachkampf-Auswertung (Schaden, Heilung, Top-Einheit)**
 
-In index3d.html beim Fokus-Ziel eine Zeile wie „⚡ Blitz bereit in 1,2 s“ ergänzen; nur für Elite/Boss, nie für normale Mobs. deterministic & wahrhaftig halten.
+Nach Sieg/Niederlage ein kompaktes Panel mit summiertem Schaden, Heilung und der stärksten Einheit anzeigen; deterministisch aus vorhandenen Kampfwerten, ohne Headless-Verhalten zu ändern.
 
-Warum: Enemy-intent-telegraph macht Kämpfe lesbar statt zufällig; Quelle: game-mechanics/concepts/enemy-intent-telegraph.
+Warum: Die beiden höchstbewerteten Ideen (Boss-Intent, Status-Formen) sind umgesetzt; die Auswertung macht den Rundenausgang nachvollziehbar. Quelle: game-mechanics/concepts/post-battle-scoreboard.
 
 ## Web- und Git-Funde
 

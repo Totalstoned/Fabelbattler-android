@@ -126,6 +126,11 @@ if (!html.includes('id="battleStatus"') || !html.includes('function updateBattle
     !html.includes('id="statusEnemies"') || !html.includes('id="statusHeroes"')) {
   throw new Error('Kampf-Status (Gegner/Helden) in der Kampfleiste fehlt');
 }
+if (!html.includes('const STATUS_RING_GEOMETRIES = {}') || !html.includes('function dominantStatusKey') ||
+    !html.includes('Ringformen im Feld:') || !html.includes('shape:"danger"') ||
+    !html.includes('shape:"control"') || !html.includes('shape:"boost"')) {
+  throw new Error('Status-Formen (Dreieck/Viereck/Sechseck) fuer Farbblinde fehlen');
+}
 if (!html.includes('id="heroAlert"') || !html.includes('id="heroAlertCount"') ||
     !html.includes('function updateHeroAlert')) {
   throw new Error('Warnung für kritische Helden in der Kampfleiste fehlt');
@@ -547,6 +552,55 @@ for (const [flag, message] of [
   ['__statusTick', 'Statuseffekte zaehlen nicht herab oder Brand verursacht keinen stillen Schaden'],
   ['__statusExpired', 'Abgelaufene Statuseffekte bleiben aktiv'],
   ['__statusClear', 'Statuseffekte werden nicht vollstaendig entfernt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+// Der Statusring muss die Wirkungsklasse auch ohne Farbe zeigen und zur
+// passenden Geometrie wechseln (inkl. Spott und Ruhezustand).
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  __beginTestRun();
+  startBattle();
+  const shapeUnit = G.battle.player[0];
+  const shapeGroup = unitGroups.get(shapeUnit.id);
+  shapeUnit.statuses = {burn:2};
+  shapeUnit.statusPower = {};
+  updateVisuals(1,0.016);
+  globalThis.__shapeDanger = !!shapeGroup && shapeGroup.userData.statusRing.visible &&
+    shapeGroup.userData.statusRing.geometry === STATUS_RING_GEOMETRIES.danger &&
+    shapeGroup.userData.statusRing.material.color.getHex() === STATUS_META.burn.hex;
+  shapeUnit.statuses = {stun:2};
+  updateVisuals(1,0.016);
+  globalThis.__shapeControl = shapeGroup.userData.statusRing.geometry === STATUS_RING_GEOMETRIES.control;
+  shapeUnit.statuses = {atkBuff:2};
+  updateVisuals(1,0.016);
+  globalThis.__shapeBoost = shapeGroup.userData.statusRing.geometry === STATUS_RING_GEOMETRIES.boost;
+  shapeUnit.statuses = {};
+  shapeUnit.modsEffective = {taunt:true};
+  updateVisuals(1,0.016);
+  globalThis.__shapeTaunt = shapeGroup.userData.statusRing.visible &&
+    shapeGroup.userData.statusRing.geometry === STATUS_RING_GEOMETRIES.boost;
+  shapeUnit.modsEffective = {};
+  updateVisuals(1,0.016);
+  globalThis.__shapeClear = !shapeGroup.userData.statusRing.visible;
+  const legendUnit = createUnit("fee",1,"player");
+  legendUnit.statuses = {burn:1};
+  globalThis.__shapeLegend = /▲ Schaden/.test(statusShapeLegend()) &&
+    /◆ Kontrolle/.test(statusShapeLegend()) && /⬢ Verstärkung/.test(statusShapeLegend()) &&
+    /▲ 🔥 Brand/.test(statusText(legendUnit));
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__shapeDanger', 'Statusring zeigt Schaden nicht als Dreieck'],
+  ['__shapeControl', 'Statusring zeigt Kontrolle nicht als Viereck'],
+  ['__shapeBoost', 'Statusring zeigt Verstaerkung nicht als Sechseck'],
+  ['__shapeTaunt', 'Spott zeigt keinen Statusring ohne aktiven Status'],
+  ['__shapeClear', 'Statusring verschwindet nicht ohne Status'],
+  ['__shapeLegend', 'Formen-Legende fehlt in der Einheiten-Info'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
@@ -2113,4 +2167,4 @@ if (!vm.runInContext('globalThis.__atlasCheck', ctx)) {
   throw new Error('Drehbarer Bigfoot-Atlas zeigt die falschen Blickwinkel');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas)`);

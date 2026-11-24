@@ -12,3 +12,5 @@
 - [x] **48. Selbstständige Ideenrecherche und 2 GiB-Budget**: Der 10-Minuten-Loop startet jetzt mit `scripts/idea_scout.py --pick` (Web + Git, kostenlos). `scripts/download_budget.py` bucht bis 2 GiB/UTC-Tag ohne Rückfrage; `AUTO_MODEL` erlaubt kostenlose opencode-Modelle; `scripts/creature_reference.py` holt Wesen-Referenzbilder von Wikimedia Commons und bereitet 8-Winkel-Turntables vor. Prompt für die Steuer-App: `docs/KI9000_PROMPT.md`.
 
 - [x] **51. Bigfoot-Atlas drehbar eingebaut**: 4x2-Sheet aus der Wikimedia-Referenz im WebView-Atlas-Panel; Ziehen/Pfeile wechseln 8 Blickwinkel, das prozedurale 3D-Modell bleibt unverändert. Neue Prüfungen in `check_data.py` und `check_runtime.js`, alle drei Checks grün.
+
+- [x] **52. Status-Formen statt nur Farbe**: Statusringe im 3D-Feld unterscheiden Schaden/Kontrolle/Verstärkung durch Dreieck/Viereck/Sechseck; Einheiten-Info mit Symbolen und Legende. Geometriewechsel, Spott und Legende in beiden Checks abgesichert, alle drei Checks grün.
