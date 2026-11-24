@@ -16,10 +16,10 @@ if [ -z "$RUN_ID" ]; then
   exit 1
 fi
 
-ARTIFACT="$($GH_BIN api "repos/$REPO/actions/runs/$RUN_ID/artifacts" --jq '[.artifacts[] | select(.name | startswith("fabelbattler-v"))][0].name // empty' | python3 -c 'import sys; print(sys.stdin.readline().strip())')"
+ARTIFACT="$($GH_BIN api "repos/$REPO/actions/runs/$RUN_ID/artifacts" --jq '[.artifacts[] | select(.name | test("^[0-9]+[.][0-9]+[.][0-9]+[.]apk$"))][0].name // empty' | python3 -c 'import sys; print(sys.stdin.readline().strip())')"
 
 if [ -z "$ARTIFACT" ]; then
-  echo "Kein versionsbenannter APK-Artifact gefunden" >&2
+  echo "Kein versionsbenannter APK-Artifact (1.00.1.apk) gefunden" >&2
   exit 1
 fi
 

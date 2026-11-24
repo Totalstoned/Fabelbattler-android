@@ -2707,6 +2707,15 @@ function clearEffects(){
   G.shockwaves = [];
   cameraShake = 0;
 }
+// Kampfende im Feld sichtbar machen: Sieg/Niederlage hatten bisher nur einen Toast.
+function battleEndFx(units,color,burstColor){
+  if(!units.length) return;
+  units.forEach(u => {
+    spawnShockwave(u,color,1.25);
+    spawnBurst(u,burstColor,8,0.9);
+  });
+  addShake(0.18);
+}
 function simulateBattle(dt){
   const previous = SIM.headless;
   SIM.headless = true;
@@ -2761,6 +2770,7 @@ function winBattle(){
   G.phase = "prep";
   G.battle = null;
   clearEffects();
+  battleEndFx(G.team.filter(u => !u.isDead),"#ffd166","#fff2a8");
   const reward = 5+cleared*2+eliteGold+bossGold;
   G.gold += reward;
   G.mana = Math.min(G.maxMana,G.mana+25);
@@ -2791,6 +2801,8 @@ function loseBattle(){
   G.phase = "defeat";
   G.battle = null;
   clearEffects();
+  const fallen = G.team.filter(u => u.isDead);
+  battleEndFx(fallen.length ? fallen : G.team,"#ef4444","#ff8a8a");
   reviveTeam();
   syncUnits();
   showToast("Niederlage in Welle "+G.wave+" · "+duration+"s · Helden "+survivors+"/"+heroTotal+" · Gegner "+foesLeft+" übrig");
