@@ -136,6 +136,15 @@ if (!html.includes('id="battleReport"') || !html.includes('function showBattleRe
     !html.includes('showBattleReport(true)') || !html.includes('showBattleReport(false)')) {
   throw new Error('Nachkampf-Auswertung (Schaden/Heilung/Top) fehlt');
 }
+if (!html.includes('hitStop:0') || !html.includes('function triggerHitStop') ||
+    !html.includes('function visualFrameDt') || !html.includes('if(SIM.headless || G.phase !== "battle" || !G.battle || !(seconds > 0)) return false;') ||
+    !html.includes('if(opts.crit && hasDamageFx(target)) triggerHitStop(HIT_STOP_CRIT)') ||
+    !html.includes('if(hasDamageFx(u)) triggerHitStop(u.isBoss ? HIT_STOP_BOSS : HIT_STOP_KILL);') ||
+    !html.includes('if(G.phase === "battle" && G.battle) updateBattle(dt);') ||
+    !html.includes('const visualDt = visualFrameDt(dt)') || !html.includes('updateEffects(visualDt)') ||
+    !html.includes('updateVisuals(visualClock,visualDt)')) {
+  throw new Error('Visueller Hit-Stop bei Krit/Kill fehlt oder greift in die Simulation ein');
+}
 if (!html.includes('id="heroAlert"') || !html.includes('id="heroAlertCount"') ||
     !html.includes('function updateHeroAlert')) {
   throw new Error('Warnung für kritische Helden in der Kampfleiste fehlt');
@@ -2211,4 +2220,67 @@ if (!vm.runInContext('globalThis.__reportCheck', ctx)) {
   throw new Error('Nachkampf-Auswertung zaehlt Schaden/Heilung oder setzt das Panel nicht zurueck');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung)`);
+vm.runInContext(`
+  __beginTestRun();
+  startBattle();
+  const hsHero = G.battle.player[0];
+  const hsFoe = G.battle.enemies[0];
+  hsFoe.shield = 0;
+  const hsTime = G.battle.time, hsCd = hsHero.attackCd, hsSpell = hsHero.spellCd, hsHp = hsFoe.hp;
+  G.hitStop = 0;
+  globalThis.__hsStart = G.hitStop === 0 && visualFrameDt(0.016) === 0.016;
+  applyDamage(hsFoe, 1, hsHero, {crit:true});
+  globalThis.__hsCrit = G.hitStop === HIT_STOP_CRIT;
+  globalThis.__hsFreeze = visualFrameDt(0.016) === 0 && G.hitStop > 0 && G.hitStop < HIT_STOP_CRIT;
+  // Der Stop darf nur das Bild anhalten: Zeit, Cooldowns und Treffer bleiben echt.
+  globalThis.__hsSim = G.battle.time === hsTime && hsHero.attackCd === hsCd &&
+    hsHero.spellCd === hsSpell && hsFoe.hp < hsHp;
+  triggerHitStop(10);
+  globalThis.__hsCap = G.hitStop === HIT_STOP_BOSS;
+  let hsTicks = 0;
+  while (G.hitStop > 0 && hsTicks < 40) { visualFrameDt(0.016); hsTicks++; }
+  globalThis.__hsEnds = G.hitStop === 0 && hsTicks >= 3 && hsTicks < 40 &&
+    visualFrameDt(0.016) === 0.016;
+  G.hitStop = 0;
+  killUnit(hsFoe, hsHero);
+  globalThis.__hsKill = G.hitStop === HIT_STOP_KILL;
+  G.hitStop = 0;
+  killUnit(createMob("brute", "enemy", 1, "boss"), hsHero);
+  globalThis.__hsBoss = G.hitStop === HIT_STOP_BOSS;
+  G.hitStop = 0;
+  const hsMob = createMob("brute", "enemy", 1, "normal");
+  applyDamage(hsMob, 1, hsHero, {crit:true});
+  const hsMobCrit = G.hitStop;
+  killUnit(hsMob, hsHero);
+  globalThis.__hsMobQuiet = hsMobCrit === 0 && G.hitStop === 0;
+  SIM.headless = true;
+  G.hitStop = 0;
+  const hsHeadFoe = G.battle.enemies.find(u => !u.isDead) || hsHero;
+  applyDamage(hsHeadFoe, 1, hsHero, {crit:true});
+  killUnit(hsHeadFoe, hsHero);
+  triggerHitStop(0.1);
+  const hsHeadTime = G.battle.time;
+  globalThis.__hsHeadless = G.hitStop === 0 && visualFrameDt(0.016) === 0.016 &&
+    G.battle.time === hsHeadTime;
+  SIM.headless = false;
+  G.phase = "menu";
+  G.battle = null;
+  G.hitStop = 0;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__hsStart', 'Hit-Stop startet nicht aus dem Normalzustand'],
+  ['__hsCrit', 'Kritischer Treffer löst keinen kurzen Hit-Stop aus'],
+  ['__hsFreeze', 'Hit-Stop pausiert die Darstellungs-dt nicht'],
+  ['__hsSim', 'Hit-Stop verändert Simulationszeit, Cooldowns oder Schaden'],
+  ['__hsCap', 'Hit-Stop stapelt sich unbegrenzt'],
+  ['__hsEnds', 'Hit-Stop endet nicht wieder nach wenigen Frame-Ticks'],
+  ['__hsKill', 'Todesstoß löst keinen Hit-Stop aus'],
+  ['__hsBoss', 'Boss-Tod bekommt keinen stärkeren Hit-Stop'],
+  ['__hsMobQuiet', 'Normale Schwarm-Mobs lösen ungewollt einen Hit-Stop aus'],
+  ['__hsHeadless', 'Hit-Stop greift in den Headless-Modus ein'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop)`);

@@ -16,3 +16,5 @@
    - Status-Formen (1.20.0): Der Statusring im 3D-Feld ist formkodiert (Dreieck Schaden, Viereck Kontrolle, Sechseck Verstärkung), die Einheiten-Info zeigt Symbole und eine Legende. Farbblinde Spieler koennen Wirkungen ohne Farbunterscheidung lesen; Daten und Version bleiben unverändert.
 
    - Nachkampf-Auswertung (1.20.0): Nach Sieg oder Niederlage zeigt ein schliessbares Panel Schaden, Heilung und die staerkste Heldeneinheit der Welle. Die Werte werden pro Kampf aus echten Treffern und Heilungen gesammelt; Draft-Overlays liegen darueber, Headless und Version bleiben unverändert.
+
+   - Hit-Stop (1.20.0): Kritische Treffer und sichtbare Tode halten Animation und Effekte kurz an; Simulationszeit, Cooldowns und Headless-Ergebnisse bleiben unverändert. Normale Schwarm-Mobs lösen keinen Stop aus, Boss-Töde den längsten.
