@@ -402,6 +402,39 @@ if (!vm.runInContext('globalThis.__novaItemCheck', ctx)) {
 }
 
 vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
+  startBattle();
+  G.battle.player.forEach(u => { u.hp = u.maxHp; u.shield = 0; });
+  // Der verwundete Held hat viel Schild, ein anderer ist bei voller HP ohne
+  // Schild: die Zielwahl darf nicht vom Schild irritiert werden.
+  const wounded = G.battle.player[0];
+  wounded.hp = wounded.maxHp * 0.4;
+  wounded.shield = wounded.maxHp * 0.8;
+  const hpBefore = wounded.hp;
+  const potionsBefore = G.items.heal;
+  const healToasts = [];
+  const origHealToast = showToast;
+  showToast = function(msg){ healToasts.push(msg); };
+  let healUsed = false;
+  try { healUsed = useItem("heal"); } finally { showToast = origHealToast; }
+  const actualHeal = Math.round(wounded.hp - hpBefore);
+  globalThis.__healTargetCheck = healUsed && G.items.heal === potionsBefore - 1 && actualHeal > 0;
+  globalThis.__healToastCheck = healToasts.length === 1 &&
+    healToasts[0] === "Heiltrank "+wounded.emoji+" +"+actualHeal+" HP";
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__healTargetCheck', ctx)) {
+  throw new Error('Heiltrank trifft nicht den verwundeten Helden');
+}
+if (!vm.runInContext('globalThis.__healToastCheck', ctx)) {
+  throw new Error('Heiltrank-Toast zeigt nicht die tatsächliche Heilung');
+}
+
+vm.runInContext(`
   const w1 = mobWaveSize(1,"enemy"), w20 = mobWaveSize(20,"enemy"), w40 = mobWaveSize(40,"enemy");
   globalThis.__mobSizeCheck = w1 >= 4 && w20 > w1 && w40 === 500 && mobWaveSize(40,"player") === 500;
   G.phase = "menu";
@@ -1349,4 +1382,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items+heiltrank-ziel, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);

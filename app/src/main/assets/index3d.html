@@ -2314,13 +2314,14 @@ function updateParticles(dt){
   G.particles = G.particles.filter(p=>p.life>0);
 }
 function healUnit(u,amount){
-  if(u.isDead || amount <= 0) return;
+  if(u.isDead || amount <= 0) return 0;
   const real = Math.min(amount,u.maxHp-u.hp);
   u.hp += real;
   if(real > 1){
     pushEffect(u,"+"+Math.round(real),"#4ade80");
     spawnBurst(u,"#4ade80",10,0.7);
   }
+  return real;
 }
 function shieldUnit(u,amount){
   if(u.isDead || amount <= 0) return;
@@ -2332,11 +2333,13 @@ function useItem(kind){
   if(!G.items || !(G.items[kind] > 0) || !G.battle || G.phase !== "battle") return false;
   const heroes = G.battle.player.filter(u => !u.isDead);
   if(kind === "heal"){
-    const ally = lowestAlly(heroes);
+    // Der Trank füllt nur HP: ein Schild darf die Zielwahl nicht verdecken,
+    // sonst trifft er einen vollen Helden und der Trank wird gar nicht verbraucht.
+    const ally = heroes.slice().sort((a,b) => a.hp/a.maxHp - b.hp/b.maxHp)[0];
     if(!ally || ally.hp >= ally.maxHp) return false;
     G.items.heal -= 1;
-    healUnit(ally,ally.maxHp*0.35);
-    showToast("Heiltrank "+ally.emoji+" +35 %");
+    const healed = healUnit(ally,ally.maxHp*0.35);
+    showToast("Heiltrank "+ally.emoji+" +"+Math.round(healed)+" HP");
   } else if(kind === "shield"){
     if(!heroes.length) return false;
     G.items.shield -= 1;

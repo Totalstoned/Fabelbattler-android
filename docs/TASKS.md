@@ -216,6 +216,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **40. Heiltrank trifft den verwundeten Helden** (v1.75)
+  `useItem("heal")` wählte das Ziel nach HP+Schild. Ein verwundeter Held mit hohem
+  Schild konnte dadurch übergangen werden; der Trank traf einen Helden mit voller
+  HP und wurde gar nicht verbraucht. Jetzt zählt nur die HP-Ratio, und der Toast
+  zeigt die tatsächlich geheilten HP statt pauschal „+35 %“.
+  *Erledigt:* `check_data.py` prüft die Tokens; `check_runtime.js` prüft Zielwahl,
+  Item-Verbrauch und Toast-Wert; alle drei Checks grün.
+
 - [x] **39. Weniger UI-Overlay im Kampf** (v1.74)
   User wollte mehr freies Schlachtfeld. Kampfleiste 0.94->0.42 Alpha plus
   Backdrop-Blur, kompaktere Buttons/Statusbalken, Toasts 0.96->0.62.

@@ -338,6 +338,15 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
 
+v1.75-b75 2026-11-24  (Heiltrank-Ziel und echte Heilung)
+   - useItem("heal") sortierte Ziele nach HP+Schild. Ein verwundeter Held mit
+     hohem Schild konnte uebergangen werden; der Trank traf einen Helden mit
+     voller HP und wurde gar nicht verbraucht.
+   - Neue Zielwahl nach HP-Ratio ohne Schild; healUnit() gibt die tatsaechliche
+     Heilung zurueck, der Toast zeigt "+<geheilte HP>" statt pauschal +35 %.
+   - check_data.py prueft die Tokens; check_runtime.js prueft Zielwahl,
+     Verbrauch und Toast-Wert. Alle drei Checks gruen.
+
 v1.74-b74 2026-11-24  (Kompakte Kampf-UI)
    - User: "die ui muss angepasst werden" -> Option "weniger Overlay, mehr Feld".
    - Kampfleiste: Hintergrund 0.94 -> 0.42 mit backdrop-filter blur(7px),
