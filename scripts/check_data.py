@@ -210,7 +210,9 @@ for token in ['id="focusMeta"', 'function updateFocusMeta']:
 for token in ['focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'function updateFocusTarget', 'activeStatusKeys(target).map']:
     if token not in src:
         problems.append('Fokus-Ziel in der Kampfleiste fehlt: ' + token)
-for token in ['eliteInfo', 'statusElites', 'enemyMobs.filter(m => m.isElite)', 'battle-info.status .elites.show']:
+for token in ['eliteInfo', 'statusElites', 'enemyMobs.filter(m => m.isElite)', 'battle-info.status .elites.show',
+              'eliteInfoPlayer', 'statusElitesPlayer', 'playerMobs.filter(m => m.isElite)',
+              'battle-info.status .elites.friendly']:
     if token not in src:
         problems.append('Eliten-Zähler im Kampfstatus fehlt: ' + token)
 for token in ['function mobHitPulse', 'mobHitPulse(m)', 'hitFlash']:

@@ -223,6 +223,10 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Trennlinie. Checks sichern 48 texturierte Kacheln.
   *Offen:* Screenshot vom Geraet zur optischen Bestaetigung.
 
+- [x] **38. Eigene Eliten im Kampfstatus** (v1.73)
+  `updateBattleStatus()` ergänzt den gegnerischen Eliten-Zähler um „✨ Team x/y“ (`eliteInfoPlayer`, `statusElitesPlayer`) für die lebenden eigenen Elit-Mobs. Damit bleibt der Bonus aus eigenen Eliten auch im 500er-Schwarm sichtbar; ohne Eliten und außerhalb des Kampfes bleibt die Anzeige verborgen.
+  *Erledigt:* `check_data.py` prüft die neuen Tokens, `check_runtime.js` prüft Ausblenden in Welle 1, Live-Zähler in Welle 5, Tod eines eigenen Eliten und Ausblenden nach Kampfende.
+
 - [x] **36. Feste Signatur fuer funktionierende App-Updates** (v1.71)
   Der User meldete, dass die Installation abbricht, statt die alte App zu
   aktualisieren. Ursache: `assembleDebug` auf den GitHub-Runnern erzeugte bei

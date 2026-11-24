@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
-Stand: 2026-11-23
-Aktuelle Version: v1.72-b72
+Stand: 2026-11-24
+Aktuelle Version: v1.73-b73
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,13 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.73-b73 2026-11-24  (Eigene Eliten im Kampfstatus)
+   - Neben „✨ Elite x/y“ der Gegner zeigt die Kampfleiste jetzt auch
+     „✨ Team x/y“ für die lebenden eigenen Elit-Mobs (eliteInfoPlayer,
+     statusElitesPlayer). Ohne Eliten und außerhalb des Kampfes ausgeblendet.
+   - check_data.py prüft die Tokens, check_runtime.js Welle 1/5, Elite-Tod
+     und das Ausblenden nach Kampfende.
 
 v1.72-b72 2026-11-24  (Realistischer Steinboden)
    - User-Wunsch: "grafisch jetzt viel realistischer". Der bisher glatte
