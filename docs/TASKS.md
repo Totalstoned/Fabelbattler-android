@@ -242,6 +242,15 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Trennlinie. Checks sichern 48 texturierte Kacheln.
   *Offen:* Screenshot vom Geraet zur optischen Bestaetigung.
 
+- [x] **38. Exakte Team-HP in der Kampfleiste** (v1.73)
+  Im Kampfmodus sind Teamliste und Einheiten-Panel ausgeblendet; der Team-HP-Balken
+  zeigte nur einen Prozentwert. `updateTeamHpBar()` ergänzt `teamHpValue` mit den
+  exakten HP plus Schild aller Helden (pro Held auf max. HP gedeckelt) als `x/y`.
+  So bleibt der Einsatz von Heiltrank und Schutzrune planbar; außerhalb des Kampfes
+  wird der Wert auf `0/0` zurückgesetzt.
+  *Erledigt:* `check_data.py` prüft den Token, `check_runtime.js` prüft Startwert,
+  Schaden, Schildausgleich, tote Helden und Reset; alle drei Checks grün.
+
 - [x] **36. Feste Signatur fuer funktionierende App-Updates** (v1.71)
   Der User meldete, dass die Installation abbricht, statt die alte App zu
   aktualisieren. Ursache: `assembleDebug` auf den GitHub-Runnern erzeugte bei

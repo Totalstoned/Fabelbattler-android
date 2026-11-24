@@ -167,7 +167,7 @@ for token in ['battleKills', 'battleKillsValue', 'function updateBattleKills', '
 for token in ['heroAlert', 'heroAlertCount', 'function updateHeroAlert']:
     if token not in src:
         problems.append('Kritische-Helden-Warnung fehlt: ' + token)
-for token in ['teamHpBar', 'teamHpFill', 'teamHpPct', 'function updateTeamHpBar']:
+for token in ['teamHpBar', 'teamHpFill', 'teamHpValue', 'teamHpPct', 'function updateTeamHpBar']:
     if token not in src:
         problems.append('Team-HP-Balken fehlt: ' + token)
 for token in ['enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'enemyHpValue', 'function updateEnemyHpBar', 'function shortHp', 'enemyhp b.abs', 'enemyhp.closing']:
