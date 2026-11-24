@@ -392,6 +392,18 @@ for token in ['id="battleReport"', 'id="battleReportTitle"', 'id="battleReportDa
     if token not in src:
         problems.append('Nachkampf-Auswertung fehlt in index3d.html: ' + token)
 
+# Visueller Hit-Stop: nur die Darstellung pausieren, die Simulation laeuft weiter.
+for token in ['hitStop:0', 'const HIT_STOP_CRIT = 0.045', 'const HIT_STOP_KILL = 0.075',
+              'const HIT_STOP_BOSS = 0.12', 'function triggerHitStop', 'function visualFrameDt',
+              'if(SIM.headless || G.phase !== "battle" || !G.battle || !(seconds > 0)) return false;',
+              'if(opts.crit && hasDamageFx(target)) triggerHitStop(HIT_STOP_CRIT);',
+              'if(hasDamageFx(u)) triggerHitStop(u.isBoss ? HIT_STOP_BOSS : HIT_STOP_KILL);',
+              'G.hitStop = 0;', 'const visualDt = visualFrameDt(dt)',
+              'visualClock += visualDt', 'updateEffects(visualDt)',
+              'updateVisuals(visualClock,visualDt)']:
+    if token not in src:
+        problems.append('Visueller Hit-Stop fehlt in index3d.html: ' + token)
+
 if problems:
     for p in problems[:30]:
         print('FEHLER:', p)

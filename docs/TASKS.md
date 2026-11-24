@@ -16,3 +16,5 @@
 - [x] **52. Status-Formen statt nur Farbe**: Statusringe im 3D-Feld unterscheiden Schaden/Kontrolle/Verstärkung durch Dreieck/Viereck/Sechseck; Einheiten-Info mit Symbolen und Legende. Geometriewechsel, Spott und Legende in beiden Checks abgesichert, alle drei Checks grün.
 
 - [x] **53. Nachkampf-Auswertung**: Kompaktes, schließbares Panel mit HP-Schaden, Heilung und Top-Einheit aus pro Welle gesammelten Heldenwerten; kein Einfluss auf Headless, Zufall oder Kampfwerte. Panel, Zählung und Reset in `check_data.py`/`check_runtime.js` geprüft, alle drei Checks grün.
+
+- [x] **54. Visueller Hit-Stop**: Krit und sichtbarer Tod frieren Animation/Effekte für 45–120 ms ein; die Simulation läuft mit realer dt weiter, Headless bleibt unberührt, normale Mobs sind ausgenommen. Trigger, Kappung und Fortsetzung in `check_data.py`/`check_runtime.js` geprüft, alle drei Checks grün.

@@ -749,7 +749,7 @@ const SYNERGY = {
   Stahl:m=>{m.shieldPct+=0.12;m.dr+=0.08;},
   Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
-const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null,lastReport:null};
+const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null,lastReport:null,hitStop:0};
 const SIM = {headless:false};
 const TOAST_MAX = 3;
 const TOAST_DEDUP_MS = 700;
@@ -2545,6 +2545,23 @@ function castAura(u,b){
 }
 // Normale Schwarm-Mobs bleiben effektfrei; Elite und Boss bekommen sichtbares Treffer-Feedback.
 function hasDamageFx(u){ return !!u && (!u.isMob || u.isElite || u.isBoss); }
+// Krits und Todesstöße halten nur das Bild kurz an (ein paar Frame-Ticks).
+// Die Simulation läuft mit echter dt weiter; Headless kennt keinen Stop.
+const HIT_STOP_CRIT = 0.045;
+const HIT_STOP_KILL = 0.075;
+const HIT_STOP_BOSS = 0.12;
+function triggerHitStop(seconds){
+  if(SIM.headless || G.phase !== "battle" || !G.battle || !(seconds > 0)) return false;
+  // Keine Stapelung: viele Treffer im Schwarm dürfen das Bild nicht dauerhaft einfrieren.
+  G.hitStop = Math.min(HIT_STOP_BOSS,Math.max(G.hitStop,seconds));
+  return true;
+}
+// Darstellungs-dt: während des Stops steht die Animation, die echte Zeit läuft ab.
+function visualFrameDt(dt){
+  if(SIM.headless || !(G.hitStop > 0)) return dt;
+  G.hitStop = Math.max(0,G.hitStop-dt);
+  return 0;
+}
 // Große Schläge und Krits bekommen größere Zahlen, damit sie im Schwarm auffallen.
 function damageTextScale(dmg,target,crit){
   const rel = clamp(dmg/Math.max(1,target && target.maxHp || 1)*4,0,1);
@@ -2732,6 +2749,7 @@ function killUnit(u,source){
   u.hp = 0;
   u.target = null;
   u.deathTimer = 0.6;
+  if(hasDamageFx(u)) triggerHitStop(u.isBoss ? HIT_STOP_BOSS : HIT_STOP_KILL);
   if(G.selectedUnitId === u.id && u.side === "player" && G.battle){
     const next = G.battle.player.find(x => !x.isDead);
     if(next) G.selectedUnitId = next.id;
@@ -2786,6 +2804,7 @@ function applyDamage(target,amount,source,opts={}){
         damageTextScale(dmg,target,!!opts.crit));
       if(dmg > target.maxHp*0.06) spawnShockwave(target,opts.crit ? "#fff2a8" : "#ffb86b",0.75);
     }
+    if(opts.crit && hasDamageFx(target)) triggerHitStop(HIT_STOP_CRIT);
     if(source && source.modsEffective.lifesteal > 0) healUnit(source,dmg*source.modsEffective.lifesteal);
   }
   if(target.hp <= 0) killUnit(target,source);
@@ -3162,6 +3181,7 @@ function startBattle(){
   setBattleMode(true);
   hideBattleReport();
   clearEffects();
+  G.hitStop = 0;
   reviveTeam();
   G.team.forEach((u,i) => {
     u.grid.gx = clamp((i%2)*0.7,0,GRID.cols-1);
@@ -4106,6 +4126,7 @@ window.addEventListener("load", () => {
   };
   document.getElementById("btnNova").onclick = () => castFabelBlitz();
   let last = performance.now();
+  let visualClock = last/1000;
   let uiTick = 0;
   function frame(now){
     const dt = Math.min(0.05,Math.max(0,(now-last)/1000));
@@ -4129,14 +4150,17 @@ window.addEventListener("load", () => {
     updateFocusMeta();
     updateFocusTarget();
     if(G.phase === "battle" && G.battle) updateBattle(dt);
-    updateEffects(dt);
+    // Hit-Stop pausiert nur Animation und Effekte, nie die Kampf-Simulation.
+    const visualDt = visualFrameDt(dt);
+    visualClock += visualDt;
+    updateEffects(visualDt);
     uiTick += dt;
     if(uiTick > 0.2){
       uiTick = 0;
       updateButtons();
       if(G.phase === "battle") updateTeamList();
     }
-    updateVisuals(now/1000,dt);
+    updateVisuals(visualClock,visualDt);
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
