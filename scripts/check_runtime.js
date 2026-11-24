@@ -90,6 +90,10 @@ if (!/body\.battle-mode\s+\.battle-bar\s*\{[^}]*display:\s*flex/.test(html)) {
 if (!/body\.battle-mode\s+\.toasts\s*\{[^}]*top:\s*\d+px[^}]*bottom:\s*auto/.test(html)) {
   throw new Error('Toasts überlagern im Kampfmodus die Kampfleiste (body.battle-mode .toasts fehlt)');
 }
+if (!html.includes('const TOAST_MAX = 3;') || !html.includes('const TOAST_DEDUP_MS = 700;') ||
+    !html.includes('toastLog.shift().node.remove()')) {
+  throw new Error('Toast-Begrenzung (maximal drei, keine Doppelmeldungen) fehlt');
+}
 if (!html.includes('id="battleTimer"') || !html.includes('function updateBattleTimer')) {
   throw new Error('Kampf-Timer fehlt');
 }
@@ -1665,6 +1669,30 @@ for (const [flag, message] of [
   ['__reviveOnce', 'Wiederbelebung greift mehr als einmal pro Held'],
   ['__reviveReset', 'Wiederbelebungs-Flag wird nach Kampfende nicht zurückgesetzt'],
   ['__reviveSpell', 'Zauber-Wiederbelebung bringt einen gefallenen Helden nicht zurück'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  SIM.headless = false;
+  toastLog = [];
+  for (let i = 1; i <= 5; i++) showToast("Meldung "+i);
+  globalThis.__toastCap = toastLog.length === TOAST_MAX &&
+    toastLog[0].msg === "Meldung 3" && toastLog[2].msg === "Meldung 5";
+  showToast("Gleich");
+  const countBefore = toastLog.length;
+  showToast("Zwischen");
+  const countAfterOther = toastLog.length;
+  toastLog[toastLog.length-2].at = Date.now();
+  showToast("Gleich");
+  globalThis.__toastDedup = countBefore === TOAST_MAX && countAfterOther === TOAST_MAX &&
+    toastLog.length === TOAST_MAX && toastLog[toastLog.length-1].msg === "Zwischen";
+  toastLog = [];
+`, ctx);
+
+for (const [flag, message] of [
+  ['__toastCap', 'Toasts werden nicht auf drei gleichzeitige Meldungen begrenzt'],
+  ['__toastDedup', 'Identische Toasts werden innerhalb kurzer Zeit mehrfach angezeigt'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }

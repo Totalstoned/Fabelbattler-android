@@ -233,6 +233,14 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Alle UI-IDs/Labels unverändert; check_runtime.js sichert Transluzenz.
   *Offen:* Screenshot zur optischen Bestaetigung.
 
+- [x] **40. Toast-Spam begrenzen** (v1.75)
+  `showToast()` behält höchstens drei Meldungen gleichzeitig und entfernt die
+  älteste, wenn eine neue hinzukommt. Identische Meldungen innerhalb von
+  700 ms werden verworfen (z. B. wiederholte Tap-Hinweise). Damit bleibt das
+  Schlachtfeld auch in großen Wellen übersichtlich.
+  *Erledigt:* `check_runtime.js` prüft Cap, Entfernen der ältesten Meldung und
+  Deduplizierung; `check_data.py` und die Kampf-Simulation bleiben grün.
+
 - [x] **38. Boden fuellt den ganzen Bildschirm** (v1.73)
   Screenshot des Users: dunkler Leerraum rund um die Arena. Neue 220x220
   Stein-Ebene mit `RepeatWrapping` (36x), Fog/Hintergrund auf 0x171e27 und

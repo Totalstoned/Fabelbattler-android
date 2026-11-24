@@ -690,6 +690,9 @@ const SYNERGY = {
 };
 const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null};
 const SIM = {headless:false};
+const TOAST_MAX = 3;
+const TOAST_DEDUP_MS = 700;
+let toastLog = [];
 const CORE_UNITS = ["bigfoot","chupacabra","fee"];
 const MOB_CAP = 500;
 const MOB_ARCHETYPES = {
@@ -3571,11 +3574,20 @@ function closeDraft(){
 }
 function showToast(msg){
   if(SIM.headless) return;
+  const now = Date.now();
+  // Wiederholte Meldungen (z. B. wiederholte Tap-Hinweise) sollen das Feld nicht zuspammen.
+  if(toastLog.some(x => x.msg === msg && now-x.at < TOAST_DEDUP_MS)) return;
   const t = document.createElement("div");
   t.className = "toast";
   t.textContent = msg;
   document.getElementById("toasts").appendChild(t);
-  setTimeout(() => { t.remove(); }, 2000);
+  toastLog.push({msg:msg,at:now,node:t});
+  // Maximal drei Meldungen gleichzeitig, damit die Kampfleiste und das Feld frei bleiben.
+  while(toastLog.length > TOAST_MAX) toastLog.shift().node.remove();
+  setTimeout(() => {
+    t.remove();
+    toastLog = toastLog.filter(x => x.node !== t);
+  }, 2000);
 }
 buildArena();
 resize();
