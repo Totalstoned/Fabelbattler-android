@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.00.0-b1000
+Aktuelle Version: v1.00.1-b1001 (Quellstand; letztes geprueftes APK v1.00.0-b1000)
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,14 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.00.1-b1001 2026-11-24  (Kamera-Modus sichtbar)
+   - Der ⌖-Button in der Kampfleiste zeigt jetzt "⌖ Folgen" oder "⌖ Frei"
+     und markiert den freien Modus gelb. Beim Ziehen der Kamera schaltet
+     panCameraPixels() das Auto-Follow ab; das war vorher nirgends sichtbar.
+   - updateCameraButton() aktualisiert Label, Tooltip und Klasse nur bei
+     Moduswechsel. check_data.py prueft die Tokens, check_runtime.js die
+     Anzeige nach Pan und Reset. Alle drei Checks gruen.
 
 v1.75-b75 2026-11-24  (Absolute Gegner-HP in der Kampfleiste)
    - Der Gegner-Stärkebalken zeigte nur Prozent. Neue Anzeige enemyHpValue

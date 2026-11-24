@@ -1980,8 +1980,13 @@ if (!vm.runInContext('globalThis.__zoomReset', ctx)) {
 vm.runInContext(`
   cameraShake = 0;
   resetCameraZoom();
+  const camBtn = document.getElementById("btnZoomReset");
+  const followShown = camBtn.textContent.indexOf("Folgen") >= 0 &&
+    !camBtn.classList.contains("camfree");
   panCameraPixels(240,0);
   const panned = Math.abs(cameraPan.x) > 0.2 && cameraFollow === false;
+  const freeShown = camBtn.textContent.indexOf("Frei") >= 0 &&
+    camBtn.classList.contains("camfree") && /Doppelklick/.test(camBtn.title);
   panCameraPixels(100000,100000);
   const clamped = Math.abs(cameraPan.x) <= PAN_LIMIT_X + 0.001 &&
     Math.abs(cameraPan.z) <= PAN_LIMIT_Z + 0.001;
@@ -1989,14 +1994,20 @@ vm.runInContext(`
   const movedCamera = Math.abs(camera.position.x - CAMERA_OFFSET.x) > 0.2 ||
     Math.abs(camera.position.z - CAMERA_OFFSET.z) > 0.2;
   resetCameraZoom();
+  const resetShown = camBtn.textContent.indexOf("Folgen") >= 0 &&
+    !camBtn.classList.contains("camfree");
   for (let f = 0; f < 200; f++) updateVisuals(f * 0.016, 0.016);
   globalThis.__cameraPan = panned && clamped && movedCamera &&
     cameraPan.x === 0 && cameraFollow === true &&
     Math.abs(cameraFocus.x - cameraDesired.x) < 0.1 &&
     Math.abs(cameraFocus.z - cameraDesired.z) < 0.1;
+  globalThis.__cameraModeButton = followShown && freeShown && resetShown;
 `, ctx);
 if (!vm.runInContext('globalThis.__cameraPan', ctx)) {
   throw new Error('Freie Kamera-Bewegung (Pan/Reset) funktioniert nicht');
 }
+if (!vm.runInContext('globalThis.__cameraModeButton', ctx)) {
+  throw new Error('Kamera-Modus wird am Zoom-Button nicht angezeigt');
+}
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus)`);

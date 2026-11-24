@@ -332,3 +332,11 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   wurden gelöscht, die Versionsnummer auf 1.00.0 (Build 1000) zurückgesetzt.
   *Erledigt:* `check_data.py` prüft die Pan-Tokens, `check_runtime.js` prüft
   Verschiebung, Clamping und Reset; alle drei Checks in beiden Kopien grün.
+
+- [x] **40. Kamera-Modus am Zoom-Button** (v1.00.1-b1001)
+  `updateCameraButton()` beschriftet den ⌖-Button mit „⌖ Folgen" oder „⌖ Frei"
+  und hebt den freien Modus gelb hervor. Beim Ziehen der Kamera wird das
+  Auto-Follow abgeschaltet; vorher war das weder im Button noch im HUD sichtbar.
+  Der Tooltip erklärt im freien Modus den Reset per ⌖/Doppelklick/0.
+  *Erledigt:* `check_data.py` prüft die Tokens, `check_runtime.js` prüft die
+  Anzeige nach Pan und Reset; alle drei Checks grün.
