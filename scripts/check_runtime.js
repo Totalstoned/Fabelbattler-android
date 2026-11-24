@@ -90,6 +90,10 @@ if (!/body\.battle-mode\s+\.battle-bar\s*\{[^}]*display:\s*flex/.test(html)) {
 if (!/body\.battle-mode\s+\.toasts\s*\{[^}]*top:\s*\d+px[^}]*bottom:\s*auto/.test(html)) {
   throw new Error('Toasts überlagern im Kampfmodus die Kampfleiste (body.battle-mode .toasts fehlt)');
 }
+if (!html.includes('const TOAST_MAX = 3;') || !html.includes('const TOAST_DEDUP_MS = 700;') ||
+    !html.includes('toastLog.shift().node.remove()')) {
+  throw new Error('Toast-Begrenzung (maximal drei, keine Doppelmeldungen) fehlt');
+}
 if (!html.includes('id="battleTimer"') || !html.includes('function updateBattleTimer')) {
   throw new Error('Kampf-Timer fehlt');
 }
@@ -1349,4 +1353,28 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
+vm.runInContext(`
+  SIM.headless = false;
+  toastLog = [];
+  for (let i = 1; i <= 5; i++) showToast("Meldung "+i);
+  globalThis.__toastCap = toastLog.length === TOAST_MAX &&
+    toastLog[0].msg === "Meldung 3" && toastLog[2].msg === "Meldung 5";
+  showToast("Gleich");
+  const countBefore = toastLog.length;
+  showToast("Zwischen");
+  const countAfterOther = toastLog.length;
+  toastLog[toastLog.length-2].at = Date.now();
+  showToast("Gleich");
+  globalThis.__toastDedup = countBefore === TOAST_MAX && countAfterOther === TOAST_MAX &&
+    toastLog.length === TOAST_MAX && toastLog[toastLog.length-1].msg === "Zwischen";
+  toastLog = [];
+`, ctx);
+
+for (const [flag, message] of [
+  ['__toastCap', 'Toasts werden nicht auf drei gleichzeitige Meldungen begrenzt'],
+  ['__toastDedup', 'Identische Toasts werden innerhalb kurzer Zeit mehrfach angezeigt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, toast-cap+dedupl, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
