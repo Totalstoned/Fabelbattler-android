@@ -1,0 +1,2 @@
+
+2026-11-24: 1.20.0 – GameMaker-Projekt als Engine-Port angelegt (export_data.js, build_project.py, 6 Skripte/111 GML-Funktionen, obj_game, Room1). Xvfb/xdotool installiert, Loop per auto-improve.stop gestoppt. Alle Checks in beiden Kopien gruen.

@@ -166,3 +166,17 @@ Schritt 2: Ein Pull Request hat Konflikte → er bleibt offen und bekommt
 Schritt 3: Die App lässt sich nicht installieren → zuerst prüfen, ob noch
            eine Version ≤ 1.70 installiert ist, und diese deinstallieren.
 Schritt 4: Unsicher? → Issue #1 schreiben; der Agent liest dort mit.
+
+
+------------------------------------------------------------
+12. Version 1.20.0 und die neue GameMaker-Engine
+------------------------------------------------------------
+Schritt 1: Die Android-App heisst jetzt 1.20.0.apk und installiert wie bisher
+           über die vorhandene Signatur (kein Deinstallieren nötig).
+Schritt 2: Der komplette Engine-Quellcode liegt zusätzlich im Ordner
+           `gamemaker/Fabelbattler/`. Öffne `Fabelbattler.yyp` in GameMaker.
+Schritt 3: Das Spiel startet mit Leertaste; R würfelt den Draft neu,
+           H heilt, N ist der Fabel-Blitz, 1/2/3 sind die Items,
+           ◀▶ wechselt den fokussierten Helden.
+Schritt 4: 1.20.0 ist die letzte geplante Version – der automatische
+           10-Minuten-Loop bleibt deshalb gestoppt.

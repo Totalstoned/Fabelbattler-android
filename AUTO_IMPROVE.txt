@@ -1,0 +1,2 @@
+
+2026-11-24: 1.20.0 erreicht – Endmarke. Der 10-Minuten-Loop bleibt bewusst gestoppt (`/root/projects/FABELBATTLER/auto-improve.stop`); keine weiteren Versionsschritte.
