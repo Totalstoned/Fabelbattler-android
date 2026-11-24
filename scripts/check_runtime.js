@@ -1349,4 +1349,58 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+  beginRun();
+  startBattle();
+  const reviveToasts = [];
+  const origReviveToast = showToast;
+  showToast = function(msg){ reviveToasts.push(msg); };
+  const revivedHero = G.battle.player[0];
+  revivedHero.mods.revive = 1;
+  recalcUnit(revivedHero);
+  revivedHero.hp = revivedHero.maxHp * 0.2;
+  revivedHero.shield = 0;
+  const effectsBeforeRevive = G.effects.length;
+  killUnit(revivedHero, G.battle.enemies[0]);
+  globalThis.__reviveTrait = !revivedHero.isDead && revivedHero.revived === true &&
+    revivedHero.hp > revivedHero.maxHp * 0.35 &&
+    revivedHero.shield > revivedHero.maxHp * 0.1 &&
+    G.effects.length > effectsBeforeRevive &&
+    reviveToasts.some(t => t.indexOf("ersteht wieder") >= 0);
+  killUnit(revivedHero, G.battle.enemies[0]);
+  globalThis.__reviveOnce = revivedHero.isDead === true &&
+    reviveToasts.filter(t => t.indexOf("ersteht wieder") >= 0).length === 1;
+  reviveTeam();
+  globalThis.__reviveReset = !revivedHero.isDead && revivedHero.revived === false &&
+    revivedHero.hp === revivedHero.maxHp;
+  const spellReviver = G.battle.player[1];
+  const spellFallen = G.battle.player[2];
+  spellReviver.spell = "koepfe";
+  spellReviver.spellCd = 0;
+  spellReviver.grid.gx = spellFallen.grid.gx;
+  spellReviver.grid.gy = spellFallen.grid.gy;
+  spellFallen.isDead = true;
+  spellFallen.hp = 0;
+  spellFallen.revived = false;
+  const spellRevived = castSpell(spellReviver, spellFallen, G.battle);
+  globalThis.__reviveSpell = spellRevived && !spellFallen.isDead &&
+    spellFallen.revived === true && spellFallen.hp > 0;
+  showToast = origReviveToast;
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+`, ctx);
+
+for (const [flag, message] of [
+  ['__reviveTrait', 'Wiederbelebung setzt HP, Schild und Feedback nicht'],
+  ['__reviveOnce', 'Wiederbelebung greift mehr als einmal pro Held'],
+  ['__reviveReset', 'Wiederbelebungs-Flag wird nach Kampfende nicht zurückgesetzt'],
+  ['__reviveSpell', 'Zauber-Wiederbelebung bringt einen gefallenen Helden nicht zurück'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
