@@ -116,7 +116,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpValue', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 const gameJs = match[1];
@@ -700,21 +700,25 @@ vm.runInContext(`
   heroes.forEach(u => { u.hp = u.maxHp; u.shield = 0; });
   const hpBar = document.getElementById("teamHpBar");
   const hpFill = document.getElementById("teamHpFill");
+  const hpValue = document.getElementById("teamHpValue");
   const hpPct = document.getElementById("teamHpPct");
   hpBar.classList.remove("show");
   hpBar.classList.remove("warn");
   hpBar.classList.remove("critical");
   updateTeamHpBar();
-  globalThis.__teamHpStart = hpBar.classList.contains("show") && hpPct.textContent === "100%" &&
-    parseFloat(hpFill.style.width) === 100 && !hpBar.classList.contains("warn") && !hpBar.classList.contains("critical");
   const totalMax = heroes.reduce((s,u) => s+u.maxHp, 0);
+  globalThis.__teamHpStart = hpBar.classList.contains("show") && hpPct.textContent === "100%" &&
+    hpValue.textContent === Math.ceil(totalMax)+"/"+Math.ceil(totalMax) &&
+    parseFloat(hpFill.style.width) === 100 && !hpBar.classList.contains("warn") && !hpBar.classList.contains("critical");
   heroes[0].hp = heroes[0].maxHp * 0.5;
   const expectedDamage = (totalMax - heroes[0].maxHp * 0.5) / totalMax * 100;
   updateTeamHpBar();
-  globalThis.__teamHpDamage = Math.abs(parseFloat(hpFill.style.width) - expectedDamage) < 0.2;
+  globalThis.__teamHpDamage = Math.abs(parseFloat(hpFill.style.width) - expectedDamage) < 0.2 &&
+    hpValue.textContent === Math.ceil(totalMax - heroes[0].maxHp * 0.5)+"/"+Math.ceil(totalMax);
   heroes[0].shield = heroes[0].maxHp * 0.5;
   updateTeamHpBar();
-  globalThis.__teamHpShield = parseFloat(hpFill.style.width) === 100 && hpPct.textContent === "100%";
+  globalThis.__teamHpShield = parseFloat(hpFill.style.width) === 100 && hpPct.textContent === "100%" &&
+    hpValue.textContent === Math.ceil(totalMax)+"/"+Math.ceil(totalMax);
   heroes.forEach(u => { u.shield = 0; u.hp = u.maxHp * 0.1; });
   updateTeamHpBar();
   globalThis.__teamHpCritical = hpBar.classList.contains("critical") && !hpBar.classList.contains("warn") &&
@@ -725,21 +729,22 @@ vm.runInContext(`
   updateTeamHpBar();
   const expectedDead = (totalMax - heroes[0].maxHp) / totalMax * 100;
   globalThis.__teamHpDead = Math.abs(parseFloat(hpFill.style.width) - expectedDead) < 0.2 &&
+    hpValue.textContent === Math.ceil(totalMax - heroes[0].maxHp)+"/"+Math.ceil(totalMax) &&
     hpBar.classList.contains("warn") === (expectedDead <= 50 && expectedDead > 25) &&
     hpBar.classList.contains("critical") === (expectedDead <= 25);
   G.phase = "menu";
   G.battle = null;
   updateTeamHpBar();
   globalThis.__teamHpHide = !hpBar.classList.contains("show") && !hpBar.classList.contains("warn") &&
-    !hpBar.classList.contains("critical");
+    !hpBar.classList.contains("critical") && hpValue.textContent === "0/0";
 `, ctx);
 
 for (const [flag, message] of [
-  ['__teamHpStart', 'Team-HP-Balken startet nicht bei 100 %'],
+  ['__teamHpStart', 'Team-HP-Balken startet nicht bei 100 % und exakten Team-HP'],
   ['__teamHpDamage', 'Team-HP-Balken reagiert nicht auf Schaden'],
   ['__teamHpShield', 'Team-HP-Balken berücksichtigt Schilde nicht'],
   ['__teamHpCritical', 'Team-HP-Balken zeigt keine kritische Gesamt-HP'],
-  ['__teamHpDead', 'Team-HP-Balken zählt tote Helden falsch'],
+  ['__teamHpDead', 'Team-HP-Balken zählt tote Helden falsch oder zeigt falsche exakte HP'],
   ['__teamHpHide', 'Team-HP-Balken verschwindet nicht außerhalb des Kampfes'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
@@ -1341,4 +1346,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+teamHpWert+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)})`);

@@ -13,7 +13,7 @@ Letztes Update: 2026-11-23
 - Repo: `/root/fabelbattler/android`, GitHub `Totalstoned/Fabelbattler-android`, Branch `main`.
 - Externe Source of Truth: `/root/fabelbattler/index3d.html` – nach Änderungen in die WebView-Datei synchronisieren.
 - Aktive App: `app/src/main/assets/index3d.html`.
-- Version **1.72**, Build **72**; APK folgt nach CI-Lauf (zuletzt heruntergeladen: `/root/projects/FABELBATTLER/fabelbattler-v1.71-b71.apk`). Signatur fest über `app/debug.p12`.
+- Version **1.73**, Build **73**; APK folgt nach CI-Lauf (zuletzt heruntergeladen: `/root/projects/FABELBATTLER/fabelbattler-v1.71-b71.apk`). Signatur fest über `app/debug.p12`.
 - Letztes geprüftes APK: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`.
 - Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
@@ -57,6 +57,7 @@ Letztes Update: 2026-11-23
 - Toasts erscheinen seit v1.45 im Kampfmodus oben statt unten (`body.battle-mode .toasts`): Die Kampfleiste mit Timer, Status, Fokus, Mana und Boss-Balken wird dadurch nicht mehr von Wellen-, Tod- und Sieges-Meldungen verdeckt; Toasts sind dort zusätzlich klick-transparent.
 - GitHub-Issue #1 ist der Fortschrittskanal für den 15-Minuten-Hintergrund-Agenten.
 - Grafik (v1.72): prozedurale Steintexturen auf allen 48 Kacheln, sichtbare Plattenkante und warmes Key-Licht; keine Trennlinie.
+- Team-HP (v1.73): Der Team-HP-Balken in der Kampfleiste zeigt mit `teamHpValue` zusätzlich die exakten HP plus Schild aller Helden im Verhältnis zur maximalen Team-HP. Teamliste und Einheiten-Panel sind im Kampfmodus ausgeblendet, daher war nur der Prozentwert ablesbar; außerhalb des Kampfes steht `0/0`.
 - Kampffeld (v1.56): keine Trennlinie und keine farblichen Seitenhälften mehr; `buildArena()` erzeugt nur noch den durchgehenden Schachboden mit Eck-Ringen. `moveUnit()` bleibt seitenunabhängig (Clamp auf das ganze GRID), `check_runtime.js` misst die minimale Annäherung (0,99 Felder).
 - Kampfleiste (v1.55, PRs #125–#133): Eliten-Zähler `✨ Elite x/y`, blauer Trefferimpuls bei Schildblock, Fokus-Ziel mit Statuseffekten **und** live Angriffswert, Draft-Karten mit Level-Vorschau (Lv/HP/ATK), fokusgeringer Toast-Spam im Kampf, Gold-Gewinn `+N`, Gegner-Stärkebalken inkl. Schwarm (grün ≤ 25 %) und Zähler besiegter Gegner. Alle neuen UI-Tokens werden in `check_data.py` **und** `check_runtime.js` geprüft.
 - Support-Cooldown (v1.54): `supportAction()` wird über `u.supportCd` (4 s, in `tickUnit()` dekrementiert) gedrosselt. Vorher schildeten Einheiten mit `shieldPct` (z. B. Stahl-Buff) bei jedem Zyklus statt anzugreifen – Kämpfe endeten nicht. Jetzt greifen sie dazwischen normal an (Harness: 12/12 Siege statt Timeouts).
