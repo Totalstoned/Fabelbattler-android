@@ -5,6 +5,18 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-24 00:30  v1.71-b71  (feste Signatur)
+  - User: "beim Installieren soll die alte App aktualisiert werden, das Setup
+    bricht sonst ab".
+  - Ursache per Zertifikats-Hash bestaetigt: alle CI-APKs haben unterschiedliche
+    Debug-Signaturen (v1.50/v1.53/v1.54/v1.55/v1.56 -> 5 verschiedene SHA-256).
+    GitHub-Runner erzeugt bei jedem Lauf ein neues Debug-Zertifikat.
+  - Fix: app/debug.p12 (RSA 2048, 10000 Tage, Alias androiddebugkey) im Repo,
+    signingConfigs.debug in build.gradle, beiden Build-Types zugewiesen.
+  - Einschraenkung: die installierte App hat noch einen alten Zufallskey und
+    muss EINMAL manuell deinstalliert werden; danach greifen In-Place-Updates.
+  - Naechster Schritt: CI-Build pruefen, zwei APKs auf gleiche Signatur testen.
+
 2026-11-24 00:25  v1.70-b70  (Versionssprung)
   - User: "benneng 1.59 1.60 1.70 der app" -> nach Rueckfrage: direkt 1.70.
   - APP_VERSION_NAME=1.70, APP_VERSION_CODE=70. Die sonstige Regel "+1 pro

@@ -1,6 +1,6 @@
 FABELBATTLER - PROJEKT-README / UEBERGABE FUER NACHFOLGENDE KI-AGENTEN
 Stand: 2026-11-23
-Aktuelle Version: v1.70-b70
+Aktuelle Version: v1.71-b71
 
 =====================================================================
 0) ZUERST LESEN - WICHTIGE REGELN
@@ -337,6 +337,19 @@ v1.45-b46 2026-11-23  (Niederlage-Zusammenfassung)
       werden vor reviveTeam() und dem Zurücksetzen von G.battle ausgelesen.
     - check_data.py prueft die Tokens; check_runtime.js prueft genau einen
       Niederlage-Toast mit Welle, Dauer, Helden- und Gegnerzahl.
+
+v1.71-b71 2026-11-24  (Feste APK-Signatur fuer Updates)
+   - Ursache fuer abbrechende Installation: assembleDebug nutzte auf den
+     GitHub-Runnern jedes Mal ein neu erzeugtes Debug-Zertifikat. Pruefung der
+     vorhandenen APKs ergab 5 verschiedene SHA-256-Zertifikats-Hashes
+     (v1.50/v1.53/v1.54/v1.55/v1.56) -> Android verweigert ein In-Place-Update
+     mit "signatures do not match".
+   - Fix: festes PKCS#12-Keystore app/debug.p12 (Alias androiddebugkey, Passwort
+     android, 10000 Tage) im Repo, in build.gradle unter signingConfigs.debug
+     verdrahtet und beiden Build-Types zugewiesen.
+   - Wichtig: die bereits installierte App ist mit einem alten Zufallskey
+     signiert und muss EINMAL manuell deinstalliert werden. Danach funktionieren
+     alle weiteren Updates ohne Deinstallation.
 
 v1.70-b70 2026-11-24  (Versionssprung auf Wunsch des Users)
    - User wollte die App direkt "1.70" nennen (statt 1.57, 1.58, ...).

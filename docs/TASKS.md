@@ -216,6 +216,16 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   Welle 5/10 und gegen Panzer/Kampftruppe/Feuerwehr (Ø 10–14 s);
   `check_runtime.js` 5 Siege in 2023 Ticks, alle drei Checks grün.
 
+- [x] **36. Feste Signatur fuer funktionierende App-Updates** (v1.71)
+  Der User meldete, dass die Installation abbricht, statt die alte App zu
+  aktualisieren. Ursache: `assembleDebug` auf den GitHub-Runnern erzeugte bei
+  jedem Lauf ein neues Debug-Zertifikat (5 APKs, 5 verschiedene Hashes).
+  Android verweigert ein Update bei wechselnder Signatur.
+  *Erledigt:* `app/debug.p12` als fester Keystore im Repo, in `build.gradle`
+  unter `signingConfigs.debug` verdrahtet und beiden Build-Types zugewiesen.
+  Alle zukuenftigen APKs tragen dieselbe Signatur. Die aktuell installierte
+  App muss wegen des alten Zufallskeys EINMAL deinstalliert werden.
+
 - [x] **35. Versionssprung auf 1.70** (v1.70)
   User-Wunsch: „benneng 1.59 1.60 1.70 der app" → direkt 1.70, keine
   Zwischenversionen. `APP_VERSION_NAME=1.70`, `APP_VERSION_CODE=70` (bewusst
