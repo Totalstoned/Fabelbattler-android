@@ -192,6 +192,12 @@ for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', '
 for token in ['function loseBattle', 'Niederlage in Welle', 'Gegner "+foesLeft+" übrig']:
     if token not in src:
         problems.append('Niederlage-Zusammenfassung fehlt: ' + token)
+for token in ['function blitzTargets', 'function castFabelBlitz',
+              'btnNova").onclick = () => castFabelBlitz()',
+              'btnBattleNova").onclick = () => castFabelBlitz()',
+              'const targets = blitzTargets(G.battle)']:
+    if token not in src:
+        problems.append('Fabel-Blitz mit Mob-Fallback fehlt: ' + token)
 for token in ['focusHp', 'focusName', 'focusHpValue', 'function updateFocusHp']:
     if token not in src:
         problems.append('Fokus-HP-Anzeige in der Kampfleiste fehlt: ' + token)

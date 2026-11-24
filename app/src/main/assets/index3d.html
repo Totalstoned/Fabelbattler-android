@@ -2343,9 +2343,7 @@ function useItem(kind){
     heroes.forEach(u => shieldUnit(u,u.maxHp*0.25));
     showToast("Schutzrune ⛨ +25 % für alle Helden");
   } else if(kind === "nova"){
-    const foes = G.battle.enemies.filter(u => !u.isDead);
-    const mobs = (G.battle.enemyMobs||[]).filter(u => !u.isDead);
-    const targets = foes.length ? foes : mobs;
+    const targets = blitzTargets(G.battle);
     if(!targets.length) return false;
     G.items.nova -= 1;
     const target = targets[Math.floor(Math.random()*targets.length)];
@@ -2359,6 +2357,27 @@ function useItem(kind){
 }
 function lowestAlly(list){
   return list.slice().sort((a,b) => (a.hp+a.shield)/a.maxHp-(b.hp+b.shield)/b.maxHp)[0] || null;
+}
+// Blitz-Ziele: gegnerische Helden zuerst, sonst der Schwarm. Ohne diesen
+// Fallback blieb der bereite Blitz-Button nach dem Tod aller Gegner-Helden
+// wirkungslos – der Blitzsplitter kannte den Fall bereits.
+function blitzTargets(b){
+  if(!b) return [];
+  const heroes = b.enemies.filter(u => !u.isDead);
+  return heroes.length ? heroes : (b.enemyMobs||[]).filter(u => !u.isDead);
+}
+function castFabelBlitz(){
+  if(G.mana < 70 || !G.battle || G.phase !== "battle") return false;
+  const targets = blitzTargets(G.battle);
+  if(!targets.length) return false;
+  G.mana -= 70;
+  const target = targets[Math.floor(Math.random()*targets.length)];
+  applyDamage(target,target.maxHp*0.35,null,{});
+  spawnShockwave(target,"#fde68a",1.5);
+  addShake(0.25);
+  showToast("Fabel-Blitz ✺");
+  updateButtons();
+  return true;
 }
 function killUnit(u,source){
   if(u.isDead) return;
@@ -3490,7 +3509,7 @@ window.addEventListener("load", () => {
   document.getElementById("btnBattleSelect").onclick = openDraft;
   document.getElementById("btnBattleNext").onclick = () => startBattle();
   document.getElementById("btnBattleHeal").onclick = () => document.getElementById("btnHeal").click();
-  document.getElementById("btnBattleNova").onclick = () => document.getElementById("btnNova").click();
+  document.getElementById("btnBattleNova").onclick = () => castFabelBlitz();
   document.getElementById("btnItemHeal").onclick = () => useItem("heal");
   document.getElementById("btnItemShield").onclick = () => useItem("shield");
   document.getElementById("btnItemNova").onclick = () => useItem("nova");
@@ -3509,18 +3528,7 @@ window.addEventListener("load", () => {
     showToast("Heilregen ☔");
     updateButtons();
   };
-  document.getElementById("btnNova").onclick = () => {
-    if(G.mana < 70 || !G.battle || G.phase !== "battle") return;
-    const targets = G.battle.enemies.filter(u => !u.isDead);
-    if(!targets.length) return;
-    G.mana -= 70;
-    const target = targets[Math.floor(Math.random()*targets.length)];
-    applyDamage(target,target.maxHp*0.35,null,{});
-    spawnShockwave(target,"#fde68a",1.5);
-    addShake(0.25);
-    showToast("Fabel-Blitz ✺");
-    updateButtons();
-  };
+  document.getElementById("btnNova").onclick = () => castFabelBlitz();
   let last = performance.now();
   let uiTick = 0;
   function frame(now){

@@ -867,6 +867,36 @@ vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
   beginRun();
+  startBattle();
+  const nb = G.battle;
+  nb.enemies.forEach(u => { u.isDead = true; });
+  const swarm = nb.enemyMobs.filter(m => !m.isDead);
+  const swarmHpBefore = swarm.reduce((s,m) => s + m.hp, 0);
+  G.mana = 70;
+  globalThis.__novaMobPool = blitzTargets(nb).length === swarm.length &&
+    blitzTargets(nb).every(m => m.isMob && !m.isDead);
+  const casted = castFabelBlitz();
+  const swarmHpAfter = nb.enemyMobs.reduce((s,m) => s + (m.isDead ? 0 : m.hp), 0);
+  globalThis.__novaMobCast = casted && G.mana === 0 && swarmHpAfter < swarmHpBefore;
+  G.mana = 70;
+  nb.enemyMobs.forEach(m => { m.isDead = true; });
+  globalThis.__novaNoTarget = !castFabelBlitz() && G.mana === 70;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__novaMobPool', 'Fabel-Blitz findet keine Schwarm-Mobs, wenn alle Gegner-Helden tot sind'],
+  ['__novaMobCast', 'Fabel-Blitz trifft den Schwarm nicht oder verbraucht keine 70 Mana'],
+  ['__novaNoTarget', 'Fabel-Blitz verbraucht Mana, obwohl kein Ziel mehr lebt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  beginRun();
   const goldBar = document.getElementById("battleGold");
   const goldValue = document.getElementById("battleGoldValue");
   const goldGain = document.getElementById("battleGoldGain");
@@ -1349,4 +1379,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items+blitz-mob, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
