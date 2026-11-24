@@ -277,3 +277,16 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* alle drei Checks in Repo- und externer Kopie grün; `check_runtime.js`
   prüft jetzt zusätzlich `focusQuiet`/`focusToastInPrep`, alle neuen IDs und
   den kombinierten Status-String.
+
+- [x] **40. Headless-Simulation bleibt effekt- und toastfrei** (Test, v1.74)
+  `simulateBattle(dt)` setzt `SIM.headless`, damit die Smoke-Tests ohne DOM- und
+  3D-Seiteneffekte laufen. Bisher prüfte `check_runtime.js` nur, dass der Modus
+  danach zurückgesetzt wird – nicht, dass währenddessen tatsächlich keine
+  Effekte, Partikel, Schockwellen oder Toasts entstehen. Der Test zählt jetzt
+  einen Toast-Append und vergleicht die FX-Arrays vor und nach jedem
+  Simulations-Tick; eine Gegenprobe außerhalb des Headless-Modus sichert, dass
+  der Zähler nicht stumm bleibt.
+  *Erledigt:* alle drei Checks grün; negativer Test (entfernte
+  `SIM.headless`-Garde in `showToast`) schlägt mit klarer Fehlermeldung fehl.
+  Nur Test-/Dokumentationsänderung – `index3d.html` und Version bleiben bei
+  v1.74-b74.

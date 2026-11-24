@@ -122,6 +122,16 @@ if (!html.includes('renderer.setSize(w,h);')) {
 for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
+// Toasts werden im Headless-Modus unterdrückt. Der Zähler macht das prüfbar,
+// ohne auf das Aussehen des echten DOM-Containers angewiesen zu sein.
+const toastBox = documentObj.getElementById('toasts');
+const originalToastAppend = toastBox.appendChild;
+ctx.__toastAppends = 0;
+toastBox.appendChild = function (...args) {
+  ctx.__toastAppends++;
+  return originalToastAppend.apply(this, args);
+};
+
 const gameJs = match[1];
 vm.runInContext(fs.readFileSync(threePath, 'utf8'), ctx, {filename: 'three.min.js'});
 vm.runInContext('var THREE = globalThis.THREE;', ctx);
@@ -149,6 +159,7 @@ vm.runInContext(`
   globalThis.__simTicks = 0;
   globalThis.__simOutcomes = {wins: 0, losses: 0};
   globalThis.__minMeetDist = 99;
+  globalThis.__headlessClean = true;
   globalThis.__stoneTiles = arena.children.filter(o => o.material && o.material.map).length;
   globalThis.__fullGround = arena.children.some(o => o.geometry && o.geometry.parameters
     && o.geometry.parameters.width > 100 && o.material && o.material.map);
@@ -161,7 +172,17 @@ vm.runInContext(`
     startBattle();
     for (let f = 0; f < 600 && G.battle && G.phase === "battle"; f++) {
       updateVisuals(f * 0.016, 0.016);
+      // Headless darf weder 3D-Effekte noch Toasts erzeugen: sonst bläht der
+      // Smoke-Test den FX-Layer auf und verdeckt echte UI-Fehler.
+      const fxBefore = G.effects.length;
+      const particlesBefore = G.particles.length;
+      const wavesBefore = G.shockwaves.length;
+      const toastsBefore = globalThis.__toastAppends;
       simulateBattle(0.016);
+      if (G.effects.length > fxBefore || G.particles.length > particlesBefore ||
+          G.shockwaves.length > wavesBefore || globalThis.__toastAppends > toastsBefore) {
+        globalThis.__headlessClean = false;
+      }
       updateBattleTimer();
       globalThis.__simTicks++;
       if (G.battle) {
@@ -181,6 +202,11 @@ vm.runInContext(`
     else if (G.phase === "defeat") globalThis.__simOutcomes.losses++;
   }
   if (SIM.headless) throw new Error('simulateBattle() hat den Headless-Modus nicht zurückgesetzt');
+  // Gegenprobe: außerhalb des Headless-Modus muss ein Toast sichtbar werden,
+  // sonst wäre der Headless-Check wirkungslos (stummer Zähler).
+  const probeToasts = globalThis.__toastAppends;
+  showToast("headless-probe");
+  globalThis.__toastProbeWorks = globalThis.__toastAppends === probeToasts + 1;
   if (!(globalThis.__minMeetDist < 2)) {
     throw new Error('Einheiten begegnen sich nicht auf dem Feld: minDist='+globalThis.__minMeetDist);
   }
@@ -215,6 +241,12 @@ if (!(maxBattleTime >= 1) || !/^Zeit \d+s$/.test(timerText)) {
 }
 if (!(simTicks >= 1) || simOutcomes.wins + simOutcomes.losses < 1) {
   throw new Error(`Kampf-Simulation endet nicht: ticks=${simTicks}, outcomes=${JSON.stringify(simOutcomes)}`);
+}
+if (!vm.runInContext('globalThis.__toastProbeWorks', ctx)) {
+  throw new Error('Toast-Zähler für den Headless-Check ist wirkungslos');
+}
+if (!vm.runInContext('globalThis.__headlessClean', ctx)) {
+  throw new Error('simulateBattle() erzeugt trotz SIM.headless Effekte, Partikel, Schockwellen oder Toasts');
 }
 
 vm.runInContext(`
@@ -1349,4 +1381,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, headless-sauber, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
