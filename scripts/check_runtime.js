@@ -178,9 +178,9 @@ vm.runInContext(`
   if (SIM.headless) throw new Error('simulateBattle() hat den Headless-Modus nicht zurückgesetzt');
   if (!(globalThis.__minMeetDist < 2)) {
     throw new Error('Einheiten begegnen sich nicht auf dem Feld: minDist='+globalThis.__minMeetDist);
+  }
   if (!(globalThis.__stoneTiles >= 40)) {
     throw new Error('Steinboden fehlt: tiles='+globalThis.__stoneTiles);
-  }
   }
 
   G.phase = "menu";
