@@ -167,6 +167,9 @@
   .battle-info.focustarget #focusTargetMeta{color:#c9b6ff;font-size:10px;}
   .battle-info.focustarget .cd{color:#8fb5ff;margin-left:5px;}
   .battle-info.focustarget .cd.ready{color:#ff8080;}
+  .battle-info.focusintent{display:none;color:#8fb5ff;}
+  .battle-info.focusintent.show{display:inline-block;}
+  .battle-info.focusintent.ready{color:#ff8080;}
   .battle-info.focusmeta{display:none;color:#c9b6ff;}
   .battle-info.focusmeta.show{display:inline-block;}
   .battle-info.focusbar .fx,.battle-info.focustarget .fx{font-size:10px;opacity:.85;margin-left:5px;}
@@ -277,6 +280,7 @@
   <span class="battle-info focusmeta" id="focusMeta" title="Level und Rolle des fokussierten Wesens">Lv – · –</span>
   <span class="battle-info focusbar" id="focusHp" title="Name, HP, Schild, Angriff, Level, Rolle und Statuseffekte des fokussierten Wesens">♥ <b id="focusName">Fokus</b> <b id="focusHpValue">0/0</b> · ⚔ <b id="focusAtkValue">0</b><span class="fx" id="focusStatus"></span></span>
   <span class="battle-info focuscd" id="focusCd" title="Zauber und Abklingzeit des fokussierten Wesens">✧ Zauber <b id="focusCdValue">–</b></span>
+  <span class="battle-info focusintent" id="focusIntent" title="Nächste Aktion eines Elite oder Boss im Fokus: Angriff bereit, Restzeit, blockiert oder noch außer Reichweite"><b id="focusIntentValue">–</b></span>
   <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Level, Rolle, Rest-HP, Schild, Angriff, Statuseffekten und Zauber-Abklingzeit">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetMeta">Lv – · –</b> <b id="focusTargetHp">0/0</b> · ⚔ <b id="focusTargetAtk">0</b><span class="cd" id="focusTargetCd" title="Zauber des Ziels: bereit (rot) oder Restzeit"></span><span class="fx" id="focusTargetStatus"></span></span>
   <span class="enemyhp" id="enemyHpBar" title="Verbleibende HP und Schilde aller Gegner inklusive Schwarm als Prozent und absolute Werte; grün, wenn der Sieg nah ist">☠ <span class="track"><i id="enemyHpFill"></i></span> <b id="enemyHpPct">100%</b> · <b class="abs" id="enemyHpValue">0/0</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP plus Schild aller Helden im Verhältnis zur maximalen Team-HP">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpValue">0/0</b> <b id="teamHpPct">100%</b></span>
@@ -3561,6 +3565,49 @@ function updateFocusCooldown(){
   bar.classList.toggle("ready",cd <= 0);
   document.getElementById("focusCdValue").textContent = cd > 0 ? name+" "+cd.toFixed(1)+"s" : name+" bereit";
 }
+function updateFocusIntent(){
+  if(SIM.headless) return;
+  const bar = document.getElementById("focusIntent");
+  const value = document.getElementById("focusIntentValue");
+  bar.classList.remove("show");
+  bar.classList.remove("ready");
+  value.textContent = "–";
+  if(G.phase !== "battle" || !G.battle) return;
+  const focus = findUnitById(G.selectedUnitId);
+  // Nur Elite und Boss bekommen einen Intent: normale Mobs bleiben absichtlich
+  // ohne Telegraph, damit die Leiste bei 500 Schwarm-Mobs lesbar bleibt.
+  // Bevorzugt das Ziel des Fokus, sonst der naechste gegnerische Elite/Boss.
+  let u = focus && !focus.isDead && (focus.isElite || focus.isBoss) ? focus : null;
+  if(!u && focus && focus.target && !focus.target.isDead &&
+     (focus.target.isElite || focus.target.isBoss)) u = focus.target;
+  if(!u && focus){
+    const specials = (G.battle.enemyMobs||[]).filter(m =>
+      !m.isDead && (m.isElite || m.isBoss) && dist(m,focus) < 12);
+    specials.sort((a,c) => dist(a,focus)-dist(c,focus)||a.id-c.id);
+    u = specials[0] || null;
+  }
+  if(!u) return;
+  const blocked = hasStatus(u,"stun") || hasStatus(u,"charm") || hasStatus(u,"root");
+  const rest = blocked ? 0 : Math.max(0,u.attackCd||0);
+  // mobAction() greift erst in Reichweite an (d <= 0.9); der Cooldown allein
+  // wäre sonst eine falsch positive Ankündigung.
+  const b = G.battle;
+  const foeSide = u.side === "player" ? "enemy" : "player";
+  const cache = b.mobCache && b.mobCache[foeSide];
+  const front = cache && cache.front;
+  const distant = !!front && Math.hypot(front.gx-u.grid.gx,front.gy-u.grid.gy) > 0.9;
+  bar.classList.add("show");
+  if(blocked){
+    value.textContent = "⚡ Angriff blockiert";
+  } else if(distant){
+    value.textContent = "⚡ Angriff: nähert sich";
+  } else if(rest > 0){
+    value.textContent = "⚡ Angriff bereit in "+rest.toFixed(1)+" s";
+  } else {
+    value.textContent = "⚡ Angriff bereit";
+    bar.classList.add("ready");
+  }
+}
 function updateFocusMeta(){
   if(SIM.headless) return;
   const bar = document.getElementById("focusMeta");
@@ -3919,6 +3966,7 @@ window.addEventListener("load", () => {
     updateHeroAlert();
     updateFocusHp();
     updateFocusCooldown();
+    updateFocusIntent();
     updateFocusMeta();
     updateFocusTarget();
     if(G.phase === "battle" && G.battle) updateBattle(dt);
