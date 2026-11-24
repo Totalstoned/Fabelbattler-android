@@ -459,6 +459,42 @@ if (!vm.runInContext('globalThis.__novaItemCheck', ctx)) {
   throw new Error('Blitzsplitter verbraucht kein Item');
 }
 
+// Statuseffekte sind zentral fuer Buffs/Debuffs, waren aber ungetestet:
+// sie muessen herabzaehlen, stillen Brand-Schaden verursachen und ablaufen.
+vm.runInContext(`
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+  const statusUnit = createUnit("fee", 1, "player");
+  statusUnit.shield = 0;
+  addStatus(statusUnit, "burn", 0.4, 0.05);
+  addStatus(statusUnit, "slow", 1.2, 0.3);
+  addStatus(statusUnit, "unknown", 2, 1);
+  globalThis.__statusApplied = hasStatus(statusUnit, "burn") && hasStatus(statusUnit, "slow") &&
+    activeStatusKeys(statusUnit).sort().join(",") === "burn,slow";
+  const statusHpBefore = statusUnit.hp;
+  const statusFxBefore = G.effects.length;
+  tickUnit(statusUnit, 0.2, null);
+  globalThis.__statusTick = statusUnit.statuses.burn < 0.4 &&
+    Math.abs(statusUnit.statuses.slow - 1) < 0.001 &&
+    statusUnit.hp < statusHpBefore && G.effects.length === statusFxBefore;
+  tickUnit(statusUnit, 0.3, null);
+  globalThis.__statusExpired = !hasStatus(statusUnit, "burn") && hasStatus(statusUnit, "slow") &&
+    activeStatusKeys(statusUnit).indexOf("burn") < 0;
+  clearStatuses(statusUnit);
+  globalThis.__statusClear = !hasStatus(statusUnit, "slow") && activeStatusKeys(statusUnit).length === 0;
+  clearEffects();
+`, ctx);
+
+for (const [flag, message] of [
+  ['__statusApplied', 'Statuseffekte werden nicht gesetzt oder unbekannte erscheinen'],
+  ['__statusTick', 'Statuseffekte zaehlen nicht herab oder Brand verursacht keinen stillen Schaden'],
+  ['__statusExpired', 'Abgelaufene Statuseffekte bleiben aktiv'],
+  ['__statusClear', 'Statuseffekte werden nicht vollstaendig entfernt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
 vm.runInContext(`
   G.phase = "menu";
   G.battle = null;
@@ -1942,3 +1978,4 @@ if (!vm.runInContext('globalThis.__zoomReset', ctx)) {
 }
 
 console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, status-ablauf+brand, krypto, stacks, bossbar-crit, sieg-toast, niederlage-toast, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)})`);
