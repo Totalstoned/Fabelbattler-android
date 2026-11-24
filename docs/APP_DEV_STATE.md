@@ -15,7 +15,7 @@ Letztes Update: 2026-11-24
 - Aktive App: `app/src/main/assets/index3d.html`.
 - Version **1.75**, Build **75**; APK folgt nach CI-Lauf (zuletzt heruntergeladen: `/root/projects/FABELBATTLER/fabelbattler-v1.73-b73.apk`). Signatur fest über `app/debug.p12`.
 - Letztes geprüftes APK: `/root/projects/FABELBATTLER/fabelbattler-v1.36-b37.apk`.
-- Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`.
+- Kampf-Logik ist über `simulateBattle(dt)` headless testbar (`SIM.headless` unterdrückt Effekte/UI); der Renderloop nutzt weiterhin `updateBattle`/`updateVisuals`. `check_runtime.js` prüft seit v1.74 zusätzlich pro Tick, dass Simulation keine Effekte/Partikel/Schockwellen/Toasts erzeugt (inkl. Gegenprobe des Toast-Zählers).
 - Feste Startbesetzung `CORE_UNITS = ["bigfoot","chupacabra","fee"]` (Tank/DPS/Heiler), erster Kampf 3 gegen 3.
 - Mob-Schwarm auf **beiden Seiten**: `MOB_CAP = 500`, 3 Archetypen, Instanced-Mesh-Rendering, Front/Cache-basierte KI. Welle 1: 4 Spieler-Mobs + 5 Gegner-Mobs, ab Welle ~28 je 500.
 - Mob-Tiere: `elite` alle 5 Wellen (3,5× HP, 2,2× ATK), `boss` alle 10 Wellen (12× HP, 3,5× ATK, je Seite 1). Bonus-Gold +2 pro Elite, +15 pro Boss.
