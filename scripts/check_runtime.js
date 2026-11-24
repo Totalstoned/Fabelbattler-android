@@ -1594,6 +1594,43 @@ for (const [flag, message] of [
 }
 
 vm.runInContext(`
+  beginRun();
+  startBattle();
+  G.mana = 0;
+  updateBattleManaBar();
+  updateButtons();
+  globalThis.__spellBtnOff = !document.getElementById("btnBattleHeal").classList.contains("ready") &&
+    !document.getElementById("btnBattleNova").classList.contains("ready") &&
+    !document.getElementById("btnHeal").classList.contains("ready") &&
+    !document.getElementById("btnNova").classList.contains("ready");
+  G.mana = 45;
+  updateBattleManaBar();
+  updateButtons();
+  globalThis.__spellBtnHealReady = document.getElementById("btnBattleHeal").classList.contains("ready") &&
+    document.getElementById("btnHeal").classList.contains("ready") &&
+    !document.getElementById("btnBattleNova").classList.contains("ready");
+  G.mana = 75;
+  updateBattleManaBar();
+  updateButtons();
+  globalThis.__spellBtnNovaReady = document.getElementById("btnBattleNova").classList.contains("ready") &&
+    document.getElementById("btnNova").classList.contains("ready");
+  G.phase = "prep";
+  G.battle = null;
+  updateButtons();
+  globalThis.__spellBtnHidePrep = !document.getElementById("btnBattleHeal").classList.contains("ready") &&
+    !document.getElementById("btnBattleNova").classList.contains("ready");
+`, ctx);
+
+for (const [flag, message] of [
+  ['__spellBtnOff', 'Zauber-Buttons leuchten bei zu wenig Mana fälschlich als bereit'],
+  ['__spellBtnHealReady', 'Heilregen-Button zeigt Bereitschaft bei 40+ Mana nicht'],
+  ['__spellBtnNovaReady', 'Blitz-Button zeigt Bereitschaft bei 70+ Mana nicht'],
+  ['__spellBtnHidePrep', 'Zauber-Bereitschaft wird außerhalb des Kampfes nicht zurückgesetzt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
   resetCameraZoom();
   zoomCamera(4);
   const zoomIn = targetView > DEFAULT_VIEW;

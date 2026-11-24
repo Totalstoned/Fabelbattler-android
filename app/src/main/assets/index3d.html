@@ -34,6 +34,8 @@
   .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt);}
   .btn.heal{background:#1c3d2a;border:1px solid #2f6b47;color:#9ff0bd;}
   .btn.nova{background:#2a1d3d;border:1px solid #5b3f8a;color:#d3b8ff;}
+  .btn.heal.ready:not(:disabled){background:#245338;border-color:#52c27f;color:#d7ffe8;box-shadow:0 0 0 1px rgba(82,194,127,.35),0 0 12px rgba(82,194,127,.25);}
+  .btn.nova.ready:not(:disabled){background:#3a2660;border-color:#9b7dff;color:#efe2ff;box-shadow:0 0 0 1px rgba(155,125,255,.35),0 0 12px rgba(155,125,255,.25);}
   .badges{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0;}
   .badge{font-size:11px;padding:4px 8px;border-radius:20px;background:var(--panel2);
          border:1px solid var(--line);}
@@ -3345,8 +3347,14 @@ function updateButtons(){
   document.getElementById("btnBattleSelect").disabled = menu || drafting || full;
   document.getElementById("btnBattleNext").disabled = menu || inBattle || drafting || !full;
   document.getElementById("btnBattleNext").textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
-  document.getElementById("btnBattleHeal").disabled = !inBattle || G.mana < 40;
-  document.getElementById("btnBattleNova").disabled = !inBattle || G.mana < 70;
+  const healReady = inBattle && G.mana >= 40;
+  const novaReady = inBattle && G.mana >= 70;
+  document.getElementById("btnBattleHeal").disabled = !healReady;
+  document.getElementById("btnBattleNova").disabled = !novaReady;
+  document.getElementById("btnBattleHeal").classList.toggle("ready", healReady);
+  document.getElementById("btnBattleNova").classList.toggle("ready", novaReady);
+  document.getElementById("btnHeal").classList.toggle("ready", healReady);
+  document.getElementById("btnNova").classList.toggle("ready", novaReady);
   const itemBtns = {btnItemHeal:"heal",btnItemShield:"shield",btnItemNova:"nova"};
   const itemLabels = {heal:"Trank",shield:"Schild",nova:"Splitter"};
   // Der Trank wäre bei voller HP wirkungslos (useItem("heal") bricht dann ab);
