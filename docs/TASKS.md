@@ -265,3 +265,13 @@ Kleine, einzeln abgeschlossene Schritte. Reihenfolge ist die empfohlene Reihenfo
   *Erledigt:* alle drei Checks in Repo- und externer Kopie grün; `check_runtime.js`
   prüft jetzt zusätzlich `focusQuiet`/`focusToastInPrep`, alle neuen IDs und
   den kombinierten Status-String.
+
+- [x] **38. Sichtbarer Zoom-Reset in der Kampfleiste** (v1.73)
+  Auf dem Touch-Gerät sind die bisherigen Wege zum Zurücksetzen der Kamera
+  (Doppelklick aufs Feld, Taste `0`) nicht praktisch. Neuer Button
+  `btnZoomReset` („⌖ Zoom") ruft `resetCameraZoom()` auf; dieselbe Funktion
+  nutzen jetzt Doppelklick und Tastatur. Die Kamera läuft weiterhin sanft
+  zum Standard-Zoom (`DEFAULT_VIEW = 11.6`), es gibt keinen Sprung.
+  *Erledigt:* `check_data.py` prüft Button, Funktion und alle drei Aufrufwege;
+  `check_runtime.js` prüft Zoomen in beide Richtungen, Reset und die
+  Kamera-Konvergenz. Alle drei Checks grün.

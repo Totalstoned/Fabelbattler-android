@@ -5,6 +5,17 @@ Neueste Eintraege zuerst. Zeitangaben UTC. Quelle: /root/fabelbattler/android
 (CI, Commits, auto-improve.log). Diese Datei ist die handschriftliche
 Entwicklungs-Chronik neben docs/PROJECT_README.txt (offizielle Uebergabe).
 
+2026-11-24 01:52  v1.73-b73  (Zoom-Reset in der Kampfleiste)
+  - Ziel: Kamera auf dem Touch-Geraet zuruecksetzen koennen. Doppelklick und
+    Taste "0" sind dort unpraktisch; neuer Button "⌖ Zoom" (btnZoomReset)
+    in der Kampfleiste.
+  - resetCameraZoom() setzt targetView auf DEFAULT_VIEW (11.6); Doppelklick,
+    Tastatur und Button nutzen denselben Pfad. Die Kamera lerpt weiterhin
+    sanft (updateVisuals), kein harter Sprung.
+  - check_data.py: Button/Funktion/Aufrufwege. check_runtime.js: Zoomen in
+    beide Richtungen, Reset, Konvergenz. Alle drei Checks gruen.
+  - Naechster Schritt: CI/APK, User-Screenshot, PRs #134-#137 integrieren.
+
 2026-11-24 01:22  v1.72-b72  (realistischer Steinboden)
   - User: "so grafisch jetzt viel realistischer".
   - stoneTexture(): 128px Canvas, deterministischer Seed, 520 Mineral-Koerner,

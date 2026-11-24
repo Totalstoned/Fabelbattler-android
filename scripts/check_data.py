@@ -185,6 +185,11 @@ for token in ['id="battleGoldGain"', 'battleGoldGainUntil', 'battle-info.gold b.
 for token in ['playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'function updatePlayerBossBar']:
     if token not in src:
         problems.append('Eigener Boss-Lebensbalken fehlt: ' + token)
+for token in ['id="btnZoomReset"', 'function resetCameraZoom', 'targetView = DEFAULT_VIEW;',
+              'getElementById("btnZoomReset").onclick = resetCameraZoom;',
+              'addEventListener("dblclick",resetCameraZoom)', 'if(e.key==="0") resetCameraZoom();']:
+    if token not in src:
+        problems.append('Zoom-Reset in der Kampfleiste fehlt: ' + token)
 
 for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', 'swarmStacks(sideUnits(G.battle,"player").length)']:
     if token not in src:
