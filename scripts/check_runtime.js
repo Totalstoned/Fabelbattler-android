@@ -118,6 +118,10 @@ if (!html.includes('addShake(0.35)') || !html.includes('Gegner-Boss besiegt!') |
 if (!html.includes('const targetRing = new THREE.Mesh(') || !html.includes('targetRing.visible = true')) {
   throw new Error('Zielmarkierung des fokussierten Wesens im 3D-Feld fehlt');
 }
+if (!html.includes('id="atlasOverlay"') || !html.includes('id="atlasFrame"') ||
+    !html.includes('creatures/bigfoot/turntable.png') || !html.includes('function setAtlasFrame')) {
+  throw new Error('Drehbarer Bigfoot-Atlas fehlt');
+}
 if (!html.includes('id="battleStatus"') || !html.includes('function updateBattleStatus') ||
     !html.includes('id="statusEnemies"') || !html.includes('id="statusHeroes"')) {
   throw new Error('Kampf-Status (Gegner/Helden) in der Kampfleiste fehlt');
@@ -138,7 +142,7 @@ if (!html.includes('id="btnBattleHeal">Heilregen (40)</button>') || !html.includ
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'atlasOverlay', 'atlasFrame', 'atlasAngle', 'atlasPrev', 'atlasNext', 'atlasClose']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 // Toasts werden im Headless-Modus unterdrückt. Der Zähler macht das prüfbar,
@@ -2085,4 +2089,28 @@ if (!vm.runInContext('globalThis.__cameraModeButton', ctx)) {
   throw new Error('Kamera-Modus wird am Zoom-Button nicht angezeigt');
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd)`);
+vm.runInContext(`
+  const atlasEl = document.getElementById("atlasFrame");
+  const opened = openCreatureAtlas("bigfoot") &&
+    document.getElementById("atlasOverlay").classList.contains("show");
+  setAtlasFrame(0);
+  const p0 = atlasEl.style.backgroundPosition;
+  const a0 = document.getElementById("atlasAngle").textContent;
+  rotateCreatureAtlas(1);
+  const p1 = atlasEl.style.backgroundPosition;
+  rotateCreatureAtlas(3);
+  const p4 = atlasEl.style.backgroundPosition;
+  const a4 = document.getElementById("atlasAngle").textContent;
+  const wrapped = setAtlasFrame(8) === 0 && setAtlasFrame(-1) === 7;
+  const unknown = !openCreatureAtlas("goblin");
+  closeCreatureAtlas();
+  const closed = !document.getElementById("atlasOverlay").classList.contains("show");
+  globalThis.__atlasCheck = opened && closed && unknown && wrapped &&
+    p0 === "0% 0%" && p1 === "33% 0%" && p4 === "0% 100%" &&
+    a0.indexOf("Front") >= 0 && a4.indexOf("Rücken") >= 0;
+`, ctx);
+if (!vm.runInContext('globalThis.__atlasCheck', ctx)) {
+  throw new Error('Drehbarer Bigfoot-Atlas zeigt die falschen Blickwinkel');
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet, mob-treffer-impuls, draft3+reroll+filter, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas)`);
