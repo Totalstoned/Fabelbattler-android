@@ -191,6 +191,11 @@ for token in ['bossBar', 'bossBarFill', 'bossBarHp', 'bossBarPct', 'function upd
 for token in ['id="btnItemHeal" title="Heilt den verwundetsten Helden um 35 %"', 'healNeeded', 'Alle Helden bei voller HP', 'kind === "heal" && !healNeeded']:
     if token not in src:
         problems.append('Trank-Button ohne verwundeten Helden fehlt: ' + token)
+for token in ['id="btnZoomReset"', 'function resetCameraZoom', 'targetView = DEFAULT_VIEW;',
+              'getElementById("btnZoomReset").onclick = resetCameraZoom;',
+              'addEventListener("dblclick",resetCameraZoom)', 'if(e.key==="0") resetCameraZoom();']:
+    if token not in src:
+        problems.append('Zoom-Reset in der Kampfleiste fehlt: ' + token)
 
 for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', 'swarmStacks(sideUnits(G.battle,"player").length)']:
     if token not in src:

@@ -275,6 +275,9 @@
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 Gegner <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarHp">0/0</b> <b id="bossBarPct">100%</b></span>
   <span class="bossbar friendly" id="playerBossBar" title="Lebenspunkte des eigenen Boss">👑 Team <span class="track"><i id="playerBossBarFill"></i></span> <b id="playerBossBarHp">0/0</b> <b id="playerBossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · Wesen tippen · 0</span>
+  <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 Gegner <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarPct">100%</b></span>
+  <span class="bossbar friendly" id="playerBossBar" title="Lebenspunkte des eigenen Boss">👑 Team <span class="track"><i id="playerBossBarFill"></i></span> <b id="playerBossBarPct">100%</b></span>
+  <span class="battle-info" style="color:var(--dim)">Zoom Rad/2 Finger · ⌖ Zoom zurück · Wesen tippen</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
   <button class="btn heal" id="btnBattleHeal">Heilregen (40)</button>
@@ -284,6 +287,7 @@
   <button class="btn nova" id="btnItemNova">Splitter</button>
   <button class="btn ghost" id="btnPrevUnit" title="Vorheriges Wesen">◀</button>
   <button class="btn ghost" id="btnNextUnit" title="Nächstes Wesen">▶</button>
+  <button class="btn ghost" id="btnZoomReset" title="Kamera auf Standard-Zoom zurücksetzen (Doppelklick oder 0)">⌖ Zoom</button>
   <button class="btn ghost" id="btnBattleInfo">Fähigkeit</button>
   <button class="btn ghost" id="btnBattleExit">Vollbild aus</button>
 </div>
@@ -742,8 +746,9 @@ const cameraDesired = new THREE.Vector3(0,0,0);
 let cameraShake = 0;
 camera.position.copy(CAMERA_OFFSET);
 camera.lookAt(0,0,0);
-let cameraView = 11.6;
-let targetView = 11.6;
+const DEFAULT_VIEW = 11.6;
+let cameraView = DEFAULT_VIEW;
+let targetView = DEFAULT_VIEW;
 scene.add(new THREE.HemisphereLight(0xcfe6ff,0x141018,0.85));
 scene.add(new THREE.AmbientLight(0xb9c7e0,0.55));
 const keyLight = new THREE.DirectionalLight(0xfff2e2,2.4);
@@ -851,6 +856,9 @@ function resize(){
 function zoomCamera(delta){
   targetView = clamp(targetView+delta,7.2,17);
 }
+function resetCameraZoom(){
+  targetView = DEFAULT_VIEW;
+}
 function touchDistance(e){
   const a=e.touches[0], b=e.touches[1];
   return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
@@ -897,8 +905,8 @@ renderer.domElement.addEventListener("pointerup",e=>{
     if(obj && obj.userData.u){ selectUnit(obj.userData.u); return; }
   }
 });
-renderer.domElement.addEventListener("dblclick",()=>{ targetView=11.6; });
-window.addEventListener("keydown",e=>{ if(e.key==="0") targetView=11.6; });
+renderer.domElement.addEventListener("dblclick",resetCameraZoom);
+window.addEventListener("keydown",e=>{ if(e.key==="0") resetCameraZoom(); });
 function setBattleMode(on){
   document.body.classList.toggle("battle-mode",on);
   requestAnimationFrame(resize);
@@ -3537,6 +3545,7 @@ window.addEventListener("load", () => {
   document.getElementById("btnBattleExit").onclick = () => setBattleMode(false);
   document.getElementById("btnPrevUnit").onclick = () => cycleFocus(-1);
   document.getElementById("btnNextUnit").onclick = () => cycleFocus(1);
+  document.getElementById("btnZoomReset").onclick = resetCameraZoom;
   document.getElementById("btnBattleInfo").onclick = () => {
     const u = findUnitById(G.selectedUnitId) || G.battle?.player.find(x => !x.isDead) || G.team[0];
     if(!u){ showToast("Kein Wesen verfügbar"); return; }
