@@ -4,3 +4,9 @@
 - 2026-11-24: 1.20.0-Korrektur: Draw-Event jetzt `Draw_0.gml` (eventType 8/eventNum 0); `gamemaker/check_project.py` prüft Ressourcen, Eventdateien, GML-Funktionen und Dateninvarianten.
 
 - 2026-11-24: `VFX - Complete Pack.yymps.zip` importiert: 635 Sprites, 48 Ordner, VERSIONED-konvertiert; `gamemaker/import_vfx.py` + `scr_vfx.gml` verbinden Treffer, Krit, Zauber, Feuer, Wasser, Blitz, Heilung, Schild, Tod, Boss und Sieg/Niederlage mit der Engine. 644 Ressourcen / 118 GML-Funktionen; Headless bleibt unberührt.
+
+- 2026-11-24: Autonomer Ideen-Scout `scripts/idea_scout.py` (DuckDuckGo, Wikipedia, öffentliche GitHub-Suche, keine API-Keys), tägliches Download-Budget 2 GiB via `scripts/download_budget.py`, `AUTO_MODEL` für kostenlose opencode-Modelle und `scripts/creature_reference.py` für Wikimedia-Wesenbilder samt 8-Winkel-Turntable-Prompt eingeführt. KI-9000-Prompt liegt in `docs/KI9000_PROMPT.md`.
+
+- 2026-11-24: `creature-turntable`-Prototyp: Wikimedia-Referenz `bigfoot/reference.jpg` (Public Domain) geladen, Bildgenerierung hatte kein Guthaben, deshalb mit `scripts/make_turntable.py` ein 1024x512-Atlas aus 8 Blickwinkeln erzeugt (`bigfoot/turntable.png`). Einbau in index3d.html ist der nächste Schritt.
+
+- 2026-11-24: `auto-model` ist umgesetzt: `AUTO_MODEL=<id>` in `scripts/auto-improve.sh` erlaubt kostenlose opencode-Modelle, Standard bleibt big-pickle.

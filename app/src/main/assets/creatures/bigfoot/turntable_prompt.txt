@@ -1,0 +1,4 @@
+Using the attached reference image of "Bigfoot illustration", create one clean 4x2 turntable sprite sheet of the SAME creature in 8 evenly spaced yaw angles: 0°, 45°, 90°, 135°, 180°, 225°, 270°, 315°. Every cell has identical scale, lighting and pose except for rotation. Transparent background, centered subject, game-ready stylized fantasy creature, no text, no border, no extra limbs. The sheet must be usable as an 8-frame rotation atlas in a real-time 3D game.
+
+Hinweis: Bildgenerierung war ohne Guthaben; erzeugt wurde stattdessen
+lokal mit scripts/make_turntable.py ein 4x2-Atlas (8 Winkel).

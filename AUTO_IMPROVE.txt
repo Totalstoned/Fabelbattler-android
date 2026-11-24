@@ -4,3 +4,5 @@
 2026-11-24: 1.20.0 bleibt Endmarke; die Projektkorrektur ändert keine Version.
 
 2026-11-24: Der VFX-Import ändert nichts an der Endmarke 1.20.0; der Loop bleibt gestoppt.
+
+2026-11-24: Loop-Prompt erweitert: Web-/Git-Recherche pro Iteration, 2 GiB Download/Tag ohne Rückfrage, kostenlose Modelle via AUTO_MODEL, Wesen-Turntables aus Wikimedia-Bildern. Start: `rm -f /root/projects/FABELBATTLER/auto-improve.stop && cd /root/fabelbattler/android && nohup ./scripts/auto-improve.sh &`. Stopp wie gehabt per Stopp-Datei.

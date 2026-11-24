@@ -12,7 +12,13 @@ LOCK=/tmp/opencode/fabel-improve.lock
 GH_BIN=/tmp/opencode/gh/gh_2.104.0_linux_arm64/bin/gh
 GH_REPO=Totalstoned/Fabelbattler-android
 INTERVAL=600
-MODEL=opencode/big-pickle
+# Kostenlose Modelle (alle cost=0). Standard bleibt der bewährte Big Pickle;
+# mit AUTO_MODEL=<id> kann der User ein anderes freies Modell waehlen.
+#   opencode/big-pickle, opencode/tidepool-alpha-free, opencode/hy4-flash-free,
+#   opencode/iceman-free, opencode/flint-40b-free, opencode/deepseek-v4.1-flash-free,
+#   opencode/nemotron-3.5-super-vl-free, opencode/beam-free,
+#   opencode/mimo-v2.6-flash-free, opencode/nemotron-3.5-lightning-free
+MODEL="${AUTO_MODEL:-opencode/big-pickle}"
 ONCE=0
 [ "${1:-}" = "once" ] && ONCE=1
 
@@ -50,13 +56,16 @@ run_iteration(){
 
   local PROMPT
   PROMPT=$(cat <<'EOF'
-Du arbeitest autonom an Fabelbattler. Lies zuerst docs/APP_DEV_STATE.md, docs/TASKS.md und docs/PROJECT_README.txt.
+Du arbeitest autonom an Fabelbattler. Lies zuerst docs/APP_DEV_STATE.md, docs/TASKS.md, docs/PROJECT_README.txt und docs/IDEA_BACKLOG.md.
 
-Wähle GENAU EIN kleines, abgeschlossenes Ziel mit klarem Nutzen. Bevorzugt: Darstellung, Animation, Kampf-Feedback, UI-Klarheit, Balance, neue Einheiten/Zauber oder Testabdeckung. Du darfst kreativ sein und im Internet recherchieren (z. B. Mythen, Tiere, Kampfbilanz anderer Auto-Battler). Behalte den bestehenden Stack (Three.js, JavaScript, Kotlin-WebView) unverändert – keine Engine-, Sprach- oder Dependency-Wechsel, keine großen Umstrukturierungen. Neue Einheiten duerfen ergaenzt werden, aber die festen Invarianten in scripts/check_data.py und scripts/check_runtime.js (u. a. 123 Einheiten, 51 Zauber, 18 Gegner-Keys, MOB_CAP=500, CORE_UNITS, keine Barbar-Rasse) muessen entweder eingehalten oder in BEIDEN Checks bewusst mitgezogen werden.
+STARTE JEDE ITERATION mit `python3 scripts/idea_scout.py --pick`. Der Scout durchsucht kostenlos (ohne API-Key) DuckDuckGo, Wikipedia und öffentliche GitHub-Repos und schreibt docs/IDEA_BACKLOG.md. `python3 scripts/idea_scout.py` schreibt den vollen Scan. Für Wesen-Grafiken: `python3 scripts/creature_reference.py <name>` lädt kostenlos Referenzbilder von Wikimedia Commons (Wikipedia/Google/DDG erlaubt), bucht sie ins Budget und legt turntable_prompt.txt an; daraus mit dem Bildgenerierungs-Tool ein 4x2-Turntable (8 Blickwinkel) machen und als rotierbaren Atlas in index3d.html einbauen. Zuerst ein Wesen (bigfoot) prototypeieren. Du darfst zusaetzlich direkt im Web recherchieren (z. B. game-mechanics, GDC, Riot-Entwicklerartikel, GitHub-Repos anderer Auto-Battler), aber entscheide IMMER selbst – frage den User NICHT nach Zielen oder Dateien.
+
+Wähle GENAU EIN kleines, abgeschlossenes Ziel mit klarem Nutzen. Bevorzugt: Darstellung, Animation, Kampf-Feedback, UI-Klarheit, Balance, neue Einheiten/Zauber oder Testabdeckung. Behalte den bestehenden Stack (Three.js, JavaScript, Kotlin-WebView) unverändert – keine Engine-, Sprach- oder Dependency-Wechsel, keine großen Umstrukturierungen. Neue Einheiten duerfen ergaenzt werden, aber die festen Invarianten in scripts/check_data.py und scripts/check_runtime.js (u. a. 123 Einheiten, 51 Zauber, 18 Gegner-Keys, MOB_CAP=500, CORE_UNITS, keine Barbar-Rasse) muessen entweder eingehalten oder in BEIDEN Checks bewusst mitgezogen werden.
 
 Regeln:
 - Ändere nach Möglichkeit app/src/main/assets/index3d.html und bei Bedarf scripts/ oder docs/.
-- Bei jeder Änderung an index3d.html: `python3 scripts/bump_version.py` ausfuehren. Das setzt APP_VERSION_NAME auf die naechste Stufe (1.00.1 -> 1.00.2 ... 1.00.9 -> 1.01.0 ... 1.20.0) und APP_VERSION_CODE auf major*1000+minor*10+patch. Bei 1.20.0 keine weitere Aenderung mehr machen (Ziel erreicht).
+- Version ist bewusst auf der Endmarke 1.20.0 fixiert: KEIN bump, kein Reset, kein neues Versionsschema. Aenderungen an index3d.html werden weiterhin direkt als 1.20.0.apk gebaut.
+- Download-Budget: Du darfst pro UTC-Tag bis zu 2 GiB herunterladen, ohne mich zu fragen. Vor groesseren Downloads `python3 scripts/download_budget.py status` pruefen und danach `reserve <bytes> <label>` buchen; `scripts/idea_scout.py` bucht seine Web-/Git-Abfragen automatisch. Bei Ueberschreitung mit lokalen Quellen weiterarbeiten und den Grund in docs/IDEA_BACKLOG.md notieren.
 - Validiere mit: python3 scripts/check_js.py app/src/main/assets/index3d.html && python3 scripts/check_data.py app/src/main/assets/index3d.html && node scripts/check_runtime.js app/src/main/assets/index3d.html
 - Wenn ein Check fehlschlägt: beheben oder die Änderung verwerfen. Never commit a broken build.
 - Bleibe auf dem aktuellen Branch (auto-improve/*). Wechsle NICHT zu main und erstelle keinen neuen Branch.

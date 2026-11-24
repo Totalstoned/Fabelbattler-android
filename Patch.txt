@@ -189,3 +189,16 @@ korrekte Draw-Event (`Draw_0.gml`); `gamemaker/check_project.py` prüft es.
 Der VFX-Pack ist jetzt im GameMaker-Projekt enthalten: Zauber-, Treffer-,
 Heil-, Schild-, Explosions- und Boss-Effekte nutzen echte Sprites statt
 reiner Kreise. Die Android-APK bleibt unverändert 1.20.0.apk.
+
+
+Der Agent holt sich jetzt selbst Ideen aus dem Internet und aus öffentlichen
+Git-Repositories, ohne dass du ihn nach Zielen fragen musst. Dafür darf er
+täglich bis zu 2 GB herunterladen. Er kann kostenlose Modelle nutzen und aus
+Wikipedia-Bildern von Wesen drehbare 3D-Grafiken vorbereiten. Der fertige
+Prompt für deine Steuer-App liegt in `KI9000_PROMPT.md`.
+
+
+Für Bigfoot liegt jetzt ein erster drehbarer 8-Winkel-Bildatlas im Projekt
+(`creatures/bigfoot/turntable.png`). Die Bildgenerierung hatte kein Guthaben,
+deshalb wurde er lokal aus dem Wikimedia-Referenzbild abgeleitet. Der Einbau
+in die 3D-Engine folgt im nächsten autonomen Lauf.

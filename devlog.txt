@@ -4,3 +4,7 @@
 2026-11-24: GameMaker-Port nachgezogen: Draw_0.gml statt Draw_64.gml, check_project.py ergänzt; ProjectTool-Link grün, Version bleibt 1.20.0.
 
 2026-11-24: VFX-Pack importiert (635 Sprites, VERSIONED-Konvertierung via ProjectTool), scr_vfx.gml erzeugt, Create/Step/Draw und Effekt-Hooks verdrahtet. Version bleibt 1.20.0.
+
+2026-11-24: Ideen-Scout, Download-Budget (2 GiB/Tag), AUTO_MODEL und Creature-Reference-Pipeline ergänzt; der 10-Minuten-Loop wird mit dem KI-9000-Prompt neu gestartet. Version bleibt 1.20.0.
+
+2026-11-24: Bigfoot-Turntable erzeugt (ImageMagick-Fallback, 8 Winkel). Bild-Gen war ohne Guthaben; Asset liegt in app/src/main/assets/creatures/bigfoot/.
