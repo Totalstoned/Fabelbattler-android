@@ -1596,6 +1596,35 @@ for (const [flag, message] of [
 vm.runInContext(`
   beginRun();
   startBattle();
+  const tapHero = G.battle.player[0];
+  const tapFoe = G.battle.enemies[0];
+  G.selectedUnitId = tapHero.id;
+  updateFocusHp();
+  selectUnit(tapFoe);
+  const infoOverlay = document.getElementById("infoOverlay");
+  globalThis.__enemyTapInfo = infoOverlay.classList.contains("show") &&
+    document.getElementById("infoTitle").textContent === tapFoe.name+" · Gegner" &&
+    document.getElementById("infoText").innerHTML.indexOf(tapFoe.name) >= 0;
+  globalThis.__enemyTapFocus = G.selectedUnitId === tapHero.id &&
+    document.getElementById("focusHp").classList.contains("show") &&
+    document.getElementById("focusName").textContent === tapHero.emoji+" "+tapHero.name;
+  closeInfo();
+  globalThis.__enemyTapInfoClosed = !infoOverlay.classList.contains("show");
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+for (const [flag, message] of [
+  ['__enemyTapInfo', 'Gegner-Tap zeigt keine Fähigkeits-Info an'],
+  ['__enemyTapFocus', 'Gegner-Tap überschreibt den Helden-Fokus in der Kampfleiste'],
+  ['__enemyTapInfoClosed', 'Gegner-Info lässt sich nicht schließen'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+vm.runInContext(`
+  beginRun();
+  startBattle();
   G.mana = 0;
   updateBattleManaBar();
   updateButtons();
