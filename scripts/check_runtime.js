@@ -533,6 +533,7 @@ vm.runInContext(`
   startBattle();
   globalThis.__eliteCheck = G.battle.enemyMobs.some(m => m.isElite) && !G.battle.enemyMobs.some(m => m.isBoss);
   beginRun();
+  clearEffects();
   G.wave = 1;
   startBattle();
   globalThis.__noTierCheck = !G.battle.enemyMobs.some(m => m.isElite || m.isBoss);
@@ -1098,6 +1099,36 @@ vm.runInContext(`
   killUnit(createMob("brute", "player", 10, "boss"), null);
   globalThis.__ownBossDeathToast = deathToasts.length === 2 && /Team-Boss gefallen/.test(deathToasts[1]);
   showToast = origDeathToast;
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+  beginRun();
+  cameraShake = 0;
+  G.wave = 1;
+  startBattle();
+  globalThis.__spawnQuietWave1 = G.effects.length === 0 && G.particles.length === 0 &&
+    G.shockwaves.length === 0 && cameraShake === 0;
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+  beginRun();
+  G.wave = 5;
+  startBattle();
+  const eliteSpecials = [...G.battle.playerMobs, ...G.battle.enemyMobs].filter(m => m.isElite || m.isBoss);
+  globalThis.__spawnEliteCheck = eliteSpecials.length > 0 && !eliteSpecials.some(m => m.isBoss) &&
+    G.effects.length === eliteSpecials.length && G.particles.length === eliteSpecials.length &&
+    G.shockwaves.length === eliteSpecials.length && cameraShake === 0;
+  G.phase = "menu";
+  G.battle = null;
+  clearEffects();
+  beginRun();
+  G.wave = 10;
+  startBattle();
+  const bossSpecials = [...G.battle.playerMobs, ...G.battle.enemyMobs].filter(m => m.isElite || m.isBoss);
+  globalThis.__spawnBossCheck = bossSpecials.some(m => m.isBoss) &&
+    G.effects.length === bossSpecials.length &&
+    G.particles.length === bossSpecials.length &&
+    G.shockwaves.length === bossSpecials.length && cameraShake > 0;
   clearEffects();
   G.phase = "menu";
   G.battle = null;
@@ -1109,6 +1140,9 @@ for (const [flag, message] of [
   ['__bossDeathShake', 'Boss-Tod hat keinen verstärkten Kamera-Shake'],
   ['__bossDeathWave', 'Boss-Tod zeigt keine Schockwelle'],
   ['__ownBossDeathToast', 'Eigener Boss-Tod zeigt keinen eigenen Hinweis'],
+  ['__spawnQuietWave1', 'Welle 1 erzeugt ungewollte Elite-/Boss-Spawn-Effekte'],
+  ['__spawnEliteCheck', 'Eliten werden beim Spawn nicht im 3D angekündigt'],
+  ['__spawnBossCheck', 'Bosse werden beim Spawn nicht im 3D angekündigt'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }

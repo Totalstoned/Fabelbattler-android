@@ -2746,6 +2746,21 @@ function buildEnemyTeam(){
     return u;
   });
 }
+// Elite und Bosse fallen im 500er-Schwarm sonst kaum auf: beim Spawn ein
+// kurzer Impuls am Ort des Wesens, damit die besonderen Gegner sofort sichtbar sind.
+function announceSpecialMobs(){
+  if(SIM.headless || !G.battle) return;
+  const specials = [...(G.battle.playerMobs||[]),...(G.battle.enemyMobs||[])]
+    .filter(m => (m.isElite || m.isBoss) && !m.isDead);
+  specials.forEach(m => {
+    const color = m.isBoss ? (m.side === "player" ? "#7ee0d0" : "#ff6b6b") :
+      (m.side === "player" ? "#67e8f9" : "#ffd166");
+    spawnShockwave(m,color,m.isBoss ? 1.6 : 1.1);
+    spawnBurst(m,color,m.isBoss ? 20 : 12,m.isBoss ? 1.2 : 0.9);
+    pushEffect(m,m.isBoss ? "👑 Boss" : "✨ Elite",color);
+  });
+  if(specials.some(m => m.isBoss)) addShake(0.18);
+}
 function startBattle(){
   if(!G.team.length || G.phase === "battle" || G.phase === "draft") return;
   if(G.team.length < G.teamSize){ openDraft(); return; }
@@ -2771,6 +2786,7 @@ function startBattle(){
   G.mana = Math.min(G.maxMana,G.mana+10);
   syncUnits();
   syncMobs();
+  announceSpecialMobs();
   const tierHint = enemyMobs.some(m => m.isBoss) ? " · 👑 BOSS" : enemyMobs.some(m => m.isElite) ? " · ✨ Elite" : "";
   showToast("Welle "+G.wave+": "+G.team.length+"+"+playerMobs.length+" gegen "+enemyTeam.length+"+"+enemyMobs.length+tierHint);
   updateHud();
