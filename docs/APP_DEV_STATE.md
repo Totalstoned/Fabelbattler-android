@@ -1,3 +1,5 @@
+- 2026-11-25: Release **1.20.3** gebaut: CI 45602329085 grün, `1.20.3.apk` SHA-256 `d198d8bc42ff097a72b29d89849953ee0a02bdd4a274bcf6688fb07fc2760a1e`, drei Checks in beiden index3d-Kopien grün, sechs eigene Arena-Szenen, Invarianten unverändert.
+
 - 2026-11-25: **Erster Loop-Schritt direkt umgesetzt – sechs eigene Szenen** (Referenz-Idee „6 Akte"): `ARENA_BIOMES` mit Feld, Steppe, Ödnis, Höhle, Berg und Arena; `arenaBiome(wave)` im 6-Wellen-Zyklus, `applyArenaBiome(wave)` tauscht prozedurale Boden-, Kanten-, Marken-, Himmel- und Nebelfarben. Angebunden an Start, Kampfbeginn, Wellensieg und Initialisierung. Kein HUD-, CSS-, Font- oder Kamerawert verändert, keine Referenz-Grafik/-Name/-Text, Invarianten unverändert. `check_data.py` und `check_runtime.js` prüfen Zyklus und Farbwechsel; alle drei Checks in beiden Kopien grün. Version 1.20.3 (Code 1203).
 
 - 2026-11-25: Release **1.20.2** gebaut: CI 45552284818 grün, `1.20.2.apk` SHA-256 `26a009db8287b2e41171c43d343f4624c94a552bf00d4612cc5856c69f4efd05`, alle drei Checks in beiden index3d-Kopien grün (Roster 123/51, 5 Kaijū + 5 Fabel statt Zwerg).
