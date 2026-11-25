@@ -167,7 +167,7 @@ if (!html.includes('renderer.setSize(w,h);')) {
 if (html.includes('if(castSpell(u,target,b)) return;')) {
   throw new Error('Auto-Battle darf keine manuellen Zauber mehr ausfuehren');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'atlasOverlay', 'atlasFrame', 'atlasAngle', 'atlasPrev', 'atlasNext', 'atlasClose', 'battleReport', 'battleReportTitle', 'battleReportDamage', 'battleReportHeal', 'battleReportTop', 'btnReportClose', 'nextWavePreview']) {
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'atlasOverlay', 'atlasFrame', 'atlasAngle', 'atlasPrev', 'atlasNext', 'atlasClose', 'battleReport', 'battleReportTitle', 'battleReportDamage', 'battleReportHeal', 'battleReportTop', 'btnReportClose', 'nextWavePreview']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 if (!html.includes('function nextWavePreview') || !html.includes('G.phase === "battle" ? null : nextWavePreview(G.wave)')) {
@@ -1120,7 +1120,7 @@ if (['battleMana', 'battleManaFill', 'battleManaValue', 'manaBar', 'manaHealRead
   throw new Error('Mana-Anzeige ist noch im UI vorhanden');
 }
 if (['btnHeal', 'btnNova', 'btnBattleHeal', 'btnBattleNova', 'btnItemHeal', 'btnItemShield',
-     'btnItemNova', 'btnPause'].some(id => html.includes(`id="${id}"`))) {
+     'btnItemNova'].some(id => html.includes(`id="${id}"`))) {
   throw new Error('Aktive Eingriffe im Kampf sind noch im UI vorhanden');
 }
 

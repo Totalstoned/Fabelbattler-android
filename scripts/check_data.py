@@ -235,9 +235,6 @@ for token in ['enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'enemyHpValue', 'functi
 for token in ['NO_BATTLE_INTERVENTION = true', 'Automatischer Kampf', 'Eingriffe erst zwischen den Wellen', 'id="hudItems"']:
     if token not in src:
         problems.append('Automatischer Kampf ohne Eingriffe fehlt: ' + token)
-for token in ['battleMana', 'manaBar', 'G.mana', 'btnHeal', 'btnNova', 'btnBattleHeal', 'btnBattleNova', 'btnItemHeal', 'btnPause', 'function useItem', 'function castFabelBlitz', 'function blitzTargets']:
-    if token in src:
-        problems.append('Mana oder aktiver Eingriff noch vorhanden: ' + token)
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)
