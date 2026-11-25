@@ -211,7 +211,7 @@ for token in ['const STATUS_RING_GEOMETRIES = {}', 'function dominantStatusKey',
               'Ringformen im Feld: ${statusShapeLegend()}']:
     if token not in src:
         problems.append('Status-Formen im Feld/UI fehlen: ' + token)
-for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'updateMobVisuals', 'hudMobs', 'mdReroll', 'rerollDraft', 'slice(0,3)', 'mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'draftFilterRole', 'draftSynergyText', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'function useItem', 'ELITE_EVERY', 'BOSS_EVERY', 'MOB_TIERS', 'mobTierFor', 'isBoss', 'isElite', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'function updateBattleStatus']:
+for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'updateMobVisuals', 'hudMobs', 'mdReroll', 'rerollDraft', 'slice(0,3)', 'mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'draftFilterRole', 'draftSynergyText', 'hudItems', 'ELITE_EVERY', 'BOSS_EVERY', 'MOB_TIERS', 'mobTierFor', 'isBoss', 'isElite', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'function updateBattleStatus']:
     if token not in src:
         problems.append('Mob-System fehlt: ' + token)
 for token in ['battleKills', 'battleKillsValue', 'function updateBattleKills', 'killsTotal', 'G.battle.kills++']:
@@ -226,12 +226,12 @@ for token in ['teamHpBar', 'teamHpFill', 'teamHpValue', 'teamHpPct', 'function u
 for token in ['enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'enemyHpValue', 'function updateEnemyHpBar', 'function shortHp', 'enemyhp b.abs', 'enemyhp.closing']:
     if token not in src:
         problems.append('Gegner-Stärkebalken fehlt: ' + token)
-for token in ['battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'ready-heal', 'ready-nova', 'function updateBattleManaBar']:
+for token in ['NO_BATTLE_INTERVENTION = true', 'Automatischer Kampf', 'Eingriffe erst zwischen den Wellen', 'id="hudItems"']:
     if token not in src:
-        problems.append('Mana-Anzeige in der Kampfleiste fehlt: ' + token)
-for token in ['btnBattleHeal").classList.toggle("ready"', 'btnBattleNova").classList.toggle("ready"', 'btn.heal.ready:not(:disabled)', 'btn.nova.ready:not(:disabled)']:
-    if token not in src:
-        problems.append('Zauber-Buttons zeigen Bereitschaft nicht deutlich: ' + token)
+        problems.append('Automatischer Kampf ohne Eingriffe fehlt: ' + token)
+for token in ['battleMana', 'manaBar', 'G.mana', 'btnHeal', 'btnNova', 'btnBattleHeal', 'btnBattleNova', 'btnItemHeal', 'btnPause', 'function useItem', 'function castFabelBlitz', 'function blitzTargets']:
+    if token in src:
+        problems.append('Mana oder aktiver Eingriff noch vorhanden: ' + token)
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)
@@ -244,9 +244,6 @@ for token in ['playerBossBar', 'playerBossBarFill', 'playerBossBarHp', 'playerBo
 for token in ['bossBar', 'bossBarFill', 'bossBarHp', 'bossBarPct', 'function updateBossBar']:
     if token not in src:
         problems.append('Gegner-Boss-Lebensbalken fehlt: ' + token)
-for token in ['id="btnItemHeal" title="Heilt den verwundetsten Helden um 35 %"', 'healNeeded', 'Alle Helden bei voller HP', 'kind === "heal" && !healNeeded']:
-    if token not in src:
-        problems.append('Trank-Button ohne verwundeten Helden fehlt: ' + token)
 for token in ['id="btnZoomReset"', 'function resetCameraZoom', 'targetView = DEFAULT_VIEW;',
               'getElementById("btnZoomReset").onclick = resetCameraZoom;',
               'addEventListener("dblclick",resetCameraZoom)', 'if(e.key==="0") resetCameraZoom();']:
@@ -267,19 +264,9 @@ for token in ['id="btnZoomReset" title="Kamera folgt dem Fokus – Ziehen schalt
 for token in ['battleDudes', 'battleDudesValue', 'function updateBattleDudes', 'swarmStacks(sideUnits(G.battle,"player").length)']:
     if token not in src:
         problems.append('Duden-Bonus in der Kampfleiste fehlt: ' + token)
-for token in ['a.hp/a.maxHp - b.hp/b.maxHp', 'const healed = healUnit(ally,ally.maxHp*0.35);',
-              'Heiltrank "+ally.emoji+" +"+Math.round(healed)+" HP"', 'return real;']:
-    if token not in src:
-        problems.append('Heiltrank-Zielwahl oder echte Heilungsanzeige fehlt: ' + token)
 for token in ['function loseBattle', 'Niederlage in Welle', 'Gegner "+foesLeft+" übrig']:
     if token not in src:
         problems.append('Niederlage-Zusammenfassung fehlt: ' + token)
-for token in ['function blitzTargets', 'function castFabelBlitz',
-              'btnNova").onclick = () => castFabelBlitz()',
-              'btnBattleNova").onclick = () => castFabelBlitz()',
-              'const targets = blitzTargets(G.battle)']:
-    if token not in src:
-        problems.append('Fabel-Blitz mit Mob-Fallback fehlt: ' + token)
 for token in ['function battleEndFx', 'spawnShockwave(u,color,1.25)', 'spawnBurst(u,burstColor,8,0.9)',
               'battleEndFx(G.team.filter(u => !u.isDead)', 'battleEndFx(fallen.length ? fallen : G.team']:
     if token not in src:

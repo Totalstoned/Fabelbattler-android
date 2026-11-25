@@ -133,7 +133,7 @@ function createGameHarness(htmlPath = DEFAULT_HTML) {
         buildMobSwarm = globalThis.__harnessOriginals.buildMobSwarm;
         G.phase = "menu";
         G.battle = null;
-        G.gold = 20; G.mana = 30; G.uid = 0;
+        G.gold = 20; G.uid = 0;
         G.items = {heal: 2, shield: 1, nova: 1};
         G.effects = []; G.particles = []; G.shockwaves = [];
         draftOffer = []; draftFilterRole = "ALL"; draftFilterClass = "ALL";

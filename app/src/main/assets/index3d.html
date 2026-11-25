@@ -41,8 +41,6 @@
   .badge{font-size:11px;padding:4px 8px;border-radius:20px;background:var(--panel2);
          border:1px solid var(--line);}
   .badge.hot{border-color:var(--acc);box-shadow:0 0 8px rgba(167,139,250,.4);}
-  .mana{height:10px;border-radius:6px;background:#0b0e13;border:1px solid var(--line);overflow:hidden;margin:6px 0 10px;}
-  .mana > i{display:block;height:100%;background:linear-gradient(90deg,#4f7cff,#8fb5ff);width:0%;transition:width .2s;}
   .team{display:flex;flex-direction:column;gap:5px;}
   .unitline{display:flex;align-items:center;gap:6px;font-size:12px;background:var(--panel2);
        border:1px solid var(--line);border-radius:8px;padding:5px 7px;}
@@ -143,14 +141,6 @@
   .enemyhp.closing .track{border-color:#2f6b47;}
   .enemyhp.closing .track i{background:linear-gradient(90deg,#2f9e60,#4ade80);}
   .enemyhp.closing b{animation:bossWarn .7s ease-in-out infinite;}
-  .battle-mana{display:none;align-items:center;gap:4px;font-size:10px;color:#8fb5ff;padding:0 6px;white-space:nowrap;}
-  .battle-mana.show{display:flex;}
-  .battle-mana .track{width:64px;height:6px;background:#0b0e13;border:1px solid #2f4a8f;border-radius:4px;overflow:hidden;}
-  .battle-mana .track i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#4f7cff,#8fb5ff);transition:width .15s;}
-  .battle-mana b{min-width:48px;text-align:right;}
-  .battle-mana .spell-ready{font-size:10px;color:#46506b;transition:color .15s;}
-  .battle-mana .spell-ready.ready-heal{color:#9ff0bd;}
-  .battle-mana .spell-ready.ready-nova{color:#ffd166;}
   .battle-info.status{display:none;color:var(--txt);}
   .battle-info.status.show{display:inline-block;}
   .battle-info.status b{color:var(--gold);}
@@ -228,7 +218,7 @@
     <div class="pill">Gold <b id="hudGold">20</b></div>
     <div class="pill">Team <b id="hudTeam">0/6</b></div>
     <div class="pill">Mobs <b id="hudMobs">0/0</b></div>
-    <div class="pill">Items <b id="hudItems">♥2 ⛨1 ✺1</b></div>
+    <div class="pill">Modus <b id="hudItems">Automatik</b></div>
     <div class="pill">Wesen-Lvl <b id="hudLvl">1</b></div>
     <div class="pill">Zeit <b id="hudTime">0s</b></div>
   </div>
@@ -236,12 +226,8 @@
     <div>
       <div id="scene"></div>
       <div class="panel" style="margin-top:10px">
-        <h2>Aktiver Eingriff</h2>
-        <div class="mana"><i id="manaBar"></i></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn heal" id="btnHeal">&#x271A; Heilregen (40)</button>
-          <button class="btn nova" id="btnNova">&#x273A; Fabel-Blitz (70)</button>
-        </div>
+        <h2>Automatischer Kampf</h2>
+        <div class="tiny">Deine Wesen kämpfen selbstständig. Eingriffe erst zwischen den Wellen.</div>
       </div>
     </div>
     <div class="panel">
@@ -324,18 +310,12 @@
   <span class="battle-info focustarget" id="focusTarget" title="Aktuelles Ziel des fokussierten Wesens mit Level, Rolle, Rest-HP, Schild, Angriff, Statuseffekten und Zauber-Abklingzeit">➤ Ziel <b id="focusTargetName">–</b> <b id="focusTargetMeta">Lv – · –</b> <b id="focusTargetHp">0/0</b> · ⚔ <b id="focusTargetAtk">0</b><span class="cd" id="focusTargetCd" title="Zauber des Ziels: bereit (rot) oder Restzeit"></span><span class="fx" id="focusTargetStatus"></span></span>
   <span class="enemyhp" id="enemyHpBar" title="Verbleibende HP und Schilde aller Gegner inklusive Schwarm als Prozent und absolute Werte; grün, wenn der Sieg nah ist">☠ <span class="track"><i id="enemyHpFill"></i></span> <b id="enemyHpPct">100%</b> · <b class="abs" id="enemyHpValue">0/0</b></span>
   <span class="teamhp" id="teamHpBar" title="Gesamte HP plus Schild aller Helden im Verhältnis zur maximalen Team-HP">♥ <span class="track"><i id="teamHpFill"></i></span> <b id="teamHpValue">0/0</b> <b id="teamHpPct">100%</b></span>
-  <span class="battle-mana" id="battleMana" title="Mana für Heilregen (40) und Blitz (70)">✦ <span class="track"><i id="battleManaFill"></i></span> <b id="battleManaValue">0/100</b> <span class="spell-ready" id="manaHealReady" title="Heilregen ab 40 Mana verfügbar">✚40</span> <span class="spell-ready" id="manaNovaReady" title="Fabel-Blitz ab 70 Mana verfügbar">✺70</span></span>
   <span class="battle-info danger" id="heroAlert" title="Lebende Helden mit kritischer HP inklusive Schild">⚠ Kritisch <b id="heroAlertCount">0</b></span>
   <span class="bossbar" id="bossBar" title="Lebenspunkte des gegnerischen Boss">👑 Gegner <span class="track"><i id="bossBarFill"></i></span> <b id="bossBarHp">0/0</b> <b id="bossBarPct">100%</b></span>
   <span class="bossbar friendly" id="playerBossBar" title="Lebenspunkte des eigenen Boss">👑 Team <span class="track"><i id="playerBossBarFill"></i></span> <b id="playerBossBarHp">0/0</b> <b id="playerBossBarPct">100%</b></span>
   <span class="battle-info" style="color:var(--dim)">Ziehen: Kamera · Rad/2 Finger: Zoom · Wesen tippen · 0</span>
   <button class="btn ghost" id="btnBattleSelect">Auswahl</button>
   <button class="btn" id="btnBattleNext">Nächste Welle</button>
-  <button class="btn heal" id="btnBattleHeal">Heilregen (40)</button>
-  <button class="btn nova" id="btnBattleNova">Blitz (70)</button>
-  <button class="btn heal" id="btnItemHeal" title="Heilt den verwundetsten Helden um 35 %">Trank</button>
-  <button class="btn" id="btnItemShield">Schild</button>
-  <button class="btn nova" id="btnItemNova">Splitter</button>
   <button class="btn ghost" id="btnPrevUnit" title="Vorheriges Wesen">◀</button>
   <button class="btn ghost" id="btnNextUnit" title="Nächstes Wesen">▶</button>
   <button class="btn ghost" id="btnZoomReset" title="Kamera folgt dem Fokus – Ziehen schaltet auf frei">⌖ Folgen</button>
@@ -758,7 +738,9 @@ const SYNERGY = {
   Stahl:m=>{m.shieldPct+=0.12;m.dr+=0.08;},
   Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
-const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null,lastReport:null,hitStop:0,relics:[],lastRelic:null};
+const G = {team:[],wave:1,gold:20,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,selectedUnitId:null,lastReport:null,hitStop:0,relics:[],lastRelic:null};
+// Während der laufenden Runde gibt es keine Spieler-Eingriffe mehr.
+const NO_BATTLE_INTERVENTION = true;
 const SIM = {headless:false};
 const TOAST_MAX = 3;
 const TOAST_DEDUP_MS = 700;
@@ -1156,8 +1138,6 @@ function beginRun(){
   G.wave = 1;
   applyArenaBiome(G.wave);
   G.gold = 20;
-  G.mana = 30;
-  G.items = {heal:2,shield:1,nova:1};
   G.relics = [];
   G.lastRelic = null;
   G.battle = null;
@@ -2787,58 +2767,8 @@ function shieldUnit(u,amount){
   // Blauer Ring markiert den Empfaenger, damit Schilde nicht unbemerkt bleiben.
   spawnShockwave(u,"#8fb5ff",0.5);
 }
-function useItem(kind){
-  if(!G.items || !(G.items[kind] > 0) || !G.battle || G.phase !== "battle") return false;
-  const heroes = G.battle.player.filter(u => !u.isDead);
-  if(kind === "heal"){
-    // Der Trank füllt nur HP: ein Schild darf die Zielwahl nicht verdecken,
-    // sonst trifft er einen vollen Helden und der Trank wird gar nicht verbraucht.
-    const ally = heroes.slice().sort((a,b) => a.hp/a.maxHp - b.hp/b.maxHp)[0];
-    if(!ally || ally.hp >= ally.maxHp) return false;
-    G.items.heal -= 1;
-    const healed = healUnit(ally,ally.maxHp*0.35);
-    showToast("Heiltrank "+ally.emoji+" +"+Math.round(healed)+" HP");
-  } else if(kind === "shield"){
-    if(!heroes.length) return false;
-    G.items.shield -= 1;
-    heroes.forEach(u => shieldUnit(u,u.maxHp*0.25));
-    showToast("Schutzrune ⛨ +25 % für alle Helden");
-  } else if(kind === "nova"){
-    const targets = blitzTargets(G.battle);
-    if(!targets.length) return false;
-    G.items.nova -= 1;
-    const target = targets[Math.floor(Math.random()*targets.length)];
-    applyDamage(target,target.maxHp*0.3,null,{});
-    if(!target.isMob) addStatus(target,"stun",0.8,1);
-    showToast("Blitzsplitter ✺ 30 %");
-  } else return false;
-  updateHud();
-  updateButtons();
-  return true;
-}
 function lowestAlly(list){
   return list.slice().sort((a,b) => (a.hp+a.shield)/a.maxHp-(b.hp+b.shield)/b.maxHp)[0] || null;
-}
-// Blitz-Ziele: gegnerische Helden zuerst, sonst der Schwarm. Ohne diesen
-// Fallback blieb der bereite Blitz-Button nach dem Tod aller Gegner-Helden
-// wirkungslos – der Blitzsplitter kannte den Fall bereits.
-function blitzTargets(b){
-  if(!b) return [];
-  const heroes = b.enemies.filter(u => !u.isDead);
-  return heroes.length ? heroes : (b.enemyMobs||[]).filter(u => !u.isDead);
-}
-function castFabelBlitz(){
-  if(G.mana < 70 || !G.battle || G.phase !== "battle") return false;
-  const targets = blitzTargets(G.battle);
-  if(!targets.length) return false;
-  G.mana -= 70;
-  const target = targets[Math.floor(Math.random()*targets.length)];
-  applyDamage(target,target.maxHp*0.35,null,{});
-  spawnShockwave(target,"#fde68a",1.5);
-  addShake(0.25);
-  showToast("Fabel-Blitz ✺");
-  updateButtons();
-  return true;
 }
 function killUnit(u,source){
   if(u.isDead) return;
@@ -3202,10 +3132,6 @@ function winBattle(){
   battleEndFx(G.team.filter(u => !u.isDead),"#ffd166","#fff2a8");
   const reward = 5+cleared*2+eliteGold+bossGold;
   G.gold += reward;
-  G.mana = Math.min(G.maxMana,G.mana+25);
-  G.items.heal += 1;
-  if(cleared % 2 === 0) G.items.shield += 1;
-  if(cleared % 3 === 0) G.items.nova += 1;
   reviveTeam();
   if(cleared % 3 === 0){
     G.team.forEach(u => setUnitLevel(u,u.level+1));
@@ -3312,7 +3238,6 @@ function startBattle(){
   if(!findUnitById(G.selectedUnitId)) G.selectedUnitId = G.team[0] ? G.team[0].id : null;
   enemyTeam.forEach(recalcUnit);
   G.team.forEach(recalcUnit);
-  G.mana = Math.min(G.maxMana,G.mana+10);
   syncUnits();
   syncMobs();
   announceSpecialMobs();
@@ -3629,7 +3554,7 @@ function updateHud(){
   const pm = G.battle && G.battle.playerMobs ? G.battle.playerMobs.length : mobWaveSize(G.wave,"player");
   const em = G.battle && G.battle.enemyMobs ? G.battle.enemyMobs.length : mobWaveSize(G.wave,"enemy");
   document.getElementById("hudMobs").textContent = pm+'/'+em;
-  document.getElementById("hudItems").textContent = "♥"+(G.items.heal||0)+" ⛨"+(G.items.shield||0)+" ✺"+(G.items.nova||0);
+  document.getElementById("hudItems").textContent = "Automatik";
   const avg = G.team.length ? G.team.reduce((s,u) => s+u.level,0)/G.team.length : 1;
   document.getElementById("hudLvl").textContent = avg.toFixed(1).replace(/\.0$/,'');
   const focus = findUnitById(G.selectedUnitId);
@@ -3644,9 +3569,6 @@ function updateHud(){
   previewEl.textContent = preview ? "⇢ Welle "+preview.wave+": "+preview.kind+" · "+preview.count+" Mobs · +"+preview.gold+" Gold"+
     (G.relics.length ? " · Relikte "+G.relics.length : "") : "";
   updateBattleTimer();
-}
-function updateManaBar(){
-  document.getElementById("manaBar").style.width = (G.mana/G.maxMana*100)+'%';
 }
 function updateBattleTimer(){
   const seconds = Math.floor(G.battle ? G.battle.time : 0);
@@ -3763,24 +3685,6 @@ function updateEnemyHpBar(){
   document.getElementById("enemyHpFill").style.width = pct.toFixed(1)+'%';
   document.getElementById("enemyHpPct").textContent = Math.ceil(pct)+'%';
   document.getElementById("enemyHpValue").textContent = shortHp(current)+'/'+shortHp(maxHp);
-}
-function updateBattleManaBar(){
-  if(SIM.headless) return;
-  const bar = document.getElementById("battleMana");
-  const healReady = document.getElementById("manaHealReady");
-  const novaReady = document.getElementById("manaNovaReady");
-  if(G.phase !== "battle" || !G.battle){
-    bar.classList.remove("show");
-    healReady.classList.remove("ready-heal");
-    novaReady.classList.remove("ready-nova");
-    return;
-  }
-  bar.classList.add("show");
-  const pct = clamp(G.mana/G.maxMana*100,0,100);
-  document.getElementById("battleManaFill").style.width = pct.toFixed(1)+'%';
-  document.getElementById("battleManaValue").textContent = Math.floor(G.mana)+'/'+G.maxMana;
-  healReady.classList.toggle("ready-heal",G.mana >= 40);
-  novaReady.classList.toggle("ready-nova",G.mana >= 70);
 }
 let lastBattleGold = null;
 let battleGoldGainUntil = 0;
@@ -3967,31 +3871,10 @@ function updateButtons(){
   battleBtn.disabled = menu || inBattle || drafting || !full;
   battleBtn.textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
   document.getElementById("btnDraft").disabled = menu || inBattle || drafting || full;
-  document.getElementById("btnHeal").disabled = menu || !inBattle || G.mana < 40;
-  document.getElementById("btnNova").disabled = menu || !inBattle || G.mana < 70;
-  document.getElementById("btnBattleSelect").disabled = menu || drafting || full;
+  // Draft und Reroll bleiben den Pausen zwischen den Wellen vorbehalten.
+  document.getElementById("btnBattleSelect").disabled = menu || inBattle || drafting || full;
   document.getElementById("btnBattleNext").disabled = menu || inBattle || drafting || !full;
   document.getElementById("btnBattleNext").textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
-  const healReady = inBattle && G.mana >= 40;
-  const novaReady = inBattle && G.mana >= 70;
-  document.getElementById("btnBattleHeal").disabled = !healReady;
-  document.getElementById("btnBattleNova").disabled = !novaReady;
-  document.getElementById("btnBattleHeal").classList.toggle("ready", healReady);
-  document.getElementById("btnBattleNova").classList.toggle("ready", novaReady);
-  document.getElementById("btnHeal").classList.toggle("ready", healReady);
-  document.getElementById("btnNova").classList.toggle("ready", novaReady);
-  const itemBtns = {btnItemHeal:"heal",btnItemShield:"shield",btnItemNova:"nova"};
-  const itemLabels = {heal:"Trank",shield:"Schild",nova:"Splitter"};
-  // Der Trank wäre bei voller HP wirkungslos (useItem("heal") bricht dann ab);
-  // deaktivieren und Grund im Tooltip nennen statt einen Klick ohne Rückmeldung zuzulassen.
-  const healNeeded = inBattle && G.battle.player.some(u => !u.isDead && u.hp < u.maxHp);
-  Object.keys(itemBtns).forEach(id => {
-    const kind = itemBtns[id];
-    const b = document.getElementById(id);
-    b.disabled = !inBattle || !(G.items[kind] > 0) || (kind === "heal" && !healNeeded);
-    b.textContent = itemLabels[kind]+" ×"+(G.items[kind]||0);
-    if(kind === "heal") b.title = healNeeded ? "Heilt den verwundetsten Helden um 35 %" : "Alle Helden bei voller HP – Trank wird nicht verbraucht";
-  });
   let hint = "";
   if(menu) hint = "Menü: Start, Einstellungen oder Credits wählen.";
   else if(drafting) hint = "Wähle "+G.teamSize+" Wesen. Das Gegnerteam wird auf dieselbe Größe angepasst.";
@@ -4196,7 +4079,6 @@ window.addEventListener("load", () => {
   updateHud();
   updateTeamList();
   updateSynergies();
-  updateManaBar();
   updateButtons();
   document.getElementById("btnBattle").onclick = () => {
     if(G.phase !== "menu" && G.phase !== "battle" && G.phase !== "draft") startBattle();
@@ -4225,11 +4107,6 @@ window.addEventListener("load", () => {
   };
   document.getElementById("btnBattleSelect").onclick = openDraft;
   document.getElementById("btnBattleNext").onclick = () => startBattle();
-  document.getElementById("btnBattleHeal").onclick = () => document.getElementById("btnHeal").click();
-  document.getElementById("btnBattleNova").onclick = () => castFabelBlitz();
-  document.getElementById("btnItemHeal").onclick = () => useItem("heal");
-  document.getElementById("btnItemShield").onclick = () => useItem("shield");
-  document.getElementById("btnItemNova").onclick = () => useItem("nova");
   document.getElementById("btnBattleExit").onclick = () => setBattleMode(false);
   document.getElementById("btnReportClose").onclick = hideBattleReport;
   document.getElementById("btnPrevUnit").onclick = () => cycleFocus(-1);
@@ -4245,22 +4122,12 @@ window.addEventListener("load", () => {
   document.getElementById("atlasPrev").onclick = () => rotateCreatureAtlas(-1);
   document.getElementById("atlasNext").onclick = () => rotateCreatureAtlas(1);
   document.getElementById("atlasClose").onclick = closeCreatureAtlas;
-  document.getElementById("btnHeal").onclick = () => {
-    if(G.mana < 40 || !G.battle || G.phase !== "battle") return;
-    G.mana -= 40;
-    G.battle.player.filter(u => !u.isDead).forEach(u => healUnit(u,u.maxHp*0.25));
-    showToast("Heilregen ☔");
-    updateButtons();
-  };
-  document.getElementById("btnNova").onclick = () => castFabelBlitz();
   let last = performance.now();
   let visualClock = last/1000;
   let uiTick = 0;
   function frame(now){
     const dt = Math.min(0.05,Math.max(0,(now-last)/1000));
     last = now;
-    G.mana = Math.min(G.maxMana,G.mana+dt*(G.phase === "battle" ? 12 : 7));
-    updateManaBar();
     updateBattleTimer();
     updateBossBar();
     updatePlayerBossBar();
@@ -4268,7 +4135,6 @@ window.addEventListener("load", () => {
     updateBattleKills();
     updateTeamHpBar();
     updateEnemyHpBar();
-    updateBattleManaBar();
     updateBattleGold();
     updateBattleDudes();
     updateHeroAlert();
