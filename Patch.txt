@@ -287,3 +287,14 @@ Schritt 6: Version 1.20.8. Die Menschen im Lager nutzen jetzt 18
            Soldaten und Zerstörer stehen vorn. Für jede Klasse gibt
            es einen menschlichen Spezialisten mit Gegenbonus.
            Der Kampf bleibt weiterhin komplett automatisch.
+Schritt 7: Version 1.20.9. Die Karte wird jetzt vor jeder Welle
+           neu generiert: acht Habitate, darunter Küste und Insel
+           mit Meer. Die Kaiju kommen aus dem Wasser. Die Menschen-
+           stadt steht mal hier, mal dort in einer Ecke und hat
+           Häuser, Schützengräben, Barrikaden und einen Wachturm.
+           Rentner und Sanitäter stehen hinten, Soldaten und
+           Zerstörer vorn; wer in Deckung steht, nimmt weniger
+           Schaden. Die Monster greifen mal einzeln nacheinander,
+           mal paarweise, mal zu dritt, mal alle gleichzeitig aus
+           einem Punkt und manchmal von zwei Seiten. Der Kampf
+           läuft weiter automatisch.
