@@ -1,3 +1,5 @@
+- [x] **55. Zwergenwesen durch Kaijū und Fabeln ersetzt**: 10 neue Wesen, neue Fabel-Rasse, Checks in beiden Skripten, Version 1.20.2.
+
 - [x] **54. Interface-Größe fixiert**: weder kleiner noch größer – als harte Regel in Automation und Doku; index3d.html unverändert.
 
 - [x] **53. Referenz-Loop und Asset-Bedarf**: Referenz-APK wird jeden Lauf neu analysiert; Bedarfsliste und CC0-Bibliothek (1,1 GiB) liegen bereit; keine Änderung an index3d.html.

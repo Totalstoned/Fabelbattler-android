@@ -1,3 +1,5 @@
+2026-11-25: Roster-Richtung: weg von normalen Zwergenkriegern, hin zu Kaijū-Filmmonstern und Märchen/Sagen/Fabeln. Neue Fabel-Rasse hat 10 Wesen? Nein: 5 Fabel + 5 Kaiju im ehemaligen Zwergen-Pack.
+
 2026-11-25: Neue harte Loop-Regel: Interface-Größe bleibt fix (weder kleiner noch größer), neue Sprites werden in vorhandene UI-Flächen eingepasst.
 
 2026-11-25: Jeder Lauf startet jetzt mit `python3 scripts/reference_apk.py` im Worktree (Hauptcheckout bleibt sauber). Der Agent wählt genau eine Mechanik aus docs/REFERENCE_APK.md und überträgt sie auf unsere Einheiten/Map; docs/ASSET_BEDARF.md nennt den Grafik-/Audio-/Font-Bedarf. Stopp-Datei bleibt bis auf Weiteres aktiv.

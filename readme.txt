@@ -1,3 +1,5 @@
+  - Roster ab 1.20.2: keine Zwergenwesen mehr; Kaijū-Filmmonster und Märchen-/Sagen/Fabelwesen statt „normaler" Fantasy-Krieger.
+
   - Interface-Regel: HUD/Dialoge/Buttons behalten feste px-Größe, auch wenn neue Grafiken dazukommen.
 
   - Referenz-Loop: `scripts/reference_apk.py` schreibt zu jedem Lauf docs/REFERENCE_APK.md; eine Mechanik davon wird auf unsere Einheiten/Map übertragen. Bedarfsliste: docs/ASSET_BEDARF.md. CC0-Assets: /root/projects/FABELBATTLER/asset-library/ (1,1 GiB).

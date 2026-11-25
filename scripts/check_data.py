@@ -171,6 +171,12 @@ for token in ['const ORIGIN_META = {', 'function unitOrigin(key)', 'function dra
 for key in ['kappa','babajaga','anansi','quetzalcoatl','ammit','tengu','selkie','yama','oni','mamiwata']:
     if key not in roster or key not in styles:
         problems.append('Neues Wesen aus aller Welt fehlt: ' + key)
+for key in ['gamera','gyaos','anguirus','kumonga','destoroyah','reineke','rotkaeppchen','dornroeschen','bremer','till']:
+    if key not in roster or key not in styles:
+        problems.append('Kaiju-/Fabelwesen fehlt: ' + key)
+for key in ['zwergenkrieger','zwergenbaumeister','zwergenschmied','zwergenheiler','zwergenjaeger','zwergenwaechter','zwergenbarde','zwergenalchemist','zwergenminenhaupt','zwergenrunenmeister']:
+    if key in roster:
+        problems.append('Zu normales Zwergenwesen noch im Roster: ' + key)
 for token in ['const START_TEAM_MIN = 3;', 'const TEAM_GROWTH_CAP = 10;',
               'const REROLL_BASE = 2;', 'const REROLL_MAX = 4;', 'function rerollCost()',
               'Math.min(REROLL_BASE+rerollCount,REROLL_MAX)', 'rerollCount = 0;',

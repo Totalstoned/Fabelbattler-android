@@ -310,6 +310,13 @@ vm.runInContext(`
   cryptKeys.forEach(k => {
     if (!ROSTER[k] || ROSTER[k].race !== "Krypto") throw new Error("Kryptid fehlt: " + k);
   });
+  const fableKeys = ["gamera","gyaos","anguirus","kumonga","destoroyah","reineke","rotkaeppchen","dornroeschen","bremer","till"];
+  fableKeys.forEach(k => {
+    if (!ROSTER[k] || !MONSTER_STYLE[k]) throw new Error("Kaiju-/Fabelwesen fehlt: " + k);
+  });
+  if (Object.keys(ROSTER).some(k => /^zwergen/.test(k))) {
+    throw new Error("Zwergenwesen sind noch im Roster");
+  }
   if (Object.keys(ROSTER).some(k => ROSTER[k].race === "Barbar")) {
     throw new Error("Barbar-Rasse ist noch im Roster");
   }

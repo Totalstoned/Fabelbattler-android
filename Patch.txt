@@ -240,3 +240,13 @@ Schritt 1: Weder kleiner noch groesser - HUD, Buttons und Texte behalten
            ihre jetzige Groesse, auch wenn neue Bilder dazukommen.
 Schritt 2: Neue Grafiken werden in die vorhandenen Flaschen eingepasst.
            Der Zoom der 3D-Kamera bleibt wie er ist.
+
+Schritt 16: Keine Zwergenkrieger mehr
+Schritt 1: Die alten zehn Zwerge (Krieger, Schmied, Baumeister usw.)
+           sind aus dem Spiel entfernt.
+Schritt 2: Stattdessen kaempfen jetzt Kaiju-Filmmonster (Gamera, Gyaos,
+           Anguirus, Kumonga, Destoroyah) und Maerchen-/Sagenwesen
+           (Reineke Fuchs, Rotkaeppchen, Dornroeschen, Bremer
+           Stadtmusikanten, Till Eulenspiegel).
+Schritt 3: Die neue Rasse heisst "Fabel & Maerchen". Die interface-Groesse
+           bleibt unverändert. Version 1.20.2.
