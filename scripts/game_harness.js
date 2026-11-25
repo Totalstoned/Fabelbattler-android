@@ -35,10 +35,14 @@ function makeElement() {
       font: '', textAlign: '', textBaseline: '', lineWidth: 0,
       strokeStyle: '', fillStyle: '',
       strokeText() {}, fillText() {}, fillRect() {}, fill() {},
+      beginPath() {}, closePath() {}, moveTo() {}, lineTo() {},
+      ellipse() {}, arc() {}, rect() {}, strokeRect() {}, clearRect() {},
+      stroke() {}, save() {}, restore() {}, translate() {}, rotate() {}, scale() {},
       createRadialGradient: () => ({addColorStop() {}}),
       createLinearGradient: () => ({addColorStop() {}}),
     }),
     width: 720, height: 460, clientWidth: 720, clientHeight: 460,
+    toDataURL: () => 'data:image/png;base64,stub',
   };
 }
 

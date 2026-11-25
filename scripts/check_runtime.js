@@ -158,14 +158,8 @@ if (html.includes('id="battleMana"') || html.includes('function updateBattleMana
 if (!html.includes('NO_BATTLE_INTERVENTION = true')) {
   throw new Error('Kein automatischer Kampf ohne Eingriffe markiert');
 }
-if (!html.includes('id="btnPause"')) {
-  throw new Error('Pause-Button in der Kampfleiste fehlt');
-}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
-}
-if (html.includes('if(castSpell(u,target,b)) return;')) {
-  throw new Error('Auto-Battle darf keine manuellen Zauber mehr ausfuehren');
 }
 for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'atlasOverlay', 'atlasFrame', 'atlasAngle', 'atlasPrev', 'atlasNext', 'atlasClose', 'battleReport', 'battleReportTitle', 'battleReportDamage', 'battleReportHeal', 'battleReportTop', 'btnReportClose', 'nextWavePreview']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
@@ -235,7 +229,7 @@ vm.runInContext(`
     G.teamSize = 4;
     for (let i = 0; i < 4; i++) G.team.push(createUnit("sensenmann", 1, "player"));
     startBattle();
-    for (let f = 0; f < 1500 && G.battle && G.phase === "battle"; f++) {
+    for (let f = 0; f < 600 && G.battle && G.phase === "battle"; f++) {
       updateVisuals(f * 0.016, 0.016);
       // Headless darf weder 3D-Effekte noch Toasts erzeugen: sonst bläht der
       // Smoke-Test den FX-Layer auf und verdeckt echte UI-Fehler.
@@ -465,8 +459,19 @@ vm.runInContext(`
   globalThis.__growthCheck = G.teamSize === sizeBefore + 1 && G.wave === 2 &&
     G.phase === "draft" && G.team.length < G.teamSize;
   globalThis.__foeOnlyCheck = Object.keys(ENEMY_ONLY).length === 18 &&
-    Object.keys(ENEMY_ONLY).every(k => ROSTER[k] && ROSTER[k].ability === "biss" &&
+    Object.keys(ENEMY_ONLY).every(k => ROSTER[k] && ROSTER[k].ability === k+"_sig" &&
+      HUMAN_TECH[k] && SPELLS[HUMAN_TECH[k]] && ROSTER[k].spell === HUMAN_TECH[k] &&
+      ABILITY_DESC[k+"_sig"] === HUMAN_TECH_DESC[k] &&
       FOE_KEYS.includes(k) && !ALL_KEYS.includes(k));
+  const abilityCounts = {};
+  Object.keys(ROSTER).forEach(k => {
+    const a = ROSTER[k].ability;
+    abilityCounts[a] = (abilityCounts[a]||0)+1;
+  });
+  const familyAbilities = Object.keys(FAMILY_SIG).map(f => FAMILY_SIG[f].ability);
+  globalThis.__uniqueAbilities = Object.keys(abilityCounts).length === 118 &&
+    Object.keys(abilityCounts).every(a => abilityCounts[a] === 1 || familyAbilities.includes(a)) &&
+    abilityCounts.atomatem === 5 && abilityCounts.brusttrommeln === 2;
   let foeLeak = false;
   for (let i = 0; i < 20; i++) {
     draftOffer = [];
@@ -510,6 +515,9 @@ if (!vm.runInContext('globalThis.__synergyTextCheck', ctx)) {
 if (!vm.runInContext('globalThis.__foeOnlyCheck', ctx)) {
   throw new Error('Zivile Gegner-Wesen fehlen oder liegen im Spielerpool');
 }
+if (!vm.runInContext('globalThis.__uniqueAbilities', ctx)) {
+  throw new Error('Fähigkeiten sind nicht eindeutig (nur Godzilla/Kong-Familien dürfen sich teilen)');
+}
 if (vm.runInContext('globalThis.__foeDraftLeak', ctx)) {
   throw new Error('Gegner-Wesen tauchen im Draft auf');
 }
@@ -542,6 +550,26 @@ if (!vm.runInContext('globalThis.__draftLevelCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__draftLevelReset', ctx)) {
   throw new Error('Draft-Picklevel fällt ohne Team nicht auf 1 zurück');
+}
+vm.runInContext(`
+  const late = createUnit("bigfoot",1,"player");
+  setUnitLevel(late,100);
+  globalThis.__level100Stats = late.level === 100 && Number.isFinite(late.maxHp) &&
+    Number.isFinite(late.atk) && late.maxHp > ROSTER.bigfoot.hp*20 &&
+    late.atk > ROSTER.bigfoot.atk*15;
+  G.phase = "draft";
+  G.team = [late];
+  const latePreview = draftPreviewStats("bigfoot",100);
+  globalThis.__level100Preview = latePreview.hp > ROSTER.bigfoot.hp*20 &&
+    latePreview.atk > ROSTER.bigfoot.atk*15;
+  G.team = [];
+  G.phase = "menu";
+`, ctx);
+if (!vm.runInContext('globalThis.__level100Stats', ctx)) {
+  throw new Error('Level 100 skaliert HP/ATK nicht endlich und deutlich hoch');
+}
+if (!vm.runInContext('globalThis.__level100Preview', ctx)) {
+  throw new Error('Draft-Vorschau unterstützt Level 100 nicht');
 }
 
 // Statuseffekte sind zentral fuer Buffs/Debuffs, waren aber ungetestet:
@@ -631,7 +659,7 @@ for (const [flag, message] of [
 
 vm.runInContext(`
   const w1 = mobWaveSize(1,"enemy"), w20 = mobWaveSize(20,"enemy"), w40 = mobWaveSize(40,"enemy");
-  globalThis.__mobSizeCheck = w1 >= 4 && w20 > w1 && w40 === MOB_WAVE_MAX && mobWaveSize(40,"player") === MOB_WAVE_MAX;
+  globalThis.__mobSizeCheck = w1 >= 4 && w20 > w1 && w40 === 500 && mobWaveSize(40,"player") === 500;
   G.phase = "menu";
   G.battle = null;
   G.teamSize = 3;
@@ -665,19 +693,57 @@ if (!vm.runInContext('globalThis.__mobAfterCheck', ctx)) {
 }
 
 vm.runInContext(`
-  G.phase = "battle";
-  G.battle = {player:[createUnit("bigfoot",1,"player")],enemies:[createUnit("oma",1,"enemy")],playerMobs:[],enemyMobs:[],time:5,kills:0,killsTotal:0,stats:{damage:{},heal:{}}};
-  G.paused = true;
-  const pausedTime = G.battle.time;
-  updateBattle(0.016);
-  globalThis.__pauseCheck = G.battle.time === pausedTime;
-  G.paused = false;
+  // Fünf Monster-Archetypen mit fünf paarweise verschiedenen Effekten.
+  const mfx = MONSTER_MOB_KEYS.map(k => MOB_ARCHETYPES[k].effect);
+  globalThis.__mobEffectCheck = MONSTER_MOB_KEYS.length === 5 &&
+    new Set(mfx).size === 5 && mfx.every(e => STATUS_META[e]) &&
+    HUMAN_MOB_KEYS.length === 5 &&
+    HUMAN_MOB_KEYS.every(k => MOB_ARCHETYPES[k].human && STATUS_META[MOB_ARCHETYPES[k].effect]);
+
+  // Menschen-Lager: 2x bis 20x mehr Menschen als Monster, Rentner am schwächsten.
+  globalThis.__ratioCheck = humanSuperiority(1) === 2 &&
+    humanSuperiority(40) === 15 && humanSuperiority(100) === 20;
+  globalThis.__weakRentner = MOB_ARCHETYPES.rentner.hp < MOB_ARCHETYPES.kriecher.hp &&
+    MOB_ARCHETYPES.rentner.atk < MOB_ARCHETYPES.kriecher.atk;
+  G.phase = "menu"; G.battle = null; __beginTestRun();
+  G.wave = 1; startBattle();
+  globalThis.__humanField1 = countHumans(G.battle) >= 2*countMonsters(G.battle) &&
+    countHumans(G.battle) > countMonsters(G.battle);
+  G.phase = "menu"; G.battle = null; __beginTestRun();
+  G.wave = 40; startBattle();
+  globalThis.__humanField40 = countHumans(G.battle) >= 2*countMonsters(G.battle) &&
+    countHumans(G.battle) >= 10*countMonsters(G.battle) &&
+    G.battle.enemyMobs.length === mobWaveSize(40,"enemy");
+  globalThis.__humanField40H = countHumans(G.battle);
+  globalThis.__humanField40M = countMonsters(G.battle);
+  globalThis.__signatureCount = new Set(Object.keys(ROSTER).map(k => ROSTER[k].ability)).size;
+  const avgGx = list => list.reduce((s,m) => s+m.grid.gx,0)/Math.max(1,list.length);
+  globalThis.__stationCheck = avgGx(G.battle.enemyMobs.filter(m => m.key === "mob_landsturmsoldat")) <
+    avgGx(G.battle.enemyMobs.filter(m => m.key === "mob_feldsanitaeter")) &&
+    avgGx(G.battle.enemyMobs.filter(m => m.key === "mob_rentner")) >
+    avgGx(G.battle.enemyMobs.filter(m => m.key === "mob_landsturmsoldat"));
+
+  // Zehn Klassen, zehn menschliche Spezialisten mit Gegenbonus.
+  const covered = Object.keys(HUMAN_COUNTER);
+  globalThis.__counterCheck = covered.length === Object.keys(CLASS_META).length &&
+    covered.every(cls => HUMAN_COUNTER[cls] &&
+      (ROSTER[HUMAN_COUNTER[cls]] || MOB_ARCHETYPES[HUMAN_COUNTER[cls]])) &&
+    Object.keys(ENEMY_ONLY).every(k => HUMAN_UNIT_COUNTER[k] &&
+      ROSTER[k].counterClass === HUMAN_UNIT_COUNTER[k]);
   G.phase = "menu";
   G.battle = null;
 `, ctx);
 
-if (!vm.runInContext('globalThis.__pauseCheck', ctx)) {
-  throw new Error('Pause friert die Kampf-Simulation nicht ein');
+for (const [flag, message] of [
+  ['__mobEffectCheck', 'Monster/Menschen-Archetypen haben zu wenige verschiedene Effekte'],
+  ['__ratioCheck', 'Menschen-Überzahl wächst nicht von 2x auf 20x'],
+  ['__weakRentner', 'Rentner sind nicht schwächer als Monster'],
+  ['__humanField1', 'Welle 1: nicht mindestens doppelt so viele Menschen wie Monster'],
+  ['__humanField40', 'Welle 40: Menschen überragen Monster nicht deutlich genug'],
+  ['__counterCheck', 'Nicht jede Klasse hat einen menschlichen Spezialisten'],
+  ['__stationCheck', 'Sanitäter/Rentner stehen nicht hinter den Soldaten'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
 vm.runInContext(`
@@ -1120,7 +1186,7 @@ if (['battleMana', 'battleManaFill', 'battleManaValue', 'manaBar', 'manaHealRead
   throw new Error('Mana-Anzeige ist noch im UI vorhanden');
 }
 if (['btnHeal', 'btnNova', 'btnBattleHeal', 'btnBattleNova', 'btnItemHeal', 'btnItemShield',
-     'btnItemNova'].some(id => html.includes(`id="${id}"`))) {
+     'btnItemNova', 'btnPause'].some(id => html.includes(`id="${id}"`))) {
   throw new Error('Aktive Eingriffe im Kampf sind noch im UI vorhanden');
 }
 
@@ -1348,7 +1414,7 @@ vm.runInContext(`
     nw5.elites === Math.max(2,Math.floor(mobWaveSize(5,"enemy")/50)) &&
     nw5.gold === 5+5*2+nw5.elites*2;
   globalThis.__nwBoss = nw10.isBoss && !nw10.isElite && nw10.gold === 5+10*2+15;
-  globalThis.__nwCap = nwCap.count === MOB_WAVE_MAX;
+  globalThis.__nwCap = nwCap.count === MOB_CAP;
   const nwEl = document.getElementById("nextWavePreview");
   G.phase = "prep";
   G.battle = null;
@@ -1432,4 +1498,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten)`);

@@ -321,7 +321,6 @@
   <button class="btn ghost" id="btnZoomReset" title="Kamera folgt dem Fokus – Ziehen schaltet auf frei">⌖ Folgen</button>
   <button class="btn ghost" id="btnBattleInfo">Fähigkeit</button>
   <button class="btn ghost" id="btnBattleExit">Vollbild aus</button>
-  <button class="btn ghost" id="btnPause" title="Pause">⏸ Pause</button>
 </div>
 <div class="toasts" id="toasts"></div>
 <div class="battle-report" id="battleReport" role="status" aria-live="polite" title="Auswertung der letzten Welle: HP-Schaden, Heilung und stärkstes Wesen (Schaden + Heilung)">
@@ -695,10 +694,79 @@ const SPELL_OVERRIDE = {
   kingkong:"ansturm",scarking:"ansturm",medusa:"steinbild",fee:"feensegen",alienpflanze:"waldzauber",
   assassinenklinge:"schattenstoss",alienenergie:"gewitter",alienkristall:"frost"
 };
+// Menschen-Technik: 18 eigene, wirkungsvolle Techniken gegen Monster statt des
+// alten Einheits-"Biss". Bestehende Zauber werden genutzt, die INVARIANTE von
+// 51 Zaubern bleibt damit unberührt.
+const HUMAN_TECH = {
+  oma:"werkzeug",opa:"traumzauber",feuerwehr:"wassersang",kampftruppe:"schwarmruf",
+  soldat:"pfeffer",missionar:"feensegen",sanitaeter:"navigator",rebelle:"nachtstuerm",
+  armee:"horden",bundeswehr:"steinblick",soeldner:"schattenstoss",feuerwehrwagen:"wetter",
+  krankenwagen:"moosheilung",panzer:"erdbeben",hubschrauber:"raketen",
+  kampfflugzeug:"raketensalve",drohne:"emp",teddy:"schrecken"
+};
+// Zehn Klassen, zehn menschliche Spezialisten: jede Klasse hat einen
+// eigenen Zerstörer/Entlarver mit einem klaren Gegenbonus.
+const HUMAN_COUNTER = {
+  Wald:"landsturmsoldat",Magie:"feldsanitaeter",Dunkel:"kampfflugzeug",Chaos:"rebelle",
+  Kaiju:"mythenzerstoerer",Mythos:"entlarver",Geist:"kampftruppe",Tier:"feuerwehr",
+  Stahl:"armee",Element:"drohne"
+};
+const HUMAN_UNIT_COUNTER = {
+  oma:"Tier",opa:"Chaos",feuerwehr:"Tier",kampftruppe:"Geist",soldat:"Wald",
+  missionar:"Magie",sanitaeter:"Magie",rebelle:"Chaos",armee:"Stahl",bundeswehr:"Mythos",
+  soeldner:"Dunkel",feuerwehrwagen:"Kaiju",krankenwagen:"Wald",panzer:"Kaiju",
+  hubschrauber:"Stahl",kampfflugzeug:"Dunkel",drohne:"Element",teddy:"Tier"
+};
+const HUMAN_TECH_DESC = {
+  oma:"Stockhieb: betäubt und schwächt",
+  opa:"Zeitungswurf: verwirrt und schwächt",
+  feuerwehr:"Wasserstrahl: verlangsamt und verwirrt",
+  kampftruppe:"Schutzkreis: stärkt und schützt das Team",
+  soldat:"Gewehrsalve: Fernschaden, schwächt und verlangsamt",
+  missionar:"Segen: heilt und schützt das Team",
+  sanitaeter:"Notfallset: starke Heilung und Schilde",
+  rebelle:"Molotow: Brand und Verwirrung",
+  armee:"Salve: Splash-Schaden und Tempo nach Kill",
+  bundeswehr:"Präzisionsschuss: betäubt und schwächt",
+  soeldner:"Scharfschuss: hoher Schaden und Schwächung",
+  feuerwehrwagen:"Wasserwerfer: Splash und Verlangsamung",
+  krankenwagen:"Notfallwagen: Heilung und Schilde für alle",
+  panzer:"Kanonenschuss: Splash und Betäubung",
+  hubschrauber:"Raketenabwurf: Splash und Kritik",
+  kampfflugzeug:"Bombensalve: hoher Splash-Schaden",
+  drohne:"EMP-Feld: betäubt und splasht",
+  teddy:"Kuschelbiss: verwirrt und schwächt"
+};
+// Signaturen: jede Einheit bekommt eine eigene Fähigkeit. Nur bewusste
+// Marken-Familien teilen sich eine: Godzilla = Atomstrahl, Kong = Brusttrommeln.
+const FAMILY_SIG = {
+  godzilla:{keys:["godzilla","burninggodzilla","shingodzilla","godzillaearth","mechagodzilla"],ability:"atomatem"},
+  kong:{keys:["kingkong","scarking"],ability:"brusttrommeln"}
+};
+ABILITY_DESC.brusttrommeln = "Brusttrommeln: sportlicher Ansturm, betäubt und spottet";
+INNATE.brusttrommeln = Object.assign({},INNATE.ansturm||{},{atk:1.15,stun:0.2});
+ABILITY_SPELL.brusttrommeln = "ansturm";
+const SIGNATURE_VERBS = ["Stößt","Kratzt","Wirbelt","Schlägt","Springt","Brüllt","Stampft","Speit","Saugt","Blitzt","Donnert","Bremst","Bohrt","Dreht"];
+const familySig = {};
+Object.keys(FAMILY_SIG).forEach(f => FAMILY_SIG[f].keys.forEach(k => { familySig[k] = FAMILY_SIG[f].ability; }));
+Object.keys(ROSTER).forEach((k,i) => {
+  const u = ROSTER[k];
+  if(familySig[k]){ u.ability = familySig[k]; return; }
+  const tech = HUMAN_TECH[k];
+  const base = u.ability;
+  const baseInnate = INNATE[tech||base]||{};
+  const sig = k+"_sig";
+  ABILITY_DESC[sig] = tech ? HUMAN_TECH_DESC[k] :
+    u.name+": "+SIGNATURE_VERBS[i%SIGNATURE_VERBS.length]+" – "+(ABILITY_DESC[base]||"eigene Technik");
+  INNATE[sig] = Object.assign({},baseInnate,{atk:baseInnate.atk ? baseInnate.atk*(1+0.01*(i%5)) : 1});
+  ABILITY_SPELL[sig] = tech || ABILITY_SPELL[base] || (SPELLS[base] ? base : "schlag");
+  u.ability = sig;
+});
 Object.keys(ROSTER).forEach(k => {
   const u = ROSTER[k];
   u.spell = SPELL_OVERRIDE[k] || ABILITY_SPELL[u.ability] || (SPELLS[u.ability] ? u.ability : "schlag");
   u.healRange = u.role === "HEALER" ? 3 : 2;
+  u.counterClass = HUMAN_UNIT_COUNTER[k] || null;
 });
 const DEFAULT_MODS = {hp:1,atk:1,spd:1,dr:0,lifesteal:0,crit:0,splash:0,curse:0,slow:0,root:0,stun:0,charm:0,burn:0,heal:0,howl:0,shieldPct:0,rage:0,gold:0,killAtk:0,taunt:false,revive:0};
 const AURA_DEFS = {
@@ -727,8 +795,6 @@ const UNIT_SIZE = {
   methuselah:1.2,bagan:1.2,shimgodzilla:1.18,queenmuto:1.05,warbat:1.0,scarking:1.25,rodan:1.1,godzillaearth:1.3,
   mechagodzilla:1.15,minilla:0.9,gojira:1.15,yeti:0.82,nessie:0.9,mothman:0.85,ogopogo:0.88,jerseydevil:0.72,skinwalker:0.76,thunderbird:0.95,kraken:0.9,batsquatch:0.92,megalodon:1.05
 };
-// Menschen (Spielermenschen) sind deutlich kleiner als die Monster des Schwarmes.
-const HUMAN_UNIT_SCALE = 0.6;
 const SYNERGY = {
   Wald:m=>{m.hp*=1.2;},
   Magie:m=>{m.atk*=1.15;},
@@ -741,7 +807,7 @@ const SYNERGY = {
   Stahl:m=>{m.shieldPct+=0.12;m.dr+=0.08;},
   Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
-const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null,lastReport:null,hitStop:0,paused:false,relics:[],lastRelic:null};
+const G = {team:[],wave:1,gold:20,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,selectedUnitId:null,lastReport:null,hitStop:0,relics:[],lastRelic:null};
 // Während der laufenden Runde gibt es keine Spieler-Eingriffe mehr.
 const NO_BATTLE_INTERVENTION = true;
 const SIM = {headless:false};
@@ -751,17 +817,37 @@ let toastLog = [];
 const CORE_UNITS = ["bigfoot","chupacabra","fee"];
 const START_TEAM_MIN = 3;
 const TEAM_GROWTH_CAP = 10;
+// Ab Welle 10 steigt das Team jede Welle statt nur alle drei Wellen, damit
+// Level 100 ohne hunderte Runden erreichbar bleibt.
+const LEVEL_RUSH_WAVE = 10;
 const REROLL_BASE = 2;
 const REROLL_MAX = 4;
 let rerollCount = 0;
 function rerollCost(){ return Math.min(REROLL_BASE+rerollCount,REROLL_MAX); }
 const MOB_CAP = 500;
-const MOB_WAVE_MAX = 100;
+// Jede Mob-Art hat einen eigenen Treffereffekt; normal, Elite und Boss steigern
+// nur Dauer und Stärke. Kein Schwarm mehr, bei dem alle denselben Effekt haben.
 const MOB_ARCHETYPES = {
-  kriecher:{name:"Kriecher",emoji:"🦠",hp:9,atk:2.2,spd:0.9,rng:40,color:0x8b5cf6,scale:0.42},
-  flieger:{name:"Fledermaus",emoji:"🦇",hp:6,atk:1.8,spd:1.25,rng:30,color:0x38bdf8,scale:0.36},
-  brute:{name:"Brute",emoji:"👹",hp:22,atk:4.5,spd:0.65,rng:55,color:0xef4444,scale:0.62}
+  kriecher:{name:"Kriecher",emoji:"🦠",hp:9,atk:2.2,spd:0.9,rng:40,color:0x8b5cf6,scale:0.42,effect:"weaken",power:0.14,desc:"Giftbiss schwächt"},
+  flieger:{name:"Fledermaus",emoji:"🦇",hp:6,atk:1.8,spd:1.25,rng:30,color:0x38bdf8,scale:0.36,effect:"slow",power:0.28,desc:"Flügelschlag verlangsamt"},
+  brute:{name:"Brute",emoji:"👹",hp:22,atk:4.5,spd:0.65,rng:55,color:0xef4444,scale:0.62,effect:"stun",power:0,desc:"Keilschlag betäubt"},
+  spitter:{name:"Spucker",emoji:"🐌",hp:12,atk:2.8,spd:0.6,rng:50,color:0xa3e635,scale:0.48,effect:"burn",power:0.008,desc:"Ätzschleim brennt"},
+  schatten:{name:"Schatten",emoji:"🌑",hp:8,atk:2.4,spd:1.05,rng:35,color:0xa78bfa,scale:0.4,effect:"charm",power:0.22,desc:"Schattenblick verwirrt"},
+  // Menschen-Bevölkerung im Lager: bewusst viel schwächer als die Monster,
+  // aber in der Masse (2x bis 20x) die Verteidigung tragend.
+  rentner:{name:"Rentner",emoji:"👴",hp:4,atk:0.8,spd:0.45,rng:28,color:0xd1a48a,scale:0.28,effect:"slow",power:0.12,desc:"Stockwinken verlangsamt",human:true,counterClass:"Stahl"},
+  landsturmsoldat:{name:"Landsturmsoldat",emoji:"🪖",hp:11,atk:2.5,spd:0.8,rng:55,color:0x84cc16,scale:0.38,effect:"weaken",power:0.14,desc:"Gewehrfeuer schwächt",human:true,counterClass:"Wald"},
+  feldsanitaeter:{name:"Feldsanitäter",emoji:"⚕️",hp:8,atk:1.2,spd:0.85,rng:40,color:0xf2f2f2,scale:0.34,effect:"stun",power:0,desc:"Notverband betäubt",human:true,counterClass:"Magie"},
+  entlarver:{name:"Fabelwesen-Entlarver",emoji:"🔍",hp:10,atk:3.2,spd:1.0,rng:60,color:0xfcd34d,scale:0.36,effect:"charm",power:0.2,desc:"Entlarvung verwirrt",human:true,counterClass:"Mythos"},
+  mythenzerstoerer:{name:"Mythen-Zerstörer",emoji:"🛠️",hp:18,atk:4,spd:0.7,rng:50,color:0xfb923c,scale:0.44,effect:"burn",power:0.008,desc:"Zerstörung brennt",human:true,counterClass:"Kaiju"}
 };
+const MONSTER_MOB_KEYS = ["kriecher","flieger","brute","spitter","schatten"];
+const HUMAN_MOB_KEYS = ["rentner","landsturmsoldat","feldsanitaeter","entlarver","mythenzerstoerer"];
+const MOB_EFFECT_KEYS = ["weaken","slow","stun","burn","charm"];
+// Das menschliche Lager stellt mindestens doppelt so viele Verteidiger wie
+// Monster auf; späte Wellen gehen bis auf das 20-fache.
+const HUMAN_SUPERIORITY_MAX = 20;
+function humanSuperiority(wave){ return Math.min(HUMAN_SUPERIORITY_MAX,2+Math.floor((Math.max(1,wave)-1)/3)); }
 const ELITE_EVERY = 5;
 const BOSS_EVERY = 10;
 const MOB_TIERS = {
@@ -784,12 +870,7 @@ function mobTierColor(tier,side,color){
 function mobWaveSize(wave,side){
   const raw = 4 + 3*(wave-1) + 0.6*(wave-1)*(wave-1);
   const bonus = side === "enemy" ? 1 : 0;
-  const size = Math.min(MOB_WAVE_MAX,Math.max(0,Math.round(raw)+bonus));
-  // Mindestens dreifache Monsterzahl gegenueber der menschlichen Mannschaft:
-  // die Mobs muessen die Menschen immer ueberwiegen.
-  const humans = (G.team || []).length;
-  const min = side === "enemy" ? Math.ceil(3*humans) : 0;
-  return Math.max(size,min);
+  return Math.min(MOB_CAP,Math.max(0,Math.round(raw)+bonus));
 }
 // Vorschau wie bei einer Rundenkarte: Art, Gegnerzahl und Gold stehen vor dem
 // Kampf fest und kommen aus denselben Regeln wie buildMobSwarm()/winBattle().
@@ -2356,7 +2437,7 @@ function makeCharacter(u){
   const portrait = makePortraitSprite(u.key);
   portrait.position.y = hpY+0.94;
   group.add(portrait);
-  group.userData = {u:u,size:(u.side === "player" ? (UNIT_SIZE[u.key] || (style ? style.scale||1 : 1))*HUMAN_UNIT_SCALE : (UNIT_SIZE[u.key] || (style ? style.scale||1 : 1))),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,animPhase:Math.random()*Math.PI*2,walk:0};
+  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,animPhase:Math.random()*Math.PI*2,walk:0};
   return group;
 }
 function syncUnits(){
@@ -2524,7 +2605,8 @@ function createUnit(key,lvl=1,side="player"){
   const base = ROSTER[key];
   const u = {
     id:++G.uid,key:key,name:base.name,emoji:base.emoji,role:base.role,cls:base.cls,cls2:base.cls2,race:base.race,
-    level:lvl,side:side,ability:base.ability,spell:base.spell,
+    level:lvl,side:side,ability:base.ability,spell:base.spell,counterClass:base.counterClass||null,
+    isHuman:!!HUMAN_UNIT_COUNTER[key],
     baseHp:base.hp*(1+(lvl-1)*0.3),baseAtk:base.atk*(1+(lvl-1)*0.25),baseSpd:base.spd,
     rng:base.rng,healRange:base.healRange||3,mods:Object.assign({},DEFAULT_MODS),modsEffective:Object.assign({},DEFAULT_MODS),
     maxHp:0,hp:0,atk:0,spd:1,shield:0,
@@ -2548,6 +2630,8 @@ function createMob(archetype,side,wave,tier){
     level:wave,side,ability:null,spell:null,isMob:true,archetype:archetype,tier:tier||"normal",
     isElite:tier === "elite",isBoss:tier === "boss",color:mobTierColor(tier,side,a.color),scale:a.scale*t.scale,
     baseHp:baseHp,baseAtk:baseAtk,baseSpd:a.spd,
+    effect:a.effect,effectPower:a.power,effectDesc:a.desc,
+    isHuman:!!a.human,counterClass:a.counterClass||null,
     rng:a.rng,healRange:0,modsEffective:Object.assign({},DEFAULT_MODS),
     maxHp:Math.round(baseHp*buff),hp:0,atk:baseAtk*buff,spd:a.spd,shield:0,
     grid:{gx:0,gy:0},target:null,attackCd:Math.random()*0.5,spellCd:999,hitFlash:0,animAttack:0,deathTimer:0.6,
@@ -2557,21 +2641,43 @@ function createMob(archetype,side,wave,tier){
   return m;
 }
 function buildMobSwarm(side,wave){
-  const keys = Object.keys(MOB_ARCHETYPES);
   const list = [];
   const count = mobWaveSize(wave,side);
+  // Beide Lager stellen eine menschliche Bevölkerung, die von Monstern nur
+  // durchsetzt ist. Die Gesamtzahl bleibt exakt MOB_CAP pro Seite.
+  const ratio = humanSuperiority(wave);
+  const monsterCount = ratio ? Math.max(1,Math.floor(count/(ratio+1))) : count;
+  const humanCount = count - monsterCount;
   for(let i=0;i<count;i++){
-    const r = (i*7+wave*3)%10;
-    const key = r < 5 ? keys[0] : r < 8 ? keys[1] : keys[2];
+    const r = (i*3+wave)%10;
+    let key;
+    if(i < humanCount){
+      key = HUMAN_MOB_KEYS[(i*7+wave)%HUMAN_MOB_KEYS.length];
+    } else {
+      key = MONSTER_MOB_KEYS[r < 3 ? 0 : r < 5 ? 1 : r < 7 ? 2 : r < 9 ? 3 : 4];
+    }
     const m = createMob(key,side,wave,mobTierFor(wave,i,count));
     const lane = side === "player" ? 0.25+(i%3)*0.45 : GRID.cols-1-(i%3)*0.45;
     m.grid.gx = clamp(lane,0,GRID.cols-1);
     m.grid.gy = clamp(0.3+((i*5)%Math.round(GRID.rows*10))/10,0,GRID.rows-1);
+    if(m.isHuman){
+      // Lager-Stationierung: Sanitäter und Rentner stehen geschützt hinten,
+      // Soldaten und Zerstörer bilden die vordere Reihe.
+      const back = key === "rentner" || key === "feldsanitaeter";
+      const front = key === "landsturmsoldat" || key === "mythenzerstoerer";
+      const dir = side === "player" ? 1 : -1;
+      if(back) m.grid.gx = clamp(m.grid.gx-dir*2.5,0,GRID.cols-1);
+      if(front) m.grid.gx = clamp(m.grid.gx+dir*2.5,0,GRID.cols-1);
+    }
     m.attackCd = (i%7)*0.08;
     list.push(m);
   }
   return list;
 }
+// Zählt die Bevölkerung auf dem Feld (Mobs, ohne Helden-Sonderfälle).
+function fieldMobs(b){ return b ? [...(b.playerMobs||[]),...(b.enemyMobs||[])] : []; }
+function countHumans(b){ return fieldMobs(b).filter(u => u.isHuman).length; }
+function countMonsters(b){ return fieldMobs(b).filter(u => u.isMob && !u.isHuman).length; }
 function refreshMobCache(b){
   if(b.mobCache && b.time-b.mobCache.t < 0.2) return;
   const build = side => {
@@ -2602,9 +2708,15 @@ function mobAction(u,b,dt){
   if(!targets.length) return;
   const target = targets[Math.floor(Math.random()*targets.length)];
   applyDamage(target,u.atk,u,{number:false});
+  if(u.effect && !target.isDead){
+    const mult = u.isBoss ? 2.4 : u.isElite ? 1.6 : 1;
+    addStatus(target,u.effect,1.4*mult,(u.effectPower||0)*mult);
+    if(!SIM.headless) pushEffect(target,aEffectLabel(u),STATUS_META[u.effect].css);
+  }
   u.animAttack = 0.18;
   u.attackCd = 1/u.spd;
 }
+function aEffectLabel(u){ return u.effectDesc || MOB_ARCHETYPES[u.archetype].desc; }
 function clearStatuses(u){ u.statuses = {}; u.statusPower = {}; }
 function refreshTeamStats(){ G.team.forEach(recalcUnit); }
 function setUnitLevel(u,lvl){
@@ -2824,6 +2936,10 @@ function killUnit(u,source){
 }
 function applyDamage(target,amount,source,opts={}){
   if(target.isDead || amount <= 0) return 0;
+  // Menschen-Spezialisten (Entlarver, Mythen-Zerstörer, ...) treffen ihre
+  // Klasse härter; der Bonus gilt für Heroen wie für Lager-Verteidiger.
+  if(source && source.counterClass && target &&
+     (target.cls === source.counterClass || target.cls2 === source.counterClass)) amount *= 1.35;
   let dmg = amount*(1-(target.modsEffective.dr||0));
   if(hasStatus(target,"defBuff")) dmg *= 1-(target.statusPower.defBuff||0);
   if(target.shield > 0){
@@ -3091,9 +3207,6 @@ function simulateBattle(dt){
 function updateBattle(dt){
   const b = G.battle;
   if(!b) return;
-  // Auto-Battle: die Simulation laeuft ohne manuelle Fähigkeit/Item-Eingriffe weiter.
-  // Pause friert den Kampf, ohne die Darstellung abzubrechen.
-  if(G.paused) return;
   b.time += dt;
   refreshMobCache(b);
   const units = [...b.player,...b.enemies,...(b.playerMobs||[]),...(b.enemyMobs||[])];
@@ -3105,6 +3218,7 @@ function updateBattle(dt){
     const target = chooseTarget(u,b);
     u.target = target;
     if(!target) return;
+    if(castSpell(u,target,b)) return;
     if(dist(u,target) > Math.max(1,u.rng/70)) moveToward(u,target,dt,b);
     else tryAttack(u,target,b);
   });
@@ -3144,7 +3258,7 @@ function winBattle(){
   const reward = 5+cleared*2+eliteGold+bossGold;
   G.gold += reward;
   reviveTeam();
-  if(cleared % 3 === 0){
+  if(cleared % 3 === 0 || cleared >= LEVEL_RUSH_WAVE){
     G.team.forEach(u => setUnitLevel(u,u.level+1));
     const minLvl = Math.min.apply(null,G.team.map(u => u.level));
     showToast("Team-Level-Up! Mindestlevel: "+minLvl);
@@ -3479,11 +3593,9 @@ function abilityInfoHtml(u){
 function updateUnitInfo(){
   const el = document.getElementById("unitInfoBody");
   const u = findUnitById(G.selectedUnitId);
-  // Einheiten-Stats erscheinen nur bei ausgewaehltem Wesen – sonst Hinweis statt Statistik.
-  if(!u){ el.innerHTML = "Tippe auf ein Wesen, um Fähigkeit und Zauber zu sehen."; return; }
-  const atlas = ATLAS_CREATURES[u.key]
+  const atlas = u && ATLAS_CREATURES[u.key]
     ? '<button class="btn ghost" id="btnAtlasFromUnit" style="margin-top:8px">🌀 8 Ansichten drehen</button>' : '';
-  el.innerHTML = abilityInfoHtml(u)+atlas;
+  el.innerHTML = u ? abilityInfoHtml(u)+atlas : "Tippe auf ein Wesen, um Fähigkeit und Zauber zu sehen.";
   if(atlas) document.getElementById("btnAtlasFromUnit").onclick = () => openCreatureAtlas(u.key);
 }
 function selectUnit(u){
@@ -3883,9 +3995,6 @@ function updateButtons(){
   const battleBtn = document.getElementById("btnBattle");
   battleBtn.disabled = menu || inBattle || drafting || !full;
   battleBtn.textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
-  const pauseBtn = document.getElementById("btnPause");
-  pauseBtn.disabled = !(inBattle && !G.paused);
-  pauseBtn.textContent = G.paused ? "▶ Fortsetzen" : "⏸ Pause";
   document.getElementById("btnDraft").disabled = menu || inBattle || drafting || full;
   // Draft und Reroll bleiben den Pausen zwischen den Wellen vorbehalten.
   document.getElementById("btnBattleSelect").disabled = menu || inBattle || drafting || full;
@@ -4124,12 +4233,6 @@ window.addEventListener("load", () => {
   document.getElementById("btnBattleSelect").onclick = openDraft;
   document.getElementById("btnBattleNext").onclick = () => startBattle();
   document.getElementById("btnBattleExit").onclick = () => setBattleMode(false);
-  document.getElementById("btnPause").onclick = () => {
-    if(G.phase !== "battle" || !G.battle) return;
-    G.paused = !G.paused;
-    showToast(G.paused ? "⏸ Pause" : "▶ Fortsetzen");
-    updateButtons();
-  };
   document.getElementById("btnReportClose").onclick = hideBattleReport;
   document.getElementById("btnPrevUnit").onclick = () => cycleFocus(-1);
   document.getElementById("btnNextUnit").onclick = () => cycleFocus(1);
