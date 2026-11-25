@@ -1,3 +1,5 @@
+2026-11-25: 1.20.6 veröffentlicht; Loop wurde für das Release angehalten. Der KI-9000-Prompt und `scripts/auto-improve.sh` enthalten jetzt die Flint-Regel: getrennte APK-Ordner, gegenseitige Prüfung, Versionsabstimmung vor dem Bump.
+
 2026-11-25: Bugfix Reroll-Overflow: Team kann ohne Gold mehr geruestet starten.
 
 2026-11-25: Loop-Schritt 1 direkt im Hauptcheckout: sechs eigene Szenen (statt Referenz-Grafiken), Farben prozedural, UI unverändert, Version 1.20.3.

@@ -1,3 +1,5 @@
+2026-11-25: 1.20.6 ausgeliefert (CI 45615352249, APK-SHA b15a59ce…e1208e0): Mana und In-Runde-Eingriffe entfernt, Checks auf Abwesenheit umgestellt, Flint-Gegenprüfung dokumentiert.
+
 2026-11-25: Release 1.20.4 ausgeliefert (CI 45606526511, APK-SHA 70e0908b…52dc), nächste Version 1.20.5.
 
 2026-11-25: Bugfix: Reroll bis kein Gold mehr, Kampf danach startbar gemacht; Version 1.20.4.

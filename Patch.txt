@@ -264,3 +264,12 @@ Schritt 1: Wer stark rumgerollt hat und kein Gold mehr hat,
 Schritt 2: Jetzt startet der Kampf mit der aktuellen Auswahl,
            sobald kein Gold mehr fuer ein naechtes Wesen da ist.
 Schritt 3: Version 1.20.4. Interface-Groesse unveraendert.
+Schritt 19: Kein Mana mehr, keine Eingriffe im Kampf
+Schritt 1: Während einer Welle kämpft dein Team jetzt automatisch.
+           Mana-Balken, Heilregen, Fabel-Blitz, Trank, Schild,
+           Splitter und Pause sind aus der App verschwunden.
+Schritt 2: Zwischen zwei Wellen darfst du weiterhin Wesen wählen,
+           neu würfeln und die nächste Welle starten.
+Schritt 3: Die Oberfläche bleibt genauso groß wie vorher.
+Schritt 4: Version 1.20.6. Flint legt seine APKs künftig in den
+           Ordner Flint/, du findest deine weiterhin direkt hier.

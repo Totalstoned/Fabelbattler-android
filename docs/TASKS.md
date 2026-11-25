@@ -1,3 +1,4 @@
+- [x] **59. Mana und Eingriffe im Kampf entfernt**: Die Runde läuft komplett automatisch; Draft/Reroll bleiben zwischen den Wellen. Alte Mana-/Item-/Pause-Tokens sind aus UI und Checks entfernt, neue Abwesenheitsprüfungen in `check_data.py`/`check_runtime.js`, alle drei Checks in beiden Kopien grün, Version 1.20.6.
 - [x] **58. Relikte nach Boss-Wellen**: Fünf eigene Relikte mit kleinen Passiv-Boni für unsere Helden, deterministisch nach Welle 10, 20, … vergeben; Anzeige in bestehenden UI-Flächen, Invarianten unverändert, Version 1.20.5.
 
 - [x] **57. Reroll-Overflow beheben**: Nach viel Reroll mit leerem Goldbudget startet der Kampf wieder; Draft-Start-Button und `startBattle` greifen jetzt auf Gold-Bedarf.

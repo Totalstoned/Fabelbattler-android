@@ -1,3 +1,6 @@
+   - Automatischer Kampf ab 1.20.6: Es gibt kein Mana und keine Knöpfe mehr für Heilregen, Blitz, Items oder Pause während der Welle. Wesen wählen und aufrüsten darf man nur zwischen den Wellen; Interface-Größe und Kamera unverändert.
+   - Flint-Regel ab 1.20.6: Flint speichert APKs nur in `/root/projects/FABELBATTLER/Flint/`, der Hauptagent nur in `/root/projects/FABELBATTLER/`; beide prüfen gegenseitig die APKs des anderen und schreiben das Ergebnis in `docs/APP_DEV_STATE.md` und Issue #1.
+
    - Relikte ab 1.20.5: Fünf eigene Relikte nach Boss-Wellen (10, 20, …) mit kleinen Team-Boni; Anzeige in Nachkampf-Auswertung, Toast und Wellen-Vorschau, Interface-Größe fix.
 
   - Bugfix ab 1.20.4: Kampf nach viel Reroll (Auswahl voll, Gold leer) startbar.
