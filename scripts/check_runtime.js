@@ -158,10 +158,16 @@ if (html.includes('id="battleMana"') || html.includes('function updateBattleMana
 if (!html.includes('NO_BATTLE_INTERVENTION = true')) {
   throw new Error('Kein automatischer Kampf ohne Eingriffe markiert');
 }
+if (!html.includes('id="btnPause"')) {
+  throw new Error('Pause-Button in der Kampfleiste fehlt');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
-for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'atlasOverlay', 'atlasFrame', 'atlasAngle', 'atlasPrev', 'atlasNext', 'atlasClose', 'battleReport', 'battleReportTitle', 'battleReportDamage', 'battleReportHeal', 'battleReportTop', 'btnReportClose', 'nextWavePreview']) {
+if (html.includes('if(castSpell(u,target,b)) return;')) {
+  throw new Error('Auto-Battle darf keine manuellen Zauber mehr ausfuehren');
+}
+for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'btnItemHeal', 'btnItemShield', 'btnItemNova', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'eliteInfo', 'statusElites', 'eliteInfoPlayer', 'statusElitesPlayer', 'battleKills', 'battleKillsValue', 'heroAlert', 'heroAlertCount', 'teamHpBar', 'teamHpFill', 'teamHpPct', 'enemyHpBar', 'enemyHpFill', 'enemyHpPct', 'battleMana', 'battleManaFill', 'battleManaValue', 'manaHealReady', 'manaNovaReady', 'battleGold', 'battleGoldValue', 'battleGoldGain', 'battleDudes', 'battleDudesValue', 'focusHp', 'focusName', 'focusHpValue', 'focusStatus', 'focusCd', 'focusCdValue', 'focusIntent', 'focusIntentValue', 'focusAtkValue', 'focusMeta', 'focusTarget', 'focusTargetName', 'focusTargetHp', 'focusTargetAtk', 'focusTargetCd', 'focusTargetStatus', 'playerBossBar', 'playerBossBarFill', 'playerBossBarPct', 'atlasOverlay', 'atlasFrame', 'atlasAngle', 'atlasPrev', 'atlasNext', 'atlasClose', 'battleReport', 'battleReportTitle', 'battleReportDamage', 'battleReportHeal', 'battleReportTop', 'btnReportClose', 'nextWavePreview']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Neues UI-Element fehlt: ${id}`);
 }
 if (!html.includes('function nextWavePreview') || !html.includes('G.phase === "battle" ? null : nextWavePreview(G.wave)')) {
@@ -229,7 +235,7 @@ vm.runInContext(`
     G.teamSize = 4;
     for (let i = 0; i < 4; i++) G.team.push(createUnit("sensenmann", 1, "player"));
     startBattle();
-    for (let f = 0; f < 600 && G.battle && G.phase === "battle"; f++) {
+    for (let f = 0; f < 1500 && G.battle && G.phase === "battle"; f++) {
       updateVisuals(f * 0.016, 0.016);
       // Headless darf weder 3D-Effekte noch Toasts erzeugen: sonst bläht der
       // Smoke-Test den FX-Layer auf und verdeckt echte UI-Fehler.
@@ -625,7 +631,7 @@ for (const [flag, message] of [
 
 vm.runInContext(`
   const w1 = mobWaveSize(1,"enemy"), w20 = mobWaveSize(20,"enemy"), w40 = mobWaveSize(40,"enemy");
-  globalThis.__mobSizeCheck = w1 >= 4 && w20 > w1 && w40 === 500 && mobWaveSize(40,"player") === 500;
+  globalThis.__mobSizeCheck = w1 >= 4 && w20 > w1 && w40 === MOB_WAVE_MAX && mobWaveSize(40,"player") === MOB_WAVE_MAX;
   G.phase = "menu";
   G.battle = null;
   G.teamSize = 3;
@@ -656,6 +662,22 @@ if (!vm.runInContext('globalThis.__mobBattleCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__mobAfterCheck', ctx)) {
   throw new Error('Mob-Kampf-Simulation mit 500 Mobs pro Seite läuft nicht');
+}
+
+vm.runInContext(`
+  G.phase = "battle";
+  G.battle = {player:[createUnit("bigfoot",1,"player")],enemies:[createUnit("oma",1,"enemy")],playerMobs:[],enemyMobs:[],time:5,kills:0,killsTotal:0,stats:{damage:{},heal:{}}};
+  G.paused = true;
+  const pausedTime = G.battle.time;
+  updateBattle(0.016);
+  globalThis.__pauseCheck = G.battle.time === pausedTime;
+  G.paused = false;
+  G.phase = "menu";
+  G.battle = null;
+`, ctx);
+
+if (!vm.runInContext('globalThis.__pauseCheck', ctx)) {
+  throw new Error('Pause friert die Kampf-Simulation nicht ein');
 }
 
 vm.runInContext(`
@@ -1326,7 +1348,7 @@ vm.runInContext(`
     nw5.elites === Math.max(2,Math.floor(mobWaveSize(5,"enemy")/50)) &&
     nw5.gold === 5+5*2+nw5.elites*2;
   globalThis.__nwBoss = nw10.isBoss && !nw10.isElite && nw10.gold === 5+10*2+15;
-  globalThis.__nwCap = nwCap.count === MOB_CAP;
+  globalThis.__nwCap = nwCap.count === MOB_WAVE_MAX;
   const nwEl = document.getElementById("nextWavePreview");
   G.phase = "prep";
   G.battle = null;

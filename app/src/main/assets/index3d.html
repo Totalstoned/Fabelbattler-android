@@ -321,6 +321,7 @@
   <button class="btn ghost" id="btnZoomReset" title="Kamera folgt dem Fokus – Ziehen schaltet auf frei">⌖ Folgen</button>
   <button class="btn ghost" id="btnBattleInfo">Fähigkeit</button>
   <button class="btn ghost" id="btnBattleExit">Vollbild aus</button>
+  <button class="btn ghost" id="btnPause" title="Pause">⏸ Pause</button>
 </div>
 <div class="toasts" id="toasts"></div>
 <div class="battle-report" id="battleReport" role="status" aria-live="polite" title="Auswertung der letzten Welle: HP-Schaden, Heilung und stärkstes Wesen (Schaden + Heilung)">
@@ -726,6 +727,8 @@ const UNIT_SIZE = {
   methuselah:1.2,bagan:1.2,shimgodzilla:1.18,queenmuto:1.05,warbat:1.0,scarking:1.25,rodan:1.1,godzillaearth:1.3,
   mechagodzilla:1.15,minilla:0.9,gojira:1.15,yeti:0.82,nessie:0.9,mothman:0.85,ogopogo:0.88,jerseydevil:0.72,skinwalker:0.76,thunderbird:0.95,kraken:0.9,batsquatch:0.92,megalodon:1.05
 };
+// Menschen (Spielermenschen) sind deutlich kleiner als die Monster des Schwarmes.
+const HUMAN_UNIT_SCALE = 0.6;
 const SYNERGY = {
   Wald:m=>{m.hp*=1.2;},
   Magie:m=>{m.atk*=1.15;},
@@ -738,7 +741,7 @@ const SYNERGY = {
   Stahl:m=>{m.shieldPct+=0.12;m.dr+=0.08;},
   Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
-const G = {team:[],wave:1,gold:20,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,selectedUnitId:null,lastReport:null,hitStop:0,relics:[],lastRelic:null};
+const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null,lastReport:null,hitStop:0,paused:false,relics:[],lastRelic:null};
 // Während der laufenden Runde gibt es keine Spieler-Eingriffe mehr.
 const NO_BATTLE_INTERVENTION = true;
 const SIM = {headless:false};
@@ -753,6 +756,7 @@ const REROLL_MAX = 4;
 let rerollCount = 0;
 function rerollCost(){ return Math.min(REROLL_BASE+rerollCount,REROLL_MAX); }
 const MOB_CAP = 500;
+const MOB_WAVE_MAX = 100;
 const MOB_ARCHETYPES = {
   kriecher:{name:"Kriecher",emoji:"🦠",hp:9,atk:2.2,spd:0.9,rng:40,color:0x8b5cf6,scale:0.42},
   flieger:{name:"Fledermaus",emoji:"🦇",hp:6,atk:1.8,spd:1.25,rng:30,color:0x38bdf8,scale:0.36},
@@ -780,7 +784,12 @@ function mobTierColor(tier,side,color){
 function mobWaveSize(wave,side){
   const raw = 4 + 3*(wave-1) + 0.6*(wave-1)*(wave-1);
   const bonus = side === "enemy" ? 1 : 0;
-  return Math.min(MOB_CAP,Math.max(0,Math.round(raw)+bonus));
+  const size = Math.min(MOB_WAVE_MAX,Math.max(0,Math.round(raw)+bonus));
+  // Mindestens dreifache Monsterzahl gegenueber der menschlichen Mannschaft:
+  // die Mobs muessen die Menschen immer ueberwiegen.
+  const humans = (G.team || []).length;
+  const min = side === "enemy" ? Math.ceil(3*humans) : 0;
+  return Math.max(size,min);
 }
 // Vorschau wie bei einer Rundenkarte: Art, Gegnerzahl und Gold stehen vor dem
 // Kampf fest und kommen aus denselben Regeln wie buildMobSwarm()/winBattle().
@@ -2347,7 +2356,7 @@ function makeCharacter(u){
   const portrait = makePortraitSprite(u.key);
   portrait.position.y = hpY+0.94;
   group.add(portrait);
-  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,animPhase:Math.random()*Math.PI*2,walk:0};
+  group.userData = {u:u,size:(u.side === "player" ? (UNIT_SIZE[u.key] || (style ? style.scale||1 : 1))*HUMAN_UNIT_SCALE : (UNIT_SIZE[u.key] || (style ? style.scale||1 : 1))),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,animPhase:Math.random()*Math.PI*2,walk:0};
   return group;
 }
 function syncUnits(){
@@ -3082,6 +3091,9 @@ function simulateBattle(dt){
 function updateBattle(dt){
   const b = G.battle;
   if(!b) return;
+  // Auto-Battle: die Simulation laeuft ohne manuelle Fähigkeit/Item-Eingriffe weiter.
+  // Pause friert den Kampf, ohne die Darstellung abzubrechen.
+  if(G.paused) return;
   b.time += dt;
   refreshMobCache(b);
   const units = [...b.player,...b.enemies,...(b.playerMobs||[]),...(b.enemyMobs||[])];
@@ -3093,7 +3105,6 @@ function updateBattle(dt){
     const target = chooseTarget(u,b);
     u.target = target;
     if(!target) return;
-    if(castSpell(u,target,b)) return;
     if(dist(u,target) > Math.max(1,u.rng/70)) moveToward(u,target,dt,b);
     else tryAttack(u,target,b);
   });
@@ -3468,9 +3479,11 @@ function abilityInfoHtml(u){
 function updateUnitInfo(){
   const el = document.getElementById("unitInfoBody");
   const u = findUnitById(G.selectedUnitId);
-  const atlas = u && ATLAS_CREATURES[u.key]
+  // Einheiten-Stats erscheinen nur bei ausgewaehltem Wesen – sonst Hinweis statt Statistik.
+  if(!u){ el.innerHTML = "Tippe auf ein Wesen, um Fähigkeit und Zauber zu sehen."; return; }
+  const atlas = ATLAS_CREATURES[u.key]
     ? '<button class="btn ghost" id="btnAtlasFromUnit" style="margin-top:8px">🌀 8 Ansichten drehen</button>' : '';
-  el.innerHTML = u ? abilityInfoHtml(u)+atlas : "Tippe auf ein Wesen, um Fähigkeit und Zauber zu sehen.";
+  el.innerHTML = abilityInfoHtml(u)+atlas;
   if(atlas) document.getElementById("btnAtlasFromUnit").onclick = () => openCreatureAtlas(u.key);
 }
 function selectUnit(u){
@@ -3870,6 +3883,9 @@ function updateButtons(){
   const battleBtn = document.getElementById("btnBattle");
   battleBtn.disabled = menu || inBattle || drafting || !full;
   battleBtn.textContent = G.phase === "defeat" ? "Erneut versuchen" : "Nächste Welle";
+  const pauseBtn = document.getElementById("btnPause");
+  pauseBtn.disabled = !(inBattle && !G.paused);
+  pauseBtn.textContent = G.paused ? "▶ Fortsetzen" : "⏸ Pause";
   document.getElementById("btnDraft").disabled = menu || inBattle || drafting || full;
   // Draft und Reroll bleiben den Pausen zwischen den Wellen vorbehalten.
   document.getElementById("btnBattleSelect").disabled = menu || inBattle || drafting || full;
@@ -4108,6 +4124,12 @@ window.addEventListener("load", () => {
   document.getElementById("btnBattleSelect").onclick = openDraft;
   document.getElementById("btnBattleNext").onclick = () => startBattle();
   document.getElementById("btnBattleExit").onclick = () => setBattleMode(false);
+  document.getElementById("btnPause").onclick = () => {
+    if(G.phase !== "battle" || !G.battle) return;
+    G.paused = !G.paused;
+    showToast(G.paused ? "⏸ Pause" : "▶ Fortsetzen");
+    updateButtons();
+  };
   document.getElementById("btnReportClose").onclick = hideBattleReport;
   document.getElementById("btnPrevUnit").onclick = () => cycleFocus(-1);
   document.getElementById("btnNextUnit").onclick = () => cycleFocus(1);

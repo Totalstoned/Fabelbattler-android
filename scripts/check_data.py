@@ -158,6 +158,9 @@ for key, role in core_roles.items():
 mob_cap = re.search(r'const MOB_CAP = (\d+);', src)
 if not mob_cap or int(mob_cap.group(1)) != 500:
     problems.append('MOB_CAP: erwartet 500')
+mob_wave_max = re.search(r'const MOB_WAVE_MAX = (\d+);', src)
+if not mob_wave_max or int(mob_wave_max.group(1)) != 100:
+    problems.append('MOB_WAVE_MAX: erwartet 100')
 
 for token in ['const GRID = {cols:18,rows:14};', 'const MAP_SPEED = 2.2;',
               '(0.4+u.spd*0.5)*MAP_SPEED*dt', 'const DEFAULT_VIEW = 14.5;']:
@@ -214,6 +217,9 @@ for token in ['const STATUS_RING_GEOMETRIES = {}', 'function dominantStatusKey',
 for token in ['MOB_ARCHETYPES', 'mobWaveSize', 'buildMobSwarm', 'mobAction', 'updateMobVisuals', 'hudMobs', 'mdReroll', 'rerollDraft', 'slice(0,3)', 'mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'draftFilterRole', 'draftSynergyText', 'hudItems', 'ELITE_EVERY', 'BOSS_EVERY', 'MOB_TIERS', 'mobTierFor', 'isBoss', 'isElite', 'battleStatus', 'statusEnemies', 'statusFoeHeroes', 'statusMobs', 'statusHeroes', 'function updateBattleStatus']:
     if token not in src:
         problems.append('Mob-System fehlt: ' + token)
+for token in ['const MOB_WAVE_MAX = 100;', 'const HUMAN_UNIT_SCALE = 0.6;', 'paused:false', 'G.paused', 'function updateBattle']:
+    if token not in src:
+        problems.append('Mob-/Menschen-/Pause-System fehlt: ' + token)
 for token in ['battleKills', 'battleKillsValue', 'function updateBattleKills', 'killsTotal', 'G.battle.kills++']:
     if token not in src:
         problems.append('Besiegte-Gegner-Anzeige in der Kampfleiste fehlt: ' + token)
