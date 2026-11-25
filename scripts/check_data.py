@@ -177,6 +177,15 @@ for key in ['gamera','gyaos','anguirus','kumonga','destoroyah','reineke','rotkae
 for key in ['zwergenkrieger','zwergenbaumeister','zwergenschmied','zwergenheiler','zwergenjaeger','zwergenwaechter','zwergenbarde','zwergenalchemist','zwergenminenhaupt','zwergenrunenmeister']:
     if key in roster:
         problems.append('Zu normales Zwergenwesen noch im Roster: ' + key)
+biomes_start = src.find('const ARENA_BIOMES = [')
+biomes = src[biomes_start:src.find('];',biomes_start)] if biomes_start >= 0 else ''
+if biomes.count('label:') != 6:
+    problems.append('Arena-Szenen: erwartet 6, gefunden ' + str(biomes.count('label:')))
+for token in ['function arenaBiome(wave)', 'function applyArenaBiome(wave)',
+              'arenaPalette = {base:base.material', 'applyArenaBiome(G.wave);',
+              'const biome = applyArenaBiome(G.wave);', 'applyArenaBiome(1);']:
+    if token not in src:
+        problems.append('Szenenwechsel im Wellenzyklus fehlt: ' + token)
 for token in ['const START_TEAM_MIN = 3;', 'const TEAM_GROWTH_CAP = 10;',
               'const REROLL_BASE = 2;', 'const REROLL_MAX = 4;', 'function rerollCost()',
               'Math.min(REROLL_BASE+rerollCount,REROLL_MAX)', 'rerollCount = 0;',
@@ -375,7 +384,7 @@ for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block(
 for token in ['addGroundRect(0,0,0.22', 'addGroundRect(-2.9', 'addGroundRect(2.9', 'arenaPulse']:
     if token in src:
         problems.append('Trennlinie/seitliche Einfärbung in der Kampffläche vorhanden: ' + token)
-for token in ['function stoneTexture', "map:stoneTexture('#333b45')", 'new THREE.BoxGeometry(part[2],0.18,part[3])', 'new THREE.PlaneGeometry(220,220)', 'groundMap.wrapS = groundMap.wrapT = THREE.RepeatWrapping']:
+for token in ['function stoneTexture', "map:stoneTexture(ARENA_BIOMES[0].tileA)", 'new THREE.BoxGeometry(part[2],0.18,part[3])', 'new THREE.PlaneGeometry(220,220)', 'groundMap.wrapS = groundMap.wrapT = THREE.RepeatWrapping']:
     if token not in src:
         problems.append('Steinboden (inkl. Vollbild-Flaeche) fehlt: ' + token)
 for token in ['function moveToward', 'gx = clamp(gx,0,GRID.cols-1)', 'gy = clamp(gy,0,GRID.rows-1)']:

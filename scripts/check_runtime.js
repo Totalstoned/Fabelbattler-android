@@ -396,6 +396,15 @@ if (!vm.runInContext('globalThis.__coreCheck', ctx)) {
 if (!vm.runInContext('globalThis.__bigMapCheck', ctx)) {
   throw new Error('Schlachtfeld ist nicht vergroessert (18x14, MAP_SPEED)');
 }
+vm.runInContext(`
+  const b7 = applyArenaBiome(7), b1 = applyArenaBiome(1), b2 = applyArenaBiome(2);
+  globalThis.__biomeCheck = ARENA_BIOMES.length === 6 &&
+    b1.label !== b2.label && b7.label === b1.label &&
+    scene.background.getHex() === b2.sky && scene.fog.color.getHex() === b2.fog;
+`, ctx);
+if (!vm.runInContext('globalThis.__biomeCheck', ctx)) {
+  throw new Error('Sechs eigene Szenen im Wellenzyklus fehlen oder wechseln nicht');
+}
 if (!vm.runInContext('globalThis.__portraitCheck', ctx)) {
   throw new Error('Wesen-Grafiken aus aller Welt fehlen');
 }

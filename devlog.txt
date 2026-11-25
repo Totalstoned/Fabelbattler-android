@@ -1,3 +1,5 @@
+2026-11-25: Erster direkter Loop-Schritt: sechs Arena-Szenen aus der Referenz-Idee „6 Akte", Checks geschärft, Version 1.20.3.
+
 2026-11-25: Release 1.20.2 ausgeliefert (CI 45552284818, APK-SHA 26a009db…f4efd05), nächste Version 1.20.3.
 
 2026-11-25: Zwergen-Pack durch 5 Kaijū + 5 Fabelwesen ersetzt, Rasse Fabel ergänzt, Checks geschärft, Version 1.20.2.

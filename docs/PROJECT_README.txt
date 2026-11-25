@@ -1,3 +1,5 @@
+  - Szenenwechsel ab 1.20.3: sechs eigene Farbszenen (Feld, Steppe, Ödnis, Höhle, Berg, Arena) im 6-Wellen-Zyklus; Interface-Größe bleibt fix.
+
   - Roster ab 1.20.2: keine Zwergenwesen mehr; Kaijū-Filmmonster und Märchen-/Sagen/Fabelwesen statt „normaler" Fantasy-Krieger.
 
   - Interface-Regel: HUD/Dialoge/Buttons behalten feste px-Größe, auch wenn neue Grafiken dazukommen.

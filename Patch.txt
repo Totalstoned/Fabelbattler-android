@@ -250,3 +250,10 @@ Schritt 2: Stattdessen kaempfen jetzt Kaiju-Filmmonster (Gamera, Gyaos,
            Stadtmusikanten, Till Eulenspiegel).
 Schritt 3: Die neue Rasse heisst "Fabel & Maerchen". Die interface-Groesse
            bleibt unverändert. Version 1.20.2.
+
+Schritt 17: Sechs Szenen statt eines Steinbodens
+Schritt 1: Der Kampfplatz wechselt jetzt alle sechs Wellen Farbe und
+           Stimmung: Feld, Steppe, Ödnis, Höhle, Berg und Arena.
+Schritt 2: Das sind unsere eigenen Szenen – nur Farben und Bodenmuster,
+           keine Bilder, Namen oder Texte aus der Referenz.
+Schritt 3: Die Interface-Groesse bleibt unverändert. Version 1.20.3.

@@ -1,3 +1,5 @@
+2026-11-25: Loop-Schritt 1 direkt im Hauptcheckout: sechs eigene Szenen (statt Referenz-Grafiken), Farben prozedural, UI unverändert, Version 1.20.3.
+
 2026-11-25: Roster-Richtung: weg von normalen Zwergenkriegern, hin zu Kaijū-Filmmonstern und Märchen/Sagen/Fabeln. Neue Fabel-Rasse hat 10 Wesen? Nein: 5 Fabel + 5 Kaiju im ehemaligen Zwergen-Pack.
 
 2026-11-25: Neue harte Loop-Regel: Interface-Größe bleibt fix (weder kleiner noch größer), neue Sprites werden in vorhandene UI-Flächen eingepasst.

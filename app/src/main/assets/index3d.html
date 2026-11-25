@@ -1119,6 +1119,7 @@ function beginRun(){
   G.team = [];
   G.teamSize = START_TEAM_MIN;
   G.wave = 1;
+  applyArenaBiome(G.wave);
   G.gold = 20;
   G.mana = 30;
   G.items = {heal:2,shield:1,nova:1};
@@ -1148,10 +1149,45 @@ function addGroundRect(x,z,w,d,color,opacity,y){
   arena.add(mesh);
   return mesh;
 }
+// Sechs eigene Szenen im Wellenzyklus (Idee aus der Referenz: wechselnde Akte).
+// Reine prozedurale Farben auf unserem 18x14-Feld – keine Grafik, kein Name und
+// kein Text der Referenz. HUD, Buttons, Dialoge und Kamera bleiben unverändert.
+const ARENA_BIOMES = [
+  {label:"Feld",   base:"#242b34", tileA:"#333b45", tileB:"#2d353f", edge:0x151d27, ring:0x2b3442, sky:0x171e27, fog:0x171e27},
+  {label:"Steppe", base:"#2a3029", tileA:"#3b4433", tileB:"#333c2c", edge:0x1b231a, ring:0x3f4a35, sky:0x1d261c, fog:0x1d261c},
+  {label:"Ödnis",  base:"#302a28", tileA:"#443934", tileB:"#3b322e", edge:0x241a17, ring:0x4b3a33, sky:0x241c1a, fog:0x241c1a},
+  {label:"Höhle",  base:"#1f2530", tileA:"#2d3545", tileB:"#262e3c", edge:0x111621, ring:0x35405a, sky:0x10151f, fog:0x10151f},
+  {label:"Berg",   base:"#2b2f36", tileA:"#3c424b", tileB:"#343a43", edge:0x191d24, ring:0x46505e, sky:0x1a1f27, fog:0x1a1f27},
+  {label:"Arena",  base:"#33242c", tileA:"#46313c", tileB:"#3d2b35", edge:0x21141b, ring:0x5a3a48, sky:0x231720, fog:0x231720}
+];
+function arenaBiome(wave){
+  const w = Math.max(1,Math.floor(wave)||1);
+  return ARENA_BIOMES[(w-1)%ARENA_BIOMES.length];
+}
+let arenaPalette = null;
+function applyArenaBiome(wave){
+  const b = arenaBiome(wave);
+  if(arenaPalette){
+    const swap=(mat,tone,tileable)=>{
+      if(!mat) return;
+      if(mat.map) mat.map.dispose();
+      mat.map = stoneTexture(tone,tileable);
+      mat.needsUpdate = true;
+    };
+    swap(arenaPalette.base,b.base,true);
+    swap(arenaPalette.tileA,b.tileA,false);
+    swap(arenaPalette.tileB,b.tileB,false);
+    arenaPalette.edge.color.setHex(b.edge);
+    arenaPalette.ring.color.setHex(b.ring);
+  }
+  if(scene.background && scene.background.setHex) scene.background.setHex(b.sky);
+  if(scene.fog && scene.fog.color && scene.fog.color.setHex) scene.fog.color.setHex(b.fog);
+  return b;
+}
 function buildArena(){
   // Der Steinboden geht ueber den sichtbaren Bildschirm hinaus: orthografische
   // Kamera und weites Seitenverhaeltnis duerfen keinen dunklen Rand zeigen.
-  const groundMap = stoneTexture('#242b34',true);
+  const groundMap = stoneTexture(ARENA_BIOMES[0].base,true);
   groundMap.wrapS = groundMap.wrapT = THREE.RepeatWrapping;
   groundMap.repeat.set(48,48);
   const base = new THREE.Mesh(
@@ -1163,8 +1199,8 @@ function buildArena(){
   base.receiveShadow = true;
   arena.add(base);
   const tileGeo = new THREE.PlaneGeometry(TILE*0.96,TILE*0.96);
-  const matA = new THREE.MeshStandardMaterial({map:stoneTexture('#333b45'),roughness:0.92,metalness:0.02});
-  const matB = new THREE.MeshStandardMaterial({map:stoneTexture('#2d353f'),roughness:0.92,metalness:0.02});
+  const matA = new THREE.MeshStandardMaterial({map:stoneTexture(ARENA_BIOMES[0].tileA),roughness:0.92,metalness:0.02});
+  const matB = new THREE.MeshStandardMaterial({map:stoneTexture(ARENA_BIOMES[0].tileB),roughness:0.92,metalness:0.02});
   for(let gx=0;gx<GRID.cols;gx++){
     for(let gy=0;gy<GRID.rows;gy++){
       const p = worldPos(gx,gy);
@@ -1177,7 +1213,7 @@ function buildArena(){
   }
   // Steinplatte mit sichtbarer Kante -> das Feld bekommt Tiefe, ohne dass
   // eine Trennlinie oder Seitenfarbe entsteht.
-  const edgeMat = new THREE.MeshStandardMaterial({color:0x151d27,roughness:0.9});
+  const edgeMat = new THREE.MeshStandardMaterial({color:ARENA_BIOMES[0].edge,roughness:0.9});
   const halfW = (GRID.cols*TILE+1.4)/2, halfD = (GRID.rows*TILE+1.4)/2;
   [[0,-halfD,halfW*2,0.16],[0,halfD,halfW*2,0.16],[-halfW,0,0.16,halfD*2],[halfW,0,0.16,halfD*2]].forEach(part => {
     const edge = new THREE.Mesh(new THREE.BoxGeometry(part[2],0.18,part[3]),edgeMat);
@@ -1188,7 +1224,7 @@ function buildArena(){
   // Keine Trennlinie und keine farblichen Haelften: das Feld ist eine
   // durchgehende Flaeche, auf der sich beide Seiten frei begegnen koennen.
   const ringGeo = new THREE.RingGeometry(0.36,0.44,32);
-  const ringMat = new THREE.MeshBasicMaterial({color:0x2b3442,transparent:true,opacity:0.8,side:THREE.DoubleSide});
+  const ringMat = new THREE.MeshBasicMaterial({color:ARENA_BIOMES[0].ring,transparent:true,opacity:0.8,side:THREE.DoubleSide});
   const cx = GRID.cols*TILE*0.34, cz = GRID.rows*TILE*0.34;
   [[-cx,-cz],[-cx,cz],[cx,-cz],[cx,cz]].forEach(pos => {
     const ring = new THREE.Mesh(ringGeo,ringMat);
@@ -1196,6 +1232,7 @@ function buildArena(){
     ring.position.set(pos[0],0.018,pos[1]);
     arena.add(ring);
   });
+  arenaPalette = {base:base.material,tileA:matA,tileB:matB,edge:edgeMat,ring:ringMat};
 }
 function disposeObject(obj){
   obj.traverse(child => {
@@ -3128,6 +3165,7 @@ function winBattle(){
     showToast("Team-Level-Up! Mindestlevel: "+minLvl);
   }
   G.wave++;
+  applyArenaBiome(G.wave);
   if(G.teamSize < TEAM_GROWTH_CAP){
     G.teamSize++;
     showToast("Neues Wesen verfügbar: Team wächst auf "+G.teamSize+" (max "+TEAM_GROWTH_CAP+")");
@@ -3204,6 +3242,7 @@ function startBattle(){
   if(G.team.length < G.teamSize){ openDraft(); return; }
   G.team = G.team.slice(0,G.teamSize);
   G.phase = "battle";
+  const biome = applyArenaBiome(G.wave);
   setBattleMode(true);
   hideBattleReport();
   clearEffects();
@@ -3228,7 +3267,7 @@ function startBattle(){
   syncMobs();
   announceSpecialMobs();
   const tierHint = enemyMobs.some(m => m.isBoss) ? " · 👑 BOSS" : enemyMobs.some(m => m.isElite) ? " · ✨ Elite" : "";
-  showToast("Welle "+G.wave+": "+G.team.length+"+"+playerMobs.length+" gegen "+enemyTeam.length+"+"+enemyMobs.length+tierHint);
+  showToast("Welle "+G.wave+" ("+biome.label+"): "+G.team.length+"+"+playerMobs.length+" gegen "+enemyTeam.length+"+"+enemyMobs.length+tierHint);
   updateHud();
   updateTeamList();
   updateSynergies();
@@ -4098,6 +4137,7 @@ function showToast(msg){
   }, 2000);
 }
 buildArena();
+applyArenaBiome(1);
 resize();
 syncUnits();
 window.addEventListener("load", () => {
