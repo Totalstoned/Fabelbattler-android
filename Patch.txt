@@ -273,3 +273,6 @@ Schritt 2: Zwischen zwei Wellen darfst du weiterhin Wesen wählen,
 Schritt 3: Die Oberfläche bleibt genauso groß wie vorher.
 Schritt 4: Version 1.20.6. Flint legt seine APKs künftig in den
            Ordner Flint/, du findest deine weiterhin direkt hier.
+Schritt 5: Beide Entwicklungen dürfen sich unterscheiden; du
+           entscheidest später, wann und wie sie zusammengeführt
+           werden. Keiner überschreibt den anderen.

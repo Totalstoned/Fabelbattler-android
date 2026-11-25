@@ -1,4 +1,4 @@
-2026-11-25: 1.20.6 veröffentlicht; Loop wurde für das Release angehalten. Der KI-9000-Prompt und `scripts/auto-improve.sh` enthalten jetzt die Flint-Regel: getrennte APK-Ordner, gegenseitige Prüfung, Versionsabstimmung vor dem Bump.
+2026-11-25: 1.20.6 veröffentlicht; Loop wurde für das Release angehalten. Der KI-9000-Prompt und `scripts/auto-improve.sh` enthalten jetzt die Flint-Regel: getrennte APK-Ordner, bewusst abweichende Entwicklung mit eigenen Regeln, kein Sync-Zwang, gegenseitige Prüfung ohne Eingriff, Merge durch den User, nur Kollisionscheck der Versionsnummer vor dem Bump.
 
 2026-11-25: Bugfix Reroll-Overflow: Team kann ohne Gold mehr geruestet starten.
 
