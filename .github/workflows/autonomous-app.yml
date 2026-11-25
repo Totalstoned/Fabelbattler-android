@@ -60,6 +60,7 @@ jobs:
             - Team-Buffs skalieren nach Anzahl: gleiche Klassen/Rassen und die gesamte Duden-Zahl stärken das Team.
             - Grafik hat bereits Schatten, Glow, Partikel, HP-/Schildbalken und Kamera-Zoom.
             - UE5-Daten und C++-Gerüst liegen außerhalb dieses Repos nur als spätere Option.
+            - Referenz-APK `How-Many-Dudes-v100.1.35-full-apkvision.apk`: vor jedem Lauf `python3 scripts/reference_apk.py` ausführen; docs/REFERENCE_APK.md und docs/ASSET_BEDARF.md lesen. Genau EINE Mechanik daraus auf UNSERE Einheiten und unser 18x14-Feld übertragen – keine Grafiken, Texte oder Namen der Referenz kopieren.
 
             Regeln:
             - Der Workflow läuft alle 10 Minuten; bleibe daher strikt unter 9 Minuten und wähle wirklich nur ein kleines Ziel.

@@ -1,3 +1,5 @@
+2026-11-25: Jeder Lauf startet jetzt mit `python3 scripts/reference_apk.py` im Worktree (Hauptcheckout bleibt sauber). Der Agent wählt genau eine Mechanik aus docs/REFERENCE_APK.md und überträgt sie auf unsere Einheiten/Map; docs/ASSET_BEDARF.md nennt den Grafik-/Audio-/Font-Bedarf. Stopp-Datei bleibt bis auf Weiteres aktiv.
+
 2026-11-25: Loop und Integrator arbeiten jetzt mit fortlaufenden Versionen (1.20.1, 1.20.2, …); die alte Endmarke 1.20.0 gilt nicht mehr.
 
 2026-11-24: Die Runden-Vorschau ändert nichts an der Endmarke 1.20.0; der Loop bleibt gestoppt.

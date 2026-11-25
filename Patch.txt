@@ -223,3 +223,14 @@ Schritt 2: Aktuell ist 1.20.1.apk installierbar; die nächste Aenderung
            erzeugt 1.20.2.apk, danach 1.20.3.apk und so weiter.
 Schritt 3: Die Nummer wird automatisch erhoeht – bitte nicht selbst
            im Code aendern. Alte APK-Dateien bleiben liegen.
+
+Schritt 14: Neue Grafiken sind vorbereitet
+Schritt 1: Eine grosse Sammlung freier CC0-Sprites (1,1 GB) liegt jetzt im
+           Ordner asset-library. Sie ist nur ein Vorrat - die App bleibt klein.
+Schritt 2: In ASSET_BEDARF.md steht, was wir wirklich brauchen: Bilder fuer
+           die 18 Gegner, 6 verschiedene Boeden, Symbole fuer Relikte und
+           Runden sowie etwas Musik und Klang.
+Schritt 3: Der Auto-Loop schaut sich ab jetzt bei jedem Lauf die Referenz-APK
+           an und uebernimmt nur kleine Ideen, nie deren Bilder oder Namen.
+Schritt 4: Die Version bleibt 1.20.1. Du kannst die Datei index3d.html
+           in Ruhe bearbeiten; der Loop ist gestoppt.

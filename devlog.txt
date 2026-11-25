@@ -1,3 +1,5 @@
+2026-11-25: Referenz-APK-Analyse in Loop und Cron eingebaut, Bedarfsliste docs/ASSET_BEDARF.md geschrieben, CC0-Bibliothek 1,1 GiB geladen (Budget 60 %), Version 1.20.1 unverändert.
+
 2026-11-25: Release 1.20.1 ausgeliefert (CI 45524168125 grün, APK-SHA 10312d0b…92b0); nächste Version 1.20.2.
 
 2026-11-25: Endmarke aufgehoben – 1.20.1 gesetzt (Code 1201), Versionierer lässt 1.20.2 usw. bis 1.99.9 zu; Automation und Docs angepasst.

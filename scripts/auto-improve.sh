@@ -54,9 +54,16 @@ run_iteration(){
   BASE=$(cd "$WT" && git rev-parse HEAD)
   log "Run $TS gestartet (Worktree $WT, Basis $BASE)"
 
+  # Referenz-APK immer neu auslesen (lokal, kein Netz, kein Asset-Kopieren).
+  # Schreibt in den Worktree, damit der Hauptcheckout sauber bleibt.
+  python3 "$WT/scripts/reference_apk.py" >>"$LOG" 2>&1 || \
+    log "Referenz-APK nicht lesbar – Lauf ohne Referenz fortsetzen"
+
   local PROMPT
   PROMPT=$(cat <<'EOF'
-Du arbeitest autonom an Fabelbattler. Lies zuerst docs/APP_DEV_STATE.md, docs/TASKS.md, docs/PROJECT_README.txt und docs/IDEA_BACKLOG.md.
+Du arbeitest autonom an Fabelbattler. Lies zuerst docs/APP_DEV_STATE.md, docs/TASKS.md, docs/PROJECT_README.txt, docs/IDEA_BACKLOG.md, docs/REFERENCE_APK.md und docs/ASSET_BEDARF.md.
+
+Die Referenz-APK wurde zu Beginn dieses Laufs neu ausgelesen: docs/REFERENCE_APK.md beschreibt ihre Mechaniken (Runden-Vorschau, Relikte, Trinkets, 6 Akte, Tier-Mutatoren, Scoreboard). Waehle daraus GENAU EINE kleine Mechanik und uebertrage sie auf UNSERE 123 Einheiten, 51 Zauber, 18 Gegner und unser 18x14-Feld. Kopiere NIEMALS Grafiken, Texte oder Namen der Referenz – nur die Idee. Wenn eine Grafik noetig ist, nutze die CC0-Bibliothek in /root/projects/FABELBATTLER/asset-library und dokumentiere die Quelle in docs/ASSET_SOURCES.md.
 
 STARTE JEDE ITERATION mit `python3 scripts/idea_scout.py --pick`. Der Scout durchsucht kostenlos (ohne API-Key) DuckDuckGo, Wikipedia und öffentliche GitHub-Repos und schreibt docs/IDEA_BACKLOG.md. `python3 scripts/idea_scout.py` schreibt den vollen Scan. Für Wesen-Grafiken: `python3 scripts/creature_reference.py <name>` lädt kostenlos Referenzbilder von Wikimedia Commons (Wikipedia/Google/DDG erlaubt), bucht sie ins Budget und legt turntable_prompt.txt an; daraus mit dem Bildgenerierungs-Tool ein 4x2-Turntable (8 Blickwinkel) machen und als rotierbaren Atlas in index3d.html einbauen. Zuerst ein Wesen (bigfoot) prototypeieren. Du darfst zusaetzlich direkt im Web recherchieren (z. B. game-mechanics, GDC, Riot-Entwicklerartikel, GitHub-Repos anderer Auto-Battler), aber entscheide IMMER selbst – frage den User NICHT nach Zielen oder Dateien.
 
