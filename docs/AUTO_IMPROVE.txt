@@ -1,3 +1,5 @@
+2026-11-25: Loop und Integrator arbeiten jetzt mit fortlaufenden Versionen (1.20.1, 1.20.2, …); die alte Endmarke 1.20.0 gilt nicht mehr.
+
 2026-11-24: Die Runden-Vorschau ändert nichts an der Endmarke 1.20.0; der Loop bleibt gestoppt.
 
 

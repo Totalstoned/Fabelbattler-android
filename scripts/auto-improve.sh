@@ -64,7 +64,7 @@ Wähle GENAU EIN kleines, abgeschlossenes Ziel mit klarem Nutzen. Bevorzugt: Dar
 
 Regeln:
 - Ändere nach Möglichkeit app/src/main/assets/index3d.html und bei Bedarf scripts/ oder docs/.
-- Version ist bewusst auf der Endmarke 1.20.0 fixiert: KEIN bump, kein Reset, kein neues Versionsschema. Aenderungen an index3d.html werden weiterhin direkt als 1.20.0.apk gebaut.
+- Version läuft weiter: bei jeder App-Änderung `python3 scripts/bump_version.py` ausführen (1.20.1, 1.20.2, ... bis 1.99.9; VersionCode = major*1000+minor*10+patch). Nicht manuell zählen, kein Reset. Die APK heißt `<VERSION>.apk`.
 - Download-Budget: Du darfst pro UTC-Tag bis zu 2 GiB herunterladen, ohne mich zu fragen. Vor groesseren Downloads `python3 scripts/download_budget.py status` pruefen und danach `reserve <bytes> <label>` buchen; `scripts/idea_scout.py` bucht seine Web-/Git-Abfragen automatisch. Bei Ueberschreitung mit lokalen Quellen weiterarbeiten und den Grund in docs/IDEA_BACKLOG.md notieren.
 - Validiere mit: python3 scripts/check_js.py app/src/main/assets/index3d.html && python3 scripts/check_data.py app/src/main/assets/index3d.html && node scripts/check_runtime.js app/src/main/assets/index3d.html
 - Wenn ein Check fehlschlägt: beheben oder die Änderung verwerfen. Never commit a broken build.

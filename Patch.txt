@@ -216,3 +216,10 @@ Runden-Vorschau: „⇢ Welle N: Standard/Elite×N/👑 Boss · M Mobs · +G Gol
 Art, Gegnerzahl und Gold kommen aus denselben Regeln wie der echte Kampf.
 Sobald die Welle läuft, verschwindet die Vorschau wieder. Die Datei
 1.20.0.apk wurde mit diesem Stand überschrieben; alte APKs bleiben liegen.
+
+Schritt 13: Die Versionsnummern laufen jetzt weiter
+Schritt 1: Die alte Endmarke 1.20.0 gibt es nicht mehr.
+Schritt 2: Aktuell ist 1.20.1.apk installierbar; die nächste Aenderung
+           erzeugt 1.20.2.apk, danach 1.20.3.apk und so weiter.
+Schritt 3: Die Nummer wird automatisch erhoeht – bitte nicht selbst
+           im Code aendern. Alte APK-Dateien bleiben liegen.

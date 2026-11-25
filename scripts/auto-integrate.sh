@@ -26,14 +26,13 @@ cd "$REPO" || exit 1
 log(){ echo "$(date -u +%FT%TZ) [integrate] $*" >> "$LOG"; }
 
 VERSION="$(grep '^APP_VERSION_NAME=' gradle.properties | cut -d= -f2)"
-MAX_VERSION=1.20.0
-# Die Endmarke bleibt fixiert, weitere Aenderungen werden weiterhin als
-# 1.20.0.apk gebaut und integriert. Nur Versionen UEBER der Endmarke stoppen.
+MAX_VERSION=1.99.9
+# Versionen laufen weiter (1.20.1, 1.20.2, ...). Nur das Schema-Limit stoppt.
 if [ "$(printf '%s\n%s\n' "$MAX_VERSION" "$VERSION" | sort -V | head -1)" != "$VERSION" ]; then
-  log "Version $VERSION ueber der Endmarke $MAX_VERSION – keine weitere Integration"
+  log "Version $VERSION ueber dem Schema-Limit $MAX_VERSION – keine weitere Integration"
   exit 0
 fi
-log "Integration bei Endmarke $VERSION aktiv (Version bleibt fixiert)"
+log "Integration bei $VERSION aktiv (naechste Stufe via bump_version.py)"
 
 if ! git -c url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf=git@github.com: fetch -q origin main; then
   log "Fetch fehlgeschlagen – Integration übersprungen"
@@ -43,15 +42,6 @@ fi
 PRS="$($GH_BIN pr list --repo "$GH_REPO" --state open --limit 20 --json number --jq '.[].number' 2>/dev/null || true)"
 MERGED=0
 for n in $PRS; do
-  # Zielversion darf nicht ueberschritten werden
-  PV="$($GH_BIN pr view "$n" --repo "$GH_REPO" --json files --jq '.files[] | select(.filename=="gradle.properties") | .patch' 2>/dev/null || true)"
-  if printf '%s' "$PV" | grep -q '^[-+]APP_VERSION_NAME=1\.2[1-9]\|^[-+]APP_VERSION_NAME=2\.'; then
-    $GH_BIN pr comment "$n" --repo "$GH_REPO" \
-      --body "Automatische Integration übersprungen: Zielversion 1.20.0 wäre überschritten." >>"$LOG" 2>&1 || true
-    log "PR #$n über 1.20.0 – übersprungen"
-    continue
-  fi
-
   WT="/tmp/opencode/fabel-prcheck-$n"
   git worktree remove --force "$WT" >/dev/null 2>&1 || true
   git worktree prune >/dev/null 2>&1
@@ -66,6 +56,13 @@ for n in $PRS; do
 
   PRVER="$(grep '^APP_VERSION_NAME=' "$WT/gradle.properties" 2>/dev/null | cut -d= -f2)"
   MAINVER="$(grep '^APP_VERSION_NAME=' gradle.properties | cut -d= -f2)"
+  if [ -n "$PRVER" ] && [ "$(printf '%s\n%s\n' "$MAX_VERSION" "$PRVER" | sort -V | head -1)" != "$PRVER" ]; then
+    $GH_BIN pr comment "$n" --repo "$GH_REPO" \
+      --body "Automatische Integration übersprungen: PR-Version $PRVER liegt über dem Schema-Limit $MAX_VERSION." >>"$LOG" 2>&1 || true
+    log "PR #$n Version $PRVER über $MAX_VERSION – übersprungen"
+    git worktree remove --force "$WT" >/dev/null 2>&1 || rm -rf "$WT"
+    continue
+  fi
   if [ -n "$PRVER" ] && [ "$PRVER" != "$MAINVER" ] && \
      [ "$(printf '%s\n%s\n' "$MAINVER" "$PRVER" | sort -V | head -1)" = "$PRVER" ]; then
     $GH_BIN pr comment "$n" --repo "$GH_REPO" \

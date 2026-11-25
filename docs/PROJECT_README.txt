@@ -1,3 +1,5 @@
+  - Versionierung (ab 1.20.1): keine Endmarke mehr; `bump_version.py` zählt 1.20.1 → 1.20.2 → … → 1.99.9, APK immer `<VERSION>.apk`.
+
   - 1.20.0: Runden-Vorschau im Prep-HUD (`nextWavePreview`): Standard/Elite/Boss, Gegnerzahl und Gold vor dem Start aus den Kampfregeln berechnet; im Kampf ausgeblendet.
 
 

@@ -1,3 +1,5 @@
+- [x] **52. Versionierung fortlaufend**: 1.20.1 ist gesetzt (Code 1201), `bump_version.py` erlaubt 1.20.2, 1.20.3 … bis 1.99.9; Integrator, Loop, Cron und Prompt folgen dem neuen Schema.
+
 - [x] **51. Runden-Vorschau im Prep-HUD**: zeigt Wellenart, Gegnerzahl und Gold vor dem Kampf, deterministisch aus den Kampfregeln abgeleitet und im Kampf ausgeblendet; alle drei Checks grün.
 
 

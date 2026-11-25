@@ -67,7 +67,7 @@ jobs:
             - Keine Engine-Installation, keine großen Dependency-Neuerungen, keine Secrets oder Tokens in Dateien.
             - Kein Wechsel der Engine; Three.js/WebView bleibt der aktive Pfad.
             - Ändere bevorzugt app/src/main/assets/index3d.html und bei Bedarf vorhandene Repo-Dateien.
-            - Bei jeder App-Änderung `python3 scripts/bump_version.py` ausführen (1.00.1 -> 1.00.2 ... 1.20.0, VersionCode = major*1000+minor*10+patch). Bei 1.20.0 stoppen.
+            - Bei jeder App-Änderung `python3 scripts/bump_version.py` ausführen (1.20.1 -> 1.20.2 -> 1.20.3 ... 1.99.9, VersionCode = major*1000+minor*10+patch). Nicht manuell zählen.
             - Validiere nach Änderungen mit: python3 scripts/check_js.py app/src/main/assets/index3d.html, python3 scripts/check_data.py app/src/main/assets/index3d.html und node scripts/check_runtime.js app/src/main/assets/index3d.html
             - Erstelle einen Commit und einen Pull Request mit kurzer, konkreter Beschreibung. Der lokale 10-Minuten-Loop integriert CLEAN-PRs automatisch nach erneuter Validierung.
             - Falls die Änderung nicht sicher abgeschlossen werden kann, ändere nichts und erkläre den Grund im Issue-Kommentar.
