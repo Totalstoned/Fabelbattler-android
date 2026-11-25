@@ -65,6 +65,7 @@ jobs:
             Regeln:
             - Der Workflow läuft alle 10 Minuten; bleibe daher strikt unter 9 Minuten und wähle wirklich nur ein kleines Ziel.
             - Pro Lauf nur ein abgeschlossenes, kleines Ziel.
+            - HARTE REGEL: Das Interface darf WEDER kleiner noch größer werden. Keine Änderung an font-size, padding, max-width oder transform:scale von HUD/Buttons/Dialogen, keine neuen vw/vh-Regeln für das HUD; neue Grafiken in vorhandene Flächen einpassen. Der 3D-Kamera-Zoom bleibt unangetastet.
             - Keine Engine-Installation, keine großen Dependency-Neuerungen, keine Secrets oder Tokens in Dateien.
             - Kein Wechsel der Engine; Three.js/WebView bleibt der aktive Pfad.
             - Ändere bevorzugt app/src/main/assets/index3d.html und bei Bedarf vorhandene Repo-Dateien.

@@ -4,6 +4,17 @@ Stand: 2026-11-25. Ziel: Stil der Referenz-APK (`How Many Dudes`) mechanisch
 nachvollziehen – mit **unseren** 123 Einheiten, 51 Zaubern, 18 Gegnern und dem
 18x14-Feld. Keine Grafiken, Texte oder Namen der Referenz übernehmen.
 
+## Harte Regel: Interface-Größe bleibt fix
+
+Das Interface darf **weder kleiner noch größer werden**. HUD, Buttons, Dialoge,
+Runden-Vorschau und alle Texte behalten ihre jetzige px-Größe. Neue Grafiken
+werden in die vorhandenen Flächen eingepasst, nicht umgekehrt.
+
+- Keine Änderung an `font-size`, `padding`, `max-width`, `gap` oder `transform:scale` von UI-Elementen.
+- Keine neuen responsiven `vw`/`vh`-Regeln für das HUD (die vorhandenen `min(...,94vw)`-Begrenzungen bleiben unangetastet).
+- Der 3D-Kamera-Zoom (`zoomCamera`) betrifft nur die Szene, nicht das Interface – er bleibt wie er ist.
+- Bei neuen Sprites: Bild auf die vorhandene UI-Fläche skalieren, nicht die Fläche an das Bild anpassen.
+
 ## Was schon da ist
 
 | Bereich | Vorhanden |

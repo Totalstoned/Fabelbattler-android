@@ -1,3 +1,5 @@
+- [x] **54. Interface-Größe fixiert**: weder kleiner noch größer – als harte Regel in Automation und Doku; index3d.html unverändert.
+
 - [x] **53. Referenz-Loop und Asset-Bedarf**: Referenz-APK wird jeden Lauf neu analysiert; Bedarfsliste und CC0-Bibliothek (1,1 GiB) liegen bereit; keine Änderung an index3d.html.
 
 - [x] **52. Versionierung fortlaufend**: 1.20.1 ist gesetzt (Code 1201), `bump_version.py` erlaubt 1.20.2, 1.20.3 … bis 1.99.9; Integrator, Loop, Cron und Prompt folgen dem neuen Schema.

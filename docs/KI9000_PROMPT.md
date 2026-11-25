@@ -35,3 +35,4 @@ Antworte mir nach jedem Lauf mit genau einer Zeile: Ziel / Ergebnis / nächster 
 - Der Agent schreibt seine Funde nach `docs/IDEA_BACKLOG.md`; neue Ideen müssen dort oder in `scripts/idea_scout.py` (Liste `SEEDS`) ergänzt werden.
 - Das Budget liegt in `/root/projects/FABELBATTLER/download_budget.json` und rollt täglich (UTC) automatisch zurück.
 - Kein direkter Gerätezugriff: Fullscreen/Visuelles nur per User-Screenshot bestätigen.
+5. Das Interface darf WEDER kleiner noch größer werden: HUD, Buttons und Texte behalten ihre px-Größe, neue Grafiken werden in vorhandene Flächen eingepasst; der 3D-Kamera-Zoom bleibt unangetastet.

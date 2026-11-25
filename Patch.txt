@@ -234,3 +234,9 @@ Schritt 3: Der Auto-Loop schaut sich ab jetzt bei jedem Lauf die Referenz-APK
            an und uebernimmt nur kleine Ideen, nie deren Bilder oder Namen.
 Schritt 4: Die Version bleibt 1.20.1. Du kannst die Datei index3d.html
            in Ruhe bearbeiten; der Loop ist gestoppt.
+
+Schritt 15: Das Interface bleibt gleich gross
+Schritt 1: Weder kleiner noch groesser - HUD, Buttons und Texte behalten
+           ihre jetzige Groesse, auch wenn neue Bilder dazukommen.
+Schritt 2: Neue Grafiken werden in die vorhandenen Flaschen eingepasst.
+           Der Zoom der 3D-Kamera bleibt wie er ist.
