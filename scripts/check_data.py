@@ -186,7 +186,8 @@ for token in ['function arenaBiome(wave)', 'function applyArenaBiome(wave)',
               'const biome = applyArenaBiome(G.wave);', 'applyArenaBiome(1);']:
     if token not in src:
         problems.append('Szenenwechsel im Wellenzyklus fehlt: ' + token)
-for token in ['const START_TEAM_MIN = 3;', 'const TEAM_GROWTH_CAP = 10;',
+for token in ['const START_TEAM_MIN = 3;', 'const TEAM_GROWTH_CAP = 10;', 'if(G.team.length < G.teamSize && G.gold >= 2){ openDraft(); return; }',
+              'start.disabled = G.team.length < G.teamSize && G.gold >= 2;',
               'const REROLL_BASE = 2;', 'const REROLL_MAX = 4;', 'function rerollCost()',
               'Math.min(REROLL_BASE+rerollCount,REROLL_MAX)', 'rerollCount = 0;',
               'G.teamSize++', 'openDraft();', 'Reroll "+rerollCost()+" Gold']:

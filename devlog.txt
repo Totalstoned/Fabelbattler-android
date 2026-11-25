@@ -1,3 +1,5 @@
+2026-11-25: Bugfix: Reroll bis kein Gold mehr, Kampf danach startbar gemacht; Version 1.20.4.
+
 2026-11-25: Release 1.20.3 ausgeliefert (CI 45602329085, APK-SHA d198d8bc…fc2760a1e), nächste Version 1.20.4.
 
 2026-11-25: Erster direkter Loop-Schritt: sechs Arena-Szenen aus der Referenz-Idee „6 Akte", Checks geschärft, Version 1.20.3.

@@ -3239,7 +3239,7 @@ function announceSpecialMobs(){
 }
 function startBattle(){
   if(!G.team.length || G.phase === "battle" || G.phase === "draft") return;
-  if(G.team.length < G.teamSize){ openDraft(); return; }
+  if(G.team.length < G.teamSize && G.gold >= 2){ openDraft(); return; }
   G.team = G.team.slice(0,G.teamSize);
   G.phase = "battle";
   const biome = applyArenaBiome(G.wave);
@@ -4051,7 +4051,7 @@ function renderDraftCards(){
   document.getElementById("mdSub").textContent = G.team.length+"/"+G.teamSize+" gewählt · 2 Gold pro Wesen · Reroll "+rerollCost()+" Gold · Gold: "+G.gold+
     " · Runde "+G.wave+" · "+G.teamSize+" Einheiten pro Seite (jede Runde +1) · ✓ markiert Wesen, die eine fehlende Rolle füllen";
   const start = document.getElementById("mdSkip");
-  start.disabled = G.team.length < G.teamSize;
+  start.disabled = G.team.length < G.teamSize && G.gold >= 2;
   start.textContent = G.team.length >= G.teamSize ? "Kampf starten" : "Noch "+(G.teamSize-G.team.length)+" wählen";
   const reroll = document.getElementById("mdReroll");
   reroll.disabled = G.gold < rerollCost() || G.team.length >= G.teamSize;

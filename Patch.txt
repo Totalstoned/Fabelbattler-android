@@ -257,3 +257,10 @@ Schritt 1: Der Kampfplatz wechselt jetzt alle sechs Wellen Farbe und
 Schritt 2: Das sind unsere eigenen Szenen – nur Farben und Bodenmuster,
            keine Bilder, Namen oder Texte aus der Referenz.
 Schritt 3: Die Interface-Groesse bleibt unverändert. Version 1.20.3.
+
+Schritt 18: Kampf startet nach viel Reroll
+Schritt 1: Wer stark rumgerollt hat und kein Gold mehr hat,
+           konnte die naechste Welle nicht starten.
+Schritt 2: Jetzt startet der Kampf mit der aktuellen Auswahl,
+           sobald kein Gold mehr fuer ein naechtes Wesen da ist.
+Schritt 3: Version 1.20.4. Interface-Groesse unveraendert.

@@ -425,6 +425,13 @@ vm.runInContext(`
   rerollDraft(); costs.push(rerollCost());
   globalThis.__rerollCheck = costs.join(",") === "2,3,4,4,4" &&
     G.gold === goldBefore - 13;
+  G.phase = "menu";
+  G.battle = null;
+  G.team = [createUnit("bigfoot",1,"player"),createUnit("chupacabra",1,"player"),createUnit("fee",1,"player")];
+  G.teamSize = 4;
+  G.gold = 0;
+  startBattle();
+  globalThis.__stowGoldCheck = G.phase === "battle" && G.battle && G.battle.player.length === 3;
   draftFilterRole = "HEALER";
   draftFilterClass = "ALL";
   draftOffer = [];
@@ -473,6 +480,9 @@ if (!vm.runInContext('globalThis.__draftCheck', ctx)) {
 }
 if (!vm.runInContext('globalThis.__rerollCheck', ctx)) {
   throw new Error('Draft-Reroll kostet nicht 2, dann 3, dann 4 (danach 4) Gold');
+}
+if (!vm.runInContext('globalThis.__stowGoldCheck', ctx)) {
+  throw new Error('Nach viel Reroll mit keinem Gold darf der Kampf trotzdem starten');
 }
 if (!vm.runInContext('globalThis.__growthCheck', ctx)) {
   throw new Error('Team waechst nicht pro Runde um 1 Einheit');

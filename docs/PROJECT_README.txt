@@ -1,3 +1,5 @@
+  - Bugfix ab 1.20.4: Kampf nach viel Reroll (Auswahl voll, Gold leer) startbar.
+
   - Szenenwechsel ab 1.20.3: sechs eigene Farbszenen (Feld, Steppe, Ödnis, Höhle, Berg, Arena) im 6-Wellen-Zyklus; Interface-Größe bleibt fix.
 
   - Roster ab 1.20.2: keine Zwergenwesen mehr; Kaijū-Filmmonster und Märchen-/Sagen/Fabelwesen statt „normaler" Fantasy-Krieger.
