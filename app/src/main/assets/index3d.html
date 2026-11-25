@@ -807,7 +807,7 @@ const SYNERGY = {
   Stahl:m=>{m.shieldPct+=0.12;m.dr+=0.08;},
   Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
-const G = {team:[],wave:1,gold:20,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,selectedUnitId:null,lastReport:null,hitStop:0,relics:[],lastRelic:null};
+const G = {team:[],wave:1,gold:20,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,selectedUnitId:null,lastReport:null,hitStop:0,relics:[],lastRelic:null,mapSalt:0};
 // Während der laufenden Runde gibt es keine Spieler-Eingriffe mehr.
 const NO_BATTLE_INTERVENTION = true;
 const SIM = {headless:false};
@@ -848,6 +848,48 @@ const MOB_EFFECT_KEYS = ["weaken","slow","stun","burn","charm"];
 // Monster auf; späte Wellen gehen bis auf das 20-fache.
 const HUMAN_SUPERIORITY_MAX = 20;
 function humanSuperiority(wave){ return Math.min(HUMAN_SUPERIORITY_MAX,2+Math.floor((Math.max(1,wave)-1)/3)); }
+// Einfache Siedlung mit Häusern, Erdgräben, Barrikaden und Wachturm.
+// Dieoffsets sind relativ zur zufälligen Stadtecke; vorne zeigt immer zum
+// Schlachtfeld. Menschen laufen bei Gefahr in diese Deckung und erhalten
+// dort weniger Schaden (wie hinter einer Mauer oder in einem Graben).
+const TOWN_CORNERS = [
+  {gx:3,gy:3},{gx:14,gy:3},{gx:3,gy:10},{gx:14,gy:10}
+];
+const TOWN_HOUSE_OFFSETS = [[0,0],[2,0],[-1,2],[1,-2],[2,3]];
+const TOWN_TRENCH_OFFSETS = [[0,-1],[1,-1],[2,-1],[3,-1],[-1,0]];
+const TOWN_WALL_OFFSETS = [[1,1],[2,1],[3,1],[4,1]];
+const TOWN_TOWER_OFFSET = [3,2];
+let TOWN_COVER = new Set();
+let TOWN_HOUSES = [], TOWN_TRENCHES = [], TOWN_WALLS = [], TOWN_TOWER = null;
+let TOWN_POSTS = {front:[],back:[],other:[]};
+const TOWN_COVER_REDUCTION = 0.25;
+// Größe im Vergleich: Kaiju (ca. 1.2) >> Gebäude (ca. 0.6) > Mensch (0.28-0.44)
+// entspricht den Godzilla-Filmen: Häuser sind riesig für Menschen, aber ein
+// Kaiju ragt über sie hinaus.
+const HABITAT_SCALE = {kaiju:1.2,building:0.62,human:0.36,monster:0.45};
+function townDirection(c){ return c.gx < GRID.cols/2 ? 1 : -1; }
+function refreshTownCover(c){
+  const dir = townDirection(c);
+  const cell = (o,kind) => ({
+    gx:clamp(c.gx+o[0]*dir,0,GRID.cols-1),
+    gy:clamp(c.gy+o[1],0,GRID.rows-1),kind:kind,dir:dir
+  });
+  TOWN_HOUSES = TOWN_HOUSE_OFFSETS.map(o => cell(o,"house"));
+  TOWN_TRENCHES = TOWN_TRENCH_OFFSETS.map(o => cell(o,"trench"));
+  TOWN_WALLS = TOWN_WALL_OFFSETS.map(o => cell(o,"wall"));
+  TOWN_TOWER = cell(TOWN_TOWER_OFFSET,"tower");
+  const cells = [...TOWN_HOUSES,...TOWN_TRENCHES,...TOWN_WALLS,TOWN_TOWER];
+  TOWN_COVER = new Set(cells.map(p => p.gx+","+p.gy));
+  TOWN_POSTS = {
+    front:[...TOWN_WALLS,...TOWN_TRENCHES.filter(p => p.gx*dir > c.gx*dir)],
+    back:[...TOWN_HOUSES.filter(p => p.gx*dir <= c.gx*dir),TOWN_TOWER],
+    other:[...TOWN_TRENCHES.filter(p => p.gx*dir <= c.gx*dir),
+      ...TOWN_HOUSES.filter(p => p.gx*dir > c.gx*dir)]
+  };
+}
+function hasCover(u){
+  return !!(u && u.isHuman && TOWN_COVER.has(Math.round(u.grid.gx)+","+Math.round(u.grid.gy)));
+}
 const ELITE_EVERY = 5;
 const BOSS_EVERY = 10;
 const MOB_TIERS = {
@@ -1226,7 +1268,7 @@ function beginRun(){
   G.team = [];
   G.teamSize = START_TEAM_MIN;
   G.wave = 1;
-  applyArenaBiome(G.wave);
+  prepareMap(G.wave);
   G.gold = 20;
   G.relics = [];
   G.lastRelic = null;
@@ -1265,15 +1307,54 @@ const ARENA_BIOMES = [
   {label:"Ödnis",  base:"#302a28", tileA:"#443934", tileB:"#3b322e", edge:0x241a17, ring:0x4b3a33, sky:0x241c1a, fog:0x241c1a},
   {label:"Höhle",  base:"#1f2530", tileA:"#2d3545", tileB:"#262e3c", edge:0x111621, ring:0x35405a, sky:0x10151f, fog:0x10151f},
   {label:"Berg",   base:"#2b2f36", tileA:"#3c424b", tileB:"#343a43", edge:0x191d24, ring:0x46505e, sky:0x1a1f27, fog:0x1a1f27},
-  {label:"Arena",  base:"#33242c", tileA:"#46313c", tileB:"#3d2b35", edge:0x21141b, ring:0x5a3a48, sky:0x231720, fog:0x231720}
+  {label:"Arena",  base:"#33242c", tileA:"#46313c", tileB:"#3d2b35", edge:0x21141b, ring:0x5a3a48, sky:0x231720, fog:0x231720},
+  {label:"Küste",  base:"#1e2b34", tileA:"#2c3b45", tileB:"#26333d", edge:0x131e26, ring:0x2f4c5c, sky:0x101c26, fog:0x13202a, water:true},
+  {label:"Insel",  base:"#23302a", tileA:"#32433a", tileB:"#2b3a32", edge:0x14231c, ring:0x3d5a48, sky:0x101e1a, fog:0x14241e, water:true}
 ];
 function arenaBiome(wave){
   const w = Math.max(1,Math.floor(wave)||1);
   return ARENA_BIOMES[(w-1)%ARENA_BIOMES.length];
 }
+// Acht Habitate, zufällige Stadtecke, zufälliges Meer und wechselnde
+// Angriffsformation. Der Salt wechselt bei jeder neuen Karte, dadurch ist
+// dieselbe Welle beim erneuten Spielen nicht identisch.
+const ATTACK_MODES = ["einzel","paar","trio","schwarm","zwei-seiten"];
+const ATTACK_MODE_LABEL = {einzel:"nacheinander",paar:"paarweise",trio:"zu dritt",schwarm:"Schwarm","zwei-seiten":"zwei Seiten"};
+function mapRandom(wave,salt){
+  let s = (Math.imul(Math.max(1,Math.floor(wave))+1,0x9e3779b1) ^
+          Math.imul(Math.max(0,Math.floor(salt))+1,0x85ebca6b)) >>> 0;
+  return () => {
+    s = (s+0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t^(t>>>15),t|1);
+    t ^= t+Math.imul(t^(t>>>7),t|61);
+    return ((t^(t>>>14))>>>0)/4294967296;
+  };
+}
+function makeMapLayout(wave,salt){
+  const r = mapRandom(wave,salt);
+  const water = r() < 0.45 || Math.max(1,Math.floor(wave))%3 === 0;
+  const pool = ARENA_BIOMES.map((b,i) => ({b:b,i:i})).filter(x => !!x.b.water === water);
+  const pick = pool[Math.floor(r()*pool.length)] || {b:ARENA_BIOMES[0],i:0};
+  const corner = TOWN_CORNERS[Math.floor(r()*TOWN_CORNERS.length)];
+  const mode = ATTACK_MODES[Math.floor(r()*ATTACK_MODES.length)];
+  return {wave:Math.max(1,Math.floor(wave)),salt:Math.max(0,Math.floor(salt)),
+    biomeIndex:pick.i,water:!!pick.b.water,corner:{gx:corner.gx,gy:corner.gy},
+    seaLeft:r()<0.5,mode:mode,flank:r()<0.5?"top":"bottom"};
+}
+let MAP_LAYOUT = null;
 let arenaPalette = null;
+let waterMesh = null;
+let townLayer = null;
+function prepareMap(wave,salt){
+  const s = salt === undefined ? ++G.mapSalt : Math.max(0,Math.floor(salt));
+  if(salt !== undefined) G.mapSalt = Math.max(G.mapSalt,s);
+  MAP_LAYOUT = makeMapLayout(wave,s);
+  return applyArenaBiome(wave);
+}
 function applyArenaBiome(wave){
-  const b = arenaBiome(wave);
+  const layout = MAP_LAYOUT;
+  const b = layout ? ARENA_BIOMES[layout.biomeIndex % ARENA_BIOMES.length] : arenaBiome(wave);
   if(arenaPalette){
     const swap=(mat,tone,tileable)=>{
       if(!mat) return;
@@ -1289,6 +1370,21 @@ function applyArenaBiome(wave){
   }
   if(scene.background && scene.background.setHex) scene.background.setHex(b.sky);
   if(scene.fog && scene.fog.color && scene.fog.color.setHex) scene.fog.color.setHex(b.fog);
+  // Wasser liegt an der Meerseite, von der die Kaiju anlanden.
+  if(waterMesh){
+    waterMesh.visible = !!b.water;
+    waterMesh.material.color.setHex(b.water ? 0x2f6f8f : 0x1c3a4a);
+    waterMesh.position.x = (layout && layout.seaLeft ? -1 : 1)*
+      (GRID.cols*TILE/2-TILE*1.5);
+  }
+  if(layout){
+    refreshTownCover(layout.corner);
+    if(townLayer){
+      const p = worldPos(layout.corner.gx,layout.corner.gy);
+      townLayer.position.set(p.x,0,p.z);
+      buildTownStructures(layout);
+    }
+  }
   return b;
 }
 function buildArena(){
@@ -1339,7 +1435,69 @@ function buildArena(){
     ring.position.set(pos[0],0.018,pos[1]);
     arena.add(ring);
   });
+  // Meer: nur in Küsten-/Inselhabitaten sichtbar, aber immer am Rand, von dem
+  // die Kaiju kommen. Die Wasserfläche liegt über den Fliesen, unter den Einheiten.
+  waterMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(TILE*3.2,(GRID.rows+2)*TILE),
+    new THREE.MeshStandardMaterial({color:0x2f6f8f,transparent:true,opacity:0.55,roughness:0.35,metalness:0.15})
+  );
+  waterMesh.rotation.x = -Math.PI/2;
+  waterMesh.position.y = 0.012;
+  waterMesh.visible = false;
+  arena.add(waterMesh);
+  // Siedlung wird als eigene Gruppe bewegt, wenn die Karte neu generiert wird.
+  townLayer = new THREE.Group();
+  arena.add(townLayer);
   arenaPalette = {base:base.material,tileA:matA,tileB:matB,edge:edgeMat,ring:ringMat};
+}
+function buildTownStructures(layout){
+  if(!townLayer) return;
+  clearGroup(townLayer);
+  const c = layout.corner, dir = townDirection(c);
+  const local = cell => ({x:(cell.gx-c.gx)*TILE,z:(cell.gy-c.gy)*TILE});
+  const houseMat = new THREE.MeshStandardMaterial({color:0xa18466,roughness:0.92});
+  const roofMat = new THREE.MeshStandardMaterial({color:0x7a4a3a,roughness:0.88});
+  const trenchMat = new THREE.MeshStandardMaterial({color:0x6b5a43,roughness:1});
+  const wallMat = new THREE.MeshStandardMaterial({color:0x8d7b5c,roughness:0.95});
+  const towerMat = new THREE.MeshStandardMaterial({color:0x9c8567,roughness:0.9});
+  TOWN_HOUSES.forEach(cell => {
+    const p = local(cell);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.62,0.55,TILE*0.56),houseMat);
+    body.position.set(p.x,0.28,p.z);
+    body.castShadow = true; body.receiveShadow = true;
+    townLayer.add(body);
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(TILE*0.48,0.34,4),roofMat);
+    roof.rotation.y = Math.PI/4;
+    roof.position.set(p.x,0.72,p.z);
+    roof.castShadow = true;
+    townLayer.add(roof);
+  });
+  TOWN_TRENCHES.forEach(cell => {
+    const p = local(cell);
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.86,0.18,TILE*0.2),trenchMat);
+    wall.position.set(p.x,0.09,p.z+TILE*0.3);
+    wall.receiveShadow = true;
+    townLayer.add(wall);
+  });
+  TOWN_WALLS.forEach(cell => {
+    const p = local(cell);
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.9,0.5,TILE*0.16),wallMat);
+    wall.position.set(p.x,0.25,p.z+TILE*0.34*dir);
+    wall.castShadow = true; wall.receiveShadow = true;
+    townLayer.add(wall);
+  });
+  if(TOWN_TOWER){
+    const p = local(TOWN_TOWER);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.5,1.7,TILE*0.5),towerMat);
+    body.position.set(p.x,0.85,p.z);
+    body.castShadow = true; body.receiveShadow = true;
+    townLayer.add(body);
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(TILE*0.42,0.4,4),roofMat);
+    roof.rotation.y = Math.PI/4;
+    roof.position.set(p.x,1.9,p.z);
+    roof.castShadow = true;
+    townLayer.add(roof);
+  }
 }
 function disposeObject(obj){
   obj.traverse(child => {
@@ -2500,6 +2658,7 @@ function updateMobVisuals(time,dt){
         let n = 0;
         list.forEach(m => {
           if(m.archetype !== key || (m.tier||"normal") !== tier) return;
+          if(G.battle.time < (m.arrivalDelay||0)) return;
           if(m.isDead && m.deathTimer <= 0) return;
           const p = worldPos(m.grid.gx,m.grid.gy);
           const hp = clamp(m.hp/m.maxHp,0,1);
@@ -2635,14 +2794,46 @@ function createMob(archetype,side,wave,tier){
     rng:a.rng,healRange:0,modsEffective:Object.assign({},DEFAULT_MODS),
     maxHp:Math.round(baseHp*buff),hp:0,atk:baseAtk*buff,spd:a.spd,shield:0,
     grid:{gx:0,gy:0},target:null,attackCd:Math.random()*0.5,spellCd:999,hitFlash:0,animAttack:0,deathTimer:0.6,
-    statuses:{},statusPower:{},isDead:false,revived:false,auraCd:0,aura:null,trait:null
+    statuses:{},statusPower:{},isDead:false,revived:false,auraCd:0,aura:null,trait:null,
+    arrivalDelay:0,spawnGroup:0,spawnEdge:"main",defenseDir:0
   };
   m.hp = m.maxHp;
   return m;
 }
+// Angriffsformation der Monster: einzeln nacheinander, paarweise, zu dritt,
+// alle gleichzeitig aus einem Punkt oder geteilt aus zwei Seiten.
+function attackFormation(index,side,layout){
+  const l = layout || MAP_LAYOUT || makeMapLayout(1,0);
+  const fromSea = l.water ? l.seaLeft : false;
+  const mainLeft = side === "player" ? fromSea : !fromSea;
+  const mainGx = mainLeft ? 0.35 : GRID.cols-1-0.35;
+  let gx = mainGx, gy = GRID.rows/2, group = 0, edge = "main", delay = 0;
+  if(l.mode === "paar" || l.mode === "trio"){
+    const lanes = l.mode === "paar" ? [0.28,0.72] : [0.2,0.5,0.8];
+    group = index % lanes.length;
+    gy = clamp(lanes[group]*GRID.rows+((index%3)-1)*0.18,0.2,GRID.rows-0.2);
+    delay = Math.min(6,Math.floor(index/lanes.length)*0.45);
+  } else if(l.mode === "zwei-seiten"){
+    group = index % 2;
+    if(group === 1){
+      edge = "flanke";
+      gy = l.flank === "top" ? 0.35 : GRID.rows-1-0.35;
+      gx = clamp((GRID.cols-1)/2+((Math.floor(index/2)%3)-1)*1.1,0.35,GRID.cols-1-0.35);
+    } else {
+      gy = clamp(2+(index%5)*2.2,0.2,GRID.rows-0.2);
+    }
+    delay = Math.min(6,Math.floor(index/2)*0.35);
+  } else {
+    group = 0;
+    gy = clamp(GRID.rows/2+((index%5)-2)*0.35,0.2,GRID.rows-0.2);
+    if(l.mode === "einzel") delay = Math.min(6,index*0.55);
+  }
+  return {gx:gx,gy:gy,group:group,edge:edge,delay:delay};
+}
 function buildMobSwarm(side,wave){
   const list = [];
   const count = mobWaveSize(wave,side);
+  const layout = MAP_LAYOUT || makeMapLayout(wave,0);
   // Beide Lager stellen eine menschliche Bevölkerung, die von Monstern nur
   // durchsetzt ist. Die Gesamtzahl bleibt exakt MOB_CAP pro Seite.
   const ratio = humanSuperiority(wave);
@@ -2657,17 +2848,26 @@ function buildMobSwarm(side,wave){
       key = MONSTER_MOB_KEYS[r < 3 ? 0 : r < 5 ? 1 : r < 7 ? 2 : r < 9 ? 3 : 4];
     }
     const m = createMob(key,side,wave,mobTierFor(wave,i,count));
-    const lane = side === "player" ? 0.25+(i%3)*0.45 : GRID.cols-1-(i%3)*0.45;
-    m.grid.gx = clamp(lane,0,GRID.cols-1);
-    m.grid.gy = clamp(0.3+((i*5)%Math.round(GRID.rows*10))/10,0,GRID.rows-1);
     if(m.isHuman){
-      // Lager-Stationierung: Sanitäter und Rentner stehen geschützt hinten,
-      // Soldaten und Zerstörer bilden die vordere Reihe.
+      // Menschen stehen in der zufälligen Stadt: hinten Rentner/Sanitäter,
+      // vorn Soldaten/Zerstörer an Barrikaden und Gräben.
       const back = key === "rentner" || key === "feldsanitaeter";
       const front = key === "landsturmsoldat" || key === "mythenzerstoerer";
-      const dir = side === "player" ? 1 : -1;
-      if(back) m.grid.gx = clamp(m.grid.gx-dir*2.5,0,GRID.cols-1);
-      if(front) m.grid.gx = clamp(m.grid.gx+dir*2.5,0,GRID.cols-1);
+      const posts = TOWN_POSTS[back ? "back" : front ? "front" : "other"];
+      if(posts.length){
+        const cell = posts[i % posts.length];
+        m.grid.gx = clamp(cell.gx+((i%3)-1)*0.12,0,GRID.cols-1);
+        m.grid.gy = clamp(cell.gy+((i%5)-2)*0.12,0,GRID.rows-1);
+        m.guard = {gx:cell.gx,gy:cell.gy};
+        m.defenseDir = cell.dir;
+      }
+    } else {
+      const f = attackFormation(i-monsterCount,side,layout);
+      m.grid.gx = clamp(f.gx+((i%3)-1)*0.12,0,GRID.cols-1);
+      m.grid.gy = clamp(f.gy,0,GRID.rows-1);
+      m.spawnGroup = f.group;
+      m.spawnEdge = f.edge;
+      m.arrivalDelay = f.delay;
     }
     m.attackCd = (i%7)*0.08;
     list.push(m);
@@ -2689,10 +2889,36 @@ function refreshMobCache(b){
   };
   b.mobCache = {t:b.time,player:build("player"),enemy:build("enemy")};
 }
+// Menschen verteidigen ihren Platz im Lager und greifen erst an, wenn ein
+// Monster in Reichweite kommt – dann aus jeder Richtung, nicht nur vorne.
+const HUMAN_AGGRO = 3.2;
 function mobAction(u,b,dt){
+  // Gruppen treffen gestaffelt ein: einzeln, paarweise, zu dritt oder als Schwarm.
+  if(b.time < (u.arrivalDelay||0)) return;
   const foeSide = u.side === "player" ? "enemy" : "player";
   const cache = b.mobCache[foeSide];
-  const front = cache.front;
+  let front = cache.front;
+  const foes = cache.targets.filter(t => !t.isDead);
+  if(u.isHuman){
+    let nearest = null, best = Infinity;
+    for(const t of foes){
+      const dd = Math.hypot(t.grid.gx-u.grid.gx,t.grid.gy-u.grid.gy);
+      if(dd < best){ best = dd; nearest = t; }
+    }
+    if(!nearest || best > HUMAN_AGGRO){
+      if(u.guard){
+        const gx = u.guard.gx-u.grid.gx, gy = u.guard.gy-u.grid.gy;
+        const gd = Math.hypot(gx,gy);
+        if(gd > 0.12){
+          const step = Math.min((0.4+u.spd*0.5)*MAP_SPEED*dt,gd);
+          u.grid.gx = clamp(u.grid.gx+gx/gd*step,0,GRID.cols-1);
+          u.grid.gy = clamp(u.grid.gy+gy/gd*step,0,GRID.rows-1);
+        }
+      }
+      return;
+    }
+    front = {gx:nearest.grid.gx,gy:nearest.grid.gy};
+  }
   if(hasStatus(u,"root") || hasStatus(u,"stun")) return;
   const dx = front.gx-u.grid.gx, dy = front.gy-u.grid.gy;
   const d = Math.hypot(dx,dy);
@@ -2704,9 +2930,15 @@ function mobAction(u,b,dt){
     return;
   }
   if(u.attackCd > 0) return;
-  const targets = cache.targets.filter(t => !t.isDead);
-  if(!targets.length) return;
-  const target = targets[Math.floor(Math.random()*targets.length)];
+  if(!foes.length) return;
+  let target;
+  if(u.isHuman){
+    target = foes.reduce((a,t) =>
+      Math.hypot(t.grid.gx-u.grid.gx,t.grid.gy-u.grid.gy) <
+      Math.hypot(a.grid.gx-u.grid.gx,a.grid.gy-u.grid.gy) ? t : a,foes[0]);
+  } else {
+    target = foes[Math.floor(Math.random()*foes.length)];
+  }
   applyDamage(target,u.atk,u,{number:false});
   if(u.effect && !target.isDead){
     const mult = u.isBoss ? 2.4 : u.isElite ? 1.6 : 1;
@@ -2941,6 +3173,7 @@ function applyDamage(target,amount,source,opts={}){
   if(source && source.counterClass && target &&
      (target.cls === source.counterClass || target.cls2 === source.counterClass)) amount *= 1.35;
   let dmg = amount*(1-(target.modsEffective.dr||0));
+  if(hasCover(target)) dmg *= 1-TOWN_COVER_REDUCTION;
   if(hasStatus(target,"defBuff")) dmg *= 1-(target.statusPower.defBuff||0);
   if(target.shield > 0){
     const absorbed = Math.min(target.shield,dmg);
@@ -3264,7 +3497,7 @@ function winBattle(){
     showToast("Team-Level-Up! Mindestlevel: "+minLvl);
   }
   G.wave++;
-  applyArenaBiome(G.wave);
+  prepareMap(G.wave);
   if(G.teamSize < TEAM_GROWTH_CAP){
     G.teamSize++;
     showToast("Neues Wesen verfügbar: Team wächst auf "+G.teamSize+" (max "+TEAM_GROWTH_CAP+")");
@@ -3343,7 +3576,7 @@ function startBattle(){
   if(G.team.length < G.teamSize && G.gold >= 2){ openDraft(); return; }
   G.team = G.team.slice(0,G.teamSize);
   G.phase = "battle";
-  const biome = applyArenaBiome(G.wave);
+  const biome = prepareMap(G.wave);
   setBattleMode(true);
   hideBattleReport();
   clearEffects();
@@ -3367,7 +3600,7 @@ function startBattle(){
   syncMobs();
   announceSpecialMobs();
   const tierHint = enemyMobs.some(m => m.isBoss) ? " · 👑 BOSS" : enemyMobs.some(m => m.isElite) ? " · ✨ Elite" : "";
-  showToast("Welle "+G.wave+" ("+biome.label+"): "+G.team.length+"+"+playerMobs.length+" gegen "+enemyTeam.length+"+"+enemyMobs.length+tierHint);
+  showToast("Welle "+G.wave+" ("+biome.label+", "+ATTACK_MODE_LABEL[MAP_LAYOUT.mode]+"): "+G.team.length+"+"+playerMobs.length+" gegen "+enemyTeam.length+"+"+enemyMobs.length+tierHint);
   updateHud();
   updateTeamList();
   updateSynergies();
@@ -4196,7 +4429,7 @@ function showToast(msg){
   }, 2000);
 }
 buildArena();
-applyArenaBiome(1);
+prepareMap(1,0);
 resize();
 syncUnits();
 window.addEventListener("load", () => {

@@ -401,14 +401,25 @@ if (!vm.runInContext('globalThis.__coreCheck', ctx)) {
 if (!vm.runInContext('globalThis.__bigMapCheck', ctx)) {
   throw new Error('Schlachtfeld ist nicht vergroessert (18x14, MAP_SPEED)');
 }
-vm.runInContext(`
-  const b7 = applyArenaBiome(7), b1 = applyArenaBiome(1), b2 = applyArenaBiome(2);
-  globalThis.__biomeCheck = ARENA_BIOMES.length === 6 &&
-    b1.label !== b2.label && b7.label === b1.label &&
-    scene.background.getHex() === b2.sky && scene.fog.color.getHex() === b2.fog;
-`, ctx);
+vm.runInContext(`(() => {
+  const layouts = [];
+  for (let s = 0; s < 24; s++) layouts.push(makeMapLayout(7,s));
+  const corners = new Set(layouts.map(l => l.corner.gx+","+l.corner.gy));
+  const biomes = new Set(layouts.map(l => l.biomeIndex));
+  const modes = new Set(layouts.map(l => l.mode));
+  const biome = prepareMap(3,5);
+  prepareMap(3,6);
+  globalThis.__habitatCount = ARENA_BIOMES.length;
+  globalThis.__biomeCheck = ARENA_BIOMES.length === 8 &&
+    layouts.some(l => l.water) && layouts.some(l => !l.water) &&
+    corners.size > 1 && biomes.size > 1 && modes.size > 1 &&
+    JSON.stringify(makeMapLayout(7,5)) === JSON.stringify(makeMapLayout(7,5)) &&
+    biome.label === ARENA_BIOMES[MAP_LAYOUT.biomeIndex].label &&
+    waterMesh.visible === !!biome.water &&
+    scene.background.getHex() === biome.sky && scene.fog.color.getHex() === biome.fog;
+})();`, ctx);
 if (!vm.runInContext('globalThis.__biomeCheck', ctx)) {
-  throw new Error('Sechs eigene Szenen im Wellenzyklus fehlen oder wechseln nicht');
+  throw new Error('Zufällige Habitate mit Meer/Wasser und wechselnder Stadt fehlen');
 }
 if (!vm.runInContext('globalThis.__portraitCheck', ctx)) {
   throw new Error('Wesen-Grafiken aus aller Welt fehlen');
@@ -692,7 +703,7 @@ if (!vm.runInContext('globalThis.__mobAfterCheck', ctx)) {
   throw new Error('Mob-Kampf-Simulation mit 500 Mobs pro Seite läuft nicht');
 }
 
-vm.runInContext(`
+vm.runInContext(`(() => {
   // Fünf Monster-Archetypen mit fünf paarweise verschiedenen Effekten.
   const mfx = MONSTER_MOB_KEYS.map(k => MOB_ARCHETYPES[k].effect);
   globalThis.__mobEffectCheck = MONSTER_MOB_KEYS.length === 5 &&
@@ -717,11 +728,13 @@ vm.runInContext(`
   globalThis.__humanField40H = countHumans(G.battle);
   globalThis.__humanField40M = countMonsters(G.battle);
   globalThis.__signatureCount = new Set(Object.keys(ROSTER).map(k => ROSTER[k].ability)).size;
-  const avgGx = list => list.reduce((s,m) => s+m.grid.gx,0)/Math.max(1,list.length);
-  globalThis.__stationCheck = avgGx(G.battle.enemyMobs.filter(m => m.key === "mob_landsturmsoldat")) <
-    avgGx(G.battle.enemyMobs.filter(m => m.key === "mob_feldsanitaeter")) &&
-    avgGx(G.battle.enemyMobs.filter(m => m.key === "mob_rentner")) >
-    avgGx(G.battle.enemyMobs.filter(m => m.key === "mob_landsturmsoldat"));
+  // Stationierung ist relativ zur Stadtecke: front naeher am Feldzentrum,
+  // Rueckzug weiter weg – bei linker und rechter Stadt gleichermassen.
+  const center = (GRID.cols-1)/2;
+  const avgDist = list => list.reduce((s,m) => s+Math.abs(m.grid.gx-center),0)/Math.max(1,list.length);
+  const front = G.battle.enemyMobs.filter(m => m.key === "mob_landsturmsoldat" || m.key === "mob_mythenzerstoerer");
+  const back = G.battle.enemyMobs.filter(m => m.key === "mob_rentner" || m.key === "mob_feldsanitaeter");
+  globalThis.__stationCheck = front.length > 0 && back.length > 0 && avgDist(front) < avgDist(back);
 
   // Zehn Klassen, zehn menschliche Spezialisten mit Gegenbonus.
   const covered = Object.keys(HUMAN_COUNTER);
@@ -730,9 +743,76 @@ vm.runInContext(`
       (ROSTER[HUMAN_COUNTER[cls]] || MOB_ARCHETYPES[HUMAN_COUNTER[cls]])) &&
     Object.keys(ENEMY_ONLY).every(k => HUMAN_UNIT_COUNTER[k] &&
       ROSTER[k].counterClass === HUMAN_UNIT_COUNTER[k]);
+  // Zufällige Stadt: Häuser, Gräben, Barrikaden, Wachturm und echte Deckung.
+  const coverCells = [...TOWN_COVER];
+  globalThis.__townDefenseCheck = !!townLayer && townLayer.children.length >= 15 &&
+    coverCells.length >= 12 && TOWN_POSTS.front.length > 0 && TOWN_POSTS.back.length > 0 &&
+    townLayer.children.some(o => o.geometry && o.geometry.parameters &&
+      o.geometry.parameters.height >= 1.5) &&
+    HABITAT_SCALE.kaiju > HABITAT_SCALE.building &&
+    HABITAT_SCALE.building > HABITAT_SCALE.human;
+  globalThis.__townStructures = townLayer ? townLayer.children.length : 0;
+  globalThis.__coverCells = coverCells.length;
+  globalThis.__humanCoverCheck = G.battle.enemyMobs.filter(m => m.isHuman).every(m =>
+    m.guard && TOWN_COVER.has(Math.round(m.guard.gx)+","+Math.round(m.guard.gy))) &&
+    G.battle.enemyMobs.some(m => m.isHuman && hasCover(m));
+  const parts = coverCells[0].split(",").map(Number);
+  const coverUnit = createMob("rentner","enemy",1), exposed = createMob("rentner","enemy",1);
+  coverUnit.grid.gx = parts[0]; coverUnit.grid.gy = parts[1];
+  exposed.grid.gx = -99; exposed.grid.gy = -99;
+  const wasHeadless = SIM.headless;
+  SIM.headless = true;
+  const dCovered = applyDamage(coverUnit,10,null), dExposed = applyDamage(exposed,10,null);
+  SIM.headless = wasHeadless;
+  globalThis.__coverDamageCheck = dCovered < dExposed;
+
+  // Fünf Angriffsformationen: einzeln, paarweise, zu dritt, Schwarm, zwei Seiten.
+  const byMode = {};
+  for (let salt = 0; salt < 80 && Object.keys(byMode).length < ATTACK_MODES.length; salt++) {
+    prepareMap(8,salt);
+    const mode = MAP_LAYOUT.mode;
+    if (byMode[mode]) continue;
+    byMode[mode] = buildMobSwarm("enemy",8).filter(m => !m.isHuman);
+  }
+  globalThis.__attackModeCheck = Object.keys(byMode).length === ATTACK_MODES.length &&
+    byMode.einzel.every((m,i) => i === 0 || m.arrivalDelay >= byMode.einzel[i-1].arrivalDelay) &&
+    new Set(byMode.einzel.map(m => Math.round(m.grid.gx))).size === 1 &&
+    new Set(byMode.paar.map(m => m.spawnGroup)).size === 2 &&
+    new Set(byMode.trio.map(m => m.spawnGroup)).size === 3 &&
+    byMode.schwarm.every(m => m.arrivalDelay === 0 && m.spawnGroup === 0) &&
+    new Set(byMode["zwei-seiten"].map(m => m.spawnEdge)).size === 2;
+  globalThis.__attackModes = Object.keys(byMode).length;
+  const waterSalt = (() => { let s = 0; while(s < 50 && !makeMapLayout(8,s).water) s++; return s; })();
+  prepareMap(8,waterSalt);
+  const seaMobs = buildMobSwarm("player",8).filter(m => !m.isHuman);
+  globalThis.__seaSpawnCheck = waterMesh.visible && seaMobs.length > 0 &&
+    seaMobs.some(m => MAP_LAYOUT.seaLeft ? m.grid.gx < 3 : m.grid.gx > GRID.cols-4);
+
+  // Angreifer warten wirklich auf ihre Staffel, bevor sie ziehen.
+  let arrivalSalt = 0;
+  while(arrivalSalt < 50 && makeMapLayout(1,arrivalSalt).mode === "schwarm") arrivalSalt++;
+  G.phase = "menu"; G.battle = null; __beginTestRun();
+  G.wave = 1; G.mapSalt = arrivalSalt-1; startBattle();
+  const lateArrival = G.battle.enemyMobs.find(m => !m.isHuman && m.arrivalDelay > 0);
+  if (lateArrival) {
+    const gx = lateArrival.grid.gx, gy = lateArrival.grid.gy;
+    for (let f = 0; f < 5 && G.battle; f++) simulateBattle(0.016);
+    globalThis.__arrivalCheck = lateArrival.grid.gx === gx && lateArrival.grid.gy === gy;
+  } else globalThis.__arrivalCheck = false;
+
+  // Jeder Kampf bekommt eine neue Karte, auch bei gleicher Welle.
+  G.phase = "menu"; G.battle = null; __beginTestRun(); G.wave = 3;
+  const saltBefore = G.mapSalt;
+  startBattle();
+  const firstLayout = JSON.stringify(MAP_LAYOUT);
+  G.phase = "menu"; G.battle = null;
+  startBattle();
+  globalThis.__freshMapCheck = firstLayout !== JSON.stringify(MAP_LAYOUT) &&
+    G.mapSalt >= saltBefore+2;
+
   G.phase = "menu";
   G.battle = null;
-`, ctx);
+})();`, ctx);
 
 for (const [flag, message] of [
   ['__mobEffectCheck', 'Monster/Menschen-Archetypen haben zu wenige verschiedene Effekte'],
@@ -742,6 +822,13 @@ for (const [flag, message] of [
   ['__humanField40', 'Welle 40: Menschen überragen Monster nicht deutlich genug'],
   ['__counterCheck', 'Nicht jede Klasse hat einen menschlichen Spezialisten'],
   ['__stationCheck', 'Sanitäter/Rentner stehen nicht hinter den Soldaten'],
+  ['__townDefenseCheck', 'Zufällige Stadt mit Häusern/Gräben/Barrikaden/Wachturm fehlt'],
+  ['__humanCoverCheck', 'Menschen werden nicht in der Stadt stationiert'],
+  ['__coverDamageCheck', 'Städtische Deckung reduziert keinen Schaden'],
+  ['__attackModeCheck', 'Angriffsformationen (einzeln/paar/trio/Schwarm/zwei Seiten) fehlen'],
+  ['__seaSpawnCheck', 'Kaiju kommen nicht aus dem Meer'],
+  ['__arrivalCheck', 'Gestaffelte Ankunft der Monster greift nicht'],
+  ['__freshMapCheck', 'Kampf bekommt keine neue zufällige Karte'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
@@ -1498,4 +1585,4 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen)`);

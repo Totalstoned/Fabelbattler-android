@@ -188,13 +188,22 @@ for key in ['zwergenkrieger','zwergenbaumeister','zwergenschmied','zwergenheiler
         problems.append('Zu normales Zwergenwesen noch im Roster: ' + key)
 biomes_start = src.find('const ARENA_BIOMES = [')
 biomes = src[biomes_start:src.find('];',biomes_start)] if biomes_start >= 0 else ''
-if biomes.count('label:') != 6:
-    problems.append('Arena-Szenen: erwartet 6, gefunden ' + str(biomes.count('label:')))
+if biomes.count('label:') != 8:
+    problems.append('Arena-Habitate: erwartet 8, gefunden ' + str(biomes.count('label:')))
+if biomes.count('water:true') < 2:
+    problems.append('Wasser-Habitate fehlen')
 for token in ['function arenaBiome(wave)', 'function applyArenaBiome(wave)',
-              'arenaPalette = {base:base.material', 'applyArenaBiome(G.wave);',
-              'const biome = applyArenaBiome(G.wave);', 'applyArenaBiome(1);']:
+              'function makeMapLayout(wave,salt)', 'function prepareMap(wave,salt)',
+              'arenaPalette = {base:base.material', 'prepareMap(G.wave);',
+              'const biome = prepareMap(G.wave);', 'prepareMap(1,0);',
+              'const ATTACK_MODES = ["einzel","paar","trio","schwarm","zwei-seiten"];',
+              'const ATTACK_MODE_LABEL = {', 'ATTACK_MODE_LABEL[MAP_LAYOUT.mode]',
+               'const TOWN_CORNERS = [', 'const HABITAT_SCALE = {',
+              'function attackFormation(index,side,layout)',
+              'function buildTownStructures(layout)', 'waterMesh = new THREE.Mesh(',
+              'if(b.time < (u.arrivalDelay||0)) return;']:
     if token not in src:
-        problems.append('Szenenwechsel im Wellenzyklus fehlt: ' + token)
+        problems.append('Zufallskarte/Wasser/Angriffsformation fehlt: ' + token)
 for token in ['const START_TEAM_MIN = 3;', 'const TEAM_GROWTH_CAP = 10;', 'if(G.team.length < G.teamSize && G.gold >= 2){ openDraft(); return; }',
               'start.disabled = G.team.length < G.teamSize && G.gold >= 2;',
               'const REROLL_BASE = 2;', 'const REROLL_MAX = 4;', 'function rerollCost()',
