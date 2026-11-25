@@ -32,7 +32,7 @@ sind keine Sprite-Vorlagen. Wir übernehmen nur Mechaniken, nicht deren Assets.
 
 ## Abgleich mit Fabelbattler
 
-- Unsere Version: 1.20.1; 123 Einheiten, 51 Zauber, 18 Gegner-Keys, MOB_CAP=500, Feld 18x14.
+- Unsere Version: 1.20.4; 123 Einheiten, 51 Zauber, 18 Gegner-Keys, MOB_CAP=500, Feld 18x14.
 - Die Referenz hat deutlich mehr Inhalte, aber **andere** Einheiten und eine andere Karte.
 - Kopiere KEINE Grafiken, Texte oder Namen der Referenz. Übertrage nur Mechaniken und Lesbarkeit.
 
