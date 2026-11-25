@@ -1,3 +1,5 @@
+2026-11-25: Release 1.20.1 ausgeliefert (CI 45524168125 grün, APK-SHA 10312d0b…92b0); nächste Version 1.20.2.
+
 2026-11-25: Endmarke aufgehoben – 1.20.1 gesetzt (Code 1201), Versionierer lässt 1.20.2 usw. bis 1.99.9 zu; Automation und Docs angepasst.
 
 2026-11-24: Runden-Vorschau im Prep-HUD ergänzt (Art, Mobs, Gold aus denselben Regeln wie der Kampf). Alle Checks in beiden Kopien grün, CI 45506294985 grün, 1.20.0.apk neu geladen.
