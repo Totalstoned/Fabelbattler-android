@@ -1,3 +1,4 @@
+- [x] **60. Menschen-Technik, eindeutige Fähigkeiten und Lagerbevölkerung**: 18 eigene Menschen-Techniken, 118 verschiedene Fähigkeiten (Godzilla/Kong-Familien als Ausnahme), 5 Monster-Archetypen mit 5 Effekten, 2x–20x mehr Menschen als Monster, Klassen-Spezialisten und Level-100-Pfad; Mana/Pause-Regression zurückgebaut, Version 1.20.8.
 - [x] **59. Mana und Eingriffe im Kampf entfernt**: Die Runde läuft komplett automatisch; Draft/Reroll bleiben zwischen den Wellen. Alte Mana-/Item-/Pause-Tokens sind aus UI und Checks entfernt, neue Abwesenheitsprüfungen in `check_data.py`/`check_runtime.js`, alle drei Checks in beiden Kopien grün, Version 1.20.6.
 - [x] **58. Relikte nach Boss-Wellen**: Fünf eigene Relikte mit kleinen Passiv-Boni für unsere Helden, deterministisch nach Welle 10, 20, … vergeben; Anzeige in bestehenden UI-Flächen, Invarianten unverändert, Version 1.20.5.
 

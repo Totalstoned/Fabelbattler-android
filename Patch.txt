@@ -276,3 +276,14 @@ Schritt 4: Version 1.20.6. Flint legt seine APKs künftig in den
 Schritt 5: Beide Entwicklungen dürfen sich unterscheiden; du
            entscheidest später, wann und wie sie zusammengeführt
            werden. Keiner überschreibt den anderen.
+Schritt 6: Version 1.20.8. Die Menschen im Lager nutzen jetzt 18
+           verschiedene Techniken gegen Monster (Gewehr, Wasserwerfer,
+           Kanone, EMP, Molotow, Notfallset ...). Keine Einheit hat
+           mehr dieselbe Fähigkeit wie eine andere – nur Godzilla
+           (Atomstrahl) und King Kong (Brusttrommeln) bleiben Marken.
+           Monster haben fünf verschiedene Treffereffekte.
+           Im Lager leben 2- bis 20-mal mehr Menschen als Monster;
+           Rentner sind schwach und stehen hinten bei den Sanitätern,
+           Soldaten und Zerstörer stehen vorn. Für jede Klasse gibt
+           es einen menschlichen Spezialisten mit Gegenbonus.
+           Der Kampf bleibt weiterhin komplett automatisch.
