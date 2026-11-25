@@ -1,3 +1,5 @@
+- 2026-11-25: Release **1.20.4** gebaut: CI 45606526511 grün, `1.20.4.apk` SHA-256 `70e0908bb64a59f4b639141a77cd9e6e17028f1ce2fbf58af2c2fb004c5852dc`, alle drei Checks in beiden index3d-Kopien grün, Bugfix „Kampf startet nach viel Reroll mit leerem Gold“.
+
 - 2026-11-25: Release **1.20.4** gebaut: CI (laufend), `1.20.4.apk` (nach Download), alle drei Checks in beiden index3d-Kopien grün. **Bugfix**: Nach starkem Reroll bis kein Gold mehr da war, konnte der Kampf nicht mehr starten; `startBattle` erlaubt jetzt Kampf mit aktueller Auswahl, wenn Gold fuer das naechste Wesen fehlt, und der Draft-Start-Button wurde entsprechend freigegeben.
 
 - 2026-11-25: Release **1.20.3** gebaut: CI 45602329085 grün, `1.20.3.apk` SHA-256 `d198d8bc42ff097a72b29d89849953ee0a02bdd4a274bcf6688fb07fc2760a1e`, drei Checks in beiden index3d-Kopien grün, sechs eigene Arena-Szenen, Invarianten unverändert.
