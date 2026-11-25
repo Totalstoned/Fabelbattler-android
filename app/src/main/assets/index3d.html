@@ -758,7 +758,7 @@ const SYNERGY = {
   Stahl:m=>{m.shieldPct+=0.12;m.dr+=0.08;},
   Element:m=>{m.burn+=0.02;m.splash+=0.12;}
 };
-const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null,lastReport:null,hitStop:0};
+const G = {team:[],wave:1,gold:20,mana:30,maxMana:100,phase:"menu",battle:null,uid:0,effects:[],particles:[],shockwaves:[],teamSize:4,items:{heal:2,shield:1,nova:1},selectedUnitId:null,lastReport:null,hitStop:0,relics:[],lastRelic:null};
 const SIM = {headless:false};
 const TOAST_MAX = 3;
 const TOAST_DEDUP_MS = 700;
@@ -811,6 +811,41 @@ function nextWavePreview(wave){
   const gold = 5+w*2+elites*2+(isBoss?15:0);
   const kind = isBoss ? "👑 Boss" : isElite ? "✨ Elite×"+elites : "Standard";
   return {wave:w,kind,count,elites,gold,isBoss,isElite};
+}
+// Relikte: kleine Belohnung nach Boss-Wellen. Eigene Namen und Effekte, keine
+// Grafiken oder Texte aus der Referenz. Die Folge ist fest, nicht zufällig.
+const RELICS = [
+  {key:"wolfszahn",name:"Wolfszahn",emoji:"🐺",bonus:"ATK +8 %",atk:1.08},
+  {key:"eisenwurzel",name:"Eisenwurzel",emoji:"🌳",bonus:"HP +8 %",hp:1.08},
+  {key:"federmantel",name:"Federmantel",emoji:"🪶",bonus:"Tempo +8 %",spd:1.08},
+  {key:"mondglas",name:"Mondglas",emoji:"🌙",bonus:"Schild +6 %",shieldPct:0.06},
+  {key:"bernsteinherz",name:"Bernsteinherz",emoji:"🟠",bonus:"Rüstung +6 %",dr:0.06}
+];
+const RELIC_EVERY = BOSS_EVERY;
+function relicForWave(wave){
+  const w = Math.max(0,Math.floor(Number(wave)||0));
+  if(w <= 0 || w % RELIC_EVERY !== 0) return null;
+  return RELICS[(Math.floor(w/RELIC_EVERY)-1) % RELICS.length];
+}
+function grantRelicForWave(wave){
+  const r = relicForWave(wave);
+  G.lastRelic = r;
+  if(!r) return null;
+  if(!G.relics.includes(r.key)) G.relics.push(r.key);
+  return r;
+}
+function relicBonuses(){
+  const b = {hp:1,atk:1,spd:1,shieldPct:0,dr:0};
+  G.relics.forEach(k => {
+    const r = RELICS.find(x => x.key === k);
+    if(!r) return;
+    if(r.hp) b.hp *= r.hp;
+    if(r.atk) b.atk *= r.atk;
+    if(r.spd) b.spd *= r.spd;
+    if(r.shieldPct) b.shieldPct += r.shieldPct;
+    if(r.dr) b.dr += r.dr;
+  });
+  return b;
 }
 const GRID = {cols:18,rows:14};
 const TILE = 1.35;
@@ -1123,6 +1158,8 @@ function beginRun(){
   G.gold = 20;
   G.mana = 30;
   G.items = {heal:2,shield:1,nova:1};
+  G.relics = [];
+  G.lastRelic = null;
   G.battle = null;
   G.selectedUnitId = null;
   rerollCount = 0;
@@ -2479,6 +2516,14 @@ function recalcUnit(u){
   const total = G.battle ? sideUnits(G.battle,u.side).length : list.length;
   const swarm = swarmStacks(total);
   if(swarm > 0){ m.hp *= 1+0.04*swarm; m.atk *= 1+0.04*swarm; }
+  // Relikte stärken nur unsere Helden, nie gegnerische Teams oder Schwärme.
+  // recalcUnit() läuft auch im Headless-Modus, damit Anzeige und Simulation
+  // denselben Bonus sehen.
+  if(u.side !== "enemy"){
+    const rb = relicBonuses();
+    m.hp *= rb.hp; m.atk *= rb.atk; m.spd *= rb.spd;
+    m.shieldPct += rb.shieldPct; m.dr += rb.dr;
+  }
   u.modsEffective = m;
   u.maxHp = Math.round(u.baseHp*m.hp);
   u.atk = u.baseAtk*m.atk;
@@ -3083,7 +3128,9 @@ function showBattleReport(win){
   const r = battleReportData(win);
   if(SIM.headless) return r;
   const title = document.getElementById("battleReportTitle");
-  title.textContent = (r.win ? "Welle "+r.wave+" besiegt" : "Niederlage in Welle "+r.wave);
+  const relic = r.win ? G.lastRelic : null;
+  title.textContent = (r.win ? "Welle "+r.wave+" besiegt" : "Niederlage in Welle "+r.wave)+
+    (relic ? " · Relikt "+relic.emoji+" "+relic.name : "");
   title.className = r.win ? "report-win" : "report-loss";
   document.getElementById("battleReportDamage").textContent = String(r.damage);
   document.getElementById("battleReportHeal").textContent = String(r.heal);
@@ -3147,6 +3194,7 @@ function winBattle(){
   const duration = b ? Math.floor(b.time) : 0;
   const survivors = b ? b.player.filter(u => !u.isDead).length : 0;
   const heroTotal = b ? b.player.length : G.team.length;
+  const relic = grantRelicForWave(cleared);
   showBattleReport(true);
   G.phase = "prep";
   G.battle = null;
@@ -3170,7 +3218,8 @@ function winBattle(){
     G.teamSize++;
     showToast("Neues Wesen verfügbar: Team wächst auf "+G.teamSize+" (max "+TEAM_GROWTH_CAP+")");
   }
-  showToast("Welle "+cleared+" besiegt! +"+reward+" Gold"+(bossGold ? " (Boss +"+bossGold+")" : eliteGold ? " (Elite +"+eliteGold+")" : "")+" · "+duration+"s · Helden "+survivors+"/"+heroTotal);
+  showToast("Welle "+cleared+" besiegt! +"+reward+" Gold"+(bossGold ? " (Boss +"+bossGold+")" : eliteGold ? " (Elite +"+eliteGold+")" : "")+
+    (relic ? " · Relikt "+relic.emoji+" "+relic.name+" ("+relic.bonus+")" : "")+" · "+duration+"s · Helden "+survivors+"/"+heroTotal);
   syncUnits();
   updateHud();
   updateTeamList();
@@ -3185,6 +3234,7 @@ function loseBattle(){
   const survivors = b ? b.player.filter(u => !u.isDead).length : 0;
   const heroTotal = b ? b.player.length : G.team.length;
   const foesLeft = b ? sideUnits(b,"enemy").filter(u => !u.isDead).length : 0;
+  G.lastRelic = null;
   showBattleReport(false);
   G.phase = "defeat";
   G.battle = null;
@@ -3591,7 +3641,8 @@ function updateHud(){
   previewEl.classList.toggle("show",!!preview);
   previewEl.classList.toggle("elite",!!preview && preview.isElite);
   previewEl.classList.toggle("boss",!!preview && preview.isBoss);
-  previewEl.textContent = preview ? "⇢ Welle "+preview.wave+": "+preview.kind+" · "+preview.count+" Mobs · +"+preview.gold+" Gold" : "";
+  previewEl.textContent = preview ? "⇢ Welle "+preview.wave+": "+preview.kind+" · "+preview.count+" Mobs · +"+preview.gold+" Gold"+
+    (G.relics.length ? " · Relikte "+G.relics.length : "") : "";
   updateBattleTimer();
 }
 function updateManaBar(){

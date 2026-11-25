@@ -1,3 +1,5 @@
+- [x] **58. Relikte nach Boss-Wellen**: Fünf eigene Relikte mit kleinen Passiv-Boni für unsere Helden, deterministisch nach Welle 10, 20, … vergeben; Anzeige in bestehenden UI-Flächen, Invarianten unverändert, Version 1.20.5.
+
 - [x] **57. Reroll-Overflow beheben**: Nach viel Reroll mit leerem Goldbudget startet der Kampf wieder; Draft-Start-Button und `startBattle` greifen jetzt auf Gold-Bedarf.
 
 - [x] **56. Sechs eigene Szenen im Wellenzyklus**: Referenz-Idee „6 Akte" als prozedurale Palette auf dem 18x14-Feld, ohne UI-Änderung, Version 1.20.3.

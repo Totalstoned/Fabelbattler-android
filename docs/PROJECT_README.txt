@@ -1,3 +1,5 @@
+   - Relikte ab 1.20.5: Fünf eigene Relikte nach Boss-Wellen (10, 20, …) mit kleinen Team-Boni; Anzeige in Nachkampf-Auswertung, Toast und Wellen-Vorschau, Interface-Größe fix.
+
   - Bugfix ab 1.20.4: Kampf nach viel Reroll (Auswahl voll, Gold leer) startbar.
 
   - Szenenwechsel ab 1.20.3: sechs eigene Farbszenen (Feld, Steppe, Ödnis, Höhle, Berg, Arena) im 6-Wellen-Zyklus; Interface-Größe bleibt fix.

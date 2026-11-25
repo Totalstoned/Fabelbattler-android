@@ -167,6 +167,11 @@ for (const id of ['mdRoleFilters', 'mdClassFilter', 'mdSynergy', 'hudItems', 'bt
 if (!html.includes('function nextWavePreview') || !html.includes('G.phase === "battle" ? null : nextWavePreview(G.wave)')) {
   throw new Error('Wellen-Vorschau fehlt oder ist nicht an den Prep-HUD angebunden');
 }
+if (!html.includes('const RELICS = [') || !html.includes('function grantRelicForWave') ||
+    !html.includes('const relic = grantRelicForWave(cleared);') ||
+    !html.includes(' Relikt "+relic.emoji+" "+relic.name')) {
+  throw new Error('Relikt-Belohnung nach Boss-Wellen fehlt');
+}
 // Toasts werden im Headless-Modus unterdrückt. Der Zähler macht das prüfbar,
 // ohne auf das Aussehen des echten DOM-Containers angewiesen zu sein.
 const toastBox = documentObj.getElementById('toasts');
@@ -2398,4 +2403,54 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau)`);
+// Relikte: feste Belohnung nach Boss-Wellen, Passiv-Bonus nur fuer our Team.
+vm.runInContext(`
+  globalThis.__relicDefs = RELICS.length === 5 &&
+    RELICS.every(r => r.key && r.name && r.emoji && r.bonus);
+  globalThis.__relicBoss = !!relicForWave(10) && !relicForWave(9) &&
+    !relicForWave(11) && relicForWave(20).key !== relicForWave(10).key;
+  G.relics = [];
+  G.lastRelic = null;
+  const r10 = grantRelicForWave(10);
+  globalThis.__relicGrant = !!r10 && G.relics.length === 1 &&
+    G.relics[0] === r10.key && G.lastRelic === r10;
+  grantRelicForWave(10);
+  globalThis.__relicUnique = G.relics.length === 1;
+  const rb = relicBonuses();
+  globalThis.__relicBonus = rb.atk > 1 && Math.abs(rb.hp-1) < 1e-9 &&
+    rb.spd === 1 && rb.shieldPct === 0 && rb.dr === 0;
+  const relicHero = createUnit("bigfoot",1,"player");
+  const relicFoe = createUnit("bigfoot",1,"enemy");
+  globalThis.__relicHeroOnly = relicHero.atk > relicFoe.atk && relicHero.maxHp === relicFoe.maxHp &&
+    Math.abs(relicHero.atk/relicFoe.atk-1.08) < 1e-6;
+  G.team = [relicHero];
+  G.battle = {player:[relicHero],enemies:[relicFoe],playerMobs:[],enemyMobs:[],time:0,stats:{damage:{},heal:{}}};
+  G.phase = "battle";
+  G.wave = 10;
+  winBattle();
+  globalThis.__relicWin = G.lastRelic === r10 &&
+    document.getElementById("battleReportTitle").textContent.indexOf("Relikt") >= 0;
+  G.phase = "prep";
+  G.battle = null;
+  G.wave = 11;
+  updateHud();
+  globalThis.__relicHud = document.getElementById("nextWavePreview").textContent.indexOf("Relikte 1") >= 0;
+  beginRun();
+  closeDraft();
+  globalThis.__relicReset = G.relics.length === 0 && G.lastRelic === null;
+`, ctx);
+for (const [flag, message] of [
+  ['__relicDefs', 'Relikt-Liste ist unvollstaendig'],
+  ['__relicBoss', 'Relikte werden nicht deterministisch nach Boss-Wellen vergeben'],
+  ['__relicGrant', 'Relikt wird nicht ins Team-Set eingetragen'],
+  ['__relicUnique', 'Dasselbe Relikt wird mehrfach eingetragen'],
+  ['__relicBonus', 'Relikt-Bonus stimmt nicht mit dem angezeigten Effekt ueberein'],
+  ['__relicHeroOnly', 'Relikt-Bonus wirkt auf Gegner oder auf die falschen Werte'],
+  ['__relicWin', 'Boss-Sieg zeigt das Relikt nicht in der Auswertung'],
+  ['__relicHud', 'Relikt-Zaehler fehlt in der Wellen-Vorschau'],
+  ['__relicReset', 'Relikte werden bei einem neuen Lauf nicht zurueckgesetzt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+mana+zauberbereit+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte)`);

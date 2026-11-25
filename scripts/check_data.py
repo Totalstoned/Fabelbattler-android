@@ -415,6 +415,25 @@ for token in ['id="battleReport"', 'id="battleReportTitle"', 'id="battleReportDa
     if token not in src:
         problems.append('Nachkampf-Auswertung fehlt in index3d.html: ' + token)
 
+# Relikte nach Boss-Wellen: eigene Mechanik, keine Namen oder Grafiken der Referenz.
+relic_start = src.find('const RELICS = [')
+relic_block = src[relic_start:src.find('];',relic_start)] if relic_start >= 0 else ''
+if relic_block.count('key:') != 5:
+    problems.append('Relikte: erwartet 5, gefunden ' + str(relic_block.count('key:')))
+for name in ['Wolfszahn','Eisenwurzel','Federmantel','Mondglas','Bernsteinherz']:
+    if name not in relic_block:
+        problems.append('Eigenes Relikt fehlt: ' + name)
+for token in ['const RELIC_EVERY = BOSS_EVERY;', 'function relicForWave(wave)',
+              'function grantRelicForWave(wave)', 'function relicBonuses()',
+              'if(u.side !== "enemy"){', 'const rb = relicBonuses();',
+              'G.lastRelic = r;', 'G.relics.push(r.key)',
+              'G.relics = [];', 'G.lastRelic = null;',
+              'const relic = grantRelicForWave(cleared);',
+              ' Relikt "+relic.emoji+" "+relic.name',
+              ' · Relikte "+G.relics.length']:
+    if token not in src:
+        problems.append('Relikt-Belohnung fehlt in index3d.html: ' + token)
+
 # Visueller Hit-Stop: nur die Darstellung pausieren, die Simulation laeuft weiter.
 for token in ['hitStop:0', 'const HIT_STOP_CRIT = 0.045', 'const HIT_STOP_KILL = 0.075',
               'const HIT_STOP_BOSS = 0.12', 'function triggerHitStop', 'function visualFrameDt',
