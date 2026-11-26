@@ -2,7 +2,7 @@
 
 Frühere Grafik-Ziele sind zurückgestellt. Neue Reihenfolge: Fähigkeiten, dann UI-Rückmeldung, dann optional Grafik.
 
-## Erledigt in 1.22.9
+## Erledigt in 1.22.9 / 1.23.0
 - [x] **82. Orientierung neu schreiben**: `/root/projects/FABELBATTLER/AGENTS.md`, `FRAGEN.md` und diese `TASKS.md` auf Mechanik zuerst umgestellt; Fragekatalog für 10-Minuten-Intervalle.
 - [x] **83. Godzilla-Atomstrahl**: `SPELLS.atomstrahl/multi_atom/schmelzstrahl` sind `charge=true`; `tickMechanics()` lädt, `castMechanic()` nutzt `sp.range + 2*charge` und `dmg*(1+0.6*charge)` plus Burn/Splash. Ladegrenze steigt mit Level/Boss/Elite (1–3 s). Check-Token `atomladung`.
 - [x] **84. King-Kong-Sturm**: `+50 %` Tempo für 4 s (`speedSurge`), Sturm auf das Ziel mit höchstem ATK, Spott 3 s und Kurz-Betäubung. Check-Token `koenig-kong-sturm`.
@@ -12,8 +12,9 @@ Frühere Grafik-Ziele sind zurückgestellt. Neue Reihenfolge: Fähigkeiten, dann
 - [x] **89. Sechs menschliche CC0-Atlanten**: `missionar`, `sanitaeter`, `rebelle`, `armee`, `bundeswehr`, `soeldner` sind jetzt registriert (82/123), mit `CC0_SOURCE.md`; Token `24-neue-atlanten`.
 
 ## Aktiv / nächster Block
-- [ ] **87. Fragen und UI**: nach jedem Block Fragen aus `FRAGEN.md` stellen; UI nur nach Freigabe ändern. (Fragekatalog wurde angelegt, Rückmeldung offen.)
-- [ ] **90. Feinabstimmung nach Feedback**: Zahlen/Reihenfolge der Fähigkeiten und ggf. UI nur auf Antwort hin ändern.
+- [x] **87. Fragen und UI (Feedback 1)**: User-Antworten: Atomladung sofort **1/2/3 s** (nicht levelabhängig), HUD/Pause/Startbild **unverändert**, als Design-Alternative **Ladeleiste** gewählt.
+- [x] **90. Ladeleiste**: `makeChargeBar()` über dem Wesen; zeigt Atomladung (0–3 s) und Rumpels Kessel (0–2 s), voll = gelb. Evolutionsstufe wirkt jetzt über `mechanicEvolution()` auf den Schaden statt auf die Ladedauer. Token `ladeleiste-3s`.
+- [ ] **91. Nächster Frageblock**: nach diesem Release erneut Fähigkeiten/UI/Design abfragen (10-Minuten-Intervall).
 
 ## Zurückgestellt (nicht verworfen)
 - Übrige 41 Wesen-Atlanten, weitere Stadt-Dekoration, echtes Sprite-/Engine-Upgrade.

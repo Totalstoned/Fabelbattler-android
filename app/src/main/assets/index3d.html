@@ -2481,6 +2481,25 @@ function makeHpBar(){
   group.userData.cdFill = cdFill;
   return group;
 }
+// Sichtbare Ladeleiste ueber dem Gegner/Helden: 1/2/3 Sekunden Atomladung
+// und Rumpels Kessel-Sprung sind damit auch im dichten Schwarm lesbar.
+function makeChargeBar(){
+  const group = new THREE.Group();
+  const bg = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.74,0.075),
+    new THREE.MeshBasicMaterial({color:0x0b0e13,depthTest:false,depthWrite:false})
+  );
+  const fill = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.68,0.045),
+    new THREE.MeshBasicMaterial({color:0x67e8f9,depthTest:false,depthWrite:false})
+  );
+  fill.position.z = 0.003;
+  group.add(bg,fill);
+  group.renderOrder = 16;
+  group.visible = false;
+  group.userData.fill = fill;
+  return group;
+}
 const MONSTER_STYLE = {
   godzilla:{type:"kaiju",variant:"classic",body:0x39434b,trim:0x82939d,plate:0xd9e6ee,glow:0x62d9ff,glowIntensity:0.18,scale:1.08,hpY:1.78,radius:0.56,plates:5,tail:1.35},
   mothra:{type:"moth",body:0xe8eef5,trim:0xf6c453,plate:0x7fc7ff,glow:0x63c7ff,glowIntensity:0.22,scale:1.12,hpY:1.55,radius:0.62},
@@ -3433,13 +3452,17 @@ function makeCharacter(u){
   hp.position.y = hpY;
   hp.quaternion.copy(camera.quaternion);
   group.add(hp);
+  const chargeBar = makeChargeBar();
+  chargeBar.position.y = hpY-0.24;
+  chargeBar.quaternion.copy(camera.quaternion);
+  group.add(chargeBar);
   const label = makeTextSprite(u.name+" L"+u.level,u.side === "player" ? "#e6edf5" : "#ff9a9a",0.8);
   label.position.y = hpY+0.43;
   group.add(label);
   const portrait = makePortraitSprite(u.key);
   portrait.position.y = hpY+0.94;
   group.add(portrait);
-  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,rotors:rotors,animPhase:Math.random()*Math.PI*2,walk:0};
+  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,chargeBar:chargeBar,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,rotors:rotors,animPhase:Math.random()*Math.PI*2,walk:0};
   return group;
 }
 function syncUnits(){
@@ -4170,10 +4193,11 @@ function applyOnHit(u,target,b){
   if(e.howl) livingAlliesOf(u,b).forEach(a => { addStatus(a,"atkBuff",3,e.howl); });
 }
 // ---- Neue Spielmechaniken (Mechanik-Pivot) ----
-// Evolutionsstufe = Level + Boss/Elite-Bonus; sie bestimmt die Ladegrenze.
-function mechanicChargeCap(u){
-  const stage = (u.level||1) + (u.isBoss ? 2 : u.isElite ? 1 : 0);
-  return Math.min(3, 1 + Math.max(0,stage-1)*0.25);
+// User-Feedback: drei Sekunden Ladezeit stehen sofort zur Verfuegung; die
+// Evolutionsstufe erhoeht weiterhin den Schaden, nicht die Ladedauer.
+function mechanicChargeCap(u){ return 3; }
+function mechanicEvolution(u){
+  return 1+Math.max(0,(u.level||1)-1)*0.08+(u.isBoss ? 0.2 : u.isElite ? 0.1 : 0);
 }
 function breakBond(u){
   if(u.bondBroken || u.bondTargetId == null || !G.battle) return;
@@ -4208,7 +4232,7 @@ function castMechanic(u,target,b,sp){
     u.spellCd = sp.cd/Math.max(0.7,u.spd);
     u.animAttack = 0.3;
     u.charge = 0;
-    const dmg = u.atk*sp.dmg*(1+charge*0.6);
+    const dmg = u.atk*sp.dmg*(1+charge*0.6)*mechanicEvolution(u);
     applyDamage(target,dmg,u,{});
     livingEnemiesOf(u,b).filter(t => t !== target && dist(t,target) < 1.6+charge*0.4)
       .forEach(t => applyDamage(t,dmg*(sp.splash||0.4),u,{number:false}));
@@ -4825,6 +4849,17 @@ function updateVisuals(time,dt,viewDt){
     group.userData.cdFill.scale.x = Math.max(0.001,cdRatio);
     group.userData.cdFill.position.x = -(1-cdRatio)*0.43;
     group.userData.cdFill.material.color.setHex(cdRatio >= 1 ? 0x86efac : 0x67e8f9);
+    const chargeBar = group.userData.chargeBar;
+    if(chargeBar){
+      const canCharge = !!(SPELLS[u.spell] && SPELLS[u.spell].charge) || u.key === "rumpelstilzchen";
+      const cap = u.key === "rumpelstilzchen" ? 2 : 3;
+      const ratio = canCharge && !u.isDead ? clamp((u.charge||0)/cap,0,1) : 0;
+      chargeBar.visible = ratio > 0.01;
+      chargeBar.userData.fill.scale.x = Math.max(0.001,ratio);
+      chargeBar.userData.fill.position.x = -(1-ratio)*0.34;
+      chargeBar.userData.fill.material.color.setHex(ratio >= 0.99 ? 0xfcd34d : 0x67e8f9);
+      chargeBar.quaternion.copy(camera.quaternion);
+    }
     const statusKey = dominantStatusKey(u) ||
       (u.modsEffective && u.modsEffective.taunt ? "taunt" : null);
     const statusMeta = statusKey ? STATUS_META[statusKey] : null;

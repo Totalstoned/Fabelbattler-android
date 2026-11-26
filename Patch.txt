@@ -427,3 +427,8 @@ Schritt 27: Version 1.22.9. Die Mechaniken sind jetzt der Mittelpunkt:
            Waldwesen heilen und staerken, Rumpelstilzchen singt und lockt
            Gegner in die Ecke. Ausserdem laeuft die CC0-Universal-Animation
            mit 43 Bewegungen auf allen menschlichen Einheiten.
+
+Schritt 28: Version 1.23.0. Godzilla kann jetzt sofort bis drei Sekunden
+           aufladen; je laenger er laedt, desto weiter und staerker trifft
+           der Atomstrahl. Ueber jedem Wesen erscheint eine Ladeleiste.
+           Das HUD bleibt unveraendert.
