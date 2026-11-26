@@ -1,10 +1,5 @@
-# Voxel Pack
+# Boden-Texturen (CC0)
 
-- **Source:** [Kenney](https://kenney.nl/assets/voxel-pack)
-- **License:** CC0-1.0 (public domain equivalent - free for commercial use, no attribution required)
-- **Tags:** character, items, tile, voxel
-- **Genres:** characters, tiles-terrain
-- **Files:** 208
-- **Removed by safety scan:** 3 executable/script file(s)
-
-Credit is not required but is appreciated by the author.
+- **Quelle:** [Kenney Voxel Pack](https://kenney.nl/assets/voxel-pack), CC0-1.0. Lokale 128x128-Kacheln `stone_grass.png`, `stone_dirt.png`.
+- **1.21.5:** Aus den CC0-Kacheln wurden 2048x2048-Mosaike aus 16 gedrehten/gespiegelten/farbvariierten Varianten erzeugt (ImageMagick). Dadurch wirkt der Boden weniger gleichförmig, ohne externe Bilder. Die 8x8-Rotationen bleiben lokal im APK.
+- **Lizenz:** CC0-1.0, keine Namensnennung erforderlich, keine Wikipedia-/Wikimedia-Quelle.

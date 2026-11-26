@@ -334,3 +334,11 @@ Schritt 12: Version 1.21.4. Die ⏸/▶-Taste unten rechts pausiert jetzt den
            Gerüst für eine Windows-EXE; gebaut wird sie erst auf einem PC
            mit Unreal Engine 5.7 oder neuer.
 
+Schritt 13: Version 1.21.5. Sechs neue Wesen sind im Atlas drehbar:
+           Burning Godzilla, Minilla, Gamera, Anguirus, Kumonga und
+           Destoroyah. Der Boden ist jetzt aus 2K-Kacheln statt 128 px.
+           Städte, Deckung und Wildnis werden jeden Kampf neu erzeugt,
+           mit echten Höhenunterschieden; die Monster finden trotzdem
+           ihren Weg. Die Rollen heißen jetzt Tank, DPS, Heiler,
+           Verstärker und Sonderwesen – Mothra gehört zu den Zwillingen.
+

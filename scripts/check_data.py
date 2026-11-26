@@ -210,9 +210,17 @@ for token in ['const COVER_HEIGHT = {', 'let TOWN_CELL_BY_KEY = new Map();',
               'function coverHeight(u)', 'function coverRangeBonus(u)', 'function coverReduction(u)',
               'HUMAN_AGGRO+coverRangeBonus(u)',
               'const reach = u.isHuman ? 0.9+coverRangeBonus(u) : 0.9;',
-              'human:0.27', 'Die Front zum', 'const floor = new THREE.Mesh(']:
+              'human:0.27', 'Die Front zum', 'const floor = new THREE.Mesh(',
+              'function refreshTownCover(layout)', 'const houses = 5+Math.floor(r()*5)',
+              'const trenches = 4+Math.floor(r()*4)', 'const walls = 3+Math.floor(r()*4)',
+              'let wildLayer = null;', 'function buildWilderness(layout)',
+              'buildWilderness(layout);', 'cell.height||COVER_HEIGHT']:
     if token not in src:
-        problems.append('Hoehen-Deckung/begehbare Haeuser fehlt: ' + token)
+        problems.append('Prozedurale Stadt/Wildnis/Hoehen-Deckung fehlt: ' + token)
+for token in ['label:"Verstärker"', 'SPECIAL:{', 'label:"Sonderwesen"',
+              'ROSTER.mothra.role = "SPECIAL"', 'Mothra-Zwillinge']:
+    if token not in src:
+        problems.append('Rollen Heiler/DPS/Tank/Verstärker/Sonderwesen fehlen: ' + token)
 
 for token in ['const START_TEAM_MIN = 3;', 'const TEAM_GROWTH_CAP = 10;', 'if(G.team.length < G.teamSize && G.gold >= 2){ openDraft(); return; }',
               'start.disabled = G.team.length < G.teamSize && G.gold >= 2;',
@@ -439,6 +447,7 @@ if not (path.parent / 'creatures' / 'bigfoot' / 'turntable.png').is_file():
 # CC0-Atlas: alle drei Kernwesen haben ein lokales Turntable-Sheet.
 for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
             'mechagodzilla', 'kingghidorah', 'rodan', 'shingodzilla',
+            'burninggodzilla', 'minilla', 'gamera', 'anguirus', 'kumonga', 'destoroyah',
             'rumpelstilzchen', 'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)

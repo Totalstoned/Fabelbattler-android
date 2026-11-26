@@ -486,8 +486,10 @@ Object.entries(RACE_PACKS).forEach(([race,list]) => {
 const ENEMY_ONLY = {oma:1,opa:1,feuerwehr:1,kampftruppe:1,soldat:1,missionar:1,sanitaeter:1,rebelle:1,armee:1,bundeswehr:1,soeldner:1,feuerwehrwagen:1,krankenwagen:1,panzer:1,hubschrauber:1,kampfflugzeug:1,drohne:1,teddy:1};
 const FOE_KEYS = Object.keys(ROSTER).filter(k => ENEMY_ONLY[k]);
 const ALL_KEYS = Object.keys(ROSTER).filter(k => !ENEMY_ONLY[k]);
-const ROLE_META = {TANK:{col:"#6ea8fe",label:"Tank"},DPS:{col:"#e5484d",label:"DPS"},HEALER:{col:"#4ade80",label:"Heiler"},BUFFER:{col:"#a78bfa",label:"Puffer"}};
+const ROLE_META = {TANK:{col:"#6ea8fe",label:"Tank"},DPS:{col:"#e5484d",label:"DPS"},HEALER:{col:"#4ade80",label:"Heiler"},BUFFER:{col:"#a78bfa",label:"Verstärker"},SPECIAL:{col:"#f9a8d4",label:"Sonderwesen"}};
 const ROLES = Object.keys(ROLE_META);
+// Mothra ist ein Sonderwesen: in den Filmen tritt sie als Zwillingspaar auf.
+ROSTER.mothra.role = "SPECIAL";
 const CLASS_META = {
   Wald:{col:"#5fd88a",label:"Wald",desc:"+20 % HP"},
   Magie:{col:"#c084fc",label:"Magie",desc:"+15 % ATK"},
@@ -767,6 +769,7 @@ Object.keys(ROSTER).forEach((k,i) => {
   ABILITY_SPELL[sig] = tech || ABILITY_SPELL[base] || (SPELLS[base] ? base : "schlag");
   u.ability = sig;
 });
+ABILITY_DESC.mothra_sig = "Mothra-Zwillinge: zwei Lichtflammen und ein Seidenschleier – das Sonderwesen aus den Godzilla-Filmen";
 Object.keys(ROSTER).forEach(k => {
   const u = ROSTER[k];
   u.spell = SPELL_OVERRIDE[k] || ABILITY_SPELL[u.ability] || (SPELLS[u.ability] ? u.ability : "schlag");
@@ -880,16 +883,52 @@ let TOWN_CELL_BY_KEY = new Map();
 // Kaiju ragt über sie hinaus.
 const HABITAT_SCALE = {kaiju:1.2,building:0.62,human:0.27,monster:0.45};
 function townDirection(c){ return c.gx < GRID.cols/2 ? 1 : -1; }
-function refreshTownCover(c){
-  const dir = townDirection(c);
-  const cell = (o,kind) => ({
+function refreshTownCover(layout){
+  const c = layout.corner, dir = townDirection(c);
+  // Keine feste Zahl Häuser/Gräben mehr: jede Welle und jeder Salz-Wert
+  // erzeugt eine andere Stadt mit anderer Deckung und anderen Höhen.
+  const r = mapRandom(layout.wave||1,layout.salt||0);
+  const used = new Set();
+  const cell = (o,kind,height) => ({
     gx:clamp(c.gx+o[0]*dir,0,GRID.cols-1),
-    gy:clamp(c.gy+o[1],0,GRID.rows-1),kind:kind,dir:dir
+    gy:clamp(c.gy+o[1],0,GRID.rows-1),kind:kind,dir:dir,height:height
   });
-  TOWN_HOUSES = TOWN_HOUSE_OFFSETS.map(o => cell(o,"house"));
-  TOWN_TRENCHES = TOWN_TRENCH_OFFSETS.map(o => cell(o,"trench"));
-  TOWN_WALLS = TOWN_WALL_OFFSETS.map(o => cell(o,"wall"));
-  TOWN_TOWER = cell(TOWN_TOWER_OFFSET,"tower");
+  const fresh = (gen,kind,min,max) => {
+    for(let tries=0;tries<40;tries++){
+      const o = gen();
+      const p = cell(o,kind,min+r()*(max-min));
+      const key = p.gx+","+p.gy;
+      if(used.has(key)) continue;
+      used.add(key);
+      return p;
+    }
+    return cell(gen(),kind,min+r()*(max-min));
+  };
+  TOWN_HOUSE_OFFSETS.length = 0;
+  TOWN_TRENCH_OFFSETS.length = 0;
+  TOWN_WALL_OFFSETS.length = 0;
+  TOWN_HOUSES = []; TOWN_TRENCHES = []; TOWN_WALLS = [];
+  const houses = 5+Math.floor(r()*5);
+  for(let i=0;i<houses;i++){
+    const o = i === 0 ? [-1,2] : i === 1 ? [0,0] :
+      [Math.floor(r()*7)-2,Math.floor(r()*8)-3];
+    TOWN_HOUSES.push(fresh(()=>o,"house",0.65,1.1));
+  }
+  const trenches = 4+Math.floor(r()*4);
+  for(let i=0;i<trenches;i++){
+    TOWN_TRENCHES.push(fresh(()=>[Math.floor(r()*5),i%2 ? -1 : 0],"trench",0.12,0.3));
+  }
+  const walls = 3+Math.floor(r()*4);
+  for(let i=0;i<walls;i++){
+    TOWN_WALLS.push(fresh(()=>[1+Math.floor(r()*3),1],"wall",0.5,0.62));
+  }
+  TOWN_TOWER = fresh(()=>[3+Math.floor(r()*3),2+Math.floor(r()*2)],"tower",1.6,2.2);
+  const backOffset = p => [(p.gx-c.gx)*dir,p.gy-c.gy];
+  TOWN_HOUSE_OFFSETS.push(...TOWN_HOUSES.map(backOffset));
+  TOWN_TRENCH_OFFSETS.push(...TOWN_TRENCHES.map(backOffset));
+  TOWN_WALL_OFFSETS.push(...TOWN_WALLS.map(backOffset));
+  TOWN_TOWER_OFFSET[0] = (TOWN_TOWER.gx-c.gx)*dir;
+  TOWN_TOWER_OFFSET[1] = TOWN_TOWER.gy-c.gy;
   const cells = [...TOWN_HOUSES,...TOWN_TRENCHES,...TOWN_WALLS,TOWN_TOWER];
   TOWN_COVER = new Set(cells.map(p => p.gx+","+p.gy));
   TOWN_CELL_BY_KEY = new Map(cells.map(p => [p.gx+","+p.gy,p]));
@@ -906,11 +945,11 @@ function hasCover(u){
 function coverHeight(u){
   if(!u || !u.isHuman) return 0;
   const cell = TOWN_CELL_BY_KEY.get(Math.round(u.grid.gx)+","+Math.round(u.grid.gy));
-  return cell ? (COVER_HEIGHT[cell.kind]||0) : 0;
+  return cell ? (cell.height||COVER_HEIGHT[cell.kind]||0) : 0;
 }
 function coverRangeBonus(u){
-  const h = coverHeight(u);
-  return h >= 1.5 ? 1.1 : h >= 0.5 ? 0.5 : h > 0 ? 0.2 : 0;
+  // Stufenlose Höhenvorteile: ein höheres Haus oder ein Turm sieht weiter.
+  return Math.min(1.25,coverHeight(u)*0.62);
 }
 function coverReduction(u){
   return Math.min(0.5,TOWN_COVER_REDUCTION+coverHeight(u)*0.12);
@@ -1276,6 +1315,12 @@ const ATLAS_CREATURES = {
   fee:{label:"Fee",image:"creatures/fee/turntable.png"},
   godzilla:{label:"Godzilla",image:"creatures/godzilla/turntable.png"},
   shingodzilla:{label:"Shin Godzilla",image:"creatures/shingodzilla/turntable.png"},
+  burninggodzilla:{label:"Burning Godzilla",image:"creatures/burninggodzilla/turntable.png"},
+  minilla:{label:"Minilla",image:"creatures/minilla/turntable.png"},
+  gamera:{label:"Gamera",image:"creatures/gamera/turntable.png"},
+  anguirus:{label:"Anguirus",image:"creatures/anguirus/turntable.png"},
+  kumonga:{label:"Kumonga",image:"creatures/kumonga/turntable.png"},
+  destoroyah:{label:"Destoroyah",image:"creatures/destoroyah/turntable.png"},
   kingkong:{label:"King Kong",image:"creatures/kingkong/turntable.png"},
   mothra:{label:"Mothra",image:"creatures/mothra/turntable.png"},
   mechagodzilla:{label:"Mechagodzilla",image:"creatures/mechagodzilla/turntable.png"},
@@ -1404,6 +1449,7 @@ let MAP_LAYOUT = null;
 let arenaPalette = null;
 let waterMesh = null;
 let townLayer = null;
+let wildLayer = null;
 function prepareMap(wave,salt){
   const s = salt === undefined ? ++G.mapSalt : Math.max(0,Math.floor(salt));
   if(salt !== undefined) G.mapSalt = Math.max(G.mapSalt,s);
@@ -1436,12 +1482,13 @@ function applyArenaBiome(wave){
       (GRID.cols*TILE/2-TILE*1.5);
   }
   if(layout){
-    refreshTownCover(layout.corner);
+    refreshTownCover(layout);
     if(townLayer){
       const p = worldPos(layout.corner.gx,layout.corner.gy);
       townLayer.position.set(p.x,0,p.z);
       buildTownStructures(layout);
     }
+    buildWilderness(layout);
   }
   return b;
 }
@@ -1505,6 +1552,8 @@ function buildArena(){
   // Siedlung wird als eigene Gruppe bewegt, wenn die Karte neu generiert wird.
   townLayer = new THREE.Group();
   arena.add(townLayer);
+  wildLayer = new THREE.Group();
+  arena.add(wildLayer);
   arenaPalette = {base:base.material,tileA:matA,tileB:matB,edge:edgeMat,ring:ringMat};
 }
 function buildTownStructures(layout){
@@ -1521,34 +1570,35 @@ function buildTownStructures(layout){
   const roadMat = new THREE.MeshStandardMaterial({color:0x6c665c,roughness:1});
   TOWN_HOUSES.forEach((cell,idx) => {
     const p = local(cell);
+    const h = cell.height||COVER_HEIGHT.house;
     // Offene Häuser: Boden, Rückwand und zwei Seitenwände. Die Front zum
     // Schlachtfeld bleibt frei, damit Menschen die Häuser betreten können.
     const floor = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.62,0.08,TILE*0.56),houseMat);
     floor.position.set(p.x,0.04,p.z);
     floor.receiveShadow = true;
     townLayer.add(floor);
-    const back = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.1,0.5,TILE*0.56),houseMat);
-    back.position.set(p.x-dir*TILE*0.26,0.29,p.z);
+    const back = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.1,h,TILE*0.56),houseMat);
+    back.position.set(p.x-dir*TILE*0.26,0.04+h/2,p.z);
     back.castShadow = true; back.receiveShadow = true;
     townLayer.add(back);
     [-1,1].forEach(side => {
-      const flank = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.62,0.5,TILE*0.1),houseMat);
-      flank.position.set(p.x,0.29,p.z+side*TILE*0.23);
+      const flank = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.62,h,TILE*0.1),houseMat);
+      flank.position.set(p.x,0.04+h/2,p.z+side*TILE*0.23);
       flank.castShadow = true; flank.receiveShadow = true;
       townLayer.add(flank);
     });
-    // Jedes zweite Haus bekommt ein Stockwerk und beleuchtete Fenster:
+    // Höhere Häuser bekommen ein Stockwerk und beleuchtete Fenster:
     // eine dicht bebaute Stadt, in der die Monster zwischen Häusern stehen.
-    const upper = idx % 2 === 0;
+    const upper = h > 0.85;
     if(upper){
-      const storey = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.6,0.42,TILE*0.54),houseMat);
-      storey.position.set(p.x,0.65,p.z);
+      const storey = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.6,0.34,TILE*0.54),houseMat);
+      storey.position.set(p.x,0.08+h+0.17,p.z);
       storey.castShadow = true; storey.receiveShadow = true;
       townLayer.add(storey);
     }
     for(const side of [-1,1]){
       const win = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.16,0.16,0.03),windowMat);
-      win.position.set(p.x-dir*TILE*0.205,upper?0.72:0.32,p.z+side*TILE*0.13);
+      win.position.set(p.x-dir*TILE*0.205,upper?h*0.75:0.32,p.z+side*TILE*0.13);
       townLayer.add(win);
     }
     const road = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.88,0.02,TILE*0.12),roadMat);
@@ -1557,35 +1607,74 @@ function buildTownStructures(layout){
     townLayer.add(road);
     const roof = new THREE.Mesh(new THREE.ConeGeometry(TILE*0.48,0.34,4),roofMat);
     roof.rotation.y = Math.PI/4;
-    roof.position.set(p.x,upper?1.03:0.78,p.z);
+    roof.position.set(p.x,(upper?h+0.52:h)+0.2,p.z);
     roof.castShadow = true;
     townLayer.add(roof);
   });
   TOWN_TRENCHES.forEach(cell => {
-    const p = local(cell);
-    const wall = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.86,0.18,TILE*0.2),trenchMat);
-    wall.position.set(p.x,0.09,p.z+TILE*0.3);
+    const p = local(cell), h = cell.height||COVER_HEIGHT.trench;
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.86,h,TILE*0.2),trenchMat);
+    wall.position.set(p.x,h/2,p.z+TILE*0.3);
     wall.receiveShadow = true;
     townLayer.add(wall);
   });
   TOWN_WALLS.forEach(cell => {
-    const p = local(cell);
-    const wall = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.9,0.5,TILE*0.16),wallMat);
-    wall.position.set(p.x,0.25,p.z+TILE*0.34*dir);
+    const p = local(cell), h = cell.height||COVER_HEIGHT.wall;
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.9,h,TILE*0.16),wallMat);
+    wall.position.set(p.x,h/2,p.z+TILE*0.34*dir);
     wall.castShadow = true; wall.receiveShadow = true;
     townLayer.add(wall);
   });
   if(TOWN_TOWER){
-    const p = local(TOWN_TOWER);
-    const body = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.5,1.7,TILE*0.5),towerMat);
-    body.position.set(p.x,0.85,p.z);
+    const p = local(TOWN_TOWER), h = TOWN_TOWER.height||COVER_HEIGHT.tower;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.5,h,TILE*0.5),towerMat);
+    body.position.set(p.x,h/2,p.z);
     body.castShadow = true; body.receiveShadow = true;
     townLayer.add(body);
     const roof = new THREE.Mesh(new THREE.ConeGeometry(TILE*0.42,0.4,4),roofMat);
     roof.rotation.y = Math.PI/4;
-    roof.position.set(p.x,1.9,p.z);
+    roof.position.set(p.x,h+0.2,p.z);
     roof.castShadow = true;
     townLayer.add(roof);
+  }
+}
+// Wildnis außerhalb der Siedlung: Bäume, Felsen und hohes Gras in zufälliger
+// Zahl und Höhe. Diese Teile sind nur Kulisse – sie blockieren keine Angriffe.
+function buildWilderness(layout){
+  if(!wildLayer) return;
+  clearGroup(wildLayer);
+  const r = mapRandom(layout.wave||1,layout.salt||0);
+  const trunkMat = new THREE.MeshStandardMaterial({color:0x6b4c32,roughness:1});
+  const leafMat = new THREE.MeshStandardMaterial({color:0x4f7f45,roughness:0.95});
+  const rockMat = new THREE.MeshStandardMaterial({color:0x7d7a70,roughness:1});
+  const grassMat = new THREE.MeshStandardMaterial({color:0x7fa657,roughness:1});
+  const count = 12+Math.floor(r()*14);
+  for(let i=0;i<count;i++){
+    const gx = clamp(Math.floor(r()*GRID.cols),0,GRID.cols-1);
+    const gy = clamp(Math.floor(r()*GRID.rows),0,GRID.rows-1);
+    if(TOWN_COVER.has(gx+","+gy)) continue;
+    const p = worldPos(gx,gy);
+    const h = 0.35+r()*0.95;
+    if(r() < 0.62){
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,h*0.5,5),trunkMat);
+      trunk.position.set(p.x,h*0.25,p.z);
+      trunk.castShadow = true;
+      wildLayer.add(trunk);
+      const crown = new THREE.Mesh(new THREE.ConeGeometry(0.22,h,6),leafMat);
+      crown.position.set(p.x,h*0.5+h*0.45,p.z);
+      crown.castShadow = true;
+      wildLayer.add(crown);
+    } else if(r() < 0.8){
+      const rock = new THREE.Mesh(new THREE.IcosahedronGeometry(h*0.35,0),rockMat);
+      rock.position.set(p.x,h*0.2,p.z);
+      rock.rotation.y = r()*Math.PI;
+      rock.castShadow = true;
+      wildLayer.add(rock);
+    } else {
+      const tuft = new THREE.Mesh(new THREE.ConeGeometry(0.16,h*0.35,4),grassMat);
+      tuft.position.set(p.x,h*0.18,p.z);
+      wildLayer.add(tuft);
+    }
   }
 }
 function disposeObject(obj){

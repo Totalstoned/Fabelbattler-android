@@ -159,6 +159,10 @@ if (html.includes('id="battleMana"') || html.includes('function updateBattleMana
 if (!html.includes('NO_BATTLE_INTERVENTION = true')) {
   throw new Error('Kein automatischer Kampf ohne Eingriffe markiert');
 }
+if (!html.includes('label:"Verstärker"') || !html.includes('SPECIAL:{') ||
+    !html.includes('label:"Sonderwesen"') || !html.includes('ROSTER.mothra.role = "SPECIAL"')) {
+  throw new Error('Rollen Tank/DPS/Heiler/Verstärker/Sonderwesen fehlen');
+}
 if (!html.includes('renderer.setSize(w,h);')) {
   throw new Error('Renderer setzt die CSS-Größe nicht (Canvas wird auf HiDPI zu groß dargestellt)');
 }
@@ -748,6 +752,7 @@ vm.runInContext(`(() => {
   // Zufällige Stadt: Häuser, Gräben, Barrikaden, Wachturm und echte Deckung.
   const coverCells = [...TOWN_COVER];
   globalThis.__townDefenseCheck = !!townLayer && townLayer.children.length >= 15 &&
+    !!wildLayer && wildLayer.children.length >= 8 &&
     coverCells.length >= 12 && TOWN_POSTS.front.length > 0 && TOWN_POSTS.back.length > 0 &&
     townLayer.children.some(o => o.geometry && o.geometry.parameters &&
       o.geometry.parameters.height >= 1.5) &&
@@ -801,6 +806,26 @@ vm.runInContext(`(() => {
     byMode.schwarm.every(m => m.arrivalDelay === 0 && m.spawnGroup === 0) &&
     new Set(byMode["zwei-seiten"].map(m => m.spawnEdge)).size === 2;
   globalThis.__attackModes = Object.keys(byMode).length;
+
+  // Prozedurale Städte: wechselnde Zahl von Deckungsfeldern und Höhen,
+  // aber immer Graben < Mauer < Haus < Turm und offene Wege fuer Angreifer.
+  const citySamples = [];
+  for (let wave = 1; wave <= 8; wave++) {
+    prepareMap(wave, wave*3);
+    const cells = [...TOWN_CELL_BY_KEY.values()];
+    const houses = cells.filter(c => c.kind === "house").map(c => c.height);
+    const walls = cells.filter(c => c.kind === "wall").map(c => c.height);
+    const trenches = cells.filter(c => c.kind === "trench").map(c => c.height);
+    const tower = cells.find(c => c.kind === "tower");
+    citySamples.push({n:cells.length, houses:houses.length, wild:wildLayer.children.length,
+      ok:!!tower && Math.min(...walls) >= 0.5 && Math.min(...houses) >= 0.65 &&
+        tower.height > Math.max(...houses) && Math.max(...trenches) < Math.min(...walls)});
+  }
+  globalThis.__cityCounts = citySamples.map(s => s.n).join("/");
+  globalThis.__procCityCheck = new Set(citySamples.map(s => s.n)).size > 1 &&
+    new Set(citySamples.map(s => s.houses)).size > 1 &&
+    citySamples.every(s => s.n >= 12 && s.wild >= 8 && s.ok);
+
   const waterSalt = (() => { let s = 0; while(s < 50 && !makeMapLayout(8,s).water) s++; return s; })();
   prepareMap(8,waterSalt);
   const seaMobs = buildMobSwarm("player",8).filter(m => !m.isHuman);
@@ -842,6 +867,7 @@ for (const [flag, message] of [
   ['__counterCheck', 'Nicht jede Klasse hat einen menschlichen Spezialisten'],
   ['__stationCheck', 'Sanitäter/Rentner stehen nicht hinter den Soldaten'],
   ['__townDefenseCheck', 'Zufällige Stadt mit Häusern/Gräben/Barrikaden/Wachturm fehlt'],
+  ['__procCityCheck', 'Prozedurale Stadt variiert nicht oder Hoehen/Wege sind ungueltig'],
   ['__humanCoverCheck', 'Menschen werden nicht in der Stadt stationiert'],
   ['__coverDamageCheck', 'Städtische Deckung reduziert keinen Schaden'],
   ['__heightRangeCheck', 'Höhenvorteil erhöht die Reichweite nicht'],
@@ -1367,7 +1393,8 @@ vm.runInContext(`
     atlasEl.style.backgroundImage.indexOf("creatures/fee/turntable.png") >= 0;
   const godzilla = openCreatureAtlas("godzilla") &&
     atlasEl.style.backgroundImage.indexOf("creatures/godzilla/turntable.png") >= 0;
-  const kaijuKeys = ["kingkong","mothra","mechagodzilla","kingghidorah","rodan","shingodzilla"];
+  const kaijuKeys = ["kingkong","mothra","mechagodzilla","kingghidorah","rodan","shingodzilla",
+    "burninggodzilla","minilla","gamera","anguirus","kumonga","destoroyah"];
   const kaijuOK = kaijuKeys.every(k => openCreatureAtlas(k) &&
     atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
   const folkloreKeys = ["rumpelstilzchen","heinzelmaennchen","wichtigel","gartenelfe","lichtfee"];
@@ -1678,4 +1705,4 @@ vm.runInContext(`(() => {
 })();`, ctx);
 if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('CC0-Texturen laden oder Fallback greift nicht');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+schadenszahlen+cc0-texturen+cc0-atlas+shin-godzilla+folklor-atlas+panzer+hoehen-reichweite+begehbare-haeuser)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+schadenszahlen+cc0-2k-texturen+cc0-atlas+12-kaiju+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+wildnis+hoehen-reichweite+begehbare-haeuser)`);
