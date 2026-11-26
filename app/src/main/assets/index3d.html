@@ -340,6 +340,8 @@
   <button class="btn ghost" id="btnReportClose" title="Auswertung schließen">×</button>
 </div>
 <script src="./vendor/three.min.js"></script>
+<script src="./vendor/GLTFLoader.js"></script>
+<script src="./vendor/SkeletonUtils.js"></script>
 <script>
 "use strict";
 const OUTLINE_COLOR = 0x151018;
@@ -547,7 +549,8 @@ const STATUS_META = {
   weaken:{label:"Geschwächt",emoji:"▼",hex:0xfca5a5,css:"#fca5a5",shape:"danger"},
   atkBuff:{label:"Gestärkt",emoji:"▲",hex:0xfcd34d,css:"#fcd34d",shape:"boost"},
   defBuff:{label:"Gepanzert",emoji:"⛨",hex:0x8fb5ff,css:"#8fb5ff",shape:"boost"},
-  taunt:{label:"Spott",emoji:"↯",hex:0xfb923c,css:"#fb923c",shape:"boost"}
+  taunt:{label:"Spott",emoji:"↯",hex:0xfb923c,css:"#fb923c",shape:"boost"},
+  regrow:{label:"Nachwachsen",emoji:"🌱",hex:0x86efac,css:"#86efac",shape:"boost"}
 };
 const ABILITY_DESC = {
   goldspinnen:"Stroh zu Gold: Bonus-Gold und kleine Schilde",
@@ -693,6 +696,11 @@ const SPELLS = {
   schwarmruf:S("Schwarmruf",3.6,2.1,{dmg:0.4,buff:0.3,shield:0.14,color:"#a3e635"}),
   biss:S("Biss",1.6,1.1,{dmg:0.75,color:"#d9a066"})
 };
+// Mechanik-Pivot: Atomstrahlen laden auf. Laengere Ladung = groessere
+// Reichweite und mehr Schaden; die Evolutionsstufe erhoeht das Maximum.
+SPELLS.atomstrahl.charge = true;
+SPELLS.multi_atom.charge = true;
+SPELLS.schmelzstrahl.charge = true;
 const ABILITY_SPELL = {
   goldspinnen:"goldspinnen",pfeffer:"pfeffer",schattenbiss:"schattenstoss",erdbeben:"erdbeben",atomatem:"atomatem",silksnare:"silksnare",
   gestaltwandel:"gestaltwandel",mondraserei:"mondbruch",wetter:"wetter",feensegen:"feensegen",waldzauber:"waldzauber",werkzeug:"werkzeug",
@@ -1160,6 +1168,56 @@ scene.add(unitLayer);
 scene.add(mobLayer);
 scene.add(fxLayer);
 scene.add(synergyLayer);
+
+// CC0 "Universal Animation Library" (Quaternius): ein skelettbasierter
+// Mensch mit 43 Clip-Animationen. Wird lokal geladen und pro Einheit
+// unabhaengig instanziiert; bei Pause laeuft der Mixer mit dt = 0 nicht weiter.
+const UNIVERSAL = {ready:false,loading:false,gltf:null,clips:{}};
+function setUniversalClip(rig,name){
+  if(!rig || rig.clip === name || !UNIVERSAL.clips[name]) return;
+  if(rig.action) rig.action.fadeOut(0.22);
+  const once = name === "Death01";
+  const action = rig.mixer.clipAction(UNIVERSAL.clips[name]);
+  action.reset().setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat,once ? 1 : Infinity);
+  action.clampWhenFinished = once;
+  action.fadeIn(0.22).play();
+  rig.action = action;
+  rig.clip = name;
+}
+function makeUniversalRig(group,u){
+  if(!UNIVERSAL.ready || !UNIVERSAL.gltf || !THREE.SkeletonUtils) return null;
+  try{
+    const model = THREE.SkeletonUtils.clone(UNIVERSAL.gltf);
+    model.scale.setScalar(0.66);
+    model.rotation.y = u.side === "enemy" ? -Math.PI/2 : Math.PI/2;
+    group.add(model);
+    const rig = {model:model,mixer:new THREE.AnimationMixer(model),action:null,clip:""};
+    setUniversalClip(rig,"Idle_Loop");
+    return rig;
+  }catch(err){
+    console.warn("Universal-Rig fehlgeschlagen:",err);
+    return null;
+  }
+}
+function loadUniversalAnimation(){
+  if(SIM.headless || UNIVERSAL.ready || UNIVERSAL.loading || !THREE.GLTFLoader) return;
+  UNIVERSAL.loading = true;
+  try{
+    new THREE.GLTFLoader().load("models/universal_animation.glb",gltf => {
+      UNIVERSAL.gltf = gltf.scene;
+      gltf.animations.forEach(clip => { UNIVERSAL.clips[clip.name] = clip; });
+      UNIVERSAL.ready = true;
+      syncUnits();
+      showToast("🎬 Universal-Animation geladen ("+gltf.animations.length+" Clips)");
+    },undefined,err => {
+      UNIVERSAL.loading = false;
+      console.warn("Universal-Animation nicht geladen:",err);
+    });
+  }catch(err){
+    UNIVERSAL.loading = false;
+    console.warn("Universal-Animation nicht geladen:",err);
+  }
+}
 // Hintergrund-Skyline jenseits des Schlachtfelds: reine Kulisse, keine
 // Kollision und kein Einfluss auf Deckung, Reichweite oder Wege.
 const skylineLayer = new THREE.Group();
@@ -1455,7 +1513,13 @@ const ATLAS_CREATURES = {
   hubschrauber:{label:"Hubschrauber",image:"creatures/hubschrauber/turntable.png"},
   krankenwagen:{label:"Krankenwagen",image:"creatures/krankenwagen/turntable.png"},
   drohne:{label:"Drohne",image:"creatures/drohne/turntable.png"},
-  schatten:{label:"Schatten der Laterne",image:"creatures/schatten/turntable.png"}
+  schatten:{label:"Schatten der Laterne",image:"creatures/schatten/turntable.png"},
+  missionar:{label:"Missionar",image:"creatures/missionar/turntable.png"},
+  sanitaeter:{label:"Sanitäter",image:"creatures/sanitaeter/turntable.png"},
+  rebelle:{label:"Rebell",image:"creatures/rebelle/turntable.png"},
+  armee:{label:"Armee",image:"creatures/armee/turntable.png"},
+  bundeswehr:{label:"Bundeswehr",image:"creatures/bundeswehr/turntable.png"},
+  soeldner:{label:"Söldner",image:"creatures/soeldner/turntable.png"}
 };
 const ATLAS_VIEWS = ["0° · Front","45° · rechts vorne","90° · rechte Seite","135° · rechts hinten",
   "180° · Rücken","225° · links hinten","270° · linke Seite","315° · links vorne"];
@@ -3287,6 +3351,12 @@ function makeCharacter(u){
     modelScale = model.scale.x;
     baseYaw = model.rotation.y;
   } else {
+  // Menschliche Einheiten nutzen das CC0-Skelett, sobald es geladen ist.
+  // Die prozedurale Puppe bleibt als Fallback (und fuer den Headless-Test).
+  const universalRig = makeUniversalRig(group,u);
+  if(universalRig){
+    group.userData.rig = universalRig;
+  } else {
   const body = new THREE.Mesh(new THREE.CylinderGeometry(0.27,0.34,0.62,12),bodyMat);
   body.position.y = 0.52;
   body.castShadow = true;
@@ -3322,6 +3392,7 @@ function makeCharacter(u){
     limbs.push(leg);
     group.add(leg);
   });
+  }
   if(u.role === "TANK"){
     const shield = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.52,0.42),trimMat);
     shield.position.set(-0.46,0.66,0.12);
@@ -3694,7 +3765,7 @@ function mobAction(u,b,dt){
         const gx = u.guard.gx-u.grid.gx, gy = u.guard.gy-u.grid.gy;
         const gd = Math.hypot(gx,gy);
         if(gd > 0.12){
-          const step = Math.min((0.4+u.spd*0.5)*MAP_SPEED*dt,gd);
+          const step = Math.min((0.4+u.spd*0.5)*MAP_SPEED*dt*speedSurge(u,b),gd);
           u.grid.gx = clamp(u.grid.gx+gx/gd*step,0,GRID.cols-1);
           u.grid.gy = clamp(u.grid.gy+gy/gd*step,0,GRID.rows-1);
         }
@@ -3709,7 +3780,7 @@ function mobAction(u,b,dt){
   const reach = u.isHuman ? 0.9+coverRangeBonus(u) : 0.9;
   const stop = reach-0.05;
   if(d > stop){
-    const step = Math.min((0.4+u.spd*0.5)*MAP_SPEED*dt,d-stop);
+    const step = Math.min((0.4+u.spd*0.5)*MAP_SPEED*dt*speedSurge(u,b),d-stop);
     const drift = Math.sin(u.id*1.7+b.time*2)*0.12;
     u.grid.gx = clamp(u.grid.gx+dx/d*step-drift*dy/Math.max(0.01,d),0,GRID.cols-1);
     u.grid.gy = clamp(u.grid.gy+dy/d*step+drift*dx/Math.max(0.01,d),0,GRID.rows-1);
@@ -3937,6 +4008,7 @@ function lowestAlly(list){
 }
 function killUnit(u,source){
   if(u.isDead) return;
+  breakBond(u);
   if(u.modsEffective.revive && !u.revived){
     u.revived = true;
     u.hp = u.maxHp*0.4;
@@ -4032,6 +4104,7 @@ function tickUnit(u,dt,b){
   for(const key in u.statuses){
     if(u.statuses[key] > 0) u.statuses[key] = Math.max(0,u.statuses[key]-dt);
   }
+  tickMechanics(u,dt,b);
   if(u.aura && !u.isDead){
     u.auraCd = Math.max(0,u.auraCd-dt);
     if(u.auraCd <= 0 && !hasStatus(u,"stun") && !hasStatus(u,"charm")){
@@ -4049,13 +4122,16 @@ function chooseTarget(u,b){
   if(!targets.length) return null;
   return targets.sort((a,c) => (dist(u,a)+a.hp/a.maxHp*0.4)-(dist(u,c)+c.hp/c.maxHp*0.4))[0];
 }
+function speedSurge(u,b){
+  return (u.stormUntil && b && b.time < u.stormUntil) ? 1.5 : 1;
+}
 function moveToward(u,target,dt,b){
   if(hasStatus(u,"root") || hasStatus(u,"stun")) return;
   const dx = target.grid.gx-u.grid.gx, dy = target.grid.gy-u.grid.gy;
   const d = Math.hypot(dx,dy);
   if(d < 0.02) return;
   const slow = hasStatus(u,"slow") ? (1-(u.statusPower.slow||0.3)) : 1;
-  const speed = (0.55+u.spd*0.35)*MAP_SPEED*slow;
+  const speed = (0.55+u.spd*0.35)*MAP_SPEED*slow*speedSurge(u,b);
   const step = Math.min(speed*dt,d);
   moveUnit(u,dx/d*step,dy/d*step,b);
 }
@@ -4093,10 +4169,152 @@ function applyOnHit(u,target,b){
   if(e.burn) addStatus(target,"burn",3,e.burn);
   if(e.howl) livingAlliesOf(u,b).forEach(a => { addStatus(a,"atkBuff",3,e.howl); });
 }
+// ---- Neue Spielmechaniken (Mechanik-Pivot) ----
+// Evolutionsstufe = Level + Boss/Elite-Bonus; sie bestimmt die Ladegrenze.
+function mechanicChargeCap(u){
+  const stage = (u.level||1) + (u.isBoss ? 2 : u.isElite ? 1 : 0);
+  return Math.min(3, 1 + Math.max(0,stage-1)*0.25);
+}
+function breakBond(u){
+  if(u.bondBroken || u.bondTargetId == null || !G.battle) return;
+  const other = findUnitById(u.bondTargetId);
+  u.bondBroken = true;
+  if(other && other.bondTargetId === u.id && !other.bondBroken){
+    other.maxHp /= 1.1;
+    other.hp = Math.min(other.hp,other.maxHp);
+    other.bondBroken = true;
+  }
+}
+function tickMechanics(u,dt,b){
+  if(u.isDead) return;
+  if((u.spell && SPELLS[u.spell] && SPELLS[u.spell].charge) ||
+     (u.key && u.key.indexOf("godzilla") >= 0))
+    u.charge = Math.min(mechanicChargeCap(u),(u.charge||0)+dt);
+  if(u.key === "rumpelstilzchen") u.charge = Math.min(2,(u.charge||0)+dt);
+  if(hasStatus(u,"regrow")) healUnit(u,(u.statusPower.regrow||0)*dt);
+  if(u.luredUntil && b && b.time < u.luredUntil){
+    const cx = u.grid.gx < (GRID.cols-1)/2 ? 0 : GRID.cols-1;
+    const cy = u.grid.gy < (GRID.rows-1)/2 ? 0 : GRID.rows-1;
+    const dx = cx-u.grid.gx, dy = cy-u.grid.gy, d = Math.hypot(dx,dy);
+    if(d > 0.2) moveUnit(u,dx/d*Math.min(d,dt*MAP_SPEED*0.9),dy/d*Math.min(d,dt*MAP_SPEED*0.9),b);
+  } else u.luredUntil = 0;
+}
+function castMechanic(u,target,b,sp){
+  const key = u.key || "";
+  // Godzilla/Schin-Godzilla: Aufladung vergroessert Reichweite und Schaden.
+  if(sp.charge){
+    const charge = Math.min(u.charge||0,mechanicChargeCap(u));
+    if(dist(u,target) > sp.range + charge*2) return false;
+    u.spellCd = sp.cd/Math.max(0.7,u.spd);
+    u.animAttack = 0.3;
+    u.charge = 0;
+    const dmg = u.atk*sp.dmg*(1+charge*0.6);
+    applyDamage(target,dmg,u,{});
+    livingEnemiesOf(u,b).filter(t => t !== target && dist(t,target) < 1.6+charge*0.4)
+      .forEach(t => applyDamage(t,dmg*(sp.splash||0.4),u,{number:false}));
+    addStatus(target,"burn",3+charge,(sp.burn||0.05)*(1+charge*0.3));
+    pushEffect(target,"Atomstrahl "+charge.toFixed(1)+"s","#62d9ff");
+    spawnBurst(target,"#62d9ff",18,1.4);
+    spawnShockwave(target,"#62d9ff",1.2);
+    addShake(0.16);
+    return true;
+  }
+  // King Kong: Sturm auf das Ziel mit dem hoechsten ATK, 50 % Tempo, Spott.
+  if(key === "kingkong" && sp.name.indexOf("Ansturm") >= 0){
+    const foes = livingEnemiesOf(u,b);
+    if(!foes.length || dist(u,foes.slice().sort((a,c)=>c.atk-a.atk)[0]) > sp.range+3) return false;
+    const boss = foes.slice().sort((a,c)=>c.atk-a.atk)[0];
+    u.spellCd = sp.cd/Math.max(0.7,u.spd);
+    u.animAttack = 0.3;
+    u.stormUntil = b.time+4;
+    addStatus(u,"atkBuff",4,0.15);
+    const d = dist(u,boss);
+    if(d > 1.05){
+      const dx = boss.grid.gx-u.grid.gx, dy = boss.grid.gy-u.grid.gy;
+      moveUnit(u,dx/d*Math.min(d-1.05,2.2),dy/d*Math.min(d-1.05,2.2),b);
+    }
+    applyDamage(boss,u.atk*sp.dmg*1.35,u,{crit:true});
+    addStatus(boss,"taunt",3,1);
+    addStatus(boss,"stun",0.5,1);
+    pushEffect(boss,"Sturm + Spott","#fbbf24");
+    spawnShockwave(boss,"#fbbf24",1.1);
+    addShake(0.18);
+    return true;
+  }
+  // Rumpelstilzchen: Kessel-Sprung, Lied, Kindraub im Wechsel.
+  if(key === "rumpelstilzchen" && sp.name === "Goldspinnen"){
+    if(dist(u,target) > Math.max(sp.range,4)) return false;
+    u.spellCd = sp.cd/Math.max(0.7,u.spd);
+    u.animAttack = 0.3;
+    const step = (u.rumpelStep||0)%3;
+    u.rumpelStep = step+1;
+    if(step === 0){
+      const charge = Math.min(u.charge||0,2);
+      u.charge = 0;
+      const dmg = u.atk*(1.2+charge*2.2);
+      applyDamage(target,dmg,u,{crit:true});
+      livingEnemiesOf(u,b).filter(t => t !== target && dist(t,target) < 1.8)
+        .forEach(t => applyDamage(t,dmg*0.5,u,{number:false}));
+      pushEffect(target,"Kessel-Sprung!","#f2c14e");
+      spawnShockwave(target,"#f2c14e",1.3);
+    } else if(step === 1){
+      addStatus(target,"charm",3.5,0.85);
+      pushEffect(target,"Lied betört","#d8b4fe");
+      spawnBurst(target,"#d8b4fe",14,1);
+    } else {
+      addStatus(target,"taunt",999,1);
+      target.luredUntil = b.time+999;
+      pushEffect(target,"Kind geraubt!","#f472b6");
+      spawnShockwave(target,"#f472b6",1.4);
+    }
+    addShake(0.14);
+    return true;
+  }
+  // Feen und Waldbewohner: Ruf der Natur, Feenkraft, Feenstaub, Waldgeflüster.
+  const fae = ["fee","lichtfee","feenkoenigin","traumfee","blumengeist",
+    "moosweiblein","waldschrat","heinzelmaennchen","wichtigel","gartenelfe"];
+  if(fae.indexOf(key) >= 0 &&
+     (sp.name === "Feensegen" || sp.name === "Waldzauber" || sp.name === "Moosheilung")){
+    if(dist(u,target) > sp.range) return false;
+    u.spellCd = sp.cd/Math.max(0.7,u.spd);
+    u.animAttack = 0.3;
+    const step = (u.faeStep||0)%4;
+    u.faeStep = step+1;
+    const allies = livingAlliesOf(u,b);
+    if(step === 0){
+      const ally = lowestAlly(allies) || u;
+      addStatus(ally,"regrow",6,u.atk*0.5/6);
+      pushEffect(ally,"Ruf der Natur","#86efac");
+    } else if(step === 1){
+      const ally = lowestAlly(allies.filter(a => a !== u)) || u;
+      if(!ally.bondBroken){
+        ally.maxHp *= 1.1;
+        ally.hp += ally.maxHp*0.1;
+        ally.bondTargetId = u.id;
+        u.bondTargetId = ally.id;
+      }
+      pushEffect(ally,"Feenkraft","#4ade80");
+    } else if(step === 2){
+      livingEnemiesOf(u,b).forEach(e => addStatus(e,"charm",1.8,0.5));
+      pushEffect(target,"Feenstaub","#f9a8d4");
+      spawnBurst(target,"#f9a8d4",14,1);
+    } else {
+      const allHurt = allies.length > 0 && allies.every(a => a.hp < a.maxHp);
+      if(allHurt){
+        allies.forEach(a => healUnit(a,u.atk*0.8+u.maxHp*0.06));
+        pushEffect(u,"Waldgeflüster","#86efac");
+        spawnShockwave(u,"#86efac",1.2);
+      } else pushEffect(u,"Wald schweigt","#8b97a8");
+    }
+    return true;
+  }
+  return false;
+}
 function castSpell(u,target,b){
   const sp = SPELLS[u.spell];
   if(!sp || !sp.cd || u.spellCd > 0 || hasStatus(u,"stun") || hasStatus(u,"charm")) return false;
   if(!target || (target.isDead && !sp.revive) || dist(u,target) > sp.range) return false;
+  if(castMechanic(u,target,b,sp)) return true;
   u.spellCd = sp.cd/Math.max(0.7,u.spd);
   u.animAttack = 0.3;
   if(target.isDead && sp.revive){
@@ -4277,6 +4495,10 @@ function updateBattle(dt){
     const target = chooseTarget(u,b);
     u.target = target;
     if(!target) return;
+    // Kindraub lockt das Ziel in eine Ecke: es folgt Rumpel nicht mehr,
+    // greift aber weiter an, sobald er in Reichweite kommt.
+    if(u.luredUntil && b.time < u.luredUntil &&
+       dist(u,target) > Math.max(1,u.rng/70)+coverRangeBonus(u)) return;
     if(castSpell(u,target,b)) return;
     if(dist(u,target) > Math.max(1,u.rng/70)+coverRangeBonus(u)) moveToward(u,target,dt,b);
     else tryAttack(u,target,b);
@@ -4477,6 +4699,18 @@ function poseCharacter(u,group,time,dt,deathT){
     if(limb.userData.limb === "arm") limb.rotation.x = swing-(attack*1.1+recoil*0.4)*(limb.userData.side||1);
     else limb.rotation.x = -swing-recoil*0.25;
   });
+  if(d.rig){
+    let clip = "Idle_Loop";
+    if(u.isDead) clip = "Death01";
+    else if(recoil > 0.2) clip = "Hit_Chest";
+    else if(hasStatus(u,"charm")) clip = "Dance_Loop";
+    else if(hasStatus(u,"root")) clip = "Crouch_Idle_Loop";
+    else if(attack > 0.15) clip = u.role === "DPS" ? "Punch_Jab" : "Punch_Cross";
+    else if(walk > 0.25) clip = (u.stormUntil && G.battle && G.battle.time < u.stormUntil) ? "Sprint_Loop" : "Walk_Loop";
+    setUniversalClip(d.rig,clip);
+    d.rig.mixer.update(dt);
+    d.rig.model.visible = !u.isDead || deathT > 0.02;
+  }
 }
 // `dt` steuert Animationen (0 in Pause/Hit-Stop), `viewDt` die Kamera. So
 // laeuft die Darstellung weiter, auch wenn der Kampf angehalten ist.
@@ -4612,7 +4846,8 @@ function findUnitById(id){
   if(!id) return null;
   const inTeam = G.team.find(u => u.id === id);
   if(inTeam) return inTeam;
-  if(G.battle) return [...G.battle.player,...G.battle.enemies].find(u => u.id === id) || null;
+  if(G.battle) return [...G.battle.player,...G.battle.enemies,
+    ...(G.battle.playerMobs||[]),...(G.battle.enemyMobs||[])].find(u => u.id === id) || null;
   return null;
 }
 function spellTagList(sp){
@@ -5281,6 +5516,7 @@ buildArena();
 prepareMap(1,0);
 resize();
 syncUnits();
+loadUniversalAnimation();
 window.addEventListener("load", () => {
   resize();
   updateHud();

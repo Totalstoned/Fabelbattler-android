@@ -489,7 +489,8 @@ for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
             'klabautermann', 'moosweiblein', 'aufhocker', 'fernrisswolf',
             'kroetenmoench', 'panzer', 'babajaga', 'mamiwata', 'nachtzerrer',
             'sensenmann', 'oma', 'opa', 'soldat', 'kampftruppe', 'feuerwehr',
-            'hubschrauber', 'krankenwagen', 'drohne', 'schatten']:
+            'hubschrauber', 'krankenwagen', 'drohne', 'schatten',
+            'missionar', 'sanitaeter', 'rebelle', 'armee', 'bundeswehr', 'soeldner']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)
     if 'creatures/'+key+'/turntable.png' not in src:
@@ -550,6 +551,23 @@ for token in ['hitStop:0', 'const HIT_STOP_CRIT = 0.045', 'const HIT_STOP_KILL =
               'updateVisuals(visualClock,visualDt,dt)']:
     if token not in src:
         problems.append('Visueller Hit-Stop fehlt in index3d.html: ' + token)
+
+# Mechanik-Pivot und CC0-Universal-Animation: Dateien und Verdrahtung.
+assets = path.parent
+for rel in ['vendor/GLTFLoader.js', 'vendor/SkeletonUtils.js',
+            'models/universal_animation.glb', 'models/CC0_SOURCE.md']:
+    f = assets / rel
+    if not f.is_file() or f.stat().st_size < 500:
+        problems.append('CC0-Universal-Animation fehlt: ' + rel)
+for token in ['function loadUniversalAnimation', 'function makeUniversalRig',
+              'function setUniversalClip', 'd.rig.mixer.update(dt)',
+              'function castMechanic', 'function tickMechanics',
+              'function speedSurge', 'SPELLS.atomstrahl.charge',
+              'regrow:{label:"Nachwachsen"', 'Atomstrahl ', 'Sturm + Spott',
+              'Kessel-Sprung!', 'Kind geraubt!', 'Ruf der Natur',
+              'Feenkraft', 'Feenstaub', 'Waldgeflüster']:
+    if token not in src:
+        problems.append('Mechanik/Animation fehlt in index3d.html: ' + token)
 
 if problems:
     for p in problems[:30]:

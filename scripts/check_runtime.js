@@ -1506,7 +1506,8 @@ vm.runInContext(`
   const folkloreKeys = ["rumpelstilzchen","heinzelmaennchen","wichtigel","gartenelfe","lichtfee","schatten",
     "klabautermann","moosweiblein","aufhocker","fernrisswolf","kroetenmoench","panzer",
     "babajaga","mamiwata","nachtzerrer","sensenmann","oma","opa",
-    "soldat","kampftruppe","feuerwehr","hubschrauber","krankenwagen","drohne"];
+    "soldat","kampftruppe","feuerwehr","hubschrauber","krankenwagen","drohne",
+    "missionar","sanitaeter","rebelle","armee","bundeswehr","soeldner"];
   const folkloreOK = folkloreKeys.every(k => openCreatureAtlas(k) &&
     atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
   const unknown = !openCreatureAtlas("goblin-alt");
@@ -1849,4 +1850,59 @@ if (!vm.runInContext('globalThis.__brightCityCheck', ctx)) throw new Error('Stad
 if (!vm.runInContext('globalThis.__labelStaggerCheck', ctx)) throw new Error('Namenslabels überlappen sich ohne Höhenversatz');
 if (!vm.runInContext('globalThis.__splashCheck', ctx)) throw new Error('Startbild-Overlay fehlt');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten/${vm.runInContext('globalThis.__skylineCounts', ctx)} skyline, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+hellere-stadt+labels-gestaffelt+startbild-5s+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+27-mythos-atlas+folklor-atlas+video-atlas+18-neue-atlanten+sonderwesen+panzer+prozedurale-stadt+stadt-requisiten+japan-city-details+schilder+ampeln+automaten+hochhaeuser+hafen+strommasten+skyline+neon+billboards+staub+fahrzeug-modelle+rotoren+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser+garnison+helden-im-haus+menschen-erhoeht (${vm.runInContext('globalThis.__garrisonSlots', ctx)} Plätze))`);
+// Mechanik-Pivot: echte Effekte der vier neuen Faehigkeitsfamilien im Kopf
+// simulieren (kein DOM, keine Zufallstreffer) und den lokalen CC0-Rig pruefen.
+if (!html.includes('models/universal_animation.glb') ||
+    !html.includes('vendor/GLTFLoader.js') ||
+    !html.includes('vendor/SkeletonUtils.js') ||
+    !html.includes('THREE.SkeletonUtils.clone') ||
+    !html.includes('d.rig.mixer.update(dt)')) {
+  throw new Error('CC0-Universal-Animation ist nicht an die Einheiten angebunden');
+}
+vm.runInContext(`(() => {
+  const g = createUnit('godzilla', 1, 'player');
+  const k = createUnit('kingkong', 1, 'player');
+  const f = createUnit('fee', 1, 'player');
+  const r = createUnit('rumpelstilzchen', 1, 'player');
+  const t = createUnit('kingkong', 1, 'enemy');
+  const t2 = createUnit('vampire', 1, 'enemy');
+  const b = {time:1, player:[g,k,f,r], enemies:[t,t2], playerMobs:[], enemyMobs:[],
+    stats:{damage:{},heal:{}}, kills:0};
+  const oldBattle = G.battle, oldPhase = G.phase;
+  G.battle = b; G.phase = 'battle';
+  [g,k,f,r,t,t2].forEach(x => { x.grid.gx = 2; x.grid.gy = 2; x.hp = x.maxHp; });
+
+  g.charge = 1;
+  const godHp = t.hp;
+  const godOK = castMechanic(g,t,b,SPELLS.atomstrahl) && t.hp < godHp &&
+    g.charge === 0 && hasStatus(t,'burn');
+
+  t.atk = 999;
+  const kongHp = t.hp;
+  const kongOK = castMechanic(k,t,b,SPELLS.ansturm) && t.hp < kongHp &&
+    hasStatus(t,'taunt') && (k.stormUntil||0) > b.time && speedSurge(k,b) === 1.5;
+
+  const rHp = t.hp;
+  const rumpel1 = castMechanic(r,t,b,SPELLS.goldspinnen) && t.hp < rHp;
+  const rumpel2 = castMechanic(r,t,b,SPELLS.goldspinnen) && hasStatus(t,'charm');
+  const rumpel3 = castMechanic(r,t,b,SPELLS.goldspinnen) &&
+    hasStatus(t,'taunt') && (t.luredUntil||0) > b.time;
+
+  f.hp = f.maxHp*0.5;
+  const fee1 = castMechanic(f,t,b,SPELLS.feensegen) && hasStatus(f,'regrow');
+  const fee2 = castMechanic(f,t,b,SPELLS.feensegen) && !!f.bondTargetId;
+  const fee3 = castMechanic(f,t,b,SPELLS.feensegen) && hasStatus(t,'charm');
+  [g,k,f,r].forEach(x => { x.hp = x.maxHp*0.7; });
+  const feeHp = k.hp;
+  const fee4 = castMechanic(f,t,b,SPELLS.feensegen) && k.hp > feeHp*0.78;
+
+  G.battle = oldBattle; G.phase = oldPhase;
+  globalThis.__mechanicCheck = godOK && kongOK && rumpel1 && rumpel2 && rumpel3 &&
+    fee1 && fee2 && fee3 && fee4;
+  globalThis.__universalCheck = !!UNIVERSAL && typeof loadUniversalAnimation === 'function' &&
+    typeof makeUniversalRig === 'function' && typeof setUniversalClip === 'function';
+})();`, ctx);
+if (!vm.runInContext('globalThis.__mechanicCheck', ctx)) throw new Error('Neue Faehigkeiten wirken nicht (Atomladung/Sturm/Rumpel/Feen)');
+if (!vm.runInContext('globalThis.__universalCheck', ctx)) throw new Error('Universal-Animation ist nicht verdrahtet');
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten/${vm.runInContext('globalThis.__skylineCounts', ctx)} skyline, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+hellere-stadt+labels-gestaffelt+startbild-5s+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+27-mythos-atlas+folklor-atlas+video-atlas+24-neue-atlanten+sonderwesen+atomladung+koenig-kong-sturm+feen-wald+rumpel-zauber+universal-animation+panzer+prozedurale-stadt+stadt-requisiten+japan-city-details+schilder+ampeln+automaten+hochhaeuser+hafen+strommasten+skyline+neon+billboards+staub+fahrzeug-modelle+rotoren+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser+garnison+helden-im-haus+menschen-erhoeht (${vm.runInContext('globalThis.__garrisonSlots', ctx)} Plätze))`);
