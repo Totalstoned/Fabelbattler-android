@@ -1,3 +1,4 @@
+- [x] **65. Unit-Audit und sechs Kaiju-Atlanten**: Alle 123 Einheiten priorisiert; Turntables für godzilla/kingkong/mothra/mechagodzilla/kingghidorah/rodan aus CC0-Bausteinen, Version 1.21.2.
 - [x] **64. CC0-Texturen und Drei-Wesen-Atlas**: Echte Kenney-CC0-Boden/Wasser/Partikel im APK mit prozeduralem Fallback; Turntables für bigfoot/chupacabra/fee im drehbaren Atlas, Version 1.21.1.
 - [x] **63. Aufgeräumte Kampfansicht und Schadenszahlen mit Kommandos-Optik**: ⏸/▶-Knopf unten rechts blendet automatische Infos aus/ein, Kampf bleibt automatisch; Schwarm-Schadenszahlen gedeckelt; pixelig/entsättigte Commandos-Anmutung ohne UI-Größen- oder Kameraänderung, Version 1.21.0.
 - [x] **62. Mehrere Ziele pro Arbeitszyklus**: Arbeitsregel in `AGENTS.md`, `README.md`, `KI9000_PROMPT.md`, `ASSET_BEDARF.md`, `Patch.txt`, `auto-improve.sh` und `autonomous-app.yml` auf mindestens zwei kleine, abgeschlossene Ziele pro Zyklus umgestellt; keine App-Änderung, kein Versions-Bump.

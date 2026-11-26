@@ -312,3 +312,8 @@ Schritt 9: Version 1.21.1. Das Schlachtfeld nutzt jetzt echte
            und weiche Treffer-Effekte. Im Wesen-Atlas kannst du
            jetzt neben Bigfoot auch Chupacabra und Fee drehen.
            Alles liegt lokal im Spiel – keine Downloads nötig.
+Schritt 10: Version 1.21.2. Im Wesen-Atlas kannst du jetzt
+           sechs weitere Riesenmonster drehen: Godzilla, King Kong,
+           Mothra, Mechagodzilla, King Ghidorah und Rodan. Alle
+           Bilder sind aus freien CC0-Bausteinen neu gemacht und
+           liegen lokal im Spiel.
