@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fabelbattler: alle 10 Minuten eine kleine, isolierte Verbesserung.
+# Fabelbattler: alle 10 Minuten mehrere kleine, isolierte Verbesserungen.
 # Stopp:  touch /root/projects/FABELBATTLER/auto-improve.stop
 # Log:    /root/projects/FABELBATTLER/auto-improve.log
 set -uo pipefail
@@ -63,13 +63,13 @@ run_iteration(){
   PROMPT=$(cat <<'EOF'
 Du arbeitest autonom an Fabelbattler. Lies zuerst docs/APP_DEV_STATE.md, docs/TASKS.md, docs/PROJECT_README.txt, docs/IDEA_BACKLOG.md, docs/REFERENCE_APK.md und docs/ASSET_BEDARF.md.
 
-Die Referenz-APK wurde zu Beginn dieses Laufs neu ausgelesen: docs/REFERENCE_APK.md beschreibt ihre Mechaniken (Runden-Vorschau, Relikte, Trinkets, 6 Akte, Tier-Mutatoren, Scoreboard). Waehle daraus GENAU EINE kleine Mechanik und uebertrage sie auf UNSERE 123 Einheiten, 51 Zauber, 18 Gegner und unser 18x14-Feld. Kopiere NIEMALS Grafiken, Texte oder Namen der Referenz – nur die Idee. Wenn eine Grafik noetig ist, nutze die CC0-Bibliothek in /root/projects/FABELBATTLER/asset-library und dokumentiere die Quelle in docs/ASSET_SOURCES.md.
+Die Referenz-APK wurde zu Beginn dieses Laufs neu ausgelesen: docs/REFERENCE_APK.md beschreibt ihre Mechaniken (Runden-Vorschau, Relikte, Trinkets, 6 Akte, Tier-Mutatoren, Scoreboard). Waehle daraus MINDESTENS ZWEI kleine Mechaniken und uebertrage sie im selben Arbeitszyklus auf UNSERE 123 Einheiten, 51 Zauber, 18 Gegner und unser 18x14-Feld. Kopiere NIEMALS Grafiken, Texte oder Namen der Referenz – nur die Idee. Wenn eine Grafik noetig ist, nutze die CC0-Bibliothek in /root/projects/FABELBATTLER/asset-library und dokumentiere die Quelle in docs/ASSET_SOURCES.md.
 
 STARTE JEDE ITERATION mit `python3 scripts/idea_scout.py --pick`. Der Scout durchsucht kostenlos (ohne API-Key) DuckDuckGo, Wikipedia und öffentliche GitHub-Repos und schreibt docs/IDEA_BACKLOG.md. `python3 scripts/idea_scout.py` schreibt den vollen Scan. Für Wesen-Grafiken: `python3 scripts/creature_reference.py <name>` lädt kostenlos Referenzbilder von Wikimedia Commons (Wikipedia/Google/DDG erlaubt), bucht sie ins Budget und legt turntable_prompt.txt an; daraus mit dem Bildgenerierungs-Tool ein 4x2-Turntable (8 Blickwinkel) machen und als rotierbaren Atlas in index3d.html einbauen. Zuerst ein Wesen (bigfoot) prototypeieren. Du darfst zusaetzlich direkt im Web recherchieren (z. B. game-mechanics, GDC, Riot-Entwicklerartikel, GitHub-Repos anderer Auto-Battler), aber entscheide IMMER selbst – frage den User NICHT nach Zielen oder Dateien.
 
 HARTE REGEL: Das Interface darf WEDER kleiner noch groesser werden. HUD, Buttons, Dialoge und Texte behalten ihre px-Groesse; keine Aenderung an font-size, padding, max-width oder transform:scale von UI-Elementen, keine neuen vw/vh-Regeln fuer das HUD. Neue Grafiken werden in die vorhandenen UI-Flaechen eingepasst. Der 3D-Kamera-Zoom bleibt unangetastet (er betrifft nur die Szene, nicht das Interface).
 
-Wähle GENAU EIN kleines, abgeschlossenes Ziel mit klarem Nutzen. Bevorzugt: Darstellung, Animation, Kampf-Feedback, UI-Klarheit, Balance, neue Einheiten/Zauber oder Testabdeckung. Behalte den bestehenden Stack (Three.js, JavaScript, Kotlin-WebView) unverändert – keine Engine-, Sprach- oder Dependency-Wechsel, keine großen Umstrukturierungen. Neue Einheiten duerfen ergaenzt werden, aber die festen Invarianten in scripts/check_data.py und scripts/check_runtime.js (u. a. 123 Einheiten, 51 Zauber, 18 Gegner-Keys, MOB_CAP=500, CORE_UNITS, keine Barbar-Rasse) muessen entweder eingehalten oder in BEIDEN Checks bewusst mitgezogen werden.
+Wähle pro Arbeitszyklus MINDESTENS ZWEI kleine, abgeschlossene Ziele mit klarem Nutzen (mehr als eine Aufgabe pro Lauf). Bevorzugt: Darstellung, Animation, Kampf-Feedback, UI-Klarheit, Balance, neue Einheiten/Zauber oder Testabdeckung. Behalte den bestehenden Stack (Three.js, JavaScript, Kotlin-WebView) unverändert – keine Engine-, Sprach- oder Dependency-Wechsel, keine großen Umstrukturierungen. Neue Einheiten duerfen ergaenzt werden, aber die festen Invarianten in scripts/check_data.py und scripts/check_runtime.js (u. a. 123 Einheiten, 51 Zauber, 18 Gegner-Keys, MOB_CAP=500, CORE_UNITS, keine Barbar-Rasse) muessen entweder eingehalten oder in BEIDEN Checks bewusst mitgezogen werden.
 
 Regeln:
 - Ändere nach Möglichkeit app/src/main/assets/index3d.html und bei Bedarf scripts/ oder docs/.

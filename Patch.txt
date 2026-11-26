@@ -117,8 +117,8 @@ Schritt 5: Der "⌖ Zoom"-Button, ein Doppelklick oder die Taste "0" setzen
 7. Wie entstehen neue Versionen?
 ------------------------------------------------------------
 Schritt 1: Alle 10 Minuten startet der Entwicklungs-Loop automatisch.
-Schritt 2: Er sucht sich genau eine kleine Verbesserung aus (zum Beispiel
-           eine Animation, ein neues Wesen, eine bessere Anzeige).
+Schritt 2: Er sucht sich mindestens zwei kleine Verbesserungen aus (zum
+           Beispiel eine Animation, ein neues Wesen, eine bessere Anzeige).
 Schritt 3: Er ändert die Spiellogik und erhöht die Version um genau eine
            Stufe: 1.00.1 → 1.00.2 → 1.00.3 und so weiter.
 Schritt 4: Er prüft die App mit drei automatischen Tests.

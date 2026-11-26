@@ -52,7 +52,7 @@ jobs:
           prompt: |
             Du arbeitest autonom an Fabelbattler in diesem Repository.
 
-            Lies zuerst Issue #${{ vars.FABEL_PROGRESS_ISSUE }} und wähle genau ein offenes, kleines Ziel aus der Checkliste. Falls kein sinnvolles Ziel offen ist, wähle eine kleine, eigene Verbesserung mit klarem Nutzen für die App.
+            Lies zuerst Issue #${{ vars.FABEL_PROGRESS_ISSUE }} und wähle mindestens zwei offene, kleine Ziele aus der Checkliste. Falls nicht genug sinnvolle Ziele offen sind, ergänze kleine, eigene Verbesserungen mit klarem Nutzen für die App.
 
             Aktueller Stand:
             - Aktive App ist die Three.js-WebView-Version in app/src/main/assets/index3d.html.
@@ -60,11 +60,11 @@ jobs:
             - Team-Buffs skalieren nach Anzahl: gleiche Klassen/Rassen und die gesamte Duden-Zahl stärken das Team.
             - Grafik hat bereits Schatten, Glow, Partikel, HP-/Schildbalken und Kamera-Zoom.
             - UE5-Daten und C++-Gerüst liegen außerhalb dieses Repos nur als spätere Option.
-            - Referenz-APK `How-Many-Dudes-v100.1.35-full-apkvision.apk`: vor jedem Lauf `python3 scripts/reference_apk.py` ausführen; docs/REFERENCE_APK.md und docs/ASSET_BEDARF.md lesen. Genau EINE Mechanik daraus auf UNSERE Einheiten und unser 18x14-Feld übertragen – keine Grafiken, Texte oder Namen der Referenz kopieren.
+            - Referenz-APK `How-Many-Dudes-v100.1.35-full-apkvision.apk`: vor jedem Lauf `python3 scripts/reference_apk.py` ausführen; docs/REFERENCE_APK.md und docs/ASSET_BEDARF.md lesen. Mindestens ZWEI Mechaniken daraus im selben Arbeitszyklus auf UNSERE Einheiten und unser 18x14-Feld übertragen – keine Grafiken, Texte oder Namen der Referenz kopieren.
 
             Regeln:
-            - Der Workflow läuft alle 10 Minuten; bleibe daher strikt unter 9 Minuten und wähle wirklich nur ein kleines Ziel.
-            - Pro Lauf nur ein abgeschlossenes, kleines Ziel.
+            - Der Workflow läuft alle 10 Minuten; bleibe daher strikt unter 9 Minuten und wähle wirklich nur kleine Ziele, die gemeinsam in diese Zeit passen.
+            - Pro Arbeitszyklus mindestens zwei abgeschlossene, kleine Ziele (mehr als eine Aufgabe pro Lauf).
             - HARTE REGEL: Das Interface darf WEDER kleiner noch größer werden. Keine Änderung an font-size, padding, max-width oder transform:scale von HUD/Buttons/Dialogen, keine neuen vw/vh-Regeln für das HUD; neue Grafiken in vorhandene Flächen einpassen. Der 3D-Kamera-Zoom bleibt unangetastet.
             - Keine Engine-Installation, keine großen Dependency-Neuerungen, keine Secrets oder Tokens in Dateien.
             - Kein Wechsel der Engine; Three.js/WebView bleibt der aktive Pfad.

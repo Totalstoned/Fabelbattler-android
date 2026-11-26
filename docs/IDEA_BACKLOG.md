@@ -2,7 +2,7 @@
 
 Letzter Scan: 2026-11-24 17:37 UTC
 
-Erzeugt von `scripts/idea_scout.py` – kostenlos, ohne API-Key. Der 10-Minuten-Agent startet jeden Lauf mit `python3 scripts/idea_scout.py --pick`.
+Erzeugt von `scripts/idea_scout.py` – kostenlos, ohne API-Key. Der 10-Minuten-Agent startet jeden Lauf mit `python3 scripts/idea_scout.py --pick` und bearbeitet pro Arbeitszyklus mindestens zwei kleine Ziele.
 
 Autonomer Stand 2026-11-24: Der `--pick`-Vorschlag (Boss/Elite-Intent, Task 49), die Idee „Status-Icons erhalten Formen“ (Task 52), der Bigfoot-Atlas (Task 51), die kurze Nachkampf-Auswertung (Task 53), der visuelle Mikro-Hit-Stop (Task 54) und der Draft-Rollenhinweis (Task 55) sind geliefert. Der Scout schlägt weiterhin den bereits umgesetzten Boss-Intent vor. Der Duplikat-Merge bleibt offen: `draftKeys()` schließt Wesen aus, die bereits im Team sind – echte Duplikate wären erst nach einer Pool-Änderung mit Auswirkung auf Draft-Invarianten erreichbar, darum wurde dieses kleine UI-Ziel bevorzugt. Diesen Lauf wurde nichts heruntergeladen, das Budget bleibt bei 0,5 MiB / 2048 MiB. Der `--pick`-Vorschlag war erneut der bereits gelieferte Boss-Intent; autonom wurde stattdessen die nächste offene Referenzmechanik „Relikte" umgesetzt (fünf eigene Relikte nach Boss-Wellen mit Passiv-Boni, Version 1.20.5). Weiterhin kein Download.
 

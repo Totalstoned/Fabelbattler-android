@@ -72,7 +72,7 @@ werden in die vorhandenen Flächen eingepasst, nicht umgekehrt.
    in `app/src/main/assets/sprites/` (neu) mit `LICENSE.txt` ablegen.
 3. Sechs Boden-Paletten aus `tiles-terrain/` als 64x64-Kacheln zuschneiden; nur 6–12 Dateien,
    nicht ganze Packs.
-4. Danach: einem Wesen pro Lauf ein Portrait geben, bis das Core-Trio komplett ist.
+4. Danach: mehreren Wesen pro Arbeitszyklus Porträts geben, bis das Core-Trio komplett ist (mindestens zwei Aufgaben pro Zyklus).
 
 ## Budget
 

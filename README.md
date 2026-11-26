@@ -22,6 +22,8 @@ node scripts/check_runtime.js app/src/main/assets/index3d.html
 
 `simulateBattle(dt)` nutzt `SIM.headless`, um Kämpfe ohne Effekte, HUD oder Three.js zu simulieren; der Renderloop verwendet weiterhin `updateBattle`/`updateVisuals`.
 
+Pro Arbeitszyklus werden mindestens zwei kleine, abgeschlossene Ziele bearbeitet (mehr als eine Aufgabe pro Lauf) und gemeinsam validiert. Die finale Zeile bleibt `Ziel / Ergebnis / nächster Schritt`; im Feld `Ziel` stehen dann die mehreren Ziele.
+
 Die GitHub Action `.github/workflows/build-apk.yml` baut die APK und benennt sie ausschließlich `<VERSION>.apk` (z. B. `1.00.4.apk`, ohne `v`-Präfix und `-b<code>`-Suffix). `scripts/download-apk.sh <run-id>` lädt nur neue Versionen nach `/root/projects/FABELBATTLER/`.
 
 Für Balancing und gezielte Gegner-Szenarien gibt es `scripts/game_harness.js` (headless, ohne Gerät/WebGL):
