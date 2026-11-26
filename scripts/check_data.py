@@ -225,7 +225,10 @@ for token in ['const COVER_HEIGHT = {', 'let TOWN_CELL_BY_KEY = new Map();',
               'const VEHICLE_VARIANTS = {panzer:1,feuerwehrwagen:1,krankenwagen:1,hubschrauber:1,kampfflugzeug:1,drohne:1}',
               'function buildVehicle(model,s,bodyMat,variant)', 'vehicle:true,variant:variant',
               'rotor:true', 'userData = {pylon:true}', 'userData = {crane:true}',
-              'userData={container:true}', 'powerline:true']:
+              'userData={container:true}', 'powerline:true',
+              'const skylineLayer = new THREE.Group()', 'function skylineWindowTexture()',
+              'function buildSkyline(layout)', 'userData = {skyline:true}',
+              'skylineGlow:true', 'skylineWindows.forEach(o =>']:
     if token not in src:
         problems.append('Prozedurale Stadt/Wildnis/Requisiten/3D-Details/Hoehen-Deckung fehlt: ' + token)
 for token in ['label:"Verstärker"', 'SPECIAL:{', 'label:"Sonderwesen"',
@@ -467,6 +470,7 @@ for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
             'bagan', 'oni', 'gyaos', 'vampire', 'werewolf', 'hydra',
             'hotzenplotz', 'ruebezahl', 'waldschrat', 'medusa', 'dschinn', 'kappa',
             'sukubus', 'lilith', 'goblin', 'alp', 'blaubart', 'hexe',
+            'quetzalcoatl', 'ammit', 'tengu', 'yama', 'anansi', 'selkie',
             'rumpelstilzchen', 'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)

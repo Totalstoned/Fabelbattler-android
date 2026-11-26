@@ -1,3 +1,4 @@
+- [x] **73. Skyline und sechs Atlanten**: Hintergrund-Hochhäuser mit beleuchteten Fenstern und Neon-Kronen, Quetzalcoatl/Ammit/Tengu/Yama/Anansi/Selkie im Atlas, Version 1.22.0.
 - [x] **72. Fahrzeugmodelle und Hafen-Silhouette**: Panzer/Feuerwehr/Krankenwagen/Hubschrauber/Jet/Drohne als echte 3D-Modelle mit Rotor-Animation, Strommastern, Hafenkran und Containern, sechs CC0-Atlanten, Version 1.21.9.
 - [x] **71. 3D-Kaiju-Details und japanische Stadtzeichen**: Krallen, Plattennähte, Schilder, Zebrastreifen, Hochhäuser, sechs CC0-Atlanten, Version 1.21.8.
 - [x] **70. Bedienbare Pause und Stadt-Requisiten**: Kamera/Tap laufen im Stillstand weiter, sechs CC0-Atlanten, Laternen/Wracks/Trümmer/Rauch, Version 1.21.7.

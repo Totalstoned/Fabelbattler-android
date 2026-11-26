@@ -1097,6 +1097,11 @@ scene.add(unitLayer);
 scene.add(mobLayer);
 scene.add(fxLayer);
 scene.add(synergyLayer);
+// Hintergrund-Skyline jenseits des Schlachtfelds: reine Kulisse, keine
+// Kollision und kein Einfluss auf Deckung, Reichweite oder Wege.
+const skylineLayer = new THREE.Group();
+scene.add(skylineLayer);
+let skylineWindows = [];
 // Eine gemeinsame Zielmarkierung zeigt im 3D-Feld, wen der fokussierte Held angreift.
 const targetRing = new THREE.Mesh(
   new THREE.RingGeometry(0.46,0.56,32),
@@ -1339,6 +1344,12 @@ const ATLAS_CREATURES = {
   alp:{label:"Alp",image:"creatures/alp/turntable.png"},
   blaubart:{label:"Blaubart",image:"creatures/blaubart/turntable.png"},
   hexe:{label:"Hexe",image:"creatures/hexe/turntable.png"},
+  quetzalcoatl:{label:"Quetzalcoatl",image:"creatures/quetzalcoatl/turntable.png"},
+  ammit:{label:"Ammit",image:"creatures/ammit/turntable.png"},
+  tengu:{label:"Tengu",image:"creatures/tengu/turntable.png"},
+  yama:{label:"Yama",image:"creatures/yama/turntable.png"},
+  anansi:{label:"Anansi",image:"creatures/anansi/turntable.png"},
+  selkie:{label:"Selkie",image:"creatures/selkie/turntable.png"},
   queenmuto:{label:"Queen M.U.T.O.",image:"creatures/queenmuto/turntable.png"},
   scarking:{label:"Scar King",image:"creatures/scarking/turntable.png"},
   methuselah:{label:"Methuselah",image:"creatures/methuselah/turntable.png"},
@@ -1515,6 +1526,7 @@ function applyArenaBiome(wave){
     }
     buildWilderness(layout);
     buildCityProps(layout);
+    buildSkyline(layout);
   }
   return b;
 }
@@ -1869,6 +1881,77 @@ function buildCityProps(layout){
       box.position.set(p.x,0.12+j*0.23,p.z);
       box.userData={container:true};
       propsLayer.add(box);
+    }
+  }
+}
+// Fenstergrid für die Hintergrundhäuser: eine einzige gecachte Canvas-Textur
+// statt hunderter Einzelmeshes – auch auf schwachen WebView-GPUs flüssig.
+function skylineWindowTexture(){
+  const key = "skyline_windows_1";
+  if(CC0_TEXTURE_CACHE[key]) return CC0_TEXTURE_CACHE[key];
+  const canvas = document.createElement("canvas");
+  canvas.width = 128; canvas.height = 256;
+  const c = canvas.getContext("2d");
+  c.fillStyle = "#19202a";
+  c.fillRect(0,0,128,256);
+  c.fillStyle = "#222b36";
+  for(let y=0;y<256;y+=32) c.fillRect(0,y,128,2);
+  const colors = ["#ffe8a3","#ffd166","#8be9fd","#f7a072","#c4b5fd"];
+  let seed = 20261126;
+  const rr = () => { seed = (Math.imul(seed,1664525)+1013904223)>>>0; return seed/4294967296; };
+  for(let y=12;y<250;y+=22){
+    for(let x=10;x<120;x+=18){
+      if(rr() > 0.45){
+        c.globalAlpha = 0.5+rr()*0.5;
+        c.fillStyle = colors[Math.floor(rr()*colors.length)];
+        c.fillRect(x,y,10,12);
+      }
+    }
+  }
+  c.globalAlpha = 1;
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  CC0_TEXTURE_CACHE[key] = tex;
+  return tex;
+}
+// Tokyo-Silhouette hinter dem Kampf: drei Seiten werden dicht verbaut, die
+// Vorderseite bleibt frei, damit die Kamera auf das Geschehen freie Sicht hat.
+function buildSkyline(layout){
+  if(!skylineLayer) return;
+  clearGroup(skylineLayer);
+  skylineWindows = [];
+  const r = mapRandom((layout.wave||1)+91,(layout.salt||0)+41);
+  const win = skylineWindowTexture();
+  const facade = new THREE.MeshStandardMaterial({map:win,emissiveMap:win,emissive:0xffffff,
+    emissiveIntensity:0.55,color:0xffffff,roughness:0.85});
+  const dark = new THREE.MeshStandardMaterial({color:0x151b23,roughness:0.9});
+  const halfW = GRID.cols*TILE/2, halfD = GRID.rows*TILE/2;
+  const count = 18+Math.floor(r()*7);
+  for(let i=0;i<count;i++){
+    const side = i%3;
+    const w = 0.7+r()*0.8, d = 0.7+r()*0.7, h = 1.2+r()*3.4;
+    let x,z;
+    if(side===0){ x = -halfW-1.2-r()*3.5; z = (r()-0.5)*GRID.rows*TILE*1.25; }
+    else if(side===1){ x = (r()-0.5)*GRID.cols*TILE*1.2; z = -halfD-1.2-r()*3.5; }
+    else { x = halfW+1.2+r()*3.5; z = (r()-0.5)*GRID.rows*TILE*1.2; }
+    const body = new THREE.Mesh(new THREE.BoxGeometry(w,h,d),facade);
+    body.position.set(x,h/2,z);
+    body.userData = {skyline:true};
+    skylineLayer.add(body);
+    if(h>3){
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(w*0.7,0.08,d*0.7),dark);
+      cap.position.set(x,h+0.04,z);
+      cap.userData = {skyline:true};
+      skylineLayer.add(cap);
+    }
+    if(r()>0.72){
+      const neon = new THREE.Mesh(new THREE.BoxGeometry(w*0.74,0.05,d*0.74),
+        new THREE.MeshBasicMaterial({color:[0xff5c7a,0x67e8f9,0xffd166][i%3],
+          transparent:true,opacity:0.9,depthWrite:false}));
+      neon.position.set(x,h*0.72,z);
+      neon.userData = {skylineGlow:true,phase:r()*6};
+      skylineLayer.add(neon);
+      skylineWindows.push(neon);
     }
   }
 }
@@ -4171,6 +4254,9 @@ function updateVisuals(time,dt,viewDt){
     resize();
   }
   motes.rotation.y = time*0.02;
+  skylineWindows.forEach(o => {
+    o.material.opacity = 0.45+0.45*(0.5+0.5*Math.sin(time*2.1+(o.userData.phase||0)));
+  });
   const focusUnit = findUnitById(G.selectedUnitId);
   const focusGroup = focusUnit && !focusUnit.isDead ? unitGroups.get(focusUnit.id) : null;
   const followX = cameraFollow && focusGroup ? focusGroup.position.x*0.35 : 0;

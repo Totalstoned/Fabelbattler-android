@@ -375,3 +375,9 @@ Schritt 17: Version 1.21.9. Panzer, Feuerwehrwagen, Krankenwagen,
            (jetzt 45): Sukubus, Lilith, Goblin, Alp, Blaubart und Hexe.
            atlas-vorschau.png im Projektordner ist aktualisiert.
 
+Schritt 18: Version 1.22.0. Hinter dem Schlachtfeld steht jetzt eine dichte
+           Skyline aus 28–35 Hochhäusern mit beleuchteten Fenstern und
+           pulsierenden Neon-Kronen (nur Kulisse). Sechs weitere Wesen sind
+           im Atlas drehbar (jetzt 51): Quetzalcoatl, Ammit, Tengu, Yama,
+           Anansi und Selkie. atlas-vorschau.png ist erneuert.
+
