@@ -406,3 +406,7 @@ Schritt 22: Version 1.22.4. Sechs neue Wesen-Atlanten (Klabautermann,
 Schritt 23: Version 1.22.5. Weitere sechs Wesen-Atlanten: Baba Jaga,
            Mami Wata, Nachzehrer, Sensenmann, Oma und Opa.
 
+Schritt 24: Version 1.22.6. Auch Soldat, Kampftruppe, Feuerwehr,
+           Hubschrauber, Krankenwagen und Drohne haben jetzt eigene
+           Wesen-Atlanten.
+
