@@ -1585,4 +1585,48 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen)`);
+vm.runInContext(`(() => {
+  const viewBtn = document.getElementById("btnBattleView");
+  G.phase = "menu"; G.battle = null; __beginTestRun(); G.wave = 1; startBattle();
+  globalThis.__defaultClean = document.body.classList.contains("clean-view") &&
+    viewBtn.textContent === "▶";
+  setCleanView(false);
+  globalThis.__cleanButton = !!viewBtn && viewBtn.textContent === "⏸";
+  const beforeTime = G.battle.time;
+  setCleanView(true);
+  const hidden = document.body.classList.contains("clean-view") &&
+    viewBtn.textContent === "▶";
+  for (let f = 0; f < 4 && G.battle; f++) simulateBattle(0.016);
+  const advanced = !G.battle || G.battle.time > beforeTime;
+  setCleanView(false);
+  globalThis.__cleanViewCheck = hidden && advanced &&
+    !document.body.classList.contains("clean-view") && viewBtn.textContent === "⏸";
+
+  // Schwarm-Schadenszahlen: sichtbar, aber gedeckelt.
+  const beforeHeadless = SIM.headless;
+  SIM.headless = false;
+  G.effects.length = 0;
+  const mob = createMob("kriecher","enemy",1);
+  mob.id -= mob.id % 4;
+  mob.grid.gx = 8; mob.grid.gy = 6;
+  applyDamage(mob,7,null);
+  const shown = G.effects.length;
+  G.effects.length = MOB_NUMBER_LIMIT;
+  const cappedMob = createMob("kriecher","enemy",1);
+  cappedMob.id -= cappedMob.id % 4;
+  applyDamage(cappedMob,7,null);
+  globalThis.__mobNumberCheck = shown > 0 && G.effects.length === MOB_NUMBER_LIMIT;
+  G.effects.length = 0;
+  SIM.headless = beforeHeadless;
+  G.phase = "menu"; G.battle = null;
+})();`, ctx);
+for (const [flag, message] of [
+  ['__defaultClean', 'Kampf startet nicht in der aufgeräumten Ansicht'],
+  ['__cleanButton', 'Play/Pause-Knopf unten rechts fehlt'],
+  ['__cleanViewCheck', 'Kampfansicht blendet Info-Leiste aus, ohne den Kampf zu stoppen'],
+  ['__mobNumberCheck', 'Schadenszahlen im Schwarm fehlen oder sind nicht gedeckelt'],
+]) {
+  if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
+}
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+schadenszahlen+kommandos-optik)`);

@@ -250,6 +250,15 @@ for token in ['NO_BATTLE_INTERVENTION = true', 'Automatischer Kampf', 'Eingriffe
 for token in ['battleMana', 'manaBar', 'G.mana', 'btnHeal', 'btnNova', 'btnBattleHeal', 'btnBattleNova', 'btnItemHeal', 'btnPause', 'function useItem', 'function castFabelBlitz', 'function blitzTargets']:
     if token in src:
         problems.append('Mana oder aktiver Eingriff noch vorhanden: ' + token)
+for token in ['id="btnBattleView"', 'function setCleanView',
+              'document.getElementById("btnBattleView").onclick',
+              'body.clean-view .battle-bar',
+              'body.clean-view #scene canvas{image-rendering:pixelated;}',
+              'body.clean-view #scene{filter:sepia(',
+              'const MOB_NUMBER_LIMIT = 18;', 'function showMobNumber(u)',
+              '(!hasDamageFx(u) && !showMobNumber(u))']:
+    if token not in src:
+        problems.append('Kampfansicht/Schadenszahlen/Kommandos-Optik fehlt: ' + token)
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)

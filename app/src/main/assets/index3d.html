@@ -188,6 +188,11 @@
   .battle-info.dudes b{color:#d9f99d;}
   .battle-bar .btn{width:auto;min-width:74px;padding:6px 8px;font-size:10px;border-radius:8px;}
   body.battle-mode .battle-bar{display:flex;}
+  /* Kommandos-Optik: pixelig, entsättigt; nur Anzeige, keine HUD-Größenänderung. */
+  #btnBattleView{position:fixed;right:8px;bottom:8px;z-index:41;width:auto;}
+  body.clean-view .battle-bar,body.clean-view .toasts,body.clean-view .battle-report{display:none !important;}
+  body.clean-view #scene canvas{image-rendering:pixelated;}
+  body.clean-view #scene{filter:sepia(.22) saturate(.82) contrast(1.05);}
   body.battle-mode .toasts{top:14px;bottom:auto;pointer-events:none;}
   body.battle-mode #app{max-width:none;margin:0;padding:0;}
   body.battle-mode h1,body.battle-mode .hud,body.battle-mode .panel,
@@ -322,6 +327,7 @@
   <button class="btn ghost" id="btnBattleInfo">Fähigkeit</button>
   <button class="btn ghost" id="btnBattleExit">Vollbild aus</button>
 </div>
+<button class="btn ghost" id="btnBattleView" title="Kampfansicht: Info-Leiste aus/ein – der Kampf läuft automatisch weiter">⏸</button>
 <div class="toasts" id="toasts"></div>
 <div class="battle-report" id="battleReport" role="status" aria-live="polite" title="Auswertung der letzten Welle: HP-Schaden, Heilung und stärkstes Wesen (Schaden + Heilung)">
   <span id="battleReportTitle"></span> · ⚔ Schaden <b id="battleReportDamage">0</b> · ✚ Heilung <b id="battleReportHeal">0</b> · ★ Top <b id="battleReportTop">–</b>
@@ -1208,8 +1214,16 @@ renderer.domElement.addEventListener("pointerup",e=>{
 });
 renderer.domElement.addEventListener("dblclick",resetCameraZoom);
 window.addEventListener("keydown",e=>{ if(e.key==="0") resetCameraZoom(); });
+function setCleanView(on){
+  document.body.classList.toggle("clean-view",on);
+  const b = document.getElementById("btnBattleView");
+  if(b) b.textContent = on ? "▶" : "⏸";
+  renderer.setPixelRatio(on ? 0.5 : Math.min(window.devicePixelRatio||1,2));
+  resize();
+}
 function setBattleMode(on){
   document.body.classList.toggle("battle-mode",on);
+  setCleanView(on);
   requestAnimationFrame(resize);
 }
 function openInfo(title,text,extraHtml){
@@ -2986,6 +3000,10 @@ function castAura(u,b){
 }
 // Normale Schwarm-Mobs bleiben effektfrei; Elite und Boss bekommen sichtbares Treffer-Feedback.
 function hasDamageFx(u){ return !!u && (!u.isMob || u.isElite || u.isBoss); }
+// Schwarm-Mobs bekommen Zahlen, aber gestreut und gedeckelt, damit das Feld lesbar bleibt.
+const MOB_NUMBER_LIMIT = 18;
+function showMobNumber(u){ return !!u && u.isMob && !u.isElite && !u.isBoss &&
+  G.effects.length < MOB_NUMBER_LIMIT && u.id % 4 === 0; }
 // Krits und Todesstöße halten nur das Bild kurz an (ein paar Frame-Ticks).
 // Die Simulation läuft mit echter dt weiter; Headless kennt keinen Stop.
 const HIT_STOP_CRIT = 0.045;
@@ -3009,7 +3027,7 @@ function damageTextScale(dmg,target,crit){
   return 0.7+rel*0.25+(crit ? 0.4 : 0);
 }
 function pushEffect(u,text,color,scale){
-  if(SIM.headless || !hasDamageFx(u)) return;
+  if(SIM.headless || (!hasDamageFx(u) && !showMobNumber(u))) return;
   const sprite = makeTextSprite(text,color,scale || 0.7);
   const p = worldPos(u.grid.gx,u.grid.gy);
   sprite.position.set(p.x+(Math.random()-0.5)*0.28,1.6,p.z+(Math.random()-0.5)*0.28);
@@ -3483,6 +3501,7 @@ function winBattle(){
   const survivors = b ? b.player.filter(u => !u.isDead).length : 0;
   const heroTotal = b ? b.player.length : G.team.length;
   const relic = grantRelicForWave(cleared);
+  setCleanView(false);
   showBattleReport(true);
   G.phase = "prep";
   G.battle = null;
@@ -3519,6 +3538,7 @@ function loseBattle(){
   const heroTotal = b ? b.player.length : G.team.length;
   const foesLeft = b ? sideUnits(b,"enemy").filter(u => !u.isDead).length : 0;
   G.lastRelic = null;
+  setCleanView(false);
   showBattleReport(false);
   G.phase = "defeat";
   G.battle = null;
@@ -4466,6 +4486,9 @@ window.addEventListener("load", () => {
   document.getElementById("btnBattleSelect").onclick = openDraft;
   document.getElementById("btnBattleNext").onclick = () => startBattle();
   document.getElementById("btnBattleExit").onclick = () => setBattleMode(false);
+  document.getElementById("btnBattleView").onclick = () =>
+    setCleanView(!document.body.classList.contains("clean-view"));
+  setCleanView(false);
   document.getElementById("btnReportClose").onclick = hideBattleReport;
   document.getElementById("btnPrevUnit").onclick = () => cycleFocus(-1);
   document.getElementById("btnNextUnit").onclick = () => cycleFocus(1);
