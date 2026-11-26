@@ -230,7 +230,11 @@ for token in ['const COVER_HEIGHT = {', 'let TOWN_CELL_BY_KEY = new Map();',
               'function buildSkyline(layout)', 'userData = {skyline:true}',
               'skylineGlow:true', 'skylineWindows.forEach(o =>', 'skylineBillboard:true',
               'function spawnDustAt(gx,gy)', 'cloud.userData = {dust:true}',
-              'gravity:0.25', '(p.gravity === undefined ? 2.4 : p.gravity)']:
+              'gravity:0.25', '(p.gravity === undefined ? 2.4 : p.gravity)',
+              'garrison:null', 'function atGarrison(u)', 'function assignGarrisons()',
+              'function refreshGarrisonMarkers()', 'function garrisonHold(u,b)',
+              'if(garrisonLayer) clearGroup(garrisonLayer)', 'assignGarrisons();',
+              'guardCell ? (guardCell.kind === "tower"', 'const garrisonY = u.garrison && atGarrison(u) ?']:
     if token not in src:
         problems.append('Prozedurale Stadt/Wildnis/Requisiten/3D-Details/Hoehen-Deckung fehlt: ' + token)
 for token in ['label:"Verstärker"', 'SPECIAL:{', 'label:"Sonderwesen"',

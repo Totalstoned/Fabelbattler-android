@@ -756,9 +756,15 @@ vm.runInContext(`(() => {
   // Rueckzug weiter weg – bei linker und rechter Stadt gleichermassen.
   const center = (GRID.cols-1)/2;
   const avgDist = list => list.reduce((s,m) => s+Math.abs(m.grid.gx-center),0)/Math.max(1,list.length);
-  const front = G.battle.enemyMobs.filter(m => m.key === "mob_landsturmsoldat" || m.key === "mob_mythenzerstoerer");
-  const back = G.battle.enemyMobs.filter(m => m.key === "mob_rentner" || m.key === "mob_feldsanitaeter");
+  // Feste Karte: sonst verschiebt die Zahl der Siege den Salz-Wert und der
+  // Check würde von Garnisonen abhängen statt von der Stationierungslogik.
+  const savedSalt = G.mapSalt;
+  prepareMap(40,3);
+  const stationList = buildMobSwarm("enemy",40);
+  const front = stationList.filter(m => m.key === "mob_landsturmsoldat" || m.key === "mob_mythenzerstoerer");
+  const back = stationList.filter(m => m.key === "mob_rentner" || m.key === "mob_feldsanitaeter");
   globalThis.__stationCheck = front.length > 0 && back.length > 0 && avgDist(front) < avgDist(back);
+  prepareMap(40,savedSalt); G.mapSalt = savedSalt;
 
   // Zehn Klassen, zehn menschliche Spezialisten mit Gegenbonus.
   const covered = Object.keys(HUMAN_COUNTER);
@@ -807,6 +813,27 @@ vm.runInContext(`(() => {
     rangeAt("trench") >= coverRangeBonus(exposedProbe) && HABITAT_SCALE.human <= 0.3;
   globalThis.__walkableHouseCheck = townLayer.children.filter(o => o.geometry &&
     o.geometry.parameters && Math.abs(o.geometry.parameters.height-0.08) < 0.001).length >= 5;
+
+  // Helden-Garnison: Haus-/Turmplätze, Höhenbonus, Halten bis Feindkontakt.
+  assignGarrisons();
+  const garKeys = G.team.map(u => u.garrison && (u.garrison.gx+","+u.garrison.gy));
+  globalThis.__garrisonCheck = G.team.every(u => !!u.garrison &&
+    TOWN_COVER.has(u.garrison.gx+","+u.garrison.gy) &&
+    Math.abs(u.grid.gx-u.garrison.gx) < 0.01 &&
+    Math.abs(u.grid.gy-u.garrison.gy) < 0.01 &&
+    hasCover(u) && atGarrison(u)) &&
+    new Set(garKeys).size > 1 && G.team.some(u => u.garrison.kind === "tower") &&
+    coverRangeBonus(G.team[0]) > coverRangeBonus(exposedProbe);
+  const emptyFoeBattle = {player:[],enemies:[],playerMobs:[],enemyMobs:[]};
+  const nearFoe = createMob("kriecher","enemy",1);
+  nearFoe.grid.gx = G.team[0].garrison.gx; nearFoe.grid.gy = G.team[0].garrison.gy;
+  const nearFoeBattle = {player:[],enemies:[nearFoe],playerMobs:[],enemyMobs:[]};
+  globalThis.__garrisonHoldCheck = garrisonHold(G.team[0],emptyFoeBattle) &&
+    !garrisonHold(G.team[0],nearFoeBattle);
+  globalThis.__humanElevationCheck = G.battle && G.battle.enemyMobs.some(m => m.isHuman && m.guard) &&
+    G.battle.enemyMobs.filter(m => m.isHuman && m.guard).every(m =>
+      !!TOWN_CELL_BY_KEY.get(m.guard.gx+","+m.guard.gy));
+  globalThis.__garrisonSlots = garKeys.length;
 
   // Fünf Angriffsformationen: einzeln, paarweise, zu dritt, Schwarm, zwei Seiten.
   const byMode = {};
@@ -924,6 +951,9 @@ for (const [flag, message] of [
   ['__coverDamageCheck', 'Städtische Deckung reduziert keinen Schaden'],
   ['__heightRangeCheck', 'Höhenvorteil erhöht die Reichweite nicht'],
   ['__walkableHouseCheck', 'Häuser sind nicht begehbar'],
+  ['__garrisonCheck', 'Helden werden nicht in Häusern/Türmen stationiert'],
+  ['__garrisonHoldCheck', 'Garnison hält nicht oder verlässt das Haus bei Feindkontakt nicht'],
+  ['__humanElevationCheck', 'Menschen haben keine sichtbare Deckungs-Position'],
   ['__kaijuDetailCheck', 'Kaiju-Modell hat keine Krallen/Rückenplatten'],
   ['__vehicleCheck', 'Panzer/Feuerwehr/Hubschrauber/Jet/Drohne haben keine Fahrzeug-Geometrie'],
   ['__rotorCheck', 'Hubschrauber-Rotor dreht sich nicht'],
@@ -1794,4 +1824,4 @@ vm.runInContext(`(() => {
 if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('CC0-Texturen laden oder Fallback greift nicht');
 if (!vm.runInContext('globalThis.__cityTextureCheck', ctx)) throw new Error('2K-Fassaden/Dachziegel/Asphalt sind nicht an der Stadt angebunden');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten/${vm.runInContext('globalThis.__skylineCounts', ctx)} skyline, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+27-mythos-atlas+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+stadt-requisiten+schilder+hochhaeuser+hafen+strommasten+skyline+neon+billboards+staub+fahrzeug-modelle+rotoren+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten/${vm.runInContext('globalThis.__skylineCounts', ctx)} skyline, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+27-mythos-atlas+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+stadt-requisiten+schilder+hochhaeuser+hafen+strommasten+skyline+neon+billboards+staub+fahrzeug-modelle+rotoren+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser+garnison+helden-im-haus+menschen-erhoeht (${vm.runInContext('globalThis.__garrisonSlots', ctx)} Plätze))`);

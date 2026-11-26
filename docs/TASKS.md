@@ -1,3 +1,4 @@
+- [x] **75. Helden in Gebäuden stationieren**: Haus-/Turmplätze mit Markern, Höhen-Reichweite und Halte-Logik; stations-abhängige Checks deterministisch, Version 1.22.2.
 - [x] **74. Neon-Billboards und Staub-Effekte**: japanische Leuchtschilder an der Skyline, Staubwolken bei Kaiju-Treffern auf gedeckte Menschen, sechs CC0-Atlanten, Version 1.22.1.
 - [x] **73. Skyline und sechs Atlanten**: Hintergrund-Hochhäuser mit beleuchteten Fenstern und Neon-Kronen, Quetzalcoatl/Ammit/Tengu/Yama/Anansi/Selkie im Atlas, Version 1.22.0.
 - [x] **72. Fahrzeugmodelle und Hafen-Silhouette**: Panzer/Feuerwehr/Krankenwagen/Hubschrauber/Jet/Drohne als echte 3D-Modelle mit Rotor-Animation, Strommastern, Hafenkran und Containern, sechs CC0-Atlanten, Version 1.21.9.

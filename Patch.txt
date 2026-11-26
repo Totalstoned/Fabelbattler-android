@@ -388,3 +388,9 @@ Schritt 19: Version 1.22.1. Die Hochhäuser tragen jetzt japanische
            (jetzt 57): Nessie, Mothman, Jersey Devil, Skinwalker,
            Reineke und Rotkäppchen. atlas-vorschau.png ist erneuert.
 
+Schritt 20: Version 1.22.2. Deine Helden werden jetzt vor dem Kampf in
+           Häusern und auf dem Wachturm stationiert (⌂ über besetzten
+           Häusern). Höhere Plätze geben mehr Reichweite, und die Truppen
+           halten kurz Deckung, bis ein Gegner nahe ist. Die Menschen im
+           Stadt-Lager stehen sichtbar im Haus bzw. auf dem Turm.
+

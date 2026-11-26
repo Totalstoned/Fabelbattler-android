@@ -938,12 +938,26 @@ function refreshTownCover(layout){
     other:[...TOWN_TRENCHES.filter(p => p.gx*dir <= c.gx*dir),
       ...TOWN_HOUSES.filter(p => p.gx*dir > c.gx*dir)]
   };
+  // Neue Stadt = neue Häuser: alte Garnisonsplätze sind ungültig.
+  if(G.team) G.team.forEach(u => { u.garrison = null; });
+  if(garrisonLayer) clearGroup(garrisonLayer);
+}
+// Garnison: Helden werden vor dem Kampf auf freie Haus-/Turmplätze gesetzt.
+// Sie halten dort Deckung und nutzen die Höhe, solange kein Feind in Reichweite
+// ist; dann verlassen sie das Gebäude ganz normal wie jede andere Einheit.
+function atGarrison(u){
+  return !!(u && u.garrison &&
+    Math.hypot(u.grid.gx-u.garrison.gx,u.grid.gy-u.garrison.gy) < 0.3);
 }
 function hasCover(u){
-  return !!(u && u.isHuman && TOWN_COVER.has(Math.round(u.grid.gx)+","+Math.round(u.grid.gy)));
+  if(!u) return false;
+  if(atGarrison(u)) return true;
+  return !!(u.isHuman && TOWN_COVER.has(Math.round(u.grid.gx)+","+Math.round(u.grid.gy)));
 }
 function coverHeight(u){
-  if(!u || !u.isHuman) return 0;
+  if(!u) return 0;
+  if(atGarrison(u)) return u.garrison.height||0;
+  if(!u.isHuman) return 0;
   const cell = TOWN_CELL_BY_KEY.get(Math.round(u.grid.gx)+","+Math.round(u.grid.gy));
   return cell ? (cell.height||COVER_HEIGHT[cell.kind]||0) : 0;
 }
@@ -953,6 +967,48 @@ function coverRangeBonus(u){
 }
 function coverReduction(u){
   return Math.min(0.5,TOWN_COVER_REDUCTION+coverHeight(u)*0.12);
+}
+function assignGarrisons(){
+  if(!G.team) return;
+  // Zwei Plätze je Haus, einen auf dem Turm – Healer und Tanks kommen nach
+  // hinten/hoch, Angreifer in die vorderen Häuser. Die Plätze sind pro Welle
+  // neu, weil refreshTownCover() die Stadt neu würfelt.
+  const slots = [TOWN_TOWER].concat(TOWN_HOUSES.flatMap(cell => [cell,cell]));
+  const rank = u => { const r = String(u.role||"").toUpperCase(); return r === "HEALER" ? 0 : r === "TANK" ? 1 : 2; };
+  const ordered = G.team.slice().sort((a,b) => rank(a)-rank(b));
+  ordered.forEach((u,i) => {
+    const cell = slots[i%slots.length];
+    if(!cell) return;
+    u.garrison = {gx:cell.gx,gy:cell.gy,kind:cell.kind,
+      height:cell.height||COVER_HEIGHT[cell.kind]||0};
+    u.grid.gx = cell.gx;
+    u.grid.gy = cell.gy;
+  });
+  refreshGarrisonMarkers();
+}
+function refreshGarrisonMarkers(){
+  if(!garrisonLayer) return;
+  clearGroup(garrisonLayer);
+  if(SIM.headless) return;
+  const seen = new Set();
+  G.team.forEach(u => {
+    if(!u.garrison) return;
+    const key = u.garrison.gx+","+u.garrison.gy;
+    if(seen.has(key)) return;
+    seen.add(key);
+    const p = worldPos(u.garrison.gx,u.garrison.gy);
+    const marker = makeTextSprite("⌂","#8be9fd",0.34);
+    marker.position.set(p.x,(u.garrison.height||0.6)+0.34,p.z);
+    garrisonLayer.add(marker);
+  });
+}
+function garrisonHold(u,b){
+  if(!u.garrison || !b) return false;
+  // Kurzer Halt am Start, danach rücken auch die letzten Truppen aus,
+  // sonst könnte ein Kampf ohne Feindkontakt endlos stehen bleiben.
+  if((b.time||0) > 0.8) return false;
+  const reach = Math.max(1,u.rng/70)+coverRangeBonus(u)+0.7;
+  return !livingEnemiesOf(u,b).some(foe => dist(u,foe) <= reach);
 }
 const ELITE_EVERY = 5;
 const BOSS_EVERY = 10;
@@ -1102,6 +1158,8 @@ scene.add(synergyLayer);
 const skylineLayer = new THREE.Group();
 scene.add(skylineLayer);
 let skylineWindows = [];
+// Sichtbare Markierung über besetzten Häusern (Helden-Garnison).
+let garrisonLayer = null;
 // Eine gemeinsame Zielmarkierung zeigt im 3D-Feld, wen der fokussierte Held angreift.
 const targetRing = new THREE.Mesh(
   new THREE.RingGeometry(0.46,0.56,32),
@@ -1600,6 +1658,8 @@ function buildArena(){
   arena.add(wildLayer);
   propsLayer = new THREE.Group();
   arena.add(propsLayer);
+  garrisonLayer = new THREE.Group();
+  arena.add(garrisonLayer);
   arenaPalette = {base:base.material,tileA:matA,tileB:matB,edge:edgeMat,ring:ringMat};
 }
 function buildTownStructures(layout){
@@ -3262,12 +3322,16 @@ function updateMobVisuals(time,dt){
           if(G.battle.time < (m.arrivalDelay||0)) return;
           if(m.isDead && m.deathTimer <= 0) return;
           const p = worldPos(m.grid.gx,m.grid.gy);
+          // Menschen stehen sichtbar im Haus bzw. oben auf dem Wachturm.
+          const guardCell = m.guard ? TOWN_CELL_BY_KEY.get(m.guard.gx+","+m.guard.gy) : null;
+          const elevation = guardCell ? (guardCell.kind === "tower" ?
+            (guardCell.height||COVER_HEIGHT.tower)*0.85 : 0.12) : 0;
           const hp = clamp(m.hp/m.maxHp,0,1);
           const swing = attackPulse(m,0.18);
           const hit = mobHitPulse(m);
           const size = m.scale*(m.isDead ? 0.2*clamp(m.deathTimer/0.6,0,1) : 0.75+0.25*hp)*
             (m.isBoss ? 1+0.05*Math.sin(time*4) : 1)*(1+swing*0.16+hit*0.2);
-          mobDummy.position.set(p.x,0.35*size+Math.sin(time*3+m.id*0.4)*0.025+swing*0.08+hit*0.06,p.z);
+          mobDummy.position.set(p.x,0.35*size+elevation+Math.sin(time*3+m.id*0.4)*0.025+swing*0.08+hit*0.06,p.z);
           mobDummy.scale.set(size*(1-swing*0.06),size*(1+swing*0.1),size*(1-swing*0.06));
           mobDummy.rotation.set(Math.sin(time*4+m.id*0.5)*0.06+hit*0.1,
             m.id*0.7+Math.sin(time*1.5+m.id)*0.08,Math.sin(time*3+m.id*0.7)*0.08+hit*0.16);
@@ -3370,7 +3434,7 @@ function createUnit(key,lvl=1,side="player"){
     baseHp:base.hp*(1+(lvl-1)*0.3),baseAtk:base.atk*(1+(lvl-1)*0.25),baseSpd:base.spd,
     rng:base.rng,healRange:base.healRange||3,mods:Object.assign({},DEFAULT_MODS),modsEffective:Object.assign({},DEFAULT_MODS),
     maxHp:0,hp:0,atk:0,spd:1,shield:0,
-    grid:{gx:0,gy:0},target:null,attackCd:0,supportCd:0,spellCd:Math.random()*0.8,hitFlash:0,animAttack:0,deathTimer:0,
+    grid:{gx:0,gy:0},garrison:null,target:null,attackCd:0,supportCd:0,spellCd:Math.random()*0.8,hitFlash:0,animAttack:0,deathTimer:0,
     statuses:{},statusPower:{},isDead:false,revived:false,auraCd:0,trait:null,aura:null
   };
   recalcUnit(u);
@@ -4084,11 +4148,19 @@ function updateBattle(dt){
     if(u.isDead) return;
     if(u.isMob){ mobAction(u,b,dt); return; }
     if(supportAction(u,b,dt)) return;
+    // Garnisonstruppen bleiben im Haus, bis ein Gegner in Reichweite kommt.
+    // Das verändert nur ihre Laufroute, nicht Angriff, Schaden oder Deckung.
+    if(u.garrison && garrisonHold(u,b)){
+      u.grid.gx += (u.garrison.gx-u.grid.gx)*Math.min(1,dt*3.5);
+      u.grid.gy += (u.garrison.gy-u.grid.gy)*Math.min(1,dt*3.5);
+      u.target = null;
+      return;
+    }
     const target = chooseTarget(u,b);
     u.target = target;
     if(!target) return;
     if(castSpell(u,target,b)) return;
-    if(dist(u,target) > Math.max(1,u.rng/70)) moveToward(u,target,dt,b);
+    if(dist(u,target) > Math.max(1,u.rng/70)+coverRangeBonus(u)) moveToward(u,target,dt,b);
     else tryAttack(u,target,b);
   });
   separate([...b.player,...b.enemies].filter(u => !u.isDead),dt);
@@ -4221,12 +4293,12 @@ function startBattle(){
   clearEffects();
   G.hitStop = 0;
   reviveTeam();
-  G.team.forEach((u,i) => {
-    u.grid.gx = clamp((i%2)*0.7,0,GRID.cols-1);
-    u.grid.gy = clamp(0.6+Math.floor(i/2)*1.7,0,GRID.rows-1);
+  G.team.forEach(u => {
     u.attackCd = Math.random()*0.4;
     recalcUnit(u);
   });
+  // Helden beziehen ihre Häuser/Türme erst nach dem Kartenwurfel.
+  assignGarrisons();
   const enemyTeam = buildEnemyTeam();
   const playerMobs = buildMobSwarm("player",G.wave);
   const enemyMobs = buildMobSwarm("enemy",G.wave);
@@ -4352,7 +4424,9 @@ function updateVisuals(time,dt,viewDt){
     } else {
       const lunge = attackPulse(u,0.3)*0.12;
       group.scale.setScalar(group.userData.size || 1);
-      group.position.y = Math.sin(time*2.2+u.id*0.7)*0.035+lunge;
+      const garrisonY = u.garrison && atGarrison(u) ?
+        (u.garrison.kind === "tower" ? u.garrison.height*0.85 : 0.12) : 0;
+      group.position.y = garrisonY+Math.sin(time*2.2+u.id*0.7)*0.035+lunge;
       group.visible = true;
     }
     poseCharacter(u,group,time,dt,deathT);
