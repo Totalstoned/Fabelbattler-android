@@ -298,3 +298,12 @@ Schritt 7: Version 1.20.9. Die Karte wird jetzt vor jeder Welle
            mal paarweise, mal zu dritt, mal alle gleichzeitig aus
            einem Punkt und manchmal von zwei Seiten. Der Kampf
            läuft weiter automatisch.
+Schritt 8: Version 1.21.0. Während des Kampfes siehst du jetzt
+           nur noch das Schlachtfeld. Unten rechts ist ein Knopf
+           mit ⏸/▶: Damit kannst du die automatischen Infos
+           unten am Bild aus- und wieder einblenden. Der Kampf
+           läuft dabei weiter von selbst; nach der Welle kommen
+           die Knöpfe automatisch zurück. Die Monster zeigen
+           auch als Schwarm Schadenszahlen (höchstens 18 auf
+           einmal), und die Kampffläche sieht im Kommandos-Stil
+           pixelig und entsättigt aus.
