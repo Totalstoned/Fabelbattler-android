@@ -1430,6 +1430,12 @@ const ATLAS_CREATURES = {
   wichtigel:{label:"Wichtel",image:"creatures/wichtigel/turntable.png"},
   gartenelfe:{label:"Gartenelfe",image:"creatures/gartenelfe/turntable.png"},
   lichtfee:{label:"Lichtfee",image:"creatures/lichtfee/turntable.png"},
+  klabautermann:{label:"Klabautermann",image:"creatures/klabautermann/turntable.png"},
+  moosweiblein:{label:"Moosweiblein",image:"creatures/moosweiblein/turntable.png"},
+  aufhocker:{label:"Aufhocker",image:"creatures/aufhocker/turntable.png"},
+  fernrisswolf:{label:"Fernrisswolf",image:"creatures/fernrisswolf/turntable.png"},
+  kroetenmoench:{label:"Krötenmönch",image:"creatures/kroetenmoench/turntable.png"},
+  panzer:{label:"Panzer",image:"creatures/panzer/turntable.png"},
   schatten:{label:"Schatten der Laterne",image:"creatures/schatten/turntable.png"}
 };
 const ATLAS_VIEWS = ["0° · Front","45° · rechts vorne","90° · rechte Seite","135° · rechts hinten",
@@ -1804,6 +1810,12 @@ function buildCityProps(layout){
   const highriseMat = new THREE.MeshStandardMaterial({map:cc0Texture("brick_wall",()=>null,3),color:0xffffff,roughness:0.9});
   const bandMat = new THREE.MeshStandardMaterial({color:0xffd166,emissive:0xffb347,emissiveIntensity:0.35,roughness:0.5});
   const paintMat = new THREE.MeshStandardMaterial({color:0xd9d9c8,roughness:1});
+  const signalMat = new THREE.MeshStandardMaterial({color:0x30363c,roughness:0.6,metalness:0.4});
+  const redLight = new THREE.MeshStandardMaterial({color:0xff5a4d,emissive:0xff2318,emissiveIntensity:0.7});
+  const amberLight = new THREE.MeshStandardMaterial({color:0xffc85c,emissive:0xff9d21,emissiveIntensity:0.55});
+  const greenLight = new THREE.MeshStandardMaterial({color:0x8ce08a,emissive:0x35c95a,emissiveIntensity:0.55});
+  const vendingBody = new THREE.MeshStandardMaterial({color:0x2f5f93,roughness:0.7,metalness:0.2});
+  const vendingFront = new THREE.MeshStandardMaterial({color:0x9ad9ef,emissive:0x2f80a5,emissiveIntensity:0.55});
   const freeCell = () => {
     for(let tries=0;tries<30;tries++){
       const gx = clamp(Math.floor(r()*GRID.cols),0,GRID.cols-1);
@@ -1842,6 +1854,36 @@ function buildCityProps(layout){
       }
     }
   });
+  // Japanische Ampeln und Getränkeautomaten direkt am Straßenrand:
+  // kleine, aber sofort lesbare Details der zerstörten Großstadt.
+  // Reine Kulisse – keine Deckung, keine Wege, keine Reichweitenänderung.
+  for(let i=0;i<3;i++){
+    const p = freeCell();
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.035,0.78,6),signalMat);
+    mast.position.set(p.x,0.39,p.z);
+    mast.userData = {traffic:true};
+    propsLayer.add(mast);
+    const box = new THREE.Mesh(new THREE.BoxGeometry(0.11,0.3,0.09),signalMat);
+    box.position.set(p.x,0.82,p.z);
+    box.userData = {traffic:true};
+    propsLayer.add(box);
+    [redLight,amberLight,greenLight].forEach((mat,j)=>{
+      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.032,6,5),mat);
+      bulb.position.set(p.x,0.91-j*0.09,p.z+0.05);
+      bulb.userData = {traffic:true};
+      propsLayer.add(bulb);
+    });
+  }
+  for(let i=0;i<4;i++){
+    const p = freeCell();
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.22,0.42,0.16),vendingBody);
+    body.position.set(p.x,0.21,p.z);
+    body.userData = {vending:true};
+    const front = new THREE.Mesh(new THREE.BoxGeometry(0.16,0.3,0.01),vendingFront);
+    front.position.set(p.x,0.23,p.z+0.085);
+    front.userData = {vending:true};
+    propsLayer.add(body,front);
+  }
   // Ein paar Hochhäuser am Rand: Tokyo-Silhouette hinter dem Schlachtfeld.
   const towers = 3+Math.floor(r()*3);
   for(let i=0;i<towers;i++){

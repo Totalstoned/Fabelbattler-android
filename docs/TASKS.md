@@ -1,3 +1,4 @@
+- [x] **77. Sechs CC0-Atlanten + Straßendetails**: Klabautermann/Moosweiblein/Aufhocker/Fernrisswolf/Krötenmönch/Panzer (64/123), dazu Ampeln und Getränkeautomaten als Kulisse, Version 1.22.4.
 - [x] **76. Video-Atlas eingebunden**: 8 Frames aus dem User-Video als „Schatten der Laterne“ für `schatten`, nicht-CC0 mit Einbau-Erlaubnis, Version 1.22.3.
 - [x] **75. Helden in Gebäuden stationieren**: Haus-/Turmplätze mit Markern, Höhen-Reichweite und Halte-Logik; stations-abhängige Checks deterministisch, Version 1.22.2.
 - [x] **74. Neon-Billboards und Staub-Effekte**: japanische Leuchtschilder an der Skyline, Staubwolken bei Kaiju-Treffern auf gedeckte Menschen, sechs CC0-Atlanten, Version 1.22.1.

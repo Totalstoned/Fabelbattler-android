@@ -398,3 +398,8 @@ Schritt 21: Version 1.22.3. Dein neues Video ist als acht Frame-Staffel
            unter dem Namen „Schatten der Laterne“ im Wesen-Atlas
            eingebunden (nicht CC0, aber von dir freigegeben).
 
+Schritt 22: Version 1.22.4. Sechs neue Wesen-Atlanten (Klabautermann,
+           Moosweiblein, Aufhocker, Fernrisswolf, Krötenmönch, Panzer).
+           Am Straßenrand stehen jetzt Ampeln und leuchtende Getränke-
+           automaten – nur Dekoration, der Kampf bleibt unverändert.
+
