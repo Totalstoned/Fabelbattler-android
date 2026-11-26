@@ -1345,10 +1345,15 @@ vm.runInContext(`
     atlasEl.style.backgroundImage.indexOf("creatures/chupacabra/turntable.png") >= 0;
   const fee = openCreatureAtlas("fee") &&
     atlasEl.style.backgroundImage.indexOf("creatures/fee/turntable.png") >= 0;
+  const godzilla = openCreatureAtlas("godzilla") &&
+    atlasEl.style.backgroundImage.indexOf("creatures/godzilla/turntable.png") >= 0;
+  const kaijuKeys = ["kingkong","mothra","mechagodzilla","kingghidorah","rodan"];
+  const kaijuOK = kaijuKeys.every(k => openCreatureAtlas(k) &&
+    atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
   const unknown = !openCreatureAtlas("goblin");
   closeCreatureAtlas();
   const closed = !document.getElementById("atlasOverlay").classList.contains("show");
-  globalThis.__atlasCheck = opened && closed && unknown && wrapped && chupa && fee &&
+  globalThis.__atlasCheck = opened && closed && unknown && wrapped && chupa && fee && godzilla && kaijuOK &&
     p0 === "0% 0%" && p1 === "33% 0%" && p4 === "0% 100%" &&
     a0.indexOf("Front") >= 0 && a4.indexOf("Rücken") >= 0;
 `, ctx);

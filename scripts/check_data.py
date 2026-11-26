@@ -424,7 +424,8 @@ for token in ['id="atlasFrame"', 'background-image:url("creatures/bigfoot/turnta
 if not (path.parent / 'creatures' / 'bigfoot' / 'turntable.png').is_file():
     problems.append('Bigfoot-Turntable-Datei fehlt im Assetordner')
 # CC0-Atlas: alle drei Kernwesen haben ein lokales Turntable-Sheet.
-for key in ['bigfoot', 'chupacabra', 'fee']:
+for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
+            'mechagodzilla', 'kingghidorah', 'rodan']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)
     if 'creatures/'+key+'/turntable.png' not in src:
