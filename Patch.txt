@@ -325,3 +325,12 @@ Schritt 11: Version 1.21.3. Rumpelstilzchen, Heinzelmännchen,
            Haus, Wachturm), sieht weiter und ist besser geschützt.
            Eine Notiz liegt bei, wie groß ein Umstieg auf Unreal
            Engine 5 werden würde.
+
+Schritt 12: Version 1.21.4. Die ⏸/▶-Taste unten rechts pausiert jetzt den
+           Kampf wirklich; die pixelig-entsättigte Kommandos-Optik ist weg.
+           Shin Godzilla ist im Wesen-Atlas drehbar. Die Menschen haben
+           Panzer und Feuerwehrwagen, und die Stadt hat mehrstöckige
+           Häuser mit Fenstern und Straßen. Im Ordner ue5/ liegt ein
+           Gerüst für eine Windows-EXE; gebaut wird sie erst auf einem PC
+           mit Unreal Engine 5.7 oder neuer.
+

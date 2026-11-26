@@ -1,0 +1,1242 @@
+{
+  "source": "index3d.html",
+  "count": 123,
+  "human_count": 18,
+  "monster_count": 105,
+  "human_keys": [
+    "oma",
+    "opa",
+    "feuerwehr",
+    "kampftruppe",
+    "soldat",
+    "missionar",
+    "sanitaeter",
+    "rebelle",
+    "armee",
+    "bundeswehr",
+    "soeldner",
+    "feuerwehrwagen",
+    "krankenwagen",
+    "panzer",
+    "hubschrauber",
+    "kampfflugzeug",
+    "drohne",
+    "teddy"
+  ],
+  "monster_keys": [
+    "rumpelstilzchen",
+    "hotzenplotz",
+    "chupacabra",
+    "bigfoot",
+    "godzilla",
+    "mothra",
+    "vampire",
+    "werewolf",
+    "hexe",
+    "fee",
+    "ruebezahl",
+    "waldschrat",
+    "heinzelmaennchen",
+    "wichtel",
+    "sukubus",
+    "lilith",
+    "hydra",
+    "medusa",
+    "dschinn",
+    "goblin",
+    "klabautermann",
+    "kingkong",
+    "shingodzilla",
+    "minilla",
+    "queenmuto",
+    "scarking",
+    "burninggodzilla",
+    "methuselah",
+    "mechagodzilla",
+    "warbat",
+    "bagan",
+    "kingghidorah",
+    "shimo",
+    "godzillaearth",
+    "rodan",
+    "alp",
+    "blaubart",
+    "duden",
+    "nachtzerrer",
+    "moosweiblein",
+    "aufhocker",
+    "fernrisswolf",
+    "nixen",
+    "kroetenmoench",
+    "sensenmann",
+    "kappa",
+    "babajaga",
+    "anansi",
+    "quetzalcoatl",
+    "ammit",
+    "tengu",
+    "selkie",
+    "yama",
+    "oni",
+    "mamiwata",
+    "lichtfee",
+    "gartenelfe",
+    "mondelfe",
+    "frostfee",
+    "feenritter",
+    "blumengeist",
+    "gluehwisp",
+    "traumfee",
+    "nebelhexe",
+    "feenkoenigin",
+    "gamera",
+    "gyaos",
+    "anguirus",
+    "kumonga",
+    "destoroyah",
+    "reineke",
+    "rotkaeppchen",
+    "dornroeschen",
+    "bremer",
+    "till",
+    "yeti",
+    "nessie",
+    "mothman",
+    "ogopogo",
+    "jerseydevil",
+    "skinwalker",
+    "thunderbird",
+    "kraken",
+    "batsquatch",
+    "megalodon",
+    "assassinenklinge",
+    "assassinenschatten",
+    "assassinengift",
+    "assassinenschuetze",
+    "assassinennebeltanz",
+    "assassinennachtlaeufer",
+    "assassinenfalle",
+    "assassinenseide",
+    "assassinenspiegel",
+    "assassinenmeister",
+    "aliengrau",
+    "alienreptil",
+    "alieninsekt",
+    "alienkristall",
+    "alienpflanze",
+    "alienenergie",
+    "alienkopffuss",
+    "alienpilz",
+    "alienroid",
+    "alienleer"
+  ],
+  "units": [
+    {
+      "key": "rumpelstilzchen",
+      "name": "Rumpelstilzchen",
+      "role": "DPS",
+      "cls": "Chaos",
+      "race": "Basis",
+      "ability": "goldspinnen",
+      "human": false
+    },
+    {
+      "key": "hotzenplotz",
+      "name": "Räuber Hotzenplotz",
+      "role": "DPS",
+      "cls": "Chaos",
+      "race": "Basis",
+      "ability": "pfeffer",
+      "human": false
+    },
+    {
+      "key": "chupacabra",
+      "name": "Chupacabra",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Basis",
+      "ability": "schattenbiss",
+      "human": false
+    },
+    {
+      "key": "bigfoot",
+      "name": "Bigfoot",
+      "role": "TANK",
+      "cls": "Wald",
+      "race": "Basis",
+      "ability": "erdbeben",
+      "human": false
+    },
+    {
+      "key": "godzilla",
+      "name": "Godzilla",
+      "role": "TANK",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "atomatem",
+      "human": false
+    },
+    {
+      "key": "mothra",
+      "name": "Mothra",
+      "role": "BUFFER",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "silksnare",
+      "human": false
+    },
+    {
+      "key": "vampire",
+      "name": "Vampir",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Basis",
+      "ability": "gestaltwandel",
+      "human": false
+    },
+    {
+      "key": "werewolf",
+      "name": "Werwolf",
+      "role": "DPS",
+      "cls": "Wald",
+      "race": "Basis",
+      "ability": "mondraserei",
+      "human": false
+    },
+    {
+      "key": "hexe",
+      "name": "Böse Hexe",
+      "role": "BUFFER",
+      "cls": "Magie",
+      "race": "Basis",
+      "ability": "wetter",
+      "human": false
+    },
+    {
+      "key": "fee",
+      "name": "Gute Fee",
+      "role": "HEALER",
+      "cls": "Magie",
+      "race": "Basis",
+      "ability": "feensegen",
+      "human": false
+    },
+    {
+      "key": "ruebezahl",
+      "name": "Rübezahl",
+      "role": "TANK",
+      "cls": "Wald",
+      "race": "Basis",
+      "ability": "wetter",
+      "human": false
+    },
+    {
+      "key": "waldschrat",
+      "name": "Waldschrat",
+      "role": "DPS",
+      "cls": "Wald",
+      "race": "Basis",
+      "ability": "waldzauber",
+      "human": false
+    },
+    {
+      "key": "heinzelmaennchen",
+      "name": "Heinzelmännchen",
+      "role": "BUFFER",
+      "cls": "Chaos",
+      "race": "Basis",
+      "ability": "werkzeug",
+      "human": false
+    },
+    {
+      "key": "wichtel",
+      "name": "Wichtel",
+      "role": "BUFFER",
+      "cls": "Chaos",
+      "race": "Basis",
+      "ability": "glueck",
+      "human": false
+    },
+    {
+      "key": "sukubus",
+      "name": "Sukubus",
+      "role": "BUFFER",
+      "cls": "Dunkel",
+      "race": "Basis",
+      "ability": "traumzauber",
+      "human": false
+    },
+    {
+      "key": "lilith",
+      "name": "Lilith",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Basis",
+      "ability": "nachtstuerm",
+      "human": false
+    },
+    {
+      "key": "hydra",
+      "name": "Hydra",
+      "role": "TANK",
+      "cls": "Mythos",
+      "race": "Basis",
+      "ability": "koepfe",
+      "human": false
+    },
+    {
+      "key": "medusa",
+      "name": "Medusa",
+      "role": "DPS",
+      "cls": "Mythos",
+      "race": "Basis",
+      "ability": "steinblick",
+      "human": false
+    },
+    {
+      "key": "dschinn",
+      "name": "Dschinn",
+      "role": "HEALER",
+      "cls": "Mythos",
+      "race": "Basis",
+      "ability": "erscheinung",
+      "human": false
+    },
+    {
+      "key": "goblin",
+      "name": "Goblin",
+      "role": "DPS",
+      "cls": "Chaos",
+      "race": "Basis",
+      "ability": "horden",
+      "human": false
+    },
+    {
+      "key": "klabautermann",
+      "name": "Klabautermann",
+      "role": "HEALER",
+      "cls": "Mythos",
+      "race": "Basis",
+      "ability": "navigator",
+      "human": false
+    },
+    {
+      "key": "kingkong",
+      "name": "King Kong",
+      "role": "TANK",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "erdbeben",
+      "human": false
+    },
+    {
+      "key": "shingodzilla",
+      "name": "Shin Godzilla",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "multi_atom",
+      "human": false
+    },
+    {
+      "key": "minilla",
+      "name": "Minilla",
+      "role": "BUFFER",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "smoke",
+      "human": false
+    },
+    {
+      "key": "queenmuto",
+      "name": "Queen M.U.T.O.",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "emp",
+      "human": false
+    },
+    {
+      "key": "scarking",
+      "name": "Scar King",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "kristallbefehl",
+      "human": false
+    },
+    {
+      "key": "burninggodzilla",
+      "name": "Burning Godzilla",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "schmelze",
+      "human": false
+    },
+    {
+      "key": "methuselah",
+      "name": "Methuselah",
+      "role": "TANK",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "tarnung",
+      "human": false
+    },
+    {
+      "key": "mechagodzilla",
+      "name": "MechaGodzilla",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "raketen",
+      "human": false
+    },
+    {
+      "key": "warbat",
+      "name": "WarBat",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "venom",
+      "human": false
+    },
+    {
+      "key": "bagan",
+      "name": "Bagan",
+      "role": "TANK",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "plasmahorn",
+      "human": false
+    },
+    {
+      "key": "kingghidorah",
+      "name": "King Ghidorah",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "gewitter",
+      "human": false
+    },
+    {
+      "key": "shimo",
+      "name": "Shimo",
+      "role": "TANK",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "frost",
+      "human": false
+    },
+    {
+      "key": "godzillaearth",
+      "name": "Godzilla Earth",
+      "role": "TANK",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "multi_atom",
+      "human": false
+    },
+    {
+      "key": "rodan",
+      "name": "Rodan",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "schwingen",
+      "human": false
+    },
+    {
+      "key": "alp",
+      "name": "Alp",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Basis",
+      "ability": "traumzauber",
+      "human": false
+    },
+    {
+      "key": "blaubart",
+      "name": "Blaubart",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Basis",
+      "ability": "schatz",
+      "human": false
+    },
+    {
+      "key": "duden",
+      "name": "Duden",
+      "role": "BUFFER",
+      "cls": "Magie",
+      "race": "Basis",
+      "ability": "wortbindung",
+      "human": false
+    },
+    {
+      "key": "nachtzerrer",
+      "name": "Nachzehrer",
+      "role": "DPS",
+      "cls": "Geist",
+      "race": "Basis",
+      "ability": "zehrfluch",
+      "human": false
+    },
+    {
+      "key": "moosweiblein",
+      "name": "Moosweiblein",
+      "role": "HEALER",
+      "cls": "Wald",
+      "race": "Basis",
+      "ability": "moosheilung",
+      "human": false
+    },
+    {
+      "key": "aufhocker",
+      "name": "Aufhocker",
+      "role": "TANK",
+      "cls": "Dunkel",
+      "race": "Basis",
+      "ability": "tarnung",
+      "human": false
+    },
+    {
+      "key": "fernrisswolf",
+      "name": "Fernrisswolf",
+      "role": "DPS",
+      "cls": "Wald",
+      "race": "Basis",
+      "ability": "rissbiss",
+      "human": false
+    },
+    {
+      "key": "nixen",
+      "name": "Nixen",
+      "role": "BUFFER",
+      "cls": "Magie",
+      "race": "Basis",
+      "ability": "wassersang",
+      "human": false
+    },
+    {
+      "key": "kroetenmoench",
+      "name": "Krötenmönch",
+      "role": "TANK",
+      "cls": "Wald",
+      "race": "Basis",
+      "ability": "kroetenfluch",
+      "human": false
+    },
+    {
+      "key": "sensenmann",
+      "name": "Sensenmann",
+      "role": "DPS",
+      "cls": "Geist",
+      "race": "Basis",
+      "ability": "sensenstreich",
+      "human": false
+    },
+    {
+      "key": "oma",
+      "name": "Oma mit Stock",
+      "role": "DPS",
+      "cls": "Chaos",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "opa",
+      "name": "Opa mit Zeitung",
+      "role": "DPS",
+      "cls": "Chaos",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "feuerwehr",
+      "name": "Feuerwehr",
+      "role": "TANK",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "kampftruppe",
+      "name": "Kampftruppe",
+      "role": "TANK",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "soldat",
+      "name": "Soldat",
+      "role": "DPS",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "missionar",
+      "name": "Missionar",
+      "role": "HEALER",
+      "cls": "Magie",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "sanitaeter",
+      "name": "Sanitäter",
+      "role": "HEALER",
+      "cls": "Magie",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "rebelle",
+      "name": "Rebell",
+      "role": "DPS",
+      "cls": "Chaos",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "armee",
+      "name": "Armee",
+      "role": "TANK",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "bundeswehr",
+      "name": "Bundeswehr",
+      "role": "DPS",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "soeldner",
+      "name": "Söldner",
+      "role": "DPS",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "feuerwehrwagen",
+      "name": "Feuerwehrwagen",
+      "role": "TANK",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "krankenwagen",
+      "name": "Krankenwagen",
+      "role": "HEALER",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "panzer",
+      "name": "Panzer",
+      "role": "TANK",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "hubschrauber",
+      "name": "Hubschrauber",
+      "role": "DPS",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "kampfflugzeug",
+      "name": "Kampfflugzeug",
+      "role": "DPS",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "drohne",
+      "name": "Drohne",
+      "role": "DPS",
+      "cls": "Stahl",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "kappa",
+      "name": "Kappa",
+      "role": "TANK",
+      "cls": "Wald",
+      "race": "Basis",
+      "ability": "wassersang",
+      "human": false
+    },
+    {
+      "key": "babajaga",
+      "name": "Baba Jaga",
+      "role": "DPS",
+      "cls": "Magie",
+      "race": "Basis",
+      "ability": "traumzauber",
+      "human": false
+    },
+    {
+      "key": "anansi",
+      "name": "Anansi",
+      "role": "BUFFER",
+      "cls": "Chaos",
+      "race": "Basis",
+      "ability": "schattenbiss",
+      "human": false
+    },
+    {
+      "key": "quetzalcoatl",
+      "name": "Quetzalcoatl",
+      "role": "DPS",
+      "cls": "Mythos",
+      "race": "Basis",
+      "ability": "gewitter",
+      "human": false
+    },
+    {
+      "key": "ammit",
+      "name": "Ammit",
+      "role": "TANK",
+      "cls": "Mythos",
+      "race": "Basis",
+      "ability": "zehrfluch",
+      "human": false
+    },
+    {
+      "key": "tengu",
+      "name": "Tengu",
+      "role": "DPS",
+      "cls": "Mythos",
+      "race": "Basis",
+      "ability": "schwingen",
+      "human": false
+    },
+    {
+      "key": "selkie",
+      "name": "Selkie",
+      "role": "HEALER",
+      "cls": "Magie",
+      "race": "Basis",
+      "ability": "wassersang",
+      "human": false
+    },
+    {
+      "key": "yama",
+      "name": "Yama",
+      "role": "TANK",
+      "cls": "Geist",
+      "race": "Basis",
+      "ability": "sensenstreich",
+      "human": false
+    },
+    {
+      "key": "oni",
+      "name": "Oni",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Basis",
+      "ability": "rissbiss",
+      "human": false
+    },
+    {
+      "key": "mamiwata",
+      "name": "Mami Wata",
+      "role": "HEALER",
+      "cls": "Magie",
+      "race": "Basis",
+      "ability": "feensegen",
+      "human": false
+    },
+    {
+      "key": "teddy",
+      "name": "Teddy",
+      "role": "DPS",
+      "cls": "Tier",
+      "race": "Basis",
+      "ability": "biss",
+      "human": true
+    },
+    {
+      "key": "lichtfee",
+      "name": "Lichtfee",
+      "role": "HEALER",
+      "cls": "Magie",
+      "race": "Fee",
+      "ability": "feensegen",
+      "human": false
+    },
+    {
+      "key": "gartenelfe",
+      "name": "Gartenelfe",
+      "role": "BUFFER",
+      "cls": "Wald",
+      "race": "Fee",
+      "ability": "waldzauber",
+      "human": false
+    },
+    {
+      "key": "mondelfe",
+      "name": "Mondelfe",
+      "role": "DPS",
+      "cls": "Magie",
+      "race": "Fee",
+      "ability": "traumzauber",
+      "human": false
+    },
+    {
+      "key": "frostfee",
+      "name": "Frostfee",
+      "role": "DPS",
+      "cls": "Element",
+      "race": "Fee",
+      "ability": "frost",
+      "human": false
+    },
+    {
+      "key": "feenritter",
+      "name": "Feenritter",
+      "role": "TANK",
+      "cls": "Stahl",
+      "race": "Fee",
+      "ability": "werkzeug",
+      "human": false
+    },
+    {
+      "key": "blumengeist",
+      "name": "Blumengeist",
+      "role": "HEALER",
+      "cls": "Wald",
+      "race": "Fee",
+      "ability": "moosheilung",
+      "human": false
+    },
+    {
+      "key": "gluehwisp",
+      "name": "Glühwisp",
+      "role": "BUFFER",
+      "cls": "Chaos",
+      "race": "Fee",
+      "ability": "glueck",
+      "human": false
+    },
+    {
+      "key": "traumfee",
+      "name": "Traumfee",
+      "role": "BUFFER",
+      "cls": "Magie",
+      "race": "Fee",
+      "ability": "traumzauber",
+      "human": false
+    },
+    {
+      "key": "nebelhexe",
+      "name": "Nebelhexe",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Fee",
+      "ability": "wetter",
+      "human": false
+    },
+    {
+      "key": "feenkoenigin",
+      "name": "Feenkönigin",
+      "role": "BUFFER",
+      "cls": "Magie",
+      "race": "Fee",
+      "ability": "feensegen",
+      "human": false
+    },
+    {
+      "key": "gamera",
+      "name": "Gamera",
+      "role": "TANK",
+      "cls": "Kaiju",
+      "race": "Kaiju",
+      "ability": "erdbeben",
+      "human": false
+    },
+    {
+      "key": "gyaos",
+      "name": "Gyaos",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Kaiju",
+      "ability": "schwingen",
+      "human": false
+    },
+    {
+      "key": "anguirus",
+      "name": "Anguirus",
+      "role": "TANK",
+      "cls": "Kaiju",
+      "race": "Kaiju",
+      "ability": "erdbeben",
+      "human": false
+    },
+    {
+      "key": "kumonga",
+      "name": "Kumonga",
+      "role": "BUFFER",
+      "cls": "Kaiju",
+      "race": "Kaiju",
+      "ability": "silksnare",
+      "human": false
+    },
+    {
+      "key": "destoroyah",
+      "name": "Destoroyah",
+      "role": "DPS",
+      "cls": "Kaiju",
+      "race": "Kaiju",
+      "ability": "schmelze",
+      "human": false
+    },
+    {
+      "key": "reineke",
+      "name": "Reineke Fuchs",
+      "role": "DPS",
+      "cls": "Chaos",
+      "race": "Fabel",
+      "ability": "schattenbiss",
+      "human": false
+    },
+    {
+      "key": "rotkaeppchen",
+      "name": "Rotkäppchen",
+      "role": "HEALER",
+      "cls": "Wald",
+      "race": "Fabel",
+      "ability": "moosheilung",
+      "human": false
+    },
+    {
+      "key": "dornroeschen",
+      "name": "Dornröschen",
+      "role": "BUFFER",
+      "cls": "Magie",
+      "race": "Fabel",
+      "ability": "traumzauber",
+      "human": false
+    },
+    {
+      "key": "bremer",
+      "name": "Bremer Stadtmusikanten",
+      "role": "TANK",
+      "cls": "Tier",
+      "race": "Fabel",
+      "ability": "horden",
+      "human": false
+    },
+    {
+      "key": "till",
+      "name": "Till Eulenspiegel",
+      "role": "DPS",
+      "cls": "Chaos",
+      "race": "Fabel",
+      "ability": "glueck",
+      "human": false
+    },
+    {
+      "key": "yeti",
+      "name": "Yeti",
+      "role": "TANK",
+      "cls": "Element",
+      "race": "Krypto",
+      "ability": "schwarmruf",
+      "human": false
+    },
+    {
+      "key": "nessie",
+      "name": "Nessie",
+      "role": "TANK",
+      "cls": "Wald",
+      "race": "Krypto",
+      "ability": "wassersang",
+      "human": false
+    },
+    {
+      "key": "mothman",
+      "name": "Mothman",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Krypto",
+      "ability": "schrecken",
+      "human": false
+    },
+    {
+      "key": "ogopogo",
+      "name": "Ogopogo",
+      "role": "TANK",
+      "cls": "Element",
+      "race": "Krypto",
+      "ability": "frost",
+      "human": false
+    },
+    {
+      "key": "jerseydevil",
+      "name": "Jersey Devil",
+      "role": "DPS",
+      "cls": "Chaos",
+      "race": "Krypto",
+      "ability": "rissbiss",
+      "human": false
+    },
+    {
+      "key": "skinwalker",
+      "name": "Skinwalker",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Krypto",
+      "ability": "schrecken",
+      "human": false
+    },
+    {
+      "key": "thunderbird",
+      "name": "Thunderbird",
+      "role": "DPS",
+      "cls": "Element",
+      "race": "Krypto",
+      "ability": "gewitter",
+      "human": false
+    },
+    {
+      "key": "kraken",
+      "name": "Kraken",
+      "role": "BUFFER",
+      "cls": "Magie",
+      "race": "Krypto",
+      "ability": "schwarmruf",
+      "human": false
+    },
+    {
+      "key": "batsquatch",
+      "name": "Batsquatch",
+      "role": "DPS",
+      "cls": "Tier",
+      "race": "Krypto",
+      "ability": "schwingen",
+      "human": false
+    },
+    {
+      "key": "megalodon",
+      "name": "Megalodon",
+      "role": "TANK",
+      "cls": "Tier",
+      "race": "Krypto",
+      "ability": "rissbiss",
+      "human": false
+    },
+    {
+      "key": "assassinenklinge",
+      "name": "Klinge",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Assassine",
+      "ability": "schattenbiss",
+      "human": false
+    },
+    {
+      "key": "assassinenschatten",
+      "name": "Schatten",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Assassine",
+      "ability": "traumzauber",
+      "human": false
+    },
+    {
+      "key": "assassinengift",
+      "name": "Giftmischer",
+      "role": "DPS",
+      "cls": "Wald",
+      "race": "Assassine",
+      "ability": "venom",
+      "human": false
+    },
+    {
+      "key": "assassinenschuetze",
+      "name": "Bogenschütze",
+      "role": "DPS",
+      "cls": "Wald",
+      "race": "Assassine",
+      "ability": "glueck",
+      "human": false
+    },
+    {
+      "key": "assassinennebeltanz",
+      "name": "Nebeltänzerin",
+      "role": "BUFFER",
+      "cls": "Dunkel",
+      "race": "Assassine",
+      "ability": "tarnung",
+      "human": false
+    },
+    {
+      "key": "assassinennachtlaeufer",
+      "name": "Nachtläufer",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Assassine",
+      "ability": "nachtstuerm",
+      "human": false
+    },
+    {
+      "key": "assassinenfalle",
+      "name": "Fallensteller",
+      "role": "BUFFER",
+      "cls": "Chaos",
+      "race": "Assassine",
+      "ability": "werkzeug",
+      "human": false
+    },
+    {
+      "key": "assassinenseide",
+      "name": "Seidenmord",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Assassine",
+      "ability": "silksnare",
+      "human": false
+    },
+    {
+      "key": "assassinenspiegel",
+      "name": "Spiegelklinge",
+      "role": "DPS",
+      "cls": "Magie",
+      "race": "Assassine",
+      "ability": "steinblick",
+      "human": false
+    },
+    {
+      "key": "assassinenmeister",
+      "name": "Großmeister",
+      "role": "DPS",
+      "cls": "Dunkel",
+      "race": "Assassine",
+      "ability": "koepfe",
+      "human": false
+    },
+    {
+      "key": "aliengrau",
+      "name": "Grauer",
+      "role": "DPS",
+      "cls": "Magie",
+      "race": "Alien",
+      "ability": "emp",
+      "human": false
+    },
+    {
+      "key": "alienreptil",
+      "name": "Reptiloid",
+      "role": "TANK",
+      "cls": "Tier",
+      "race": "Alien",
+      "ability": "plasmahorn",
+      "human": false
+    },
+    {
+      "key": "alieninsekt",
+      "name": "Insektoid",
+      "role": "DPS",
+      "cls": "Tier",
+      "race": "Alien",
+      "ability": "venom",
+      "human": false
+    },
+    {
+      "key": "alienkristall",
+      "name": "Kristallwesen",
+      "role": "TANK",
+      "cls": "Element",
+      "race": "Alien",
+      "ability": "frost",
+      "human": false
+    },
+    {
+      "key": "alienpflanze",
+      "name": "Pflanzenwesen",
+      "role": "HEALER",
+      "cls": "Wald",
+      "race": "Alien",
+      "ability": "waldzauber",
+      "human": false
+    },
+    {
+      "key": "alienenergie",
+      "name": "Energieform",
+      "role": "DPS",
+      "cls": "Element",
+      "race": "Alien",
+      "ability": "gewitter",
+      "human": false
+    },
+    {
+      "key": "alienkopffuss",
+      "name": "Tentakelwesen",
+      "role": "BUFFER",
+      "cls": "Magie",
+      "race": "Alien",
+      "ability": "wassersang",
+      "human": false
+    },
+    {
+      "key": "alienpilz",
+      "name": "Sporenwesen",
+      "role": "BUFFER",
+      "cls": "Wald",
+      "race": "Alien",
+      "ability": "kroetenfluch",
+      "human": false
+    },
+    {
+      "key": "alienroid",
+      "name": "Metallroid",
+      "role": "TANK",
+      "cls": "Stahl",
+      "race": "Alien",
+      "ability": "raketen",
+      "human": false
+    },
+    {
+      "key": "alienleer",
+      "name": "Leerwesen",
+      "role": "DPS",
+      "cls": "Geist",
+      "race": "Alien",
+      "ability": "zehrfluch",
+      "human": false
+    }
+  ]
+}

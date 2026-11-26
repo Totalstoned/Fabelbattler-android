@@ -9,7 +9,7 @@ Alle Grafiken aus der lokalen CC0-Bibliothek oder aus CC0-Bausteinen neu zusamme
 - `godzilla` – Godzilla (Basis)
 - `mothra` – Mothra (Basis)
 - `kingkong` – King Kong (Basis)
-- `shingodzilla` – Shin Godzilla (Basis)
+- `shingodzilla` – Shin Godzilla (Basis, CC0-Atlas 1.21.4)
 - `minilla` – Minilla (Basis)
 - `queenmuto` – Queen M.U.T.O. (Basis)
 - `scarking` – Scar King (Basis)

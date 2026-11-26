@@ -164,9 +164,11 @@ for token in ['const LEVEL_RUSH_WAVE = 10;', 'cleared >= LEVEL_RUSH_WAVE']:
 for token in ['const HUMAN_TECH = {', 'const HUMAN_COUNTER = {', 'const FAMILY_SIG = {',
               'const HUMAN_MOB_KEYS = [', 'const MONSTER_MOB_KEYS = [',
               'const HUMAN_SUPERIORITY_MAX = 20;', 'function humanSuperiority(wave)',
-              'function countHumans(b)', 'function countMonsters(b)']:
+              'function countHumans(b)', 'function countMonsters(b)',
+              'panzer:{name:"Panzer"', 'feuerwehr:{name:"Feuerwehrwagen"',
+              'a.shape === "tank"', 'a.shape === "truck"']:
     if token not in src:
-        problems.append('Menschen-Technik/Überzahl fehlt: ' + token)
+        problems.append('Menschen-Technik/Panzer/Überzahl fehlt: ' + token)
 
 for token in ['const GRID = {cols:18,rows:14};', 'const MAP_SPEED = 2.2;',
               '(0.4+u.spd*0.5)*MAP_SPEED*dt', 'const DEFAULT_VIEW = 14.5;']:
@@ -259,14 +261,17 @@ for token in ['battleMana', 'manaBar', 'G.mana', 'btnHeal', 'btnNova', 'btnBattl
     if token in src:
         problems.append('Mana oder aktiver Eingriff noch vorhanden: ' + token)
 for token in ['id="btnBattleView"', 'function setCleanView',
-              'document.getElementById("btnBattleView").onclick',
+              'document.getElementById("btnBattleView").onclick = toggleBattlePause;',
+              'function setBattlePaused(on)', 'paused:false',
+              'if(G.paused) return 0;', 'if(G.paused) return;',
               'body.clean-view .battle-bar',
-              'body.clean-view #scene canvas{image-rendering:pixelated;}',
-              'body.clean-view #scene{filter:sepia(',
               'const MOB_NUMBER_LIMIT = 18;', 'function showMobNumber(u)',
               '(!hasDamageFx(u) && !showMobNumber(u))']:
     if token not in src:
-        problems.append('Kampfansicht/Schadenszahlen/Kommandos-Optik fehlt: ' + token)
+        problems.append('Pause/Kampfansicht/Schadenszahlen fehlt: ' + token)
+for token in ['image-rendering:pixelated', 'filter:sepia(']:
+    if token in src:
+        problems.append('Kommandos-Filter noch vorhanden: ' + token)
 for token in ['const CC0_TEXTURE_CACHE = {}', 'function cc0Texture(name,fallback,repeat)',
               'cc0Texture("stone_grass"', 'cc0Texture("stone_dirt"',
               'cc0Texture("water"', 'cc0Texture("circle_01"',
@@ -433,8 +438,8 @@ if not (path.parent / 'creatures' / 'bigfoot' / 'turntable.png').is_file():
     problems.append('Bigfoot-Turntable-Datei fehlt im Assetordner')
 # CC0-Atlas: alle drei Kernwesen haben ein lokales Turntable-Sheet.
 for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
-            'mechagodzilla', 'kingghidorah', 'rodan', 'rumpelstilzchen',
-            'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee']:
+            'mechagodzilla', 'kingghidorah', 'rodan', 'shingodzilla',
+            'rumpelstilzchen', 'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)
     if 'creatures/'+key+'/turntable.png' not in src:

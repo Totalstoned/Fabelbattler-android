@@ -1,0 +1,14 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.7",
+  "Category": "Games",
+  "Description": "Fabelbattler - Windows-Prototyp (UE 5.7+, target SDK 35)",
+  "Modules": [
+    {
+      "Name": "Fabelbattler",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": []
+}

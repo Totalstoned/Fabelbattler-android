@@ -709,8 +709,9 @@ vm.runInContext(`(() => {
   const mfx = MONSTER_MOB_KEYS.map(k => MOB_ARCHETYPES[k].effect);
   globalThis.__mobEffectCheck = MONSTER_MOB_KEYS.length === 5 &&
     new Set(mfx).size === 5 && mfx.every(e => STATUS_META[e]) &&
-    HUMAN_MOB_KEYS.length === 5 &&
-    HUMAN_MOB_KEYS.every(k => MOB_ARCHETYPES[k].human && STATUS_META[MOB_ARCHETYPES[k].effect]);
+    HUMAN_MOB_KEYS.length === 7 &&
+    HUMAN_MOB_KEYS.every(k => MOB_ARCHETYPES[k].human && STATUS_META[MOB_ARCHETYPES[k].effect]) &&
+    MOB_ARCHETYPES.panzer.shape === "tank" && MOB_ARCHETYPES.feuerwehr.shape === "truck";
 
   // Menschen-Lager: 2x bis 20x mehr Menschen als Monster, Rentner am schwächsten.
   globalThis.__ratioCheck = humanSuperiority(1) === 2 &&
@@ -1366,7 +1367,7 @@ vm.runInContext(`
     atlasEl.style.backgroundImage.indexOf("creatures/fee/turntable.png") >= 0;
   const godzilla = openCreatureAtlas("godzilla") &&
     atlasEl.style.backgroundImage.indexOf("creatures/godzilla/turntable.png") >= 0;
-  const kaijuKeys = ["kingkong","mothra","mechagodzilla","kingghidorah","rodan"];
+  const kaijuKeys = ["kingkong","mothra","mechagodzilla","kingghidorah","rodan","shingodzilla"];
   const kaijuOK = kaijuKeys.every(k => openCreatureAtlas(k) &&
     atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
   const folkloreKeys = ["rumpelstilzchen","heinzelmaennchen","wichtigel","gartenelfe","lichtfee"];
@@ -1621,18 +1622,21 @@ vm.runInContext(`(() => {
   const viewBtn = document.getElementById("btnBattleView");
   G.phase = "menu"; G.battle = null; __beginTestRun(); G.wave = 1; startBattle();
   globalThis.__defaultClean = document.body.classList.contains("clean-view") &&
-    viewBtn.textContent === "▶";
-  setCleanView(false);
+    viewBtn.textContent === "▶" && G.paused === false;
+  setBattlePaused(false);
   globalThis.__cleanButton = !!viewBtn && viewBtn.textContent === "⏸";
   const beforeTime = G.battle.time;
-  setCleanView(true);
-  const hidden = document.body.classList.contains("clean-view") &&
-    viewBtn.textContent === "▶";
+  setBattlePaused(true);
+  const hidden = G.paused === true && document.body.classList.contains("clean-view") &&
+    viewBtn.textContent === "▶" && visualFrameDt(0.016) === 0;
   for (let f = 0; f < 4 && G.battle; f++) simulateBattle(0.016);
-  const advanced = !G.battle || G.battle.time > beforeTime;
-  setCleanView(false);
-  globalThis.__cleanViewCheck = hidden && advanced &&
-    !document.body.classList.contains("clean-view") && viewBtn.textContent === "⏸";
+  const frozen = G.battle.time === beforeTime;
+  setBattlePaused(false);
+  simulateBattle(0.016);
+  const resumed = !G.battle || G.battle.time > beforeTime;
+  globalThis.__cleanViewCheck = hidden && frozen && resumed &&
+    !G.paused && !document.body.classList.contains("clean-view") &&
+    viewBtn.textContent === "⏸";
 
   // Schwarm-Schadenszahlen: sichtbar, aber gedeckelt.
   const beforeHeadless = SIM.headless;
@@ -1655,7 +1659,7 @@ vm.runInContext(`(() => {
 for (const [flag, message] of [
   ['__defaultClean', 'Kampf startet nicht in der aufgeräumten Ansicht'],
   ['__cleanButton', 'Play/Pause-Knopf unten rechts fehlt'],
-  ['__cleanViewCheck', 'Kampfansicht blendet Info-Leiste aus, ohne den Kampf zu stoppen'],
+  ['__cleanViewCheck', 'Pause-Taste haelt den Kampf nicht an oder startet ihn nicht wieder'],
   ['__mobNumberCheck', 'Schadenszahlen im Schwarm fehlen oder sind nicht gedeckelt'],
 ]) {
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
@@ -1674,4 +1678,4 @@ vm.runInContext(`(() => {
 })();`, ctx);
 if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('CC0-Texturen laden oder Fallback greift nicht');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+schadenszahlen+kommandos-optik+cc0-texturen+cc0-atlas+folklor-atlas+hoehen-reichweite+begehbare-haeuser)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+schadenszahlen+cc0-texturen+cc0-atlas+shin-godzilla+folklor-atlas+panzer+hoehen-reichweite+begehbare-haeuser)`);
