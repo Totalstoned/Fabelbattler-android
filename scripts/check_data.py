@@ -493,6 +493,15 @@ for token in ['chupacabra:{label:"Chupacabra"', 'fee:{label:"Fee"',
     if token not in src:
         problems.append('CC0-Atlas fuer Chupacabra/Fee fehlt: ' + token)
 
+# Startbildschirm: User-PNG 5 Sekunden zeigen, danach automatisch zum Menü.
+for token in ['id="splashOverlay"', 'src="splash/start.png"',
+              'let splashLeft = 5;', 'splashLeft -= dt',
+              'splashEl.classList.remove("show")']:
+    if token not in src:
+        problems.append('5-Sekunden-Startbild fehlt in index3d.html: ' + token)
+if not (path.parent / 'splash' / 'start.png').is_file():
+    problems.append('Startbild-Datei splash/start.png fehlt im Assetordner')
+
 # Nachkampf-Auswertung: Zaehlung und Panel muessen im WebView-Build zusammen liegen.
 for token in ['id="battleReport"', 'id="battleReportTitle"', 'id="battleReportDamage"',
               'id="battleReportHeal"', 'id="battleReportTop"', 'id="btnReportClose"',

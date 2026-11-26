@@ -92,6 +92,10 @@
   .overlay{position:fixed;inset:0;background:rgba(8,10,14,.86);display:none;align-items:center;
     justify-content:center;z-index:50;padding:16px;}
   .overlay.show{display:flex;}
+  .splash-overlay{position:fixed;inset:0;background:#05070a;display:none;align-items:center;
+    justify-content:center;z-index:200;cursor:pointer;}
+  .splash-overlay.show{display:flex;}
+  .splash-overlay img{max-width:100%;max-height:100%;object-fit:contain;}
   .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:430px;width:100%;}
   .modal h3{margin:0 0 4px;font-size:18px;}
   .menu-overlay{background:radial-gradient(circle at 50% 35%,#1d2635,#080a0e 70%);}
@@ -251,6 +255,9 @@
       <p class="tiny" id="hint" style="margin-top:10px"></p>
     </div>
   </div>
+</div>
+<div class="splash-overlay show" id="splashOverlay" title="Tippen zum Überspringen">
+  <img id="splashImage" src="splash/start.png" alt="Startbildschirm">
 </div>
 <div class="overlay menu-overlay show" id="menuOverlay">
   <div class="modal">
@@ -1123,9 +1130,9 @@ let cameraFollow = true;
 let cameraModeShown = null;
 const PAN_LIMIT_X = GRID.cols*TILE*0.6;
 const PAN_LIMIT_Z = GRID.rows*TILE*0.6;
-scene.add(new THREE.HemisphereLight(0xcfe6ff,0x141018,0.85));
-scene.add(new THREE.AmbientLight(0xb9c7e0,0.55));
-const keyLight = new THREE.DirectionalLight(0xfff2e2,2.4);
+scene.add(new THREE.HemisphereLight(0xcfe6ff,0x141018,1.0));
+scene.add(new THREE.AmbientLight(0xb9c7e0,0.7));
+const keyLight = new THREE.DirectionalLight(0xfff2e2,2.55);
 keyLight.position.set(-7,13,9);
 keyLight.castShadow = true;
 keyLight.shadow.mapSize.set(1024,1024);
@@ -3322,6 +3329,9 @@ function syncUnits(){
       u.grid.gy = clamp(0.6+Math.floor(i/2)*1.7,0,GRID.rows-1);
     }
     const group = makeCharacter(u);
+    // Gegner-Labels alternierend höhenversetzen: bei vielen Einheiten
+    // überlappen sich die Namensschilder sonst im dunklen Stadtbild.
+    if(u.side === "enemy" && group.userData.label) group.userData.label.position.y += (i%2)*0.22;
     const p = worldPos(u.grid.gx,u.grid.gy);
     group.position.set(p.x,0,p.z);
     unitLayer.add(group);
@@ -5271,9 +5281,21 @@ window.addEventListener("load", () => {
   let last = performance.now();
   let visualClock = last/1000;
   let uiTick = 0;
+  // User-Wunsch: das Startbild 5 Sekunden einblenden, danach automatisch
+  // zum Menü wechseln. Tippen überspringt die Wartezeit.
+  let splashLeft = 5;
+  const splashEl = document.getElementById("splashOverlay");
+  if(splashEl) splashEl.onclick = () => {
+    splashLeft = 0;
+    splashEl.classList.remove("show");
+  };
   function frame(now){
     const dt = Math.min(0.05,Math.max(0,(now-last)/1000));
     last = now;
+    if(splashLeft > 0){
+      splashLeft -= dt;
+      if(splashLeft <= 0 && splashEl) splashEl.classList.remove("show");
+    }
     updateBattleTimer();
     updateBossBar();
     updatePlayerBossBar();

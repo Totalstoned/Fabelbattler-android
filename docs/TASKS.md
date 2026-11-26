@@ -1,3 +1,4 @@
+- [x] **80. Screenshot-Fixes**: hellere Beleuchtung und höhenversetzte Gegner-Labels; Vision-Befund ausgewertet, FaceApp-Selfie verworfen, Version 1.22.7.
 - [x] **79. Sechs Stahl-/Fahrzeug-Atlanten**: Soldat/Kampftruppe/Feuerwehr/Hubschrauber/Krankenwagen/Drohne (76/123), Check auf 18 neue Wesen, Version 1.22.6.
 - [x] **78. Weitere sechs CC0-Atlanten**: Baba Jaga/Mami Wata/Nachzehrer/Sensenmann/Oma/Opa (70/123), Atlas-Check auf 12 nachgelieferte Wesen erweitert, Version 1.22.5.
 - [x] **77. Sechs CC0-Atlanten + Straßendetails**: Klabautermann/Moosweiblein/Aufhocker/Fernrisswolf/Krötenmönch/Panzer (64/123), dazu Ampeln und Getränkeautomaten als Kulisse, Version 1.22.4.

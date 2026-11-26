@@ -1,6 +1,6 @@
 # Optik-Optionen – was mehr Download wert ist
 
-Stand 2026-11-26. Der aktuelle Build ist 1.22.6 (mit 76 Atlanten, Fahrzeugen, Hafen, beleuchteter Skyline und Neon-Schildern) – weiterhin weit unter 100 MB. Du hast gesagt, dass dir ein größerer Download für deutlich bessere Optik egal ist – hier sind die sinnvollsten Wege, sortiert nach Wirkung pro Megabyte.
+Stand 2026-11-26. Der aktuelle Build ist 1.22.7 (mit 76 Atlanten, Fahrzeugen, Hafen, beleuchteter Skyline und Neon-Schildern) – weiterhin weit unter 100 MB. Du hast gesagt, dass dir ein größerer Download für deutlich bessere Optik egal ist – hier sind die sinnvollsten Wege, sortiert nach Wirkung pro Megabyte.
 
 | Option | Mehrgröße (geschätzt) | Wirkung |
 | --- | --- | --- |
