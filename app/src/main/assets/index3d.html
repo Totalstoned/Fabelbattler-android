@@ -2500,6 +2500,35 @@ function makeChargeBar(){
   group.userData.fill = fill;
   return group;
 }
+// Status-Icons im Feld: das Emoji aus STATUS_META wird einmal pro Status
+// auf ein 96x96-Canvas gemalt und danach von allen Einheiten geteilt.
+const STATUS_ICON_CACHE = {};
+function statusIconTexture(key,meta){
+  if(STATUS_ICON_CACHE[key]) return STATUS_ICON_CACHE[key];
+  const canvas = document.createElement("canvas");
+  canvas.width = 96;
+  canvas.height = 96;
+  const c = canvas.getContext("2d");
+  c.font = "bold 62px system-ui";
+  c.textAlign = "center";
+  c.textBaseline = "middle";
+  c.lineWidth = 8;
+  c.strokeStyle = "rgba(0,0,0,0.85)";
+  c.strokeText(meta.emoji,48,50);
+  c.fillStyle = meta.css;
+  c.fillText(meta.emoji,48,50);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  STATUS_ICON_CACHE[key] = texture;
+  return texture;
+}
+function makeStatusIcon(){
+  const icon = new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthTest:false,depthWrite:false}));
+  icon.scale.set(0.38,0.38,1);
+  icon.visible = false;
+  icon.renderOrder = 21;
+  return icon;
+}
 const MONSTER_STYLE = {
   godzilla:{type:"kaiju",variant:"classic",body:0x39434b,trim:0x82939d,plate:0xd9e6ee,glow:0x62d9ff,glowIntensity:0.18,scale:1.08,hpY:1.78,radius:0.56,plates:5,tail:1.35},
   mothra:{type:"moth",body:0xe8eef5,trim:0xf6c453,plate:0x7fc7ff,glow:0x63c7ff,glowIntensity:0.22,scale:1.12,hpY:1.55,radius:0.62},
@@ -3456,13 +3485,16 @@ function makeCharacter(u){
   chargeBar.position.y = hpY-0.24;
   chargeBar.quaternion.copy(camera.quaternion);
   group.add(chargeBar);
+  const statusIcon = makeStatusIcon();
+  statusIcon.position.set(0.72,hpY+0.02,0);
+  group.add(statusIcon);
   const label = makeTextSprite(u.name+" L"+u.level,u.side === "player" ? "#e6edf5" : "#ff9a9a",0.8);
   label.position.y = hpY+0.43;
   group.add(label);
   const portrait = makePortraitSprite(u.key);
   portrait.position.y = hpY+0.94;
   group.add(portrait);
-  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,chargeBar:chargeBar,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,rotors:rotors,animPhase:Math.random()*Math.PI*2,walk:0};
+  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,chargeBar:chargeBar,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,statusIcon:statusIcon,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,rotors:rotors,animPhase:Math.random()*Math.PI*2,walk:0};
   return group;
 }
 function syncUnits(){
@@ -4857,7 +4889,7 @@ function updateVisuals(time,dt,viewDt){
       chargeBar.visible = ratio > 0.01;
       chargeBar.userData.fill.scale.x = Math.max(0.001,ratio);
       chargeBar.userData.fill.position.x = -(1-ratio)*0.34;
-      chargeBar.userData.fill.material.color.setHex(ratio >= 0.99 ? 0xfcd34d : 0x67e8f9);
+      chargeBar.userData.fill.material.color.setHex(ratio >= 0.99 ? 0xf472b6 : 0xc084fc);
       chargeBar.quaternion.copy(camera.quaternion);
     }
     const statusKey = dominantStatusKey(u) ||
@@ -4870,6 +4902,14 @@ function updateVisuals(time,dt,viewDt){
       group.userData.statusRing.material.color.setHex(statusMeta.hex);
       group.userData.statusRing.material.opacity = 0.45+Math.sin(time*5+u.id)*0.25;
       group.userData.statusRing.rotation.z -= dt*1.6;
+    }
+    const statusIcon = group.userData.statusIcon;
+    if(statusIcon){
+      if(statusMeta && !u.isDead){
+        statusIcon.material.map = statusIconTexture(statusKey,statusMeta);
+        statusIcon.material.needsUpdate = true;
+        statusIcon.visible = true;
+      } else statusIcon.visible = false;
     }
   });
   updateMobVisuals(time,dt);
