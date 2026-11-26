@@ -1243,7 +1243,11 @@ function openInfo(title,text,extraHtml){
 function closeInfo(){ document.getElementById("infoOverlay").classList.remove("show"); }
 // Drehbarer Wesen-Atlas: Der 4x2-Sheet liegt lokal im WebView-Assetordner.
 // Jede Zelle ist eine feste Blickrichtung; Ziehen/Pfeile wechseln die Zelle.
-const ATLAS_CREATURES = {bigfoot:{label:"Bigfoot",image:"creatures/bigfoot/turntable.png"}};
+const ATLAS_CREATURES = {
+  bigfoot:{label:"Bigfoot",image:"creatures/bigfoot/turntable.png"},
+  chupacabra:{label:"Chupacabra",image:"creatures/chupacabra/turntable.png"},
+  fee:{label:"Fee",image:"creatures/fee/turntable.png"}
+};
 const ATLAS_VIEWS = ["0° · Front","45° · rechts vorne","90° · rechte Seite","135° · rechts hinten",
   "180° · Rücken","225° · links hinten","270° · linke Seite","315° · links vorne"];
 let atlasView = 0;
@@ -1261,6 +1265,7 @@ function openCreatureAtlas(key){
   const info = ATLAS_CREATURES[key];
   if(!info){ showToast("Für dieses Wesen gibt es noch keinen Atlas"); return false; }
   document.getElementById("atlasTitle").textContent = info.label+" · 8 Ansichten";
+  document.getElementById("atlasFrame").style.backgroundImage = 'url("'+info.image+'")';
   document.getElementById("atlasOverlay").classList.add("show");
   setAtlasFrame(0);
   return true;
@@ -1404,9 +1409,7 @@ function applyArenaBiome(wave){
 function buildArena(){
   // Der Steinboden geht ueber den sichtbaren Bildschirm hinaus: orthografische
   // Kamera und weites Seitenverhaeltnis duerfen keinen dunklen Rand zeigen.
-  const groundMap = stoneTexture(ARENA_BIOMES[0].base,true);
-  groundMap.wrapS = groundMap.wrapT = THREE.RepeatWrapping;
-  groundMap.repeat.set(48,48);
+  const groundMap = cc0Texture("stone_grass",()=>stoneTexture(ARENA_BIOMES[0].base,true),48);
   const base = new THREE.Mesh(
     new THREE.PlaneGeometry(220,220),
     new THREE.MeshStandardMaterial({map:groundMap,roughness:1})
@@ -1416,8 +1419,8 @@ function buildArena(){
   base.receiveShadow = true;
   arena.add(base);
   const tileGeo = new THREE.PlaneGeometry(TILE*0.96,TILE*0.96);
-  const matA = new THREE.MeshStandardMaterial({map:stoneTexture(ARENA_BIOMES[0].tileA),roughness:0.92,metalness:0.02});
-  const matB = new THREE.MeshStandardMaterial({map:stoneTexture(ARENA_BIOMES[0].tileB),roughness:0.92,metalness:0.02});
+  const matA = new THREE.MeshStandardMaterial({map:cc0Texture("stone_dirt",()=>stoneTexture(ARENA_BIOMES[0].tileA)),roughness:0.92,metalness:0.02});
+  const matB = new THREE.MeshStandardMaterial({map:cc0Texture("stone_grass",()=>stoneTexture(ARENA_BIOMES[0].tileB)),roughness:0.92,metalness:0.02});
   for(let gx=0;gx<GRID.cols;gx++){
     for(let gy=0;gy<GRID.rows;gy++){
       const p = worldPos(gx,gy);
@@ -1451,9 +1454,10 @@ function buildArena(){
   });
   // Meer: nur in Küsten-/Inselhabitaten sichtbar, aber immer am Rand, von dem
   // die Kaiju kommen. Die Wasserfläche liegt über den Fliesen, unter den Einheiten.
+  const waterTex = cc0Texture("water",()=>null,4);
   waterMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(TILE*3.2,(GRID.rows+2)*TILE),
-    new THREE.MeshStandardMaterial({color:0x2f6f8f,transparent:true,opacity:0.55,roughness:0.35,metalness:0.15})
+    new THREE.MeshStandardMaterial({map:waterTex,color:waterTex?0xffffff:0x2f6f8f,transparent:true,opacity:0.55,roughness:0.35,metalness:0.15})
   );
   waterMesh.rotation.x = -Math.PI/2;
   waterMesh.position.y = 0.012;
@@ -1654,6 +1658,26 @@ function makePortraitSprite(key){
   return sprite;
 }
 
+// CC0-Texturen aus dem lokalen Assetordner (Kenney Voxel Pack / Particle Pack).
+// Die Dateien liegen im APK; falls das WebView sie nicht laedt, greift der
+// prozedurale Fallback. Keine externe URL, kein Engine-Wechsel.
+const CC0_TEXTURE_CACHE = {};
+function cc0Texture(name,fallback,repeat){
+  const key = name+"_"+(repeat||1);
+  if(CC0_TEXTURE_CACHE[key]) return CC0_TEXTURE_CACHE[key];
+  let tex = null;
+  try{
+    tex = new THREE.TextureLoader().load("textures/"+name+".png");
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(repeat||1,repeat||1);
+    tex.anisotropy = 4;
+  }catch(e){
+    tex = fallback ? fallback() : null;
+  }
+  CC0_TEXTURE_CACHE[key] = tex;
+  return tex;
+}
 function stoneTexture(tone,tileable){
   // Prozeduraler Steinboden: warmer Grundton, Mineral-Koerner, feine Risse
   // und Vignette. Deterministischer Seed -> jedes Disable-Rerender gleich.
@@ -1708,7 +1732,7 @@ function radialTexture(inner,outer){
 }
 function makeGlowSprite(color,size){
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-    map:radialTexture("rgba(255,255,255,0.95)","rgba(255,255,255,0)"),
+    map:cc0Texture("circle_01",()=>radialTexture("rgba(255,255,255,0.95)","rgba(255,255,255,0)")),
     color:color,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending,depthWrite:false
   }));
   sprite.scale.set(size,size,1);

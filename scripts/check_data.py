@@ -259,6 +259,12 @@ for token in ['id="btnBattleView"', 'function setCleanView',
               '(!hasDamageFx(u) && !showMobNumber(u))']:
     if token not in src:
         problems.append('Kampfansicht/Schadenszahlen/Kommandos-Optik fehlt: ' + token)
+for token in ['const CC0_TEXTURE_CACHE = {}', 'function cc0Texture(name,fallback,repeat)',
+              'cc0Texture("stone_grass"', 'cc0Texture("stone_dirt"',
+              'cc0Texture("water"', 'cc0Texture("circle_01"',
+              'textures/"+name+".png']:
+    if token not in src:
+        problems.append('CC0-Texturen in der Szene fehlen: ' + token)
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)
@@ -399,7 +405,7 @@ for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block(
 for token in ['addGroundRect(0,0,0.22', 'addGroundRect(-2.9', 'addGroundRect(2.9', 'arenaPulse']:
     if token in src:
         problems.append('Trennlinie/seitliche Einfärbung in der Kampffläche vorhanden: ' + token)
-for token in ['function stoneTexture', "map:stoneTexture(ARENA_BIOMES[0].tileA)", 'new THREE.BoxGeometry(part[2],0.18,part[3])', 'new THREE.PlaneGeometry(220,220)', 'groundMap.wrapS = groundMap.wrapT = THREE.RepeatWrapping']:
+for token in ['function stoneTexture', 'cc0Texture("stone_dirt"', 'new THREE.BoxGeometry(part[2],0.18,part[3])', 'new THREE.PlaneGeometry(220,220)', 'cc0Texture("stone_grass",()=>stoneTexture(ARENA_BIOMES[0].base,true),48)']:
     if token not in src:
         problems.append('Steinboden (inkl. Vollbild-Flaeche) fehlt: ' + token)
 for token in ['function moveToward', 'gx = clamp(gx,0,GRID.cols-1)', 'gy = clamp(gy,0,GRID.rows-1)']:
@@ -417,6 +423,16 @@ for token in ['id="atlasFrame"', 'background-image:url("creatures/bigfoot/turnta
         problems.append('Bigfoot-Turntable fehlt in index3d.html: ' + token)
 if not (path.parent / 'creatures' / 'bigfoot' / 'turntable.png').is_file():
     problems.append('Bigfoot-Turntable-Datei fehlt im Assetordner')
+# CC0-Atlas: alle drei Kernwesen haben ein lokales Turntable-Sheet.
+for key in ['bigfoot', 'chupacabra', 'fee']:
+    if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
+        problems.append('CC0-Turntable-Datei fehlt: ' + key)
+    if 'creatures/'+key+'/turntable.png' not in src:
+        problems.append('CC0-Turntable nicht angebunden: ' + key)
+for token in ['chupacabra:{label:"Chupacabra"', 'fee:{label:"Fee"',
+              'atlasFrame").style.backgroundImage']:
+    if token not in src:
+        problems.append('CC0-Atlas fuer Chupacabra/Fee fehlt: ' + token)
 
 # Nachkampf-Auswertung: Zaehlung und Panel muessen im WebView-Build zusammen liegen.
 for token in ['id="battleReport"', 'id="battleReportTitle"', 'id="battleReportDamage"',

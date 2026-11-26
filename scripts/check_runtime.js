@@ -47,6 +47,7 @@ const elements = {};
 const documentObj = {
   getElementById(id) { return elements[id] || (elements[id] = makeElement()); },
   createElement: makeElement,
+  createElementNS: makeElement,
   body: makeElement(),
   documentElement: makeElement(),
   addEventListener() {}, removeEventListener() {},
@@ -1340,10 +1341,14 @@ vm.runInContext(`
   const p4 = atlasEl.style.backgroundPosition;
   const a4 = document.getElementById("atlasAngle").textContent;
   const wrapped = setAtlasFrame(8) === 0 && setAtlasFrame(-1) === 7;
+  const chupa = openCreatureAtlas("chupacabra") &&
+    atlasEl.style.backgroundImage.indexOf("creatures/chupacabra/turntable.png") >= 0;
+  const fee = openCreatureAtlas("fee") &&
+    atlasEl.style.backgroundImage.indexOf("creatures/fee/turntable.png") >= 0;
   const unknown = !openCreatureAtlas("goblin");
   closeCreatureAtlas();
   const closed = !document.getElementById("atlasOverlay").classList.contains("show");
-  globalThis.__atlasCheck = opened && closed && unknown && wrapped &&
+  globalThis.__atlasCheck = opened && closed && unknown && wrapped && chupa && fee &&
     p0 === "0% 0%" && p1 === "33% 0%" && p4 === "0% 100%" &&
     a0.indexOf("Front") >= 0 && a4.indexOf("Rücken") >= 0;
 `, ctx);
@@ -1629,4 +1634,17 @@ for (const [flag, message] of [
   if (!vm.runInContext(`globalThis.${flag}`, ctx)) throw new Error(message);
 }
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+schadenszahlen+kommandos-optik)`);
+vm.runInContext(`(() => {
+  const grass = cc0Texture("stone_grass",()=>null,48);
+  const cached = cc0Texture("stone_grass",()=>null,48) === grass;
+  const particle = cc0Texture("circle_01",()=>null);
+  const originalLoader = THREE.TextureLoader;
+  THREE.TextureLoader = function(){ throw new Error("missing"); };
+  const fallbackTex = {};
+  const fallback = cc0Texture("__missing__",()=>fallbackTex);
+  THREE.TextureLoader = originalLoader;
+  globalThis.__cc0TextureCheck = !!grass && cached && !!particle && fallback === fallbackTex;
+})();`, ctx);
+if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('CC0-Texturen laden oder Fallback greift nicht');
+
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+schadenszahlen+kommandos-optik+cc0-texturen+cc0-atlas)`);
