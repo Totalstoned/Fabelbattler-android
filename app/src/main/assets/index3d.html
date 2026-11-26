@@ -1333,6 +1333,12 @@ const ATLAS_CREATURES = {
   medusa:{label:"Medusa",image:"creatures/medusa/turntable.png"},
   dschinn:{label:"Dschinn",image:"creatures/dschinn/turntable.png"},
   kappa:{label:"Kappa",image:"creatures/kappa/turntable.png"},
+  sukubus:{label:"Sukubus",image:"creatures/sukubus/turntable.png"},
+  lilith:{label:"Lilith",image:"creatures/lilith/turntable.png"},
+  goblin:{label:"Goblin",image:"creatures/goblin/turntable.png"},
+  alp:{label:"Alp",image:"creatures/alp/turntable.png"},
+  blaubart:{label:"Blaubart",image:"creatures/blaubart/turntable.png"},
+  hexe:{label:"Hexe",image:"creatures/hexe/turntable.png"},
   queenmuto:{label:"Queen M.U.T.O.",image:"creatures/queenmuto/turntable.png"},
   scarking:{label:"Scar King",image:"creatures/scarking/turntable.png"},
   methuselah:{label:"Methuselah",image:"creatures/methuselah/turntable.png"},
@@ -1804,6 +1810,65 @@ function buildCityProps(layout){
       const puff = new THREE.Mesh(new THREE.SphereGeometry(0.18+j*0.06,6,5),smokeMat);
       puff.position.set(p.x+(r()-0.5)*0.16,0.6+j*0.3,p.z+(r()-0.5)*0.16);
       propsLayer.add(puff);
+    }
+  }
+  // Strommasten mit Querträgern und durchhängenden Leitungen: eine
+  // Silhouette am Rand, die von Weitem sofort als japanische Industrieküste
+  // lesbar ist. Alles Kulisse – keine Kollision, keine Reichweitenänderung.
+  const steelMat = new THREE.MeshStandardMaterial({color:0x5b656e,roughness:0.7,metalness:0.55});
+  const wireMat = new THREE.LineBasicMaterial({color:0x2b3038,transparent:true,opacity:0.6});
+  const mastPoints = [];
+  const masts = 3+Math.floor(r()*2);
+  for(let i=0;i<masts;i++){
+    const p = freeCell();
+    const h = 1.4+r()*0.5;
+    [-0.17,0.17].forEach(x=>{
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.04,h,6),steelMat);
+      leg.position.set(p.x+x,h/2,p.z); leg.rotation.z = -x*0.4;
+      leg.userData = {pylon:true};
+      propsLayer.add(leg);
+    });
+    [0.55,0.78].forEach(t=>{
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.62,0.035,0.035),steelMat);
+      arm.position.set(p.x,h*t,p.z);
+      arm.userData = {pylon:true};
+      propsLayer.add(arm);
+    });
+    mastPoints.push(new THREE.Vector3(p.x,h*0.78,p.z));
+  }
+  for(let i=1;i<mastPoints.length;i++){
+    const a=mastPoints[i-1], b=mastPoints[i];
+    const sag = new THREE.Vector3(0,-0.18,0);
+    const mid = a.clone().add(b).multiplyScalar(0.5).add(sag);
+    const curve = new THREE.QuadraticBezierCurve3(a,mid,b);
+    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(10)),wireMat);
+    line.userData = {powerline:true};
+    propsLayer.add(line);
+  }
+  // Hafenkran mit Ausleger und Container-Stapeln – Godzilla-überfällige Küste.
+  const hp = freeCell();
+  const craneH = 1.5+r()*0.4;
+  const tower = new THREE.Mesh(new THREE.BoxGeometry(0.12,craneH,0.12),steelMat);
+  tower.position.set(hp.x,craneH/2,hp.z);
+  tower.userData = {crane:true};
+  const boom = new THREE.Mesh(new THREE.BoxGeometry(1.5,0.07,0.08),steelMat);
+  boom.position.set(hp.x+0.35,craneH,hp.z);
+  boom.rotation.z = -0.12;
+  boom.userData = {crane:true};
+  const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.01,0.01,0.55,5),steelMat);
+  cable.position.set(hp.x+1.0,craneH-0.3,hp.z);
+  cable.userData = {crane:true};
+  propsLayer.add(tower,boom,cable);
+  const containerColors=[0xb23a2e,0x2e6b8f,0xd9a441,0x3f7a55];
+  const stacks=2+Math.floor(r()*2);
+  for(let i=0;i<stacks;i++){
+    const p=freeCell();
+    for(let j=0;j<2+Math.floor(r()*2);j++){
+      const box=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.22,0.26),
+        new THREE.MeshStandardMaterial({color:containerColors[(i+j)%containerColors.length],roughness:0.85,metalness:0.2}));
+      box.position.set(p.x,0.12+j*0.23,p.z);
+      box.userData={container:true};
+      propsLayer.add(box);
     }
   }
 }
@@ -2387,6 +2452,82 @@ function buildRobot(model,s,bodyMat,variant){
   addPlates(model,plate,5,-0.24,-1.05,1.3,0.68,0.26);
   addTail(model,dark,0.64,s.tail||1.25,0.18,6,0.18);
 }
+const VEHICLE_VARIANTS = {panzer:1,feuerwehrwagen:1,krankenwagen:1,hubschrauber:1,kampfflugzeug:1,drohne:1};
+// Fahrzeuge sind bisher Humanoid-Roboter. Diese Varianten bekommen echte
+// Silhouetten: Kettenpanzer mit Turm, Rettungsfahrzeuge mit Aufbau,
+// Hubschrauber mit Rotor, Jet mit Deltaflügeln, Drohne mit vier Propellern.
+// `userData.vehicle`/`rotor` markiert Teile für Animation und Headless-Checks.
+function buildVehicle(model,s,bodyMat,variant){
+  const dark=monsterMat(s.trim,undefined,0,0.72,0.42);
+  const plate=monsterMat(s.plate,s.glow,(s.glowIntensity||0)*0.3,0.6,0.42);
+  const glass=monsterMat(0x182534,s.glow,(s.glowIntensity||0)*0.4,0.3,0.22);
+  const eye=monsterMat(s.glow,s.glow,2.2,0.1,0.3);
+  const tire=monsterMat(0x14181c,undefined,0,0.25,0.92);
+  const mark=(m,extra)=>{m.userData=Object.assign({vehicle:true,variant:variant},extra||{});return m;};
+  const wheel=(x,y,z,r)=>mark(part(model,new THREE.CylinderGeometry(r,r,0.1,10),tire,x,y,z,0,0,Math.PI/2));
+  if(variant==="panzer"){
+    [-1,1].forEach(side=>{
+      mark(part(model,new THREE.BoxGeometry(0.2,0.34,1.24),dark,side*0.34,0.24,0));
+      [-0.42,-0.14,0.14,0.42].forEach(z=>wheel(side*0.37,0.24,z,0.16));
+    });
+    mark(part(model,new THREE.BoxGeometry(0.64,0.3,1.16),bodyMat,0,0.5,0));
+    mark(part(model,new THREE.ConeGeometry(0.42,0.5,4),bodyMat,0,0.52,0.62,Math.PI/2,Math.PI/4,0,0.8,1,0.6));
+    mark(part(model,new THREE.CylinderGeometry(0.32,0.36,0.26,10),plate,0,0.78,0.02));
+    mark(part(model,new THREE.CylinderGeometry(0.055,0.055,0.9,8),dark,0,0.78,0.48,-Math.PI/2,0,0));
+    mark(part(model,new THREE.SphereGeometry(0.07,8,6),eye,0,0.78,0.94));
+    mark(part(model,new THREE.CylinderGeometry(0.012,0.012,0.55,5),dark,0.26,1.05,-0.3,0,0,0.12));
+  } else if(variant==="feuerwehrwagen"||variant==="krankenwagen"){
+    mark(part(model,new THREE.BoxGeometry(0.66,0.26,1.34),bodyMat,0,0.42,0));
+    [-0.36,0.36].forEach(x=>[-0.42,0.42].forEach(z=>wheel(x,0.3,z,0.2)));
+    mark(part(model,new THREE.BoxGeometry(0.62,0.42,0.46),plate,0,0.74,0.42));
+    mark(part(model,new THREE.BoxGeometry(0.5,0.2,0.03),glass,0,0.82,0.66));
+    mark(part(model,new THREE.BoxGeometry(0.64,0.52,0.8),bodyMat,0,0.8,-0.26));
+    mark(part(model,new THREE.BoxGeometry(0.66,0.08,0.8),plate,0,0.56,-0.26));
+    addEyes(model,eye,0.62,0.7,0.2,0.045);
+    if(variant==="feuerwehrwagen"){
+      [-1,1].forEach(side=>mark(part(model,new THREE.BoxGeometry(0.04,0.06,0.96),dark,side*0.14,1.16,-0.2,0.18,0,0)));
+      for(let i=-3;i<=3;i++) mark(part(model,new THREE.BoxGeometry(0.34,0.03,0.05),dark,0,1.16+i*0.12,-0.2+i*0.02));
+      mark(part(model,new THREE.SphereGeometry(0.09,10,8),eye,0,1.22,0.42));
+    } else {
+      [-1,1].forEach(side=>{
+        mark(part(model,new THREE.BoxGeometry(0.02,0.3,0.14),plate,side*0.33,0.82,-0.26));
+        mark(part(model,new THREE.BoxGeometry(0.02,0.14,0.3),plate,side*0.33,0.82,-0.26));
+      });
+      mark(part(model,new THREE.BoxGeometry(0.16,0.05,0.06),eye,0,1.1,0.42));
+    }
+  } else if(variant==="hubschrauber"){
+    mark(part(model,new THREE.SphereGeometry(0.44,16,12),bodyMat,0,1.02,0,0,0,0,1,0.85,1.35));
+    mark(part(model,new THREE.SphereGeometry(0.32,14,10),glass,0,1.05,0.45,0,0,0,0.86,0.78,0.9));
+    mark(part(model,new THREE.CylinderGeometry(0.07,0.12,1.0,8),bodyMat,0,1.12,-0.86,-Math.PI/2,0,0));
+    mark(part(model,new THREE.BoxGeometry(0.04,0.36,0.26),plate,0,1.32,-1.3));
+    [-1,1].forEach(side=>{
+      mark(part(model,new THREE.CylinderGeometry(0.025,0.025,0.9,6),dark,side*0.5,0.58,0,Math.PI/2,0,0));
+      [-0.3,0.3].forEach(z=>mark(part(model,new THREE.CylinderGeometry(0.02,0.02,0.42,6),dark,side*0.5,0.78,z)));
+    });
+    part(model,new THREE.CylinderGeometry(0.04,0.05,0.22,8),dark,0,1.52,0);
+    mark(part(model,new THREE.BoxGeometry(1.7,0.025,0.1),dark,0,1.64,0),{rotor:true});
+    mark(part(model,new THREE.CylinderGeometry(0.19,0.19,0.02,10),plate,1.36,1.12,-1.3,0,Math.PI/2,0),{rotor:true});
+    addEyes(model,eye,1.0,0.72,0.18,0.04);
+  } else if(variant==="kampfflugzeug"){
+    mark(part(model,new THREE.SphereGeometry(0.32,16,12),bodyMat,0,1.0,0,0,0,0,0.85,0.8,1.6));
+    mark(part(model,new THREE.ConeGeometry(0.3,0.8,12),bodyMat,0,1.0,0.82,Math.PI/2,0,0,1,0.8,1));
+    mark(part(model,new THREE.SphereGeometry(0.2,12,8),glass,0,1.16,0.36,0,0,0,0.9,0.6,1.2));
+    [-1,1].forEach(side=>{
+      mark(part(model,new THREE.BoxGeometry(0.95,0.05,0.5),plate,side*0.6,0.96,-0.2,0,side*0.32,side*0.08));
+      mark(part(model,new THREE.BoxGeometry(0.05,0.34,0.3),plate,side*0.22,1.16,-0.62,0,0,side*0.22));
+      mark(part(model,new THREE.CylinderGeometry(0.09,0.11,0.26,10),dark,side*0.24,0.98,-0.82,-Math.PI/2,0,0));
+    });
+    mark(part(model,new THREE.SphereGeometry(0.1,10,8),eye,0,0.98,-0.9));
+  } else { // drohne
+    mark(part(model,new THREE.BoxGeometry(0.4,0.16,0.5),bodyMat,0,1.0,0));
+    mark(part(model,new THREE.SphereGeometry(0.13,10,8),glass,0,0.94,0.28));
+    [-1,1].forEach(sx=>[-1,1].forEach(sz=>{
+      mark(part(model,new THREE.BoxGeometry(0.06,0.04,0.62),dark,sx*0.22,1.02,sz*0.22,0,sx*sz*Math.PI/4,0));
+      mark(part(model,new THREE.CylinderGeometry(0.2,0.2,0.02,12),plate,sx*0.58,1.06,sz*0.58),{rotor:true});
+    }));
+    mark(part(model,new THREE.SphereGeometry(0.1,10,8),eye,0,0.86,0.34));
+  }
+}
 function buildSerpent(model,s,bodyMat){
   const membrane=monsterMat(s.plate,s.glow,0.22,0.03,0.7);
   const rib=monsterMat(s.trim,undefined,0,0.08,0.8);
@@ -2774,6 +2915,7 @@ function makeMonsterModel(model,u,s,bodyMat){
   else if(s.type==="ape") buildApe(model,s,bodyMat,s.variant||"kong");
   else if(s.type==="dragon") buildDragon(model,s,bodyMat);
   else if(s.type==="bug") buildBug(model,s,bodyMat);
+  else if(s.type==="robot" && VEHICLE_VARIANTS[s.variant]) buildVehicle(model,s,bodyMat,s.variant);
   else if(s.type==="robot") buildRobot(model,s,bodyMat,s.variant||"mecha");
   else if(s.type==="serpent") buildSerpent(model,s,bodyMat);
   else if(s.type==="rock") buildRock(model,s,bodyMat);
@@ -2806,6 +2948,7 @@ function addCartoonOutline(obj,color){
 function makeCharacter(u){
   const group = new THREE.Group();
   const limbs = [];
+  const rotors = [];
   let modelRef = null, modelScale = 1, baseYaw = 0;
   const style = MONSTER_STYLE[u.key];
   const classColor = new THREE.Color(style ? "#"+style.body.toString(16).padStart(6,"0") : CLASS_META[u.cls].col);
@@ -2862,6 +3005,7 @@ function makeCharacter(u){
     model.scale.setScalar(style.scale||1);
     model.rotation.y = u.side === "enemy" ? -Math.PI/2 : Math.PI/2;
     makeMonsterModel(model,u,style,bodyMat);
+    model.traverse(c => { if(c.userData && c.userData.rotor) rotors.push(c); });
     addCartoonOutline(model,OUTLINE_COLOR);
     group.add(model);
     modelRef = model;
@@ -2949,7 +3093,7 @@ function makeCharacter(u){
   const portrait = makePortraitSprite(u.key);
   portrait.position.y = hpY+0.94;
   group.add(portrait);
-  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,animPhase:Math.random()*Math.PI*2,walk:0};
+  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,rotors:rotors,animPhase:Math.random()*Math.PI*2,walk:0};
   return group;
 }
 function syncUnits(){
@@ -4009,6 +4153,9 @@ function poseCharacter(u,group,time,dt,deathT){
       model.rotation.z += dt*0.5;
     }
   }
+  (d.rotors||[]).forEach((rotor,i) => {
+    rotor.rotation.y += dt*(i%2 ? -1 : 1)*(14+walk*10);
+  });
   (d.limbs||[]).forEach((limb,i) => {
     const swing = Math.sin(time*(4+walk*7)+phase+i*Math.PI)*walk*0.55;
     if(limb.userData.limb === "arm") limb.rotation.x = swing-(attack*1.1+recoil*0.4)*(limb.userData.side||1);

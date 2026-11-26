@@ -366,3 +366,12 @@ Schritt 16: Version 1.21.8. Die Monster-Modelle haben jetzt Krallen an
            Rübezahl, Waldschrat, Medusa, Dschinn und Kappa. Die Vorschau
            atlas-vorschau.png im Projektordner ist aktualisiert.
 
+Schritt 17: Version 1.21.9. Panzer, Feuerwehrwagen, Krankenwagen,
+           Hubschrauber, Kampfflugzeug und Drohne sind jetzt echte
+           Fahrzeugmodelle – keine aufrecht stehenden Roboter mehr.
+           Hubschrauber- und Drohnenrotoren drehen sich. Am Kartenrand
+           stehen Strommasten mit Leitungen, ein Hafenkran und bunte
+           Containerstapel. Sechs weitere Wesen sind im Atlas drehbar
+           (jetzt 45): Sukubus, Lilith, Goblin, Alp, Blaubart und Hexe.
+           atlas-vorschau.png im Projektordner ist aktualisiert.
+
