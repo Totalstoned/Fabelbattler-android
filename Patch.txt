@@ -410,7 +410,9 @@ Schritt 24: Version 1.22.6. Auch Soldat, Kampftruppe, Feuerwehr,
            Hubschrauber, Krankenwagen und Drohne haben jetzt eigene
            Wesen-Atlanten.
 
-Schritt 25: Version 1.22.7. Die Stadt ist heller beleuchtet, und die
-           Namensschilder der Gegner stehen versetzt übereinander,
-           damit sie sich nicht mehr überlagern.
+Schritt 25: Version 1.22.7. Beim Start erscheint dein Bild fünf
+           Sekunden lang; ein Tippen überspringt es. Die Stadt ist
+           heller beleuchtet, und die Namensschilder der Gegner
+           stehen versetzt übereinander, damit sie sich nicht mehr
+           überlagern.
 
