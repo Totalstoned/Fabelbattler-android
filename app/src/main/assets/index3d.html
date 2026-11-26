@@ -1835,6 +1835,12 @@ function buildCityProps(layout){
   const greenLight = new THREE.MeshStandardMaterial({color:0x8ce08a,emissive:0x35c95a,emissiveIntensity:0.55});
   const vendingBody = new THREE.MeshStandardMaterial({color:0x2f5f93,roughness:0.7,metalness:0.2});
   const vendingFront = new THREE.MeshStandardMaterial({color:0x9ad9ef,emissive:0x2f80a5,emissiveIntensity:0.55});
+  const toriiRed = new THREE.MeshStandardMaterial({color:0xd4483b,roughness:0.7,metalness:0.1});
+  const toriiDark = new THREE.MeshStandardMaterial({color:0x2a1c1c,roughness:0.8});
+  const pagodaMat = new THREE.MeshStandardMaterial({map:cc0Texture("roof_tiles",()=>null,1),color:0x8a4838,roughness:0.85});
+  const taxiMat = new THREE.MeshStandardMaterial({color:0xe8b62d,roughness:0.65,metalness:0.15});
+  const taxiSignMat = new THREE.MeshStandardMaterial({color:0xfff0b0,emissive:0xffc23c,emissiveIntensity:0.5});
+  const kanaMat = new THREE.MeshStandardMaterial({color:0xff88b0,emissive:0xff3f7f,emissiveIntensity:0.75});
   const freeCell = () => {
     for(let tries=0;tries<30;tries++){
       const gx = clamp(Math.floor(r()*GRID.cols),0,GRID.cols-1);
@@ -1903,6 +1909,37 @@ function buildCityProps(layout){
     front.userData = {vending:true};
     propsLayer.add(body,front);
   }
+  // Torii-Tore am Straßenrand: die erste Silhouette, die Japan sofort lesbar
+  // macht. Reine Kulisse – kein Deckungsfeld, keine Bewegungs- oder Reichweitenwirkung.
+  for(let i=0;i<4;i++){
+    const p = freeCell(), gateW = 0.62, gateH = 0.78;
+    [-gateW/2,gateW/2].forEach(x=>{
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.045,gateH,6),toriiRed);
+      post.position.set(p.x+x,gateH/2,p.z);
+      post.userData = {torii:true};
+      propsLayer.add(post);
+    });
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(gateW+0.18,0.055,0.08),toriiRed);
+    beam.position.set(p.x,gateH,p.z);
+    beam.userData = {torii:true};
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(gateW+0.28,0.045,0.1),toriiDark);
+    cap.position.set(p.x,gateH+0.075,p.z);
+    cap.userData = {torii:true};
+    propsLayer.add(beam,cap);
+  }
+  // Intakte Taxis und Kei-Wagen zwischen den Trümmern: die Stadt war bewohnt.
+  for(let i=0;i<5;i++){
+    const p = freeCell();
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.52,0.18,0.28),taxiMat);
+    body.position.set(p.x,0.14,p.z);
+    body.rotation.y = r()*Math.PI;
+    body.userData = {taxi:true};
+    const roofSign = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.07,0.22),taxiSignMat);
+    roofSign.position.set(p.x,0.27,p.z);
+    roofSign.rotation.y = body.rotation.y;
+    roofSign.userData = {taxi:true};
+    propsLayer.add(body,roofSign);
+  }
   // Ein paar Hochhäuser am Rand: Tokyo-Silhouette hinter dem Schlachtfeld.
   const towers = 3+Math.floor(r()*3);
   for(let i=0;i<towers;i++){
@@ -1918,6 +1955,22 @@ function buildCityProps(layout){
       band.position.set(p.x,h*b/4,p.z);
       propsLayer.add(band);
     }
+    // Pagoden-Ebenen mit CC0-Dachziegeln und ein vertikales Neon-Schild:
+    // japanische Architektur statt einer einfachen Klotz-Silhouette.
+    if(i%2===0){
+      [0.55,0.92].forEach((t,j)=>{
+        const eave = new THREE.Mesh(new THREE.ConeGeometry(0.5-j*0.09,0.18,4),pagodaMat);
+        eave.rotation.y = Math.PI/4;
+        eave.position.set(p.x,h*t,p.z);
+        eave.castShadow = true;
+        eave.userData = {pagoda:true};
+        propsLayer.add(eave);
+      });
+    }
+    const kana = new THREE.Mesh(new THREE.BoxGeometry(0.09,0.46,0.03),kanaMat);
+    kana.position.set(p.x+0.34,h*0.62,p.z+0.33);
+    kana.userData = {kanaSign:true};
+    propsLayer.add(kana);
   }
   // Ausgebrannte Fahrzeuge mit geneigtem Aufbau und dunklen Fenstern.
   const wrecks = 3+Math.floor(r()*3);

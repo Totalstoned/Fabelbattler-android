@@ -416,3 +416,7 @@ Schritt 25: Version 1.22.7. Beim Start erscheint dein Bild fünf
            stehen versetzt übereinander, damit sie sich nicht mehr
            überlagern.
 
+Schritt 26: Version 1.22.8. Die Stadt bekommt japanische Tore,
+           Pagodendächer, Neon-Schilder und fahrende Taxis als Kulisse.
+           Das ändert nichts an Deckung, Wegen oder Reichweite.
+

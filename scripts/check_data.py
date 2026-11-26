@@ -460,6 +460,13 @@ for token in ['function damageTextScale', 'damageTextScale(dmg,target,!!opts.cri
     if token not in src:
         problems.append('Skalierte Trefferzahlen fehlen: ' + token)
 
+# Japanische Stadtkulisse: Torii, Pagoden, Neon und Taxis sind reine Props.
+for token in ['userData = {torii:true}', 'userData = {pagoda:true}',
+              'userData = {kanaSign:true}', 'userData = {taxi:true}',
+              'cc0Texture("roof_tiles",()=>null,1)']:
+    if token not in src:
+        problems.append('Japanische Stadt-Details fehlen: ' + token)
+
 # Bigfoot-Prototyp des drehbaren Wesen-Atlasses: Sheet und Anbindung muessen
 # im WebView-Build zusammen vorhanden sein (sonst bleibt die Zelle schwarz).
 for token in ['id="atlasFrame"', 'background-image:url("creatures/bigfoot/turntable.png")',
