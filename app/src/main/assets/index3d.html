@@ -1327,6 +1327,12 @@ const ATLAS_CREATURES = {
   vampire:{label:"Vampir",image:"creatures/vampire/turntable.png"},
   werewolf:{label:"Werwolf",image:"creatures/werewolf/turntable.png"},
   hydra:{label:"Hydra",image:"creatures/hydra/turntable.png"},
+  hotzenplotz:{label:"Räuber Hotzenplotz",image:"creatures/hotzenplotz/turntable.png"},
+  ruebezahl:{label:"Rübezahl",image:"creatures/ruebezahl/turntable.png"},
+  waldschrat:{label:"Waldschrat",image:"creatures/waldschrat/turntable.png"},
+  medusa:{label:"Medusa",image:"creatures/medusa/turntable.png"},
+  dschinn:{label:"Dschinn",image:"creatures/dschinn/turntable.png"},
+  kappa:{label:"Kappa",image:"creatures/kappa/turntable.png"},
   queenmuto:{label:"Queen M.U.T.O.",image:"creatures/queenmuto/turntable.png"},
   scarking:{label:"Scar King",image:"creatures/scarking/turntable.png"},
   methuselah:{label:"Methuselah",image:"creatures/methuselah/turntable.png"},
@@ -1710,6 +1716,9 @@ function buildCityProps(layout){
   const glassMat = new THREE.MeshStandardMaterial({color:0x2b3540,roughness:0.4,metalness:0.3});
   const rubbleMat = new THREE.MeshStandardMaterial({map:cc0Texture("brick_wall",()=>null,2),color:0xbfb0a0,roughness:1});
   const smokeMat = new THREE.MeshStandardMaterial({color:0x45484e,transparent:true,opacity:0.42,roughness:1});
+  const highriseMat = new THREE.MeshStandardMaterial({map:cc0Texture("brick_wall",()=>null,3),color:0xffffff,roughness:0.9});
+  const bandMat = new THREE.MeshStandardMaterial({color:0xffd166,emissive:0xffb347,emissiveIntensity:0.35,roughness:0.5});
+  const paintMat = new THREE.MeshStandardMaterial({color:0xd9d9c8,roughness:1});
   const freeCell = () => {
     for(let tries=0;tries<30;tries++){
       const gx = clamp(Math.floor(r()*GRID.cols),0,GRID.cols-1);
@@ -1729,6 +1738,41 @@ function buildCityProps(layout){
     head.position.set(p.x,0.94,p.z);
     propsLayer.add(pole,head);
   });
+  // Japanische Laden-/Warnschilder und Zebrastreifen vor den Häusern.
+  const signs = ["東京","怪獣","避難","商店","夜市"];
+  TOWN_HOUSES.forEach((cell,i) => {
+    if(i%3) return;
+    const p = worldPos(cell.gx,cell.gy);
+    const sign = makeTextSprite(signs[i%signs.length],i%2 ? "#ff9a8a" : "#8be9fd",0.55);
+    sign.position.set(p.x,0.55+(cell.height||COVER_HEIGHT.house)*0.5,p.z+TILE*0.32);
+    sign.userData = {sign:true};
+    propsLayer.add(sign);
+    if(i<6){
+      const road = worldPos(clamp(cell.gx+townDirection(cell),0,GRID.cols-1),cell.gy);
+      for(let j=-1;j<=1;j++){
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.08,0.012,0.3),paintMat);
+        stripe.position.set(road.x+j*0.16,0.018,road.z+TILE*0.18);
+        stripe.userData = {crossing:true};
+        propsLayer.add(stripe);
+      }
+    }
+  });
+  // Ein paar Hochhäuser am Rand: Tokyo-Silhouette hinter dem Schlachtfeld.
+  const towers = 3+Math.floor(r()*3);
+  for(let i=0;i<towers;i++){
+    const p = freeCell();
+    const h = 1.4+r()*0.7;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.62,h,0.62),highriseMat);
+    body.position.set(p.x,h/2,p.z);
+    body.castShadow = true;
+    body.userData = {highrise:true};
+    propsLayer.add(body);
+    for(let b=1;b<4;b++){
+      const band = new THREE.Mesh(new THREE.BoxGeometry(0.64,0.045,0.64),bandMat);
+      band.position.set(p.x,h*b/4,p.z);
+      propsLayer.add(band);
+    }
+  }
   // Ausgebrannte Fahrzeuge mit geneigtem Aufbau und dunklen Fenstern.
   const wrecks = 3+Math.floor(r()*3);
   for(let i=0;i<wrecks;i++){
@@ -2189,6 +2233,17 @@ function addTeeth(parent,mat,y,z,count,down){
     part(parent,new THREE.ConeGeometry(0.032,0.12,5),mat,x,y+(down?-0.06:0.06),z,down?Math.PI:0,0,0);
   }
 }
+// Drei Krallen pro Pfote/Hand: die Kaiju wirken wie echte Raubtiere, nicht
+// wie glatte Platzhalter. userData.claw erlaubt einen Headless-Check.
+function addClaws(parent,mat,y,z,sep,size){
+  [-1,1].forEach(side => {
+    for(let i=-1;i<=1;i++){
+      const claw = part(parent,new THREE.ConeGeometry(size*0.3,size,5),mat,
+        side*sep+i*size*0.5,y,z+size*0.35,Math.PI/2,0,0);
+      claw.userData = {claw:true};
+    }
+  });
+}
 function buildKaiju(model,s,bodyMat,variant){
   const trim=monsterMat(s.trim,s.glow,s.glowIntensity*0.25,0.12,0.68);
   const plate=monsterMat(s.plate,s.glow,variant==="burning"?1.6:variant==="shin"?1.1:0.45,0.08,0.58);
@@ -2209,7 +2264,19 @@ function buildKaiju(model,s,bodyMat,variant){
     part(model,new THREE.SphereGeometry(0.16,10,8),bodyMat,side*0.23,0.08,0.16,0,0,0,1,0.55,1.35);
     part(model,new THREE.CapsuleGeometry(0.07,0.24,4,8),bodyMat,side*0.45,0.86,0.12,0,0,side*0.5);
   });
+  addClaws(model,trim,0.07,0.3,0.23,0.13);
+  addClaws(model,trim,0.79,0.34,0.45,0.1);
   addPlates(model,plate,s.plates||5,-0.25,-1.05,1.33,0.66,variant==="minilla"?0.14:0.26);
+  if(variant==="shin"||variant==="burning"||variant==="earth"){
+    // Leuchtende Nähte zwischen den Rückenplatten – bei Shin/Burning besonders
+    // sichtbar, ohne die Kampflogik zu berühren.
+    const seams=s.plates||5;
+    for(let i=0;i<seams;i++){
+      const t=seams===1?0:i/(seams-1);
+      part(model,new THREE.BoxGeometry(0.026,0.1,0.03),eye,
+        0,1.33+(0.66-1.33)*t+0.08,-0.25+(-1.05+0.25)*t);
+    }
+  }
   addTail(model,bodyMat,0.66,s.tail||1.3,0.22,6,0.22);
   if(variant==="shin"){
     [-0.3,0.3].forEach(x => part(model,new THREE.SphereGeometry(0.11,10,8),accent,x,0.82,0.3,0,0,0,0.7,1.3,0.5));

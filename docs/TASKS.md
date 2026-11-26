@@ -1,3 +1,4 @@
+- [x] **71. 3D-Kaiju-Details und japanische Stadtzeichen**: Krallen, Plattennähte, Schilder, Zebrastreifen, Hochhäuser, sechs CC0-Atlanten, Version 1.21.8.
 - [x] **70. Bedienbare Pause und Stadt-Requisiten**: Kamera/Tap laufen im Stillstand weiter, sechs CC0-Atlanten, Laternen/Wracks/Trümmer/Rauch, Version 1.21.7.
 - [x] **69. Weitere Kaiju-Atlanten und Stadttexturen**: sechs CC0-Turntables, 2K-Fassaden/Dachziegel/Asphalt in der prozeduralen Stadt, Version 1.21.6.
 - [x] **68. Prozedurale Stadt, Wildnis, 2K-Texturen und Sonderwesen-Klasse**: Sechs CC0-Kaiju-Atlanten, 2048px-Bodenmosaike, variabel erzeugte Häuser/Gräben/Mauern/Höhen und Wildnis, Rollenlabel Verstärker und Sonderwesen für Mothra-Zwillinge, Version 1.21.5.

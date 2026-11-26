@@ -217,9 +217,13 @@ for token in ['const COVER_HEIGHT = {', 'let TOWN_CELL_BY_KEY = new Map();',
               'buildWilderness(layout);', 'cell.height||COVER_HEIGHT',
               'let propsLayer = null;', 'function buildCityProps(layout)',
               'buildCityProps(layout);', 'Straßenlaternen', 'Ausgebrannte Fahrzeuge',
-              'Rauch über eingestürzten Häusern', 'const cached = new Set(Object.values(CC0_TEXTURE_CACHE))']:
+              'Rauch über eingestürzten Häusern', 'const cached = new Set(Object.values(CC0_TEXTURE_CACHE))',
+              'function addClaws(parent,mat,y,z,sep,size)', 'claw.userData = {claw:true}',
+              'Japanische Laden-/Warnschilder', 'sign.userData = {sign:true}',
+              'Zebrastreifen', 'crossing:true', 'highrise:true',
+              'Leuchtende Nähte zwischen den Rückenplatten']:
     if token not in src:
-        problems.append('Prozedurale Stadt/Wildnis/Requisiten/Hoehen-Deckung fehlt: ' + token)
+        problems.append('Prozedurale Stadt/Wildnis/Requisiten/3D-Details/Hoehen-Deckung fehlt: ' + token)
 for token in ['label:"Verstärker"', 'SPECIAL:{', 'label:"Sonderwesen"',
               'ROSTER.mothra.role = "SPECIAL"', 'Mothra-Zwillinge']:
     if token not in src:
@@ -457,6 +461,7 @@ for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
             'burninggodzilla', 'minilla', 'gamera', 'anguirus', 'kumonga', 'destoroyah',
             'queenmuto', 'scarking', 'methuselah', 'warbat', 'shimo', 'godzillaearth',
             'bagan', 'oni', 'gyaos', 'vampire', 'werewolf', 'hydra',
+            'hotzenplotz', 'ruebezahl', 'waldschrat', 'medusa', 'dschinn', 'kappa',
             'rumpelstilzchen', 'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)

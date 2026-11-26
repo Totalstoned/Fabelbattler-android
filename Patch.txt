@@ -357,3 +357,12 @@ Schritt 15: Version 1.21.7. Die Pause hält jetzt nur noch den Kampf an:
            Atlas- und Textur-Vorschauen liegen im Projektordner als
            atlas-vorschau.png und texturen-vorschau.png.
 
+Schritt 16: Version 1.21.8. Die Monster-Modelle haben jetzt Krallen an
+           Pfoten und Händen; Shin Godzilla, Burning Godzilla und Godzilla
+           Earth zeigen leuchtende Nähte zwischen den Rückenplatten.
+           Die Stadt bekommt japanische Schilder (東京, 怪獣, 避難, 商店,
+           夜市), Zebrastreifen und Hochhäuser mit Fensterbändern. Sechs
+           weitere Wesen sind im Atlas drehbar (jetzt 39): Hotzenplotz,
+           Rübezahl, Waldschrat, Medusa, Dschinn und Kappa. Die Vorschau
+           atlas-vorschau.png im Projektordner ist aktualisiert.
+

@@ -353,6 +353,12 @@ vm.runInContext(`
       const after = model ? model.rotation.z : g.userData.limbs[0].rotation.x;
       return before !== after;
     })();
+  // 3D-Details: Kaiju besitzen Krallen an Pfoten/Händen und Rückenplatten.
+  const detailUnit = createUnit("shingodzilla",1,"player");
+  const detailModel = makeCharacter(detailUnit).userData.model;
+  globalThis.__kaijuDetailCheck = !!detailModel &&
+    detailModel.children.some(c => c.userData && c.userData.claw) &&
+    detailModel.children.filter(c => c.geometry && c.geometry.type === "ConeGeometry").length >= 8;
   G.phase = "draft";
   updateSynergies();
 `, ctx);
@@ -820,6 +826,9 @@ vm.runInContext(`(() => {
     const tower = cells.find(c => c.kind === "tower");
     citySamples.push({n:cells.length, houses:houses.length, wild:wildLayer.children.length,
       props:propsLayer ? propsLayer.children.length : 0,
+      signs:propsLayer ? propsLayer.children.filter(o => o.userData && o.userData.sign).length : 0,
+      highrises:propsLayer ? propsLayer.children.filter(o => o.userData && o.userData.highrise).length : 0,
+      crossings:propsLayer ? propsLayer.children.filter(o => o.userData && o.userData.crossing).length : 0,
       ok:!!tower && Math.min(...walls) >= 0.5 && Math.min(...houses) >= 0.65 &&
         tower.height > Math.max(...houses) && Math.max(...trenches) < Math.min(...walls)});
   }
@@ -828,7 +837,8 @@ vm.runInContext(`(() => {
     new Set(citySamples.map(s => s.houses)).size > 1 &&
     citySamples.every(s => s.n >= 12 && s.wild >= 8 && s.ok);
   globalThis.__propsCount = citySamples.map(s => s.props).join("/");
-  globalThis.__cityPropsCheck = citySamples.every(s => s.props >= 20) &&
+  globalThis.__cityPropsCheck = citySamples.every(s => s.props >= 20 &&
+    s.signs > 0 && s.highrises > 0 && s.crossings > 0) &&
     new Set(citySamples.map(s => s.props)).size > 1;
 
   const waterSalt = (() => { let s = 0; while(s < 50 && !makeMapLayout(8,s).water) s++; return s; })();
@@ -878,6 +888,7 @@ for (const [flag, message] of [
   ['__coverDamageCheck', 'Städtische Deckung reduziert keinen Schaden'],
   ['__heightRangeCheck', 'Höhenvorteil erhöht die Reichweite nicht'],
   ['__walkableHouseCheck', 'Häuser sind nicht begehbar'],
+  ['__kaijuDetailCheck', 'Kaiju-Modell hat keine Krallen/Rückenplatten'],
   ['__attackModeCheck', 'Angriffsformationen (einzeln/paar/trio/Schwarm/zwei Seiten) fehlen'],
   ['__seaSpawnCheck', 'Kaiju kommen nicht aus dem Meer'],
   ['__arrivalCheck', 'Gestaffelte Ankunft der Monster greift nicht'],
@@ -1405,7 +1416,8 @@ vm.runInContext(`
     "bagan","oni","gyaos"];
   const kaijuOK = kaijuKeys.every(k => openCreatureAtlas(k) &&
     atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
-  const mythKeys = ["vampire","werewolf","hydra"];
+  const mythKeys = ["vampire","werewolf","hydra","hotzenplotz","ruebezahl",
+    "waldschrat","medusa","dschinn","kappa"];
   const mythOK = mythKeys.every(k => openCreatureAtlas(k) &&
     atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
   const folkloreKeys = ["rumpelstilzchen","heinzelmaennchen","wichtigel","gartenelfe","lichtfee"];
@@ -1739,4 +1751,4 @@ vm.runInContext(`(() => {
 if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('CC0-Texturen laden oder Fallback greift nicht');
 if (!vm.runInContext('globalThis.__cityTextureCheck', ctx)) throw new Error('2K-Fassaden/Dachziegel/Asphalt sind nicht an der Stadt angebunden');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+3-mythos-atlas+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+stadt-requisiten+wildnis+hoehen-reichweite+begehbare-haeuser)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+9-mythos-atlas+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+stadt-requisiten+schilder+hochhaeuser+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser)`);
