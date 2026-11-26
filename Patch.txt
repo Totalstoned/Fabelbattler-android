@@ -307,3 +307,8 @@ Schritt 8: Version 1.21.0. Während des Kampfes siehst du jetzt
            auch als Schwarm Schadenszahlen (höchstens 18 auf
            einmal), und die Kampffläche sieht im Kommandos-Stil
            pixelig und entsättigt aus.
+Schritt 9: Version 1.21.1. Das Schlachtfeld nutzt jetzt echte
+           CC0-Grafiken aus dem Paket: strukturierter Boden, Wasser
+           und weiche Treffer-Effekte. Im Wesen-Atlas kannst du
+           jetzt neben Bigfoot auch Chupacabra und Fee drehen.
+           Alles liegt lokal im Spiel – keine Downloads nötig.
