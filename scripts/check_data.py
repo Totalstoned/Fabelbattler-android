@@ -204,6 +204,14 @@ for token in ['function arenaBiome(wave)', 'function applyArenaBiome(wave)',
               'if(b.time < (u.arrivalDelay||0)) return;']:
     if token not in src:
         problems.append('Zufallskarte/Wasser/Angriffsformation fehlt: ' + token)
+for token in ['const COVER_HEIGHT = {', 'let TOWN_CELL_BY_KEY = new Map();',
+              'function coverHeight(u)', 'function coverRangeBonus(u)', 'function coverReduction(u)',
+              'HUMAN_AGGRO+coverRangeBonus(u)',
+              'const reach = u.isHuman ? 0.9+coverRangeBonus(u) : 0.9;',
+              'human:0.27', 'Die Front zum', 'const floor = new THREE.Mesh(']:
+    if token not in src:
+        problems.append('Hoehen-Deckung/begehbare Haeuser fehlt: ' + token)
+
 for token in ['const START_TEAM_MIN = 3;', 'const TEAM_GROWTH_CAP = 10;', 'if(G.team.length < G.teamSize && G.gold >= 2){ openDraft(); return; }',
               'start.disabled = G.team.length < G.teamSize && G.gold >= 2;',
               'const REROLL_BASE = 2;', 'const REROLL_MAX = 4;', 'function rerollCost()',
@@ -425,7 +433,8 @@ if not (path.parent / 'creatures' / 'bigfoot' / 'turntable.png').is_file():
     problems.append('Bigfoot-Turntable-Datei fehlt im Assetordner')
 # CC0-Atlas: alle drei Kernwesen haben ein lokales Turntable-Sheet.
 for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
-            'mechagodzilla', 'kingghidorah', 'rodan']:
+            'mechagodzilla', 'kingghidorah', 'rodan', 'rumpelstilzchen',
+            'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)
     if 'creatures/'+key+'/turntable.png' not in src:

@@ -766,6 +766,23 @@ vm.runInContext(`(() => {
   const dCovered = applyDamage(coverUnit,10,null), dExposed = applyDamage(exposed,10,null);
   SIM.headless = wasHeadless;
   globalThis.__coverDamageCheck = dCovered < dExposed;
+  // Hoehenvorteil: Turm > Haus > Mauer > Graben > freies Feld. Menschen sind
+  // deutlich kleiner als Monumente und stehen in offenen, begehbaren Haeusern.
+  const coverCellsByKind = [...TOWN_CELL_BY_KEY.values()];
+  const rangeAt = kind => {
+    const cell = coverCellsByKind.find(p => p.kind === kind);
+    if(!cell) return -1;
+    const probe = createMob("rentner","enemy",1);
+    probe.grid.gx = cell.gx; probe.grid.gy = cell.gy;
+    return coverRangeBonus(probe);
+  };
+  const exposedProbe = createMob("rentner","enemy",1);
+  exposedProbe.grid.gx = -99; exposedProbe.grid.gy = -99;
+  globalThis.__heightRangeCheck = rangeAt("tower") > rangeAt("house") &&
+    rangeAt("house") >= rangeAt("wall") && rangeAt("wall") >= rangeAt("trench") &&
+    rangeAt("trench") >= coverRangeBonus(exposedProbe) && HABITAT_SCALE.human <= 0.3;
+  globalThis.__walkableHouseCheck = townLayer.children.filter(o => o.geometry &&
+    o.geometry.parameters && Math.abs(o.geometry.parameters.height-0.08) < 0.001).length >= 5;
 
   // Fünf Angriffsformationen: einzeln, paarweise, zu dritt, Schwarm, zwei Seiten.
   const byMode = {};
@@ -826,6 +843,8 @@ for (const [flag, message] of [
   ['__townDefenseCheck', 'Zufällige Stadt mit Häusern/Gräben/Barrikaden/Wachturm fehlt'],
   ['__humanCoverCheck', 'Menschen werden nicht in der Stadt stationiert'],
   ['__coverDamageCheck', 'Städtische Deckung reduziert keinen Schaden'],
+  ['__heightRangeCheck', 'Höhenvorteil erhöht die Reichweite nicht'],
+  ['__walkableHouseCheck', 'Häuser sind nicht begehbar'],
   ['__attackModeCheck', 'Angriffsformationen (einzeln/paar/trio/Schwarm/zwei Seiten) fehlen'],
   ['__seaSpawnCheck', 'Kaiju kommen nicht aus dem Meer'],
   ['__arrivalCheck', 'Gestaffelte Ankunft der Monster greift nicht'],
@@ -1350,10 +1369,13 @@ vm.runInContext(`
   const kaijuKeys = ["kingkong","mothra","mechagodzilla","kingghidorah","rodan"];
   const kaijuOK = kaijuKeys.every(k => openCreatureAtlas(k) &&
     atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
+  const folkloreKeys = ["rumpelstilzchen","heinzelmaennchen","wichtigel","gartenelfe","lichtfee"];
+  const folkloreOK = folkloreKeys.every(k => openCreatureAtlas(k) &&
+    atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
   const unknown = !openCreatureAtlas("goblin");
   closeCreatureAtlas();
   const closed = !document.getElementById("atlasOverlay").classList.contains("show");
-  globalThis.__atlasCheck = opened && closed && unknown && wrapped && chupa && fee && godzilla && kaijuOK &&
+  globalThis.__atlasCheck = opened && closed && unknown && wrapped && chupa && fee && godzilla && kaijuOK && folkloreOK &&
     p0 === "0% 0%" && p1 === "33% 0%" && p4 === "0% 100%" &&
     a0.indexOf("Front") >= 0 && a4.indexOf("Rücken") >= 0;
 `, ctx);
@@ -1652,4 +1674,4 @@ vm.runInContext(`(() => {
 })();`, ctx);
 if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('CC0-Texturen laden oder Fallback greift nicht');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+schadenszahlen+kommandos-optik+cc0-texturen+cc0-atlas)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+schadenszahlen+kommandos-optik+cc0-texturen+cc0-atlas+folklor-atlas+hoehen-reichweite+begehbare-haeuser)`);

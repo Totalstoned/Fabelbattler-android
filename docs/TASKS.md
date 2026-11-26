@@ -1,3 +1,4 @@
+- [x] **66. Folklore-Atlanten + Höhen-Deckung**: Sechs CC0-Cartoon-Sheets (Rumpelstilzchen, Heinzelmännchen, Fee, Wichtel, Gartenelfe, Lichtfee); Menschen 2x–20x und kleiner, begehbare Häuser mit höhenabhängiger Reichweite, UE5-Machbarkeitsdoku, Version 1.21.3.
 - [x] **65. Unit-Audit und sechs Kaiju-Atlanten**: Alle 123 Einheiten priorisiert; Turntables für godzilla/kingkong/mothra/mechagodzilla/kingghidorah/rodan aus CC0-Bausteinen, Version 1.21.2.
 - [x] **64. CC0-Texturen und Drei-Wesen-Atlas**: Echte Kenney-CC0-Boden/Wasser/Partikel im APK mit prozeduralem Fallback; Turntables für bigfoot/chupacabra/fee im drehbaren Atlas, Version 1.21.1.
 - [x] **63. Aufgeräumte Kampfansicht und Schadenszahlen mit Kommandos-Optik**: ⏸/▶-Knopf unten rechts blendet automatische Infos aus/ein, Kampf bleibt automatisch; Schwarm-Schadenszahlen gedeckelt; pixelig/entsättigte Commandos-Anmutung ohne UI-Größen- oder Kameraänderung, Version 1.21.0.

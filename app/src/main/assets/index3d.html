@@ -869,10 +869,14 @@ let TOWN_COVER = new Set();
 let TOWN_HOUSES = [], TOWN_TRENCHES = [], TOWN_WALLS = [], TOWN_TOWER = null;
 let TOWN_POSTS = {front:[],back:[],other:[]};
 const TOWN_COVER_REDUCTION = 0.25;
-// Größe im Vergleich: Kaiju (ca. 1.2) >> Gebäude (ca. 0.6) > Mensch (0.28-0.44)
+// Höhe der Deckung: Graben < Mauer < Haus < Wachturm. Wer höher steht, sieht
+// weiter und ist schwerer zu treffen; die Reichweite steigt mit der Höhe.
+const COVER_HEIGHT = {trench:0.15,wall:0.55,house:0.6,tower:1.8};
+let TOWN_CELL_BY_KEY = new Map();
+// Größe im Vergleich: Kaiju (ca. 1.2) >> Gebäude (ca. 0.6) > Mensch (0.27)
 // entspricht den Godzilla-Filmen: Häuser sind riesig für Menschen, aber ein
 // Kaiju ragt über sie hinaus.
-const HABITAT_SCALE = {kaiju:1.2,building:0.62,human:0.36,monster:0.45};
+const HABITAT_SCALE = {kaiju:1.2,building:0.62,human:0.27,monster:0.45};
 function townDirection(c){ return c.gx < GRID.cols/2 ? 1 : -1; }
 function refreshTownCover(c){
   const dir = townDirection(c);
@@ -886,6 +890,7 @@ function refreshTownCover(c){
   TOWN_TOWER = cell(TOWN_TOWER_OFFSET,"tower");
   const cells = [...TOWN_HOUSES,...TOWN_TRENCHES,...TOWN_WALLS,TOWN_TOWER];
   TOWN_COVER = new Set(cells.map(p => p.gx+","+p.gy));
+  TOWN_CELL_BY_KEY = new Map(cells.map(p => [p.gx+","+p.gy,p]));
   TOWN_POSTS = {
     front:[...TOWN_WALLS,...TOWN_TRENCHES.filter(p => p.gx*dir > c.gx*dir)],
     back:[...TOWN_HOUSES.filter(p => p.gx*dir <= c.gx*dir),TOWN_TOWER],
@@ -895,6 +900,18 @@ function refreshTownCover(c){
 }
 function hasCover(u){
   return !!(u && u.isHuman && TOWN_COVER.has(Math.round(u.grid.gx)+","+Math.round(u.grid.gy)));
+}
+function coverHeight(u){
+  if(!u || !u.isHuman) return 0;
+  const cell = TOWN_CELL_BY_KEY.get(Math.round(u.grid.gx)+","+Math.round(u.grid.gy));
+  return cell ? (COVER_HEIGHT[cell.kind]||0) : 0;
+}
+function coverRangeBonus(u){
+  const h = coverHeight(u);
+  return h >= 1.5 ? 1.1 : h >= 0.5 ? 0.5 : h > 0 ? 0.2 : 0;
+}
+function coverReduction(u){
+  return Math.min(0.5,TOWN_COVER_REDUCTION+coverHeight(u)*0.12);
 }
 const ELITE_EVERY = 5;
 const BOSS_EVERY = 10;
@@ -1252,7 +1269,12 @@ const ATLAS_CREATURES = {
   mothra:{label:"Mothra",image:"creatures/mothra/turntable.png"},
   mechagodzilla:{label:"Mechagodzilla",image:"creatures/mechagodzilla/turntable.png"},
   kingghidorah:{label:"King Ghidorah",image:"creatures/kingghidorah/turntable.png"},
-  rodan:{label:"Rodan",image:"creatures/rodan/turntable.png"}
+  rodan:{label:"Rodan",image:"creatures/rodan/turntable.png"},
+  rumpelstilzchen:{label:"Rumpelstilzchen",image:"creatures/rumpelstilzchen/turntable.png"},
+  heinzelmaennchen:{label:"Heinzelmännchen",image:"creatures/heinzelmaennchen/turntable.png"},
+  wichtigel:{label:"Wichtel",image:"creatures/wichtigel/turntable.png"},
+  gartenelfe:{label:"Gartenelfe",image:"creatures/gartenelfe/turntable.png"},
+  lichtfee:{label:"Lichtfee",image:"creatures/lichtfee/turntable.png"}
 };
 const ATLAS_VIEWS = ["0° · Front","45° · rechts vorne","90° · rechte Seite","135° · rechts hinten",
   "180° · Rücken","225° · links hinten","270° · linke Seite","315° · links vorne"];
@@ -1486,13 +1508,25 @@ function buildTownStructures(layout){
   const towerMat = new THREE.MeshStandardMaterial({color:0x9c8567,roughness:0.9});
   TOWN_HOUSES.forEach(cell => {
     const p = local(cell);
-    const body = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.62,0.55,TILE*0.56),houseMat);
-    body.position.set(p.x,0.28,p.z);
-    body.castShadow = true; body.receiveShadow = true;
-    townLayer.add(body);
+    // Offene Häuser: Boden, Rückwand und zwei Seitenwände. Die Front zum
+    // Schlachtfeld bleibt frei, damit Menschen die Häuser betreten können.
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.62,0.08,TILE*0.56),houseMat);
+    floor.position.set(p.x,0.04,p.z);
+    floor.receiveShadow = true;
+    townLayer.add(floor);
+    const back = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.1,0.5,TILE*0.56),houseMat);
+    back.position.set(p.x-dir*TILE*0.26,0.29,p.z);
+    back.castShadow = true; back.receiveShadow = true;
+    townLayer.add(back);
+    [-1,1].forEach(side => {
+      const flank = new THREE.Mesh(new THREE.BoxGeometry(TILE*0.62,0.5,TILE*0.1),houseMat);
+      flank.position.set(p.x,0.29,p.z+side*TILE*0.23);
+      flank.castShadow = true; flank.receiveShadow = true;
+      townLayer.add(flank);
+    });
     const roof = new THREE.Mesh(new THREE.ConeGeometry(TILE*0.48,0.34,4),roofMat);
     roof.rotation.y = Math.PI/4;
-    roof.position.set(p.x,0.72,p.z);
+    roof.position.set(p.x,0.78,p.z);
     roof.castShadow = true;
     townLayer.add(roof);
   });
@@ -2949,7 +2983,7 @@ function mobAction(u,b,dt){
       const dd = Math.hypot(t.grid.gx-u.grid.gx,t.grid.gy-u.grid.gy);
       if(dd < best){ best = dd; nearest = t; }
     }
-    if(!nearest || best > HUMAN_AGGRO){
+    if(!nearest || best > HUMAN_AGGRO+coverRangeBonus(u)){
       if(u.guard){
         const gx = u.guard.gx-u.grid.gx, gy = u.guard.gy-u.grid.gy;
         const gd = Math.hypot(gx,gy);
@@ -2966,8 +3000,10 @@ function mobAction(u,b,dt){
   if(hasStatus(u,"root") || hasStatus(u,"stun")) return;
   const dx = front.gx-u.grid.gx, dy = front.gy-u.grid.gy;
   const d = Math.hypot(dx,dy);
-  if(d > 0.9){
-    const step = Math.min((0.4+u.spd*0.5)*MAP_SPEED*dt,d-0.85);
+  const reach = u.isHuman ? 0.9+coverRangeBonus(u) : 0.9;
+  const stop = reach-0.05;
+  if(d > stop){
+    const step = Math.min((0.4+u.spd*0.5)*MAP_SPEED*dt,d-stop);
     const drift = Math.sin(u.id*1.7+b.time*2)*0.12;
     u.grid.gx = clamp(u.grid.gx+dx/d*step-drift*dy/Math.max(0.01,d),0,GRID.cols-1);
     u.grid.gy = clamp(u.grid.gy+dy/d*step+drift*dx/Math.max(0.01,d),0,GRID.rows-1);
@@ -3221,7 +3257,7 @@ function applyDamage(target,amount,source,opts={}){
   if(source && source.counterClass && target &&
      (target.cls === source.counterClass || target.cls2 === source.counterClass)) amount *= 1.35;
   let dmg = amount*(1-(target.modsEffective.dr||0));
-  if(hasCover(target)) dmg *= 1-TOWN_COVER_REDUCTION;
+  if(hasCover(target)) dmg *= 1-coverReduction(target);
   if(hasStatus(target,"defBuff")) dmg *= 1-(target.statusPower.defBuff||0);
   if(target.shield > 0){
     const absorbed = Math.min(target.shield,dmg);

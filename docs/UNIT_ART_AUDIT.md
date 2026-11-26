@@ -138,6 +138,6 @@ Alle Grafiken aus der lokalen CC0-Bibliothek oder aus CC0-Bausteinen neu zusamme
 
 ## Atlas-Status
 
-- Turntable vorhanden: bigfoot, chupacabra, fee, godzilla
+- Turntable vorhanden (15): bigfoot, chupacabra, fee, godzilla, kingkong, mothra, mechagodzilla, kingghidorah, rodan, rumpelstilzchen, heinzelmaennchen, wichtigel, gartenelfe, lichtfee
 - Ziel: min. 5–6 CC0-Varianten pro Unit als 4x2-Sheet (1024x512), lokal im APK.
 - Bildgenerierung derzeit ohne Guthaben – daher CC0-Komposition.

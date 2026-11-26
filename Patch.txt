@@ -317,3 +317,11 @@ Schritt 10: Version 1.21.2. Im Wesen-Atlas kannst du jetzt
            Mothra, Mechagodzilla, King Ghidorah und Rodan. Alle
            Bilder sind aus freien CC0-Bausteinen neu gemacht und
            liegen lokal im Spiel.
+Schritt 11: Version 1.21.3. Rumpelstilzchen, Heinzelmännchen,
+           Fee, Wichtel, Gartenelfe und Lichtfee kannst du jetzt im
+           Wesen-Atlas drehen. Die Menschen sind kleiner und immer
+           mindestens doppelt so viele wie die Monster. Sie ziehen
+           sich in offene Häuser zurück; wer höher steht (Mauer,
+           Haus, Wachturm), sieht weiter und ist besser geschützt.
+           Eine Notiz liegt bei, wie groß ein Umstieg auf Unreal
+           Engine 5 werden würde.
