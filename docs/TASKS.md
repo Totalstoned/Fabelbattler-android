@@ -2,7 +2,7 @@
 
 Frühere Grafik-Ziele sind zurückgestellt. Neue Reihenfolge: Fähigkeiten, dann UI-Rückmeldung, dann optional Grafik.
 
-## Erledigt in 1.22.9 / 1.23.0 / 1.23.1
+## Erledigt in 1.22.9 / 1.23.0 / 1.23.1 / 1.23.2
 - [x] **82. Orientierung neu schreiben**: `/root/projects/FABELBATTLER/AGENTS.md`, `FRAGEN.md` und diese `TASKS.md` auf Mechanik zuerst umgestellt; Fragekatalog für 10-Minuten-Intervalle.
 - [x] **83. Godzilla-Atomstrahl**: `SPELLS.atomstrahl/multi_atom/schmelzstrahl` sind `charge=true`; `tickMechanics()` lädt, `castMechanic()` nutzt `sp.range + 2*charge` und `dmg*(1+0.6*charge)` plus Burn/Splash. Ladegrenze steigt mit Level/Boss/Elite (1–3 s). Check-Token `atomladung`.
 - [x] **84. King-Kong-Sturm**: `+50 %` Tempo für 4 s (`speedSurge`), Sturm auf das Ziel mit höchstem ATK, Spott 3 s und Kurz-Betäubung. Check-Token `koenig-kong-sturm`.
@@ -15,7 +15,8 @@ Frühere Grafik-Ziele sind zurückgestellt. Neue Reihenfolge: Fähigkeiten, dann
 - [x] **87. Fragen und UI (Feedback 1)**: User-Antworten: Atomladung sofort **1/2/3 s** (nicht levelabhängig), HUD/Pause/Startbild **unverändert**, als Design-Alternative **Ladeleiste** gewählt.
 - [x] **90. Ladeleiste**: `makeChargeBar()` über dem Wesen; zeigt Atomladung (0–3 s) und Rumpels Kessel (0–2 s), voll = gelb. Evolutionsstufe wirkt jetzt über `mechanicEvolution()` auf den Schaden statt auf die Ladedauer. Token `ladeleiste-3s`.
 - [x] **91. Feedback-Block 2**: Fähigkeiten bleiben; Ladeleiste nun violett→pink; Status-Icons im Feld umgesetzt (gecachte Emoji-Texturen, gültig auch für `regrow`/`taunt`). Token `status-icons`.
-- [ ] **92. Nächster Frageblock**: Fokus-Pfeil / Fähigkeits-Log oder Grafik? erneut abfragen.
+- [x] **92. Feedback-Block 3 / Fähigkeits-Log**: Antwort „5“ aus `FRAGEN.md` = Fähigkeits-Log. `logAbility()` schreibt maximal drei Zeilen (je 3 s) über die Kampfleiste, nur für Heldenzauber; Token `faehigkeits-log`. Mechanik und Icons bleiben unverändert.
+- [ ] **93. Nächster Frageblock**: Fokus-Pfeil, Screenshot-Prüfung oder Grafik? erneut abfragen.
 
 ## Zurückgestellt (nicht verworfen)
 - Übrige 41 Wesen-Atlanten, weitere Stadt-Dekoration, echtes Sprite-/Engine-Upgrade.

@@ -436,3 +436,6 @@ Schritt 28: Version 1.23.0. Godzilla kann jetzt sofort bis drei Sekunden
 Schritt 29: Version 1.23.1. Die Ladeleiste ist jetzt violett und leuchtet
            bei voller Ladung pink. Neben jedem Wesen erscheint ein Icon
            für den aktiven Status (Heilung, Spott, Betörung, Langsamkeit).
+
+Schritt 30: Version 1.23.2. Über der Kampfleiste erscheinen jetzt für drei
+           Sekunden die letzten Fähigkeiten deiner Helden.
