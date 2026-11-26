@@ -478,12 +478,14 @@ for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
             'sukubus', 'lilith', 'goblin', 'alp', 'blaubart', 'hexe',
             'quetzalcoatl', 'ammit', 'tengu', 'yama', 'anansi', 'selkie',
             'nessie', 'mothman', 'jerseydevil', 'skinwalker', 'reineke', 'rotkaeppchen',
-            'rumpelstilzchen', 'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee']:
+            'rumpelstilzchen', 'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee',
+            'schatten']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)
     if 'creatures/'+key+'/turntable.png' not in src:
         problems.append('CC0-Turntable nicht angebunden: ' + key)
 for token in ['chupacabra:{label:"Chupacabra"', 'fee:{label:"Fee"',
+              'schatten:{label:"Schatten der Laterne"',
               'atlasFrame").style.backgroundImage']:
     if token not in src:
         problems.append('CC0-Atlas fuer Chupacabra/Fee fehlt: ' + token)

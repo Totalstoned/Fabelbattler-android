@@ -394,3 +394,7 @@ Schritt 20: Version 1.22.2. Deine Helden werden jetzt vor dem Kampf in
            halten kurz Deckung, bis ein Gegner nahe ist. Die Menschen im
            Stadt-Lager stehen sichtbar im Haus bzw. auf dem Turm.
 
+Schritt 21: Version 1.22.3. Dein neues Video ist als acht Frame-Staffel
+           unter dem Namen „Schatten der Laterne“ im Wesen-Atlas
+           eingebunden (nicht CC0, aber von dir freigegeben).
+
