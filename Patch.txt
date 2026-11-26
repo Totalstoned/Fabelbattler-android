@@ -403,3 +403,6 @@ Schritt 22: Version 1.22.4. Sechs neue Wesen-Atlanten (Klabautermann,
            Am Straßenrand stehen jetzt Ampeln und leuchtende Getränke-
            automaten – nur Dekoration, der Kampf bleibt unverändert.
 
+Schritt 23: Version 1.22.5. Weitere sechs Wesen-Atlanten: Baba Jaga,
+           Mami Wata, Nachzehrer, Sensenmann, Oma und Opa.
+

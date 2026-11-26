@@ -480,7 +480,8 @@ for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
             'nessie', 'mothman', 'jerseydevil', 'skinwalker', 'reineke', 'rotkaeppchen',
             'rumpelstilzchen', 'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee',
             'klabautermann', 'moosweiblein', 'aufhocker', 'fernrisswolf',
-            'kroetenmoench', 'panzer', 'schatten']:
+            'kroetenmoench', 'panzer', 'babajaga', 'mamiwata', 'nachtzerrer',
+            'sensenmann', 'oma', 'opa', 'schatten']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)
     if 'creatures/'+key+'/turntable.png' not in src:
