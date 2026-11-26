@@ -342,3 +342,9 @@ Schritt 13: Version 1.21.5. Sechs neue Wesen sind im Atlas drehbar:
            ihren Weg. Die Rollen heißen jetzt Tank, DPS, Heiler,
            Verstärker und Sonderwesen – Mothra gehört zu den Zwillingen.
 
+Schritt 14: Version 1.21.6. Sechs weitere Wesen sind im Atlas drehbar:
+           Queen M.U.T.O., Scar King, Methuselah, Warbat, Shimo und
+           Godzilla Earth (jetzt 27 Wesen). Die Stadt bekommt 2K-Texturen
+           für Fassaden, Dachziegel und Straßen statt reiner Farben.
+           Städte, Deckung, Höhen, Wildnis und Pause bleiben wie in 1.21.5.
+

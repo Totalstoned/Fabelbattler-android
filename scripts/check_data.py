@@ -283,6 +283,7 @@ for token in ['image-rendering:pixelated', 'filter:sepia(']:
 for token in ['const CC0_TEXTURE_CACHE = {}', 'function cc0Texture(name,fallback,repeat)',
               'cc0Texture("stone_grass"', 'cc0Texture("stone_dirt"',
               'cc0Texture("water"', 'cc0Texture("circle_01"',
+              'cc0Texture("brick_wall"', 'cc0Texture("roof_tiles"', 'cc0Texture("asphalt"',
               'textures/"+name+".png']:
     if token not in src:
         problems.append('CC0-Texturen in der Szene fehlen: ' + token)
@@ -448,6 +449,7 @@ if not (path.parent / 'creatures' / 'bigfoot' / 'turntable.png').is_file():
 for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
             'mechagodzilla', 'kingghidorah', 'rodan', 'shingodzilla',
             'burninggodzilla', 'minilla', 'gamera', 'anguirus', 'kumonga', 'destoroyah',
+            'queenmuto', 'scarking', 'methuselah', 'warbat', 'shimo', 'godzillaearth',
             'rumpelstilzchen', 'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)

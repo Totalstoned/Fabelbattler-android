@@ -1321,6 +1321,12 @@ const ATLAS_CREATURES = {
   anguirus:{label:"Anguirus",image:"creatures/anguirus/turntable.png"},
   kumonga:{label:"Kumonga",image:"creatures/kumonga/turntable.png"},
   destoroyah:{label:"Destoroyah",image:"creatures/destoroyah/turntable.png"},
+  queenmuto:{label:"Queen M.U.T.O.",image:"creatures/queenmuto/turntable.png"},
+  scarking:{label:"Scar King",image:"creatures/scarking/turntable.png"},
+  methuselah:{label:"Methuselah",image:"creatures/methuselah/turntable.png"},
+  warbat:{label:"Warbat",image:"creatures/warbat/turntable.png"},
+  shimo:{label:"Shimo",image:"creatures/shimo/turntable.png"},
+  godzillaearth:{label:"Godzilla Earth",image:"creatures/godzillaearth/turntable.png"},
   kingkong:{label:"King Kong",image:"creatures/kingkong/turntable.png"},
   mothra:{label:"Mothra",image:"creatures/mothra/turntable.png"},
   mechagodzilla:{label:"Mechagodzilla",image:"creatures/mechagodzilla/turntable.png"},
@@ -1561,13 +1567,18 @@ function buildTownStructures(layout){
   clearGroup(townLayer);
   const c = layout.corner, dir = townDirection(c);
   const local = cell => ({x:(cell.gx-c.gx)*TILE,z:(cell.gy-c.gy)*TILE});
-  const houseMat = new THREE.MeshStandardMaterial({color:0xa18466,roughness:0.92});
-  const roofMat = new THREE.MeshStandardMaterial({color:0x7a4a3a,roughness:0.88});
+  // 2K-Fassaden, Dachziegel und Asphalt aus lokalen CC0-Kacheln: die Stadt
+  // bekommt echte Oberflächen statt flacher Farben, bleibt aber offline.
+  const brickMap = cc0Texture("brick_wall",()=>null,2);
+  const roofMap = cc0Texture("roof_tiles",()=>null,1);
+  const asphaltMap = cc0Texture("asphalt",()=>null,3);
+  const houseMat = new THREE.MeshStandardMaterial({map:brickMap,color:brickMap?0xffffff:0xa18466,roughness:0.92});
+  const roofMat = new THREE.MeshStandardMaterial({map:roofMap,color:roofMap?0xffffff:0x7a4a3a,roughness:0.88});
   const trenchMat = new THREE.MeshStandardMaterial({color:0x6b5a43,roughness:1});
-  const wallMat = new THREE.MeshStandardMaterial({color:0x8d7b5c,roughness:0.95});
-  const towerMat = new THREE.MeshStandardMaterial({color:0x9c8567,roughness:0.9});
+  const wallMat = new THREE.MeshStandardMaterial({map:brickMap,color:brickMap?0xffffff:0x8d7b5c,roughness:0.95});
+  const towerMat = new THREE.MeshStandardMaterial({map:brickMap,color:brickMap?0xffffff:0x9c8567,roughness:0.9});
   const windowMat = new THREE.MeshStandardMaterial({color:0xffd166,emissive:0xffb347,emissiveIntensity:0.4,roughness:0.5});
-  const roadMat = new THREE.MeshStandardMaterial({color:0x6c665c,roughness:1});
+  const roadMat = new THREE.MeshStandardMaterial({map:asphaltMap,color:asphaltMap?0xffffff:0x6c665c,roughness:1});
   TOWN_HOUSES.forEach((cell,idx) => {
     const p = local(cell);
     const h = cell.height||COVER_HEIGHT.house;

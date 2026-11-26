@@ -1394,7 +1394,8 @@ vm.runInContext(`
   const godzilla = openCreatureAtlas("godzilla") &&
     atlasEl.style.backgroundImage.indexOf("creatures/godzilla/turntable.png") >= 0;
   const kaijuKeys = ["kingkong","mothra","mechagodzilla","kingghidorah","rodan","shingodzilla",
-    "burninggodzilla","minilla","gamera","anguirus","kumonga","destoroyah"];
+    "burninggodzilla","minilla","gamera","anguirus","kumonga","destoroyah",
+    "queenmuto","scarking","methuselah","warbat","shimo","godzillaearth"];
   const kaijuOK = kaijuKeys.every(k => openCreatureAtlas(k) &&
     atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
   const folkloreKeys = ["rumpelstilzchen","heinzelmaennchen","wichtigel","gartenelfe","lichtfee"];
@@ -1695,6 +1696,14 @@ for (const [flag, message] of [
 vm.runInContext(`(() => {
   const grass = cc0Texture("stone_grass",()=>null,48);
   const cached = cc0Texture("stone_grass",()=>null,48) === grass;
+  const brick = cc0Texture("brick_wall",()=>null,2);
+  const roof = cc0Texture("roof_tiles",()=>null,1);
+  const asphalt = cc0Texture("asphalt",()=>null,3);
+  const cityMaps = !!brick && !!roof && !!asphalt &&
+    townLayer.children.some(o => o.material && o.material.map === brick) &&
+    townLayer.children.some(o => o.material && o.material.map === roof) &&
+    townLayer.children.some(o => o.material && o.material.map === asphalt);
+  globalThis.__cityTextureCheck = cityMaps;
   const particle = cc0Texture("circle_01",()=>null);
   const originalLoader = THREE.TextureLoader;
   THREE.TextureLoader = function(){ throw new Error("missing"); };
@@ -1704,5 +1713,6 @@ vm.runInContext(`(() => {
   globalThis.__cc0TextureCheck = !!grass && cached && !!particle && fallback === fallbackTex;
 })();`, ctx);
 if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('CC0-Texturen laden oder Fallback greift nicht');
+if (!vm.runInContext('globalThis.__cityTextureCheck', ctx)) throw new Error('2K-Fassaden/Dachziegel/Asphalt sind nicht an der Stadt angebunden');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+schadenszahlen+cc0-2k-texturen+cc0-atlas+12-kaiju+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+wildnis+hoehen-reichweite+begehbare-haeuser)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+18-kaiju+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+wildnis+hoehen-reichweite+begehbare-haeuser)`);

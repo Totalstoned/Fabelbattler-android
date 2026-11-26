@@ -1,3 +1,4 @@
+- [x] **69. Weitere Kaiju-Atlanten und Stadttexturen**: sechs CC0-Turntables, 2K-Fassaden/Dachziegel/Asphalt in der prozeduralen Stadt, Version 1.21.6.
 - [x] **68. Prozedurale Stadt, Wildnis, 2K-Texturen und Sonderwesen-Klasse**: Sechs CC0-Kaiju-Atlanten, 2048px-Bodenmosaike, variabel erzeugte Häuser/Gräben/Mauern/Höhen und Wildnis, Rollenlabel Verstärker und Sonderwesen für Mothra-Zwillinge, Version 1.21.5.
 - [x] **67. Echte Pause, Shin Godzilla, Panzer und dichtere Stadt**: Play/Pause-Taste hält den Kampf an, Kommandos-Filter entfernt; Shin-Godzilla-Atlas, Panzer/Feuerwehr und mehrstöckige Häuser mit Fenstern/Straßen, UE5-Windows-Gerüst mit 123-Einheiten-Export, Version 1.21.4.
 - [x] **66. Folklore-Atlanten + Höhen-Deckung**: Sechs CC0-Cartoon-Sheets (Rumpelstilzchen, Heinzelmännchen, Fee, Wichtel, Gartenelfe, Lichtfee); Menschen 2x–20x und kleiner, begehbare Häuser mit höhenabhängiger Reichweite, UE5-Machbarkeitsdoku, Version 1.21.3.
