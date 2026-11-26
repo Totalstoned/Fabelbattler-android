@@ -1,6 +1,6 @@
 # Optik-Optionen – was mehr Download wert ist
 
-Stand 2026-11-26. Der aktuelle Build ist 5,9 MB (`1.21.5.apk`); mit 2K-Stadttexturen und sechs weiteren Atlanten wächst 1.21.6 etwas, bleibt aber weit unter 100 MB. Du hast gesagt, dass dir ein größerer Download für deutlich bessere Optik egal ist – hier sind die sinnvollsten Wege, sortiert nach Wirkung pro Megabyte.
+Stand 2026-11-26. Der aktuelle Build ist 11 MB (`1.21.6.apk`) – weiterhin weit unter 100 MB. Du hast gesagt, dass dir ein größerer Download für deutlich bessere Optik egal ist – hier sind die sinnvollsten Wege, sortiert nach Wirkung pro Megabyte.
 
 | Option | Mehrgröße (geschätzt) | Wirkung |
 | --- | --- | --- |
