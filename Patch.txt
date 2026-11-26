@@ -348,3 +348,12 @@ Schritt 14: Version 1.21.6. Sechs weitere Wesen sind im Atlas drehbar:
            für Fassaden, Dachziegel und Straßen statt reiner Farben.
            Städte, Deckung, Höhen, Wildnis und Pause bleiben wie in 1.21.5.
 
+Schritt 15: Version 1.21.7. Die Pause hält jetzt nur noch den Kampf an:
+           Du kannst die Karte weiter ziehen, zoomen und auf Wesen tippen
+           (ihre Fähigkeiten erscheinen dann). Sechs weitere Wesen sind im
+           Atlas drehbar: Bagan, Oni, Gyaos, Vampir, Werwolf und Hydra
+           (jetzt 33). Die Stadt hat Laternen, ausgebrannte Autos, Trümmer
+           und Rauch – alles nur Kulisse, die Monster kommen trotzdem durch.
+           Atlas- und Textur-Vorschauen liegen im Projektordner als
+           atlas-vorschau.png und texturen-vorschau.png.
+

@@ -143,7 +143,8 @@ if (!html.includes('hitStop:0') || !html.includes('function triggerHitStop') ||
     !html.includes('if(hasDamageFx(u)) triggerHitStop(u.isBoss ? HIT_STOP_BOSS : HIT_STOP_KILL);') ||
     !html.includes('if(G.phase === "battle" && G.battle) updateBattle(dt);') ||
     !html.includes('const visualDt = visualFrameDt(dt)') || !html.includes('updateEffects(visualDt)') ||
-    !html.includes('updateVisuals(visualClock,visualDt)')) {
+    !html.includes('updateVisuals(visualClock,visualDt,dt)') ||
+    !html.includes('function updateVisuals(time,dt,viewDt)')) {
   throw new Error('Visueller Hit-Stop bei Krit/Kill fehlt oder greift in die Simulation ein');
 }
 if (!html.includes('id="heroAlert"') || !html.includes('id="heroAlertCount"') ||
@@ -818,6 +819,7 @@ vm.runInContext(`(() => {
     const trenches = cells.filter(c => c.kind === "trench").map(c => c.height);
     const tower = cells.find(c => c.kind === "tower");
     citySamples.push({n:cells.length, houses:houses.length, wild:wildLayer.children.length,
+      props:propsLayer ? propsLayer.children.length : 0,
       ok:!!tower && Math.min(...walls) >= 0.5 && Math.min(...houses) >= 0.65 &&
         tower.height > Math.max(...houses) && Math.max(...trenches) < Math.min(...walls)});
   }
@@ -825,6 +827,9 @@ vm.runInContext(`(() => {
   globalThis.__procCityCheck = new Set(citySamples.map(s => s.n)).size > 1 &&
     new Set(citySamples.map(s => s.houses)).size > 1 &&
     citySamples.every(s => s.n >= 12 && s.wild >= 8 && s.ok);
+  globalThis.__propsCount = citySamples.map(s => s.props).join("/");
+  globalThis.__cityPropsCheck = citySamples.every(s => s.props >= 20) &&
+    new Set(citySamples.map(s => s.props)).size > 1;
 
   const waterSalt = (() => { let s = 0; while(s < 50 && !makeMapLayout(8,s).water) s++; return s; })();
   prepareMap(8,waterSalt);
@@ -868,6 +873,7 @@ for (const [flag, message] of [
   ['__stationCheck', 'Sanitäter/Rentner stehen nicht hinter den Soldaten'],
   ['__townDefenseCheck', 'Zufällige Stadt mit Häusern/Gräben/Barrikaden/Wachturm fehlt'],
   ['__procCityCheck', 'Prozedurale Stadt variiert nicht oder Hoehen/Wege sind ungueltig'],
+  ['__cityPropsCheck', 'Stadt-Requisiten (Laternen/Wracks/Truemmer/Rauch) fehlen'],
   ['__humanCoverCheck', 'Menschen werden nicht in der Stadt stationiert'],
   ['__coverDamageCheck', 'Städtische Deckung reduziert keinen Schaden'],
   ['__heightRangeCheck', 'Höhenvorteil erhöht die Reichweite nicht'],
@@ -1395,8 +1401,12 @@ vm.runInContext(`
     atlasEl.style.backgroundImage.indexOf("creatures/godzilla/turntable.png") >= 0;
   const kaijuKeys = ["kingkong","mothra","mechagodzilla","kingghidorah","rodan","shingodzilla",
     "burninggodzilla","minilla","gamera","anguirus","kumonga","destoroyah",
-    "queenmuto","scarking","methuselah","warbat","shimo","godzillaearth"];
+    "queenmuto","scarking","methuselah","warbat","shimo","godzillaearth",
+    "bagan","oni","gyaos"];
   const kaijuOK = kaijuKeys.every(k => openCreatureAtlas(k) &&
+    atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
+  const mythKeys = ["vampire","werewolf","hydra"];
+  const mythOK = mythKeys.every(k => openCreatureAtlas(k) &&
     atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
   const folkloreKeys = ["rumpelstilzchen","heinzelmaennchen","wichtigel","gartenelfe","lichtfee"];
   const folkloreOK = folkloreKeys.every(k => openCreatureAtlas(k) &&
@@ -1404,7 +1414,7 @@ vm.runInContext(`
   const unknown = !openCreatureAtlas("goblin");
   closeCreatureAtlas();
   const closed = !document.getElementById("atlasOverlay").classList.contains("show");
-  globalThis.__atlasCheck = opened && closed && unknown && wrapped && chupa && fee && godzilla && kaijuOK && folkloreOK &&
+  globalThis.__atlasCheck = opened && closed && unknown && wrapped && chupa && fee && godzilla && kaijuOK && mythOK && folkloreOK &&
     p0 === "0% 0%" && p1 === "33% 0%" && p4 === "0% 100%" &&
     a0.indexOf("Front") >= 0 && a4.indexOf("Rücken") >= 0;
 `, ctx);
@@ -1657,12 +1667,26 @@ vm.runInContext(`(() => {
   setBattlePaused(true);
   const hidden = G.paused === true && document.body.classList.contains("clean-view") &&
     viewBtn.textContent === "▶" && visualFrameDt(0.016) === 0;
+  // Pause halt nur die Simulation: Kamera-Ziehen, Zoom und Wesen-Tap bleiben aktiv.
+  const camBefore = cameraFocus.x + cameraFocus.z;
+  const viewBefore = cameraView;
+  panCameraPixels(80,40);
+  zoomCamera(1);
+  updateVisuals(0,0,0.3);
+  const camMoved = Math.abs(cameraFocus.x+cameraFocus.z-camBefore) > 0.01 &&
+    Math.abs(cameraView-viewBefore) > 0.01;
+  const tapUnit = G.battle.player[0];
+  selectUnit(tapUnit);
+  const pausedInfo = document.getElementById("infoOverlay").classList.contains("show") &&
+    (!ATLAS_CREATURES[tapUnit.key] ||
+      document.getElementById("infoExtra").innerHTML.includes("btnAtlasFromUnit"));
+  closeInfo();
   for (let f = 0; f < 4 && G.battle; f++) simulateBattle(0.016);
   const frozen = G.battle.time === beforeTime;
   setBattlePaused(false);
   simulateBattle(0.016);
   const resumed = !G.battle || G.battle.time > beforeTime;
-  globalThis.__cleanViewCheck = hidden && frozen && resumed &&
+  globalThis.__cleanViewCheck = hidden && frozen && resumed && camMoved && pausedInfo &&
     !G.paused && !document.body.classList.contains("clean-view") &&
     viewBtn.textContent === "⏸";
 
@@ -1715,4 +1739,4 @@ vm.runInContext(`(() => {
 if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('CC0-Texturen laden oder Fallback greift nicht');
 if (!vm.runInContext('globalThis.__cityTextureCheck', ctx)) throw new Error('2K-Fassaden/Dachziegel/Asphalt sind nicht an der Stadt angebunden');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+18-kaiju+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+wildnis+hoehen-reichweite+begehbare-haeuser)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+3-mythos-atlas+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+stadt-requisiten+wildnis+hoehen-reichweite+begehbare-haeuser)`);

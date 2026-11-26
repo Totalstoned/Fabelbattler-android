@@ -1321,6 +1321,12 @@ const ATLAS_CREATURES = {
   anguirus:{label:"Anguirus",image:"creatures/anguirus/turntable.png"},
   kumonga:{label:"Kumonga",image:"creatures/kumonga/turntable.png"},
   destoroyah:{label:"Destoroyah",image:"creatures/destoroyah/turntable.png"},
+  bagan:{label:"Bagan",image:"creatures/bagan/turntable.png"},
+  oni:{label:"Oni",image:"creatures/oni/turntable.png"},
+  gyaos:{label:"Gyaos",image:"creatures/gyaos/turntable.png"},
+  vampire:{label:"Vampir",image:"creatures/vampire/turntable.png"},
+  werewolf:{label:"Werwolf",image:"creatures/werewolf/turntable.png"},
+  hydra:{label:"Hydra",image:"creatures/hydra/turntable.png"},
   queenmuto:{label:"Queen M.U.T.O.",image:"creatures/queenmuto/turntable.png"},
   scarking:{label:"Scar King",image:"creatures/scarking/turntable.png"},
   methuselah:{label:"Methuselah",image:"creatures/methuselah/turntable.png"},
@@ -1456,6 +1462,7 @@ let arenaPalette = null;
 let waterMesh = null;
 let townLayer = null;
 let wildLayer = null;
+let propsLayer = null;
 function prepareMap(wave,salt){
   const s = salt === undefined ? ++G.mapSalt : Math.max(0,Math.floor(salt));
   if(salt !== undefined) G.mapSalt = Math.max(G.mapSalt,s);
@@ -1495,6 +1502,7 @@ function applyArenaBiome(wave){
       buildTownStructures(layout);
     }
     buildWilderness(layout);
+    buildCityProps(layout);
   }
   return b;
 }
@@ -1560,6 +1568,8 @@ function buildArena(){
   arena.add(townLayer);
   wildLayer = new THREE.Group();
   arena.add(wildLayer);
+  propsLayer = new THREE.Group();
+  arena.add(propsLayer);
   arenaPalette = {base:base.material,tileA:matA,tileB:matB,edge:edgeMat,ring:ringMat};
 }
 function buildTownStructures(layout){
@@ -1688,11 +1698,79 @@ function buildWilderness(layout){
     }
   }
 }
+// Von Godzilla überrannte Stadt: Laternen, ausgebrannte Autos, Trümmer und
+// Rauchsäulen. Nur Kulisse – Deckung, Wege und Angriffe bleiben unverändert.
+function buildCityProps(layout){
+  if(!propsLayer) return;
+  clearGroup(propsLayer);
+  const r = mapRandom((layout.wave||1)+17,(layout.salt||0)+23);
+  const poleMat = new THREE.MeshStandardMaterial({color:0x4d5359,roughness:0.7,metalness:0.4});
+  const lampMat = new THREE.MeshStandardMaterial({color:0xffe9a8,emissive:0xffc25c,emissiveIntensity:0.5});
+  const wreckMat = new THREE.MeshStandardMaterial({color:0x5b6168,roughness:0.9,metalness:0.25});
+  const glassMat = new THREE.MeshStandardMaterial({color:0x2b3540,roughness:0.4,metalness:0.3});
+  const rubbleMat = new THREE.MeshStandardMaterial({map:cc0Texture("brick_wall",()=>null,2),color:0xbfb0a0,roughness:1});
+  const smokeMat = new THREE.MeshStandardMaterial({color:0x45484e,transparent:true,opacity:0.42,roughness:1});
+  const freeCell = () => {
+    for(let tries=0;tries<30;tries++){
+      const gx = clamp(Math.floor(r()*GRID.cols),0,GRID.cols-1);
+      const gy = clamp(Math.floor(r()*GRID.rows),0,GRID.rows-1);
+      if(!TOWN_COVER.has(gx+","+gy)) return worldPos(gx,gy);
+    }
+    return worldPos(Math.floor(r()*GRID.cols),Math.floor(r()*GRID.rows));
+  };
+  // Straßenlaternen vor den Häusern: die Stadt wirkt bewohnt, bevor sie
+  // von den Monstern zerstört wird.
+  TOWN_HOUSES.forEach((cell,i) => {
+    if(i%2) return;
+    const p = worldPos(clamp(cell.gx+townDirection(cell)*2,0,GRID.cols-1),clamp(cell.gy+1,0,GRID.rows-1));
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.04,0.9,5),poleMat);
+    pole.position.set(p.x,0.45,p.z);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.07,0.12),lampMat);
+    head.position.set(p.x,0.94,p.z);
+    propsLayer.add(pole,head);
+  });
+  // Ausgebrannte Fahrzeuge mit geneigtem Aufbau und dunklen Fenstern.
+  const wrecks = 3+Math.floor(r()*3);
+  for(let i=0;i<wrecks;i++){
+    const p = freeCell();
+    const tilt = (r()-0.5)*0.35;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.22,0.32),wreckMat);
+    body.position.set(p.x,0.16,p.z); body.rotation.set(0,r()*Math.PI,tilt);
+    const cabin = new THREE.Mesh(new THREE.BoxGeometry(0.3,0.16,0.28),glassMat);
+    cabin.position.set(p.x-0.06*Math.sign(tilt||1),0.34,p.z); cabin.rotation.z = tilt;
+    propsLayer.add(body,cabin);
+  }
+  // Trümmer vor den Gebäuden; drei bis vier Bruchstücke pro Haufen.
+  const piles = 5+Math.floor(r()*5);
+  for(let i=0;i<piles;i++){
+    const p = freeCell();
+    for(let j=0;j<3+Math.floor(r()*2);j++){
+      const size = 0.09+r()*0.12;
+      const chunk = new THREE.Mesh(new THREE.IcosahedronGeometry(size,0),rubbleMat);
+      chunk.position.set(p.x+(r()-0.5)*TILE*0.5,size*0.7,p.z+(r()-0.5)*TILE*0.5);
+      chunk.rotation.set(r()*2,r()*2,r()*2);
+      propsLayer.add(chunk);
+    }
+  }
+  // Rauch über eingestürzten Häusern: weiche, halbtransparente Kugeln.
+  const fires = 2+Math.floor(r()*3);
+  for(let i=0;i<fires;i++){
+    const p = freeCell();
+    for(let j=0;j<3;j++){
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.18+j*0.06,6,5),smokeMat);
+      puff.position.set(p.x+(r()-0.5)*0.16,0.6+j*0.3,p.z+(r()-0.5)*0.16);
+      propsLayer.add(puff);
+    }
+  }
+}
 function disposeObject(obj){
+  // CC0-Texturen sind gecacht und werden von mehreren Gruppen geteilt: sie
+  // duerfen beim Neuaufbau der Stadt nicht weggeworfen werden.
+  const cached = new Set(Object.values(CC0_TEXTURE_CACHE));
   obj.traverse(child => {
     if(child.geometry) child.geometry.dispose();
     if(child.material){
-      if(child.material.map) child.material.map.dispose();
+      if(child.material.map && !cached.has(child.material.map)) child.material.map.dispose();
       child.material.dispose();
     }
   });
@@ -3870,9 +3948,12 @@ function poseCharacter(u,group,time,dt,deathT){
     else limb.rotation.x = -swing-recoil*0.25;
   });
 }
-function updateVisuals(time,dt){
+// `dt` steuert Animationen (0 in Pause/Hit-Stop), `viewDt` die Kamera. So
+// laeuft die Darstellung weiter, auch wenn der Kampf angehalten ist.
+function updateVisuals(time,dt,viewDt){
+  if(viewDt === undefined) viewDt = dt;
   if(Math.abs(cameraView-targetView) > 0.005){
-    cameraView += (targetView-cameraView)*Math.min(1,dt*7);
+    cameraView += (targetView-cameraView)*Math.min(1,viewDt*7);
     resize();
   }
   motes.rotation.y = time*0.02;
@@ -3892,8 +3973,8 @@ function updateVisuals(time,dt){
   } else {
     targetRing.visible = false;
   }
-  cameraFocus.lerp(cameraDesired,Math.min(1,dt*2.4));
-  cameraShake = Math.max(0,cameraShake-dt*1.5);
+  cameraFocus.lerp(cameraDesired,Math.min(1,viewDt*2.4));
+  cameraShake = Math.max(0,cameraShake-viewDt*1.5);
   const shakeX = (Math.random()-0.5)*cameraShake;
   const shakeZ = (Math.random()-0.5)*cameraShake;
   camera.position.set(CAMERA_OFFSET.x+cameraFocus.x+shakeX,CAMERA_OFFSET.y,CAMERA_OFFSET.z+cameraFocus.z+shakeZ);
@@ -4065,6 +4146,15 @@ function selectUnit(u){
   }
   G.selectedUnitId = u.id;
   updateTeamList();
+  // In der Pause ist die Kampfleiste ausgeblendet: ein Tap auf ein Wesen
+  // oeffnet dessen Faehigkeiten, damit man es in Ruhe ansehen kann.
+  if(G.paused && G.phase === "battle"){
+    const atlas = ATLAS_CREATURES[u.key]
+      ? '<button class="btn ghost" id="btnAtlasFromUnit" style="margin-top:8px">🌀 8 Ansichten drehen</button>' : '';
+    openInfo(u.name+" · Fähigkeit", abilityInfoHtml(u), atlas);
+    if(atlas) document.getElementById("btnAtlasFromUnit").onclick = () => openCreatureAtlas(u.key);
+    return;
+  }
   // Im Kampf zeigt die Fokus-Anzeige alle Details live; ein Toast pro ◀/▶ oder Tap
   // würde sonst die Kampfleiste und andere Meldungen überdecken.
   if(G.phase !== "battle" || !G.battle) showToast("Info: "+u.emoji+" "+u.name);
@@ -4738,7 +4828,7 @@ window.addEventListener("load", () => {
       updateButtons();
       if(G.phase === "battle") updateTeamList();
     }
-    updateVisuals(visualClock,visualDt);
+    updateVisuals(visualClock,visualDt,dt);
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);

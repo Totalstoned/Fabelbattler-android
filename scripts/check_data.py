@@ -214,9 +214,12 @@ for token in ['const COVER_HEIGHT = {', 'let TOWN_CELL_BY_KEY = new Map();',
               'function refreshTownCover(layout)', 'const houses = 5+Math.floor(r()*5)',
               'const trenches = 4+Math.floor(r()*4)', 'const walls = 3+Math.floor(r()*4)',
               'let wildLayer = null;', 'function buildWilderness(layout)',
-              'buildWilderness(layout);', 'cell.height||COVER_HEIGHT']:
+              'buildWilderness(layout);', 'cell.height||COVER_HEIGHT',
+              'let propsLayer = null;', 'function buildCityProps(layout)',
+              'buildCityProps(layout);', 'Straßenlaternen', 'Ausgebrannte Fahrzeuge',
+              'Rauch über eingestürzten Häusern', 'const cached = new Set(Object.values(CC0_TEXTURE_CACHE))']:
     if token not in src:
-        problems.append('Prozedurale Stadt/Wildnis/Hoehen-Deckung fehlt: ' + token)
+        problems.append('Prozedurale Stadt/Wildnis/Requisiten/Hoehen-Deckung fehlt: ' + token)
 for token in ['label:"Verstärker"', 'SPECIAL:{', 'label:"Sonderwesen"',
               'ROSTER.mothra.role = "SPECIAL"', 'Mothra-Zwillinge']:
     if token not in src:
@@ -273,6 +276,9 @@ for token in ['id="btnBattleView"', 'function setCleanView',
               'function setBattlePaused(on)', 'paused:false',
               'if(G.paused) return 0;', 'if(G.paused) return;',
               'body.clean-view .battle-bar',
+              'function updateVisuals(time,dt,viewDt)', 'if(viewDt === undefined) viewDt = dt;',
+              'cameraFocus.lerp(cameraDesired,Math.min(1,viewDt*2.4));',
+              'updateVisuals(visualClock,visualDt,dt);', 'btnAtlasFromUnit',
               'const MOB_NUMBER_LIMIT = 18;', 'function showMobNumber(u)',
               '(!hasDamageFx(u) && !showMobNumber(u))']:
     if token not in src:
@@ -450,6 +456,7 @@ for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
             'mechagodzilla', 'kingghidorah', 'rodan', 'shingodzilla',
             'burninggodzilla', 'minilla', 'gamera', 'anguirus', 'kumonga', 'destoroyah',
             'queenmuto', 'scarking', 'methuselah', 'warbat', 'shimo', 'godzillaearth',
+            'bagan', 'oni', 'gyaos', 'vampire', 'werewolf', 'hydra',
             'rumpelstilzchen', 'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)
@@ -498,7 +505,7 @@ for token in ['hitStop:0', 'const HIT_STOP_CRIT = 0.045', 'const HIT_STOP_KILL =
               'if(hasDamageFx(u)) triggerHitStop(u.isBoss ? HIT_STOP_BOSS : HIT_STOP_KILL);',
               'G.hitStop = 0;', 'const visualDt = visualFrameDt(dt)',
               'visualClock += visualDt', 'updateEffects(visualDt)',
-              'updateVisuals(visualClock,visualDt)']:
+              'updateVisuals(visualClock,visualDt,dt)']:
     if token not in src:
         problems.append('Visueller Hit-Stop fehlt in index3d.html: ' + token)
 
