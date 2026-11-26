@@ -846,6 +846,7 @@ vm.runInContext(`(() => {
       powerlines:propsLayer ? propsLayer.children.filter(o => o.userData && o.userData.powerline).length : 0,
       skyline:skylineLayer.children.filter(o => o.userData && o.userData.skyline).length,
       neon:skylineLayer.children.filter(o => o.userData && o.userData.skylineGlow).length,
+      billboards:skylineLayer.children.filter(o => o.userData && o.userData.skylineBillboard).length,
       ok:!!tower && Math.min(...walls) >= 0.5 && Math.min(...houses) >= 0.65 &&
         tower.height > Math.max(...houses) && Math.max(...trenches) < Math.min(...walls)});
   }
@@ -858,13 +859,23 @@ vm.runInContext(`(() => {
     s.signs > 0 && s.highrises > 0 && s.crossings > 0 &&
     s.pylons > 0 && s.cranes > 0 && s.containers > 0 && s.powerlines > 0) &&
     new Set(citySamples.map(s => s.props)).size > 1;
-  globalThis.__skylineCounts = citySamples.map(s => s.skyline).join("/");
-  globalThis.__skylineCheck = citySamples.every(s => s.skyline >= 18 && s.neon > 0) &&
+  globalThis.__skylineCounts = citySamples.map(s => s.skyline+"+"+s.billboards).join("/");
+  globalThis.__skylineCheck = citySamples.every(s => s.skyline >= 18 && s.neon > 0 && s.billboards > 0) &&
     new Set(citySamples.map(s => s.skyline)).size > 1;
   const neon = skylineLayer.children.find(o => o.userData && o.userData.skylineGlow);
   const neonBefore = neon ? neon.material.opacity : 0;
   updateVisuals(2.5,0,0);
   globalThis.__neonCheck = !!neon && Math.abs(neon.material.opacity-neonBefore) > 0.01;
+  // Staubwolken sind reine FX: sie duerfen die Headless-Simulation nicht beruehren.
+  const dustHeadless = SIM.headless;
+  SIM.headless = false;
+  const dustBefore = G.particles.length;
+  spawnDustAt(2,2);
+  const dustObj = G.particles[G.particles.length-1] && G.particles[G.particles.length-1].obj;
+  globalThis.__dustCheck = G.particles.length === dustBefore+1 &&
+    !!dustObj && !!dustObj.userData.dust;
+  if(dustObj){ fxLayer.remove(dustObj); disposeObject(dustObj); G.particles.pop(); }
+  SIM.headless = dustHeadless;
 
   const waterSalt = (() => { let s = 0; while(s < 50 && !makeMapLayout(8,s).water) s++; return s; })();
   prepareMap(8,waterSalt);
@@ -918,6 +929,7 @@ for (const [flag, message] of [
   ['__rotorCheck', 'Hubschrauber-Rotor dreht sich nicht'],
   ['__skylineCheck', 'Hintergrund-Skyline fehlt oder variiert nicht'],
   ['__neonCheck', 'Neon-Kronen der Skyline pulsieren nicht'],
+  ['__dustCheck', 'Kaiju-Staubwolken fehlen oder greifen in die Simulation ein'],
   ['__attackModeCheck', 'Angriffsformationen (einzeln/paar/trio/Schwarm/zwei Seiten) fehlen'],
   ['__seaSpawnCheck', 'Kaiju kommen nicht aus dem Meer'],
   ['__arrivalCheck', 'Gestaffelte Ankunft der Monster greift nicht'],
@@ -1447,7 +1459,8 @@ vm.runInContext(`
     atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
   const mythKeys = ["vampire","werewolf","hydra","hotzenplotz","ruebezahl",
     "waldschrat","medusa","dschinn","kappa","sukubus","lilith","goblin","alp",
-    "blaubart","hexe","quetzalcoatl","ammit","tengu","yama","anansi","selkie"];
+    "blaubart","hexe","quetzalcoatl","ammit","tengu","yama","anansi","selkie",
+    "nessie","mothman","jerseydevil","skinwalker","reineke","rotkaeppchen"];
   const mythOK = mythKeys.every(k => openCreatureAtlas(k) &&
     atlasEl.style.backgroundImage.indexOf("creatures/"+k+"/turntable.png") >= 0);
   const folkloreKeys = ["rumpelstilzchen","heinzelmaennchen","wichtigel","gartenelfe","lichtfee"];
@@ -1781,4 +1794,4 @@ vm.runInContext(`(() => {
 if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('CC0-Texturen laden oder Fallback greift nicht');
 if (!vm.runInContext('globalThis.__cityTextureCheck', ctx)) throw new Error('2K-Fassaden/Dachziegel/Asphalt sind nicht an der Stadt angebunden');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten/${vm.runInContext('globalThis.__skylineCounts', ctx)} skyline, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+21-mythos-atlas+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+stadt-requisiten+schilder+hochhaeuser+hafen+strommasten+skyline+neon+fahrzeug-modelle+rotoren+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser)`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten/${vm.runInContext('globalThis.__skylineCounts', ctx)} skyline, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+27-mythos-atlas+folklor-atlas+sonderwesen+panzer+prozedurale-stadt+stadt-requisiten+schilder+hochhaeuser+hafen+strommasten+skyline+neon+billboards+staub+fahrzeug-modelle+rotoren+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser)`);

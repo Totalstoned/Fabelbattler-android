@@ -228,7 +228,9 @@ for token in ['const COVER_HEIGHT = {', 'let TOWN_CELL_BY_KEY = new Map();',
               'userData={container:true}', 'powerline:true',
               'const skylineLayer = new THREE.Group()', 'function skylineWindowTexture()',
               'function buildSkyline(layout)', 'userData = {skyline:true}',
-              'skylineGlow:true', 'skylineWindows.forEach(o =>']:
+              'skylineGlow:true', 'skylineWindows.forEach(o =>', 'skylineBillboard:true',
+              'function spawnDustAt(gx,gy)', 'cloud.userData = {dust:true}',
+              'gravity:0.25', '(p.gravity === undefined ? 2.4 : p.gravity)']:
     if token not in src:
         problems.append('Prozedurale Stadt/Wildnis/Requisiten/3D-Details/Hoehen-Deckung fehlt: ' + token)
 for token in ['label:"Verstärker"', 'SPECIAL:{', 'label:"Sonderwesen"',
@@ -471,6 +473,7 @@ for key in ['bigfoot', 'chupacabra', 'fee', 'godzilla', 'kingkong', 'mothra',
             'hotzenplotz', 'ruebezahl', 'waldschrat', 'medusa', 'dschinn', 'kappa',
             'sukubus', 'lilith', 'goblin', 'alp', 'blaubart', 'hexe',
             'quetzalcoatl', 'ammit', 'tengu', 'yama', 'anansi', 'selkie',
+            'nessie', 'mothman', 'jerseydevil', 'skinwalker', 'reineke', 'rotkaeppchen',
             'rumpelstilzchen', 'heinzelmaennchen', 'wichtigel', 'gartenelfe', 'lichtfee']:
     if not (path.parent / 'creatures' / key / 'turntable.png').is_file():
         problems.append('CC0-Turntable-Datei fehlt: ' + key)

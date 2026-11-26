@@ -381,3 +381,10 @@ Schritt 18: Version 1.22.0. Hinter dem Schlachtfeld steht jetzt eine dichte
            im Atlas drehbar (jetzt 51): Quetzalcoatl, Ammit, Tengu, Yama,
            Anansi und Selkie. atlas-vorschau.png ist erneuert.
 
+Schritt 19: Version 1.22.1. Die Hochhäuser tragen jetzt japanische
+           Leuchtschilder (東京, 怪獣注意, 避難所, 夜市, 商店街), die
+           flackern. Wenn ein Monster einen Menschen in einem Haus trifft,
+           steigt Staub auf. Sechs weitere Wesen sind im Atlas drehbar
+           (jetzt 57): Nessie, Mothman, Jersey Devil, Skinwalker,
+           Reineke und Rotkäppchen. atlas-vorschau.png ist erneuert.
+
