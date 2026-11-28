@@ -1866,8 +1866,27 @@ if (!html.includes('models/universal_animation.glb') ||
     !html.includes('renderAbilityLog();') ||
     !html.includes('function makeFocusArrow') ||
     !html.includes('focusArrow.visible = focused') ||
-    !html.includes('lured ? 0xf472b6 : 0xfbbf24')) {
+    !html.includes('lured ? 0xf472b6 : 0xfbbf24') ||
+    !html.includes('function loadCc0ModelLibrary') ||
+    !html.includes('function cc0ClipMap') ||
+    !html.includes('rig.clips || UNIVERSAL.clips') ||
+    !html.includes('CC0_MODEL_FILES')) {
   throw new Error('CC0-Universal-Animation ist nicht an die Einheiten angebunden');
+}
+const cc0Files = [
+  'models/adventurer.glb',
+  'models/modular/adventurer.glb', 'models/modular/astronaut.glb',
+  'models/modular/beach.glb', 'models/modular/business.glb',
+  'models/modular/casual.glb', 'models/modular/farmer.glb',
+  'models/modular/hoodie.glb', 'models/modular/king.glb',
+  'models/modular/punk.glb', 'models/modular/swat.glb',
+  'models/modular/worker.glb',
+];
+for (const file of cc0Files) {
+  if (!html.includes(file)) throw new Error('CC0-Modell fehlt im HTML: ' + file);
+  if (!fs.existsSync(path.join(path.dirname(htmlPath), file))) {
+    throw new Error('CC0-Modelldatei fehlt: ' + file);
+  }
 }
 vm.runInContext(`(() => {
   const g = createUnit('godzilla', 1, 'player');
@@ -1910,7 +1929,9 @@ vm.runInContext(`(() => {
   globalThis.__mechanicCheck = godOK && kongOK && rumpel1 && rumpel2 && rumpel3 &&
     fee1 && fee2 && fee3 && fee4;
   globalThis.__universalCheck = !!UNIVERSAL && typeof loadUniversalAnimation === 'function' &&
-    typeof makeUniversalRig === 'function' && typeof setUniversalClip === 'function';
+    typeof makeUniversalRig === 'function' && typeof setUniversalClip === 'function' &&
+    typeof loadCc0ModelLibrary === 'function' && CC0_MODEL_FILES.length === 12 &&
+    Object.keys(CC0_CLIP_ALIASES).length >= 9;
   globalThis.__statusIconCheck = !!statusIconTexture('burn', STATUS_META.burn) &&
     statusIconTexture('burn', STATUS_META.burn) === statusIconTexture('burn', STATUS_META.burn);
   globalThis.__abilityLogCheck = typeof logAbility === 'function' &&
@@ -1926,4 +1947,4 @@ if (!vm.runInContext('globalThis.__statusIconCheck', ctx)) throw new Error('Stat
 if (!vm.runInContext('globalThis.__abilityLogCheck', ctx)) throw new Error('Faehigkeits-Log fehlt');
 if (!vm.runInContext('globalThis.__focusArrowCheck', ctx)) throw new Error('Fokus-Pfeil fehlt');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten/${vm.runInContext('globalThis.__skylineCounts', ctx)} skyline, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+hellere-stadt+labels-gestaffelt+startbild-5s+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+27-mythos-atlas+folklor-atlas+video-atlas+24-neue-atlanten+sonderwesen+atomladung+koenig-kong-sturm+feen-wald+rumpel-zauber+universal-animation+ladeleiste-3s+status-icons+faehigkeits-log+fokus-pfeil+panzer+prozedurale-stadt+stadt-requisiten+japan-city-details+schilder+ampeln+automaten+hochhaeuser+hafen+strommasten+skyline+neon+billboards+staub+fahrzeug-modelle+rotoren+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser+garnison+helden-im-haus+menschen-erhoeht (${vm.runInContext('globalThis.__garrisonSlots', ctx)} Plätze))`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten/${vm.runInContext('globalThis.__skylineCounts', ctx)} skyline, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+hellere-stadt+labels-gestaffelt+startbild-5s+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+27-mythos-atlas+folklor-atlas+video-atlas+24-neue-atlanten+sonderwesen+atomladung+koenig-kong-sturm+feen-wald+rumpel-zauber+universal-animation+ladeleiste-3s+status-icons+faehigkeits-log+fokus-pfeil+cc0-modelle+panzer+prozedurale-stadt+stadt-requisiten+japan-city-details+schilder+ampeln+automaten+hochhaeuser+hafen+strommasten+skyline+neon+billboards+staub+fahrzeug-modelle+rotoren+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser+garnison+helden-im-haus+menschen-erhoeht (${vm.runInContext('globalThis.__garrisonSlots', ctx)} Plätze))`);
