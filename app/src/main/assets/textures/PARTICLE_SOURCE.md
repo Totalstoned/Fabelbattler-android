@@ -1,9 +1,6 @@
-# Particle Pack
+# Particle Pack – entfernt (1.23.8)
 
-- **Source:** [Kenney](https://kenney.nl/assets/particle-pack)
-- **License:** CC0-1.0 (public domain equivalent - free for commercial use, no attribution required)
-- **Tags:** particle, shader, vfx
-- **Genres:** effects
-- **Files:** 195
-
-Credit is not required but is appreciated by the author.
+Die Kenney-CC0-PNGs (`circle_01.png`, `flare_01.png`, `sand.png`, `water.png`)
+wurden auf User-Wunsch aus der APK entfernt. Partikel und Wasserflächen nutzen
+prozedurale Texturen bzw. einfache Farben. Das Originalarchiv bleibt unter
+`/root/projects/FABELBATTLER/UDownload`, ist aber nicht mehr Teil des Spiels.

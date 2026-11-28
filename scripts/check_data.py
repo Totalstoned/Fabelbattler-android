@@ -306,10 +306,16 @@ for token in ['image-rendering:pixelated', 'filter:sepia(']:
 for token in ['const CC0_TEXTURE_CACHE = {}', 'function cc0Texture(name,fallback,repeat)',
               'cc0Texture("stone_grass"', 'cc0Texture("stone_dirt"',
               'cc0Texture("water"', 'cc0Texture("circle_01"',
-              'cc0Texture("brick_wall"', 'cc0Texture("roof_tiles"', 'cc0Texture("asphalt"',
-              'textures/"+name+".png']:
+              'cc0Texture("brick_wall"', 'cc0Texture("roof_tiles"', 'cc0Texture("asphalt"']:
     if token not in src:
-        problems.append('CC0-Texturen in der Szene fehlen: ' + token)
+        problems.append('Prozedurale Textur-Verdrahtung fehlt: ' + token)
+for token in ['textures/"+name+".png', 'new THREE.TextureLoader']:
+    if token in src:
+        problems.append('CC0-PNG-Ladung sollte entfernt sein: ' + token)
+for rel in ['stone_grass.png', 'stone_dirt.png', 'brick_wall.png', 'roof_tiles.png',
+            'asphalt.png', 'circle_01.png', 'flare_01.png', 'sand.png', 'water.png']:
+    if (path.parent / 'textures' / rel).is_file():
+        problems.append('CC0-Texturdatei sollte entfernt sein: textures/' + rel)
 for token in ['battleGold', 'battleGoldValue', 'function updateBattleGold']:
     if token not in src:
         problems.append('Gold-Anzeige in der Kampfleiste fehlt: ' + token)
@@ -566,15 +572,24 @@ for token in ['hitStop:0', 'const HIT_STOP_CRIT = 0.045', 'const HIT_STOP_KILL =
     if token not in src:
         problems.append('Visueller Hit-Stop fehlt in index3d.html: ' + token)
 
-# Mechanik-Pivot und CC0-Universal-Animation: Dateien und Verdrahtung.
+# Mechanik-Pivot bleibt; die CC0-Modelle/Texturen sind auf User-Wunsch entfernt.
 assets = path.parent
 for rel in ['vendor/GLTFLoader.js', 'vendor/SkeletonUtils.js',
-            'models/universal_animation.glb', 'models/CC0_SOURCE.md']:
-    f = assets / rel
-    if not f.is_file() or f.stat().st_size < 500:
-        problems.append('CC0-Universal-Animation fehlt: ' + rel)
-for token in ['function loadUniversalAnimation', 'function makeUniversalRig',
-              'function setUniversalClip', 'd.rig.mixer.update(dt)',
+            'models/universal_animation.glb', 'models/adventurer.glb']:
+    if (assets / rel).is_file():
+        problems.append('CC0-Modelldatei sollte entfernt sein: ' + rel)
+for rel in ['adventurer.glb', 'astronaut.glb', 'beach.glb', 'business.glb',
+            'casual.glb', 'farmer.glb', 'hoodie.glb', 'king.glb',
+            'punk.glb', 'swat.glb', 'worker.glb']:
+    if (assets / 'models' / 'modular' / rel).is_file():
+        problems.append('CC0-Modularmodell sollte entfernt sein: models/modular/' + rel)
+for token in ['models/universal_animation.glb', 'vendor/GLTFLoader.js',
+              'vendor/SkeletonUtils.js', 'loadCc0ModelLibrary()',
+              'CC0_MODEL_FILES', 'function cc0ClipMap']:
+    if token in src:
+        problems.append('CC0-Modell-Rest sollte entfernt sein: ' + token)
+for token in ['function makeUniversalRig(){ return null; }',
+              'function setUniversalClip(){ return; }', 'd.rig.mixer.update(dt)',
               'function castMechanic', 'function tickMechanics',
               'function speedSurge', 'function makeChargeBar', 'chargeBar.visible',
               'function mechanicEvolution', 'function statusIconTexture',

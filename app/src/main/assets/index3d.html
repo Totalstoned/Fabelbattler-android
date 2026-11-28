@@ -350,8 +350,6 @@
   <button class="btn ghost" id="btnReportClose" title="Auswertung schließen">×</button>
 </div>
 <script src="./vendor/three.min.js"></script>
-<script src="./vendor/GLTFLoader.js"></script>
-<script src="./vendor/SkeletonUtils.js"></script>
 <script>
 "use strict";
 const OUTLINE_COLOR = 0x151018;
@@ -1179,149 +1177,11 @@ scene.add(mobLayer);
 scene.add(fxLayer);
 scene.add(synergyLayer);
 
-// CC0 "Universal Animation Library" (Quaternius): ein skelettbasierter
-// Mensch mit 43 Clip-Animationen. Wird lokal geladen und pro Einheit
-// unabhaengig instanziiert; bei Pause laeuft der Mixer mit dt = 0 nicht weiter.
-const UNIVERSAL = {ready:false,loading:false,gltf:null,clips:{}};
-// Weitere CC0-Modelle von Quaternius: Adventurer + Ultimate Modular Men Pack.
-// Sie werden lokal geladen und auf dieselben generischen Kampf-Clips abgebildet;
-// die Spielmechanik bleibt dadurch unverändert.
-const CC0_MODELS = {entries:[],loading:false,loaded:false};
-const CC0_MODEL_FILES = [
-  ["models/adventurer.glb","Adventurer"],
-  ["models/modular/adventurer.glb","Modular Adventurer"],
-  ["models/modular/astronaut.glb","Astronaut"],
-  ["models/modular/beach.glb","Beach"],
-  ["models/modular/business.glb","Business"],
-  ["models/modular/casual.glb","Casual"],
-  ["models/modular/farmer.glb","Farmer"],
-  ["models/modular/hoodie.glb","Hoodie"],
-  ["models/modular/king.glb","King"],
-  ["models/modular/punk.glb","Punk"],
-  ["models/modular/swat.glb","SWAT"],
-  ["models/modular/worker.glb","Worker"]
-];
-const CC0_CLIP_ALIASES = {
-  Idle_Loop:["CharacterArmature|Idle","CharacterArmature|Idle_Neutral"],
-  Walk_Loop:["CharacterArmature|Walk","CharacterArmature|Run"],
-  Sprint_Loop:["CharacterArmature|Run"],
-  Punch_Jab:["CharacterArmature|Punch_Left"],
-  Punch_Cross:["CharacterArmature|Punch_Right"],
-  Hit_Chest:["CharacterArmature|HitRecieve"],
-  Dance_Loop:["CharacterArmature|Wave","CharacterArmature|Sword_Slash"],
-  Crouch_Idle_Loop:["CharacterArmature|Idle_Neutral"],
-  Death01:["CharacterArmature|Death"]
-};
-function cc0ClipMap(gltf){
-  const byName = {};
-  (gltf.animations||[]).forEach(clip => { byName[clip.name] = clip; });
-  const map = {};
-  Object.keys(CC0_CLIP_ALIASES).forEach(generic => {
-    const clip = CC0_CLIP_ALIASES[generic].map(name => byName[name]).find(Boolean);
-    if(clip) map[generic] = clip;
-  });
-  return map;
-}
-function cc0Hash(text){
-  let h = 2166136261;
-  for(let i=0;i<text.length;i++){
-    h ^= text.charCodeAt(i);
-    h = Math.imul(h,16777619);
-  }
-  return h >>> 0;
-}
-function cc0RigPool(){
-  const pool = [];
-  if(UNIVERSAL.ready && UNIVERSAL.gltf) pool.push({scene:UNIVERSAL.gltf,clips:UNIVERSAL.clips,scale:0.66,label:"Universal"});
-  CC0_MODELS.entries.forEach(entry => {
-    if(entry.scene && entry.clips && Object.keys(entry.clips).length) pool.push(entry);
-  });
-  return pool;
-}
-function cc0EntryForUnit(u){
-  const pool = cc0RigPool();
-  if(!pool.length) return null;
-  return pool[cc0Hash((u.key||"held")+"#"+(u.id||0))%pool.length];
-}
-function loadCc0ModelLibrary(){
-  if(SIM.headless || CC0_MODELS.loading || CC0_MODELS.loaded || !THREE.GLTFLoader) return;
-  CC0_MODELS.loading = true;
-  let i = 0;
-  const next = () => {
-    if(i >= CC0_MODEL_FILES.length){
-      CC0_MODELS.loaded = true;
-      CC0_MODELS.loading = false;
-      syncUnits();
-      showToast("🧍 "+CC0_MODELS.entries.length+" CC0-Modelle geladen");
-      return;
-    }
-    const entry = CC0_MODEL_FILES[i++];
-    new THREE.GLTFLoader().load(entry[0],gltf => {
-      const clips = cc0ClipMap(gltf);
-      if(Object.keys(clips).length) CC0_MODELS.entries.push({scene:gltf.scene,clips:clips,label:entry[1]});
-      next();
-    },undefined,err => {
-      console.warn("CC0-Modell nicht geladen:",entry[0],err);
-      next();
-    });
-  };
-  next();
-}
-function setUniversalClip(rig,name){
-  if(!rig) return;
-  const clips = rig.clips || UNIVERSAL.clips;
-  if(rig.clip === name || !clips[name]) return;
-  if(rig.action) rig.action.fadeOut(0.22);
-  const once = name === "Death01";
-  const action = rig.mixer.clipAction(clips[name]);
-  action.reset().setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat,once ? 1 : Infinity);
-  action.clampWhenFinished = once;
-  action.fadeIn(0.22).play();
-  rig.action = action;
-  rig.clip = name;
-}
-function makeUniversalRig(group,u){
-  const entry = cc0EntryForUnit(u);
-  if(!entry || !THREE.SkeletonUtils) return null;
-  try{
-    const model = THREE.SkeletonUtils.clone(entry.scene);
-    if(entry.scale){
-      model.scale.setScalar(entry.scale);
-    } else {
-      const box = new THREE.Box3().setFromObject(model);
-      const size = new THREE.Vector3();
-      box.getSize(size);
-      model.scale.setScalar(size.y > 0 ? 1.42/size.y : 1);
-    }
-    model.rotation.y = u.side === "enemy" ? -Math.PI/2 : Math.PI/2;
-    group.add(model);
-    const rig = {model:model,clips:entry.clips,mixer:new THREE.AnimationMixer(model),action:null,clip:"",label:entry.label};
-    setUniversalClip(rig,"Idle_Loop");
-    return rig;
-  }catch(err){
-    console.warn("CC0-Rig fehlgeschlagen:",err);
-    return null;
-  }
-}
-function loadUniversalAnimation(){
-  if(SIM.headless || UNIVERSAL.ready || UNIVERSAL.loading || !THREE.GLTFLoader) return;
-  UNIVERSAL.loading = true;
-  try{
-    new THREE.GLTFLoader().load("models/universal_animation.glb",gltf => {
-      UNIVERSAL.gltf = gltf.scene;
-      gltf.animations.forEach(clip => { UNIVERSAL.clips[clip.name] = clip; });
-      UNIVERSAL.ready = true;
-      syncUnits();
-      showToast("🎬 Universal-Animation geladen ("+gltf.animations.length+" Clips)");
-    },undefined,err => {
-      UNIVERSAL.loading = false;
-      console.warn("Universal-Animation nicht geladen:",err);
-    });
-  }catch(err){
-    UNIVERSAL.loading = false;
-    console.warn("Universal-Animation nicht geladen:",err);
-  }
-}
+// CC0-3D-Modelle und -Texturen wurden auf User-Wunsch aus der APK entfernt.
+// Die prozeduralen Wesen bleiben; diese Stubs halten die alten Aufrufstellen
+// stabil, laden aber keine GLB-Dateien mehr.
+function makeUniversalRig(){ return null; }
+function setUniversalClip(){ return; }
 // Hintergrund-Skyline jenseits des Schlachtfelds: reine Kulisse, keine
 // Kollision und kein Einfluss auf Deckung, Reichweite oder Wege.
 const skylineLayer = new THREE.Group();
@@ -2478,22 +2338,17 @@ function makePortraitSprite(key){
   return sprite;
 }
 
-// CC0-Texturen aus dem lokalen Assetordner (Kenney Voxel Pack / Particle Pack).
-// Die Dateien liegen im APK; falls das WebView sie nicht laedt, greift der
-// prozedurale Fallback. Keine externe URL, kein Engine-Wechsel.
+// Die CC0-PNGs wurden auf User-Wunsch aus der APK entfernt. Es bleiben nur
+// die prozeduralen Fallbacks; der Cache verhindert mehrfache Canvas-Erzeugung.
 const CC0_TEXTURE_CACHE = {};
 function cc0Texture(name,fallback,repeat){
   const key = name+"_"+(repeat||1);
   if(CC0_TEXTURE_CACHE[key]) return CC0_TEXTURE_CACHE[key];
-  let tex = null;
-  try{
-    tex = new THREE.TextureLoader().load("textures/"+name+".png");
-    tex.colorSpace = THREE.SRGBColorSpace;
+  const tex = fallback ? fallback() : null;
+  if(tex && repeat && tex.repeat && typeof tex.repeat.set === "function"){
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(repeat||1,repeat||1);
+    tex.repeat.set(repeat,repeat);
     tex.anisotropy = 4;
-  }catch(e){
-    tex = fallback ? fallback() : null;
   }
   CC0_TEXTURE_CACHE[key] = tex;
   return tex;
@@ -5774,8 +5629,6 @@ buildArena();
 prepareMap(1,0);
 resize();
 syncUnits();
-loadUniversalAnimation();
-loadCc0ModelLibrary();
 window.addEventListener("load", () => {
   resize();
   updateHud();

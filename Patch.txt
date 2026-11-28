@@ -459,3 +459,8 @@ Schritt 34: Version 1.23.6. Ein aufgeladener Atomstrahl schwächt Bosse und
 Schritt 35: Version 1.23.7. Die Teamgröße wählst du direkt im Menü (3 bis 6
            gegen 3 bis 6); die Auswahl bleibt beim Start erhalten. Nasse
            Straßen spiegeln das Laternenlicht. Der Boss-Brecher bleibt wie er ist.
+
+Schritt 36: Version 1.23.8. Die APK ist deutlich kleiner: alle CC0-3D-Modelle
+           und -Texturen sind entfernt. Die Wesen werden wieder prozedural
+           gezeichnet, Boden und Stadt nutzen prozedurale Farben/Texturen.
+           Mechanik, HUD und Menü bleiben unverändert.

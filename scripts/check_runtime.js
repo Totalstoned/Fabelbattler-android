@@ -1838,26 +1838,16 @@ for (const [flag, message] of [
 }
 
 vm.runInContext(`(() => {
-  const grass = cc0Texture("stone_grass",()=>null,48);
-  const cached = cc0Texture("stone_grass",()=>null,48) === grass;
-  const brick = cc0Texture("brick_wall",()=>null,2);
-  const roof = cc0Texture("roof_tiles",()=>null,1);
-  const asphalt = cc0Texture("asphalt",()=>null,3);
-  const cityMaps = !!brick && !!roof && !!asphalt &&
-    townLayer.children.some(o => o.material && o.material.map === brick) &&
-    townLayer.children.some(o => o.material && o.material.map === roof) &&
-    townLayer.children.some(o => o.material && o.material.map === asphalt);
-  globalThis.__cityTextureCheck = cityMaps;
-  const particle = cc0Texture("circle_01",()=>null);
-  const originalLoader = THREE.TextureLoader;
-  THREE.TextureLoader = function(){ throw new Error("missing"); };
-  const fallbackTex = {};
-  const fallback = cc0Texture("__missing__",()=>fallbackTex);
-  THREE.TextureLoader = originalLoader;
-  globalThis.__cc0TextureCheck = !!grass && cached && !!particle && fallback === fallbackTex;
+  const proc = () => ({procedural:true});
+  const texA = cc0Texture("__test_grass__",proc,48);
+  const cached = cc0Texture("__test_grass__",proc,48) === texA;
+  const particle = cc0Texture("__test_particle__",proc);
+  globalThis.__cc0TextureCheck = !!texA.procedural && cached && !!particle.procedural;
 })();`, ctx);
-if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('CC0-Texturen laden oder Fallback greift nicht');
-if (!vm.runInContext('globalThis.__cityTextureCheck', ctx)) throw new Error('2K-Fassaden/Dachziegel/Asphalt sind nicht an der Stadt angebunden');
+if (!vm.runInContext('globalThis.__cc0TextureCheck', ctx)) throw new Error('Prozedurale Texturen oder Cache greifen nicht');
+if (html.includes('new THREE.TextureLoader') || html.includes('textures/"+name+".png')) {
+  throw new Error('CC0-PNGs werden noch geladen');
+}
 vm.runInContext(`(() => {
   const amb = scene.children.find(o => o.isAmbientLight);
   const hemi = scene.children.find(o => o.isHemisphereLight);
@@ -1876,11 +1866,18 @@ if (fs.existsSync(path.join(path.dirname(htmlPath), 'splash', 'start.png'))) {
 }
 
 // Mechanik-Pivot: echte Effekte der vier neuen Faehigkeitsfamilien im Kopf
-// simulieren (kein DOM, keine Zufallstreffer) und den lokalen CC0-Rig pruefen.
-if (!html.includes('models/universal_animation.glb') ||
-    !html.includes('vendor/GLTFLoader.js') ||
-    !html.includes('vendor/SkeletonUtils.js') ||
-    !html.includes('THREE.SkeletonUtils.clone') ||
+// simulieren. Die CC0-Modelle sind auf User-Wunsch aus der APK entfernt.
+if (html.includes('models/universal_animation.glb') ||
+    html.includes('vendor/GLTFLoader.js') ||
+    html.includes('vendor/SkeletonUtils.js') ||
+    html.includes('THREE.SkeletonUtils.clone') ||
+    html.includes('loadCc0ModelLibrary()') ||
+    html.includes('function cc0ClipMap') ||
+    html.includes('CC0_MODEL_FILES')) {
+  throw new Error('CC0-Modelle sind noch in der Runtime angebunden');
+}
+if (!html.includes('function makeUniversalRig(){ return null; }') ||
+    !html.includes('function setUniversalClip(){ return; }') ||
     !html.includes('d.rig.mixer.update(dt)') ||
     !html.includes('function makeChargeBar') ||
     !html.includes('chargeBar.visible = ratio > 0.01') ||
@@ -1892,16 +1889,12 @@ if (!html.includes('models/universal_animation.glb') ||
     !html.includes('function makeFocusArrow') ||
     !html.includes('focusArrow.visible = focused') ||
     !html.includes('lured ? 0xf472b6 : 0xfbbf24') ||
-    !html.includes('function loadCc0ModelLibrary') ||
-    !html.includes('function cc0ClipMap') ||
-    !html.includes('rig.clips || UNIVERSAL.clips') ||
-    !html.includes('CC0_MODEL_FILES') ||
     !html.includes('Boss-Brecher ▼25 %') ||
     !html.includes('lampGlowMat') ||
     !html.includes('puddleGlowMat') ||
     !html.includes('{puddle:true}') ||
     !html.includes('id="menuSettings" title="Einstellungen"')) {
-  throw new Error('CC0-Universal-Animation ist nicht an die Einheiten angebunden');
+  throw new Error('Mechanik/UI-Verdrahtung fehlt');
 }
 if (html.includes('menu-sub') || !html.includes('menu-actions .icon-btn') ||
     !html.includes('id="menuTeamSize"') || !html.includes('function setMenuTeamSize') ||
@@ -1909,18 +1902,23 @@ if (html.includes('menu-sub') || !html.includes('menu-actions .icon-btn') ||
   throw new Error('Menue ist nicht vereinfacht oder Teamgroesse ist nicht direkt im Menue');
 }
 const cc0Files = [
-  'models/adventurer.glb',
+  'models/universal_animation.glb', 'models/adventurer.glb',
   'models/modular/adventurer.glb', 'models/modular/astronaut.glb',
   'models/modular/beach.glb', 'models/modular/business.glb',
   'models/modular/casual.glb', 'models/modular/farmer.glb',
   'models/modular/hoodie.glb', 'models/modular/king.glb',
   'models/modular/punk.glb', 'models/modular/swat.glb',
   'models/modular/worker.glb',
+  'textures/stone_grass.png', 'textures/stone_dirt.png',
+  'textures/brick_wall.png', 'textures/roof_tiles.png',
+  'textures/asphalt.png', 'textures/circle_01.png',
+  'textures/flare_01.png', 'textures/sand.png', 'textures/water.png',
+  'vendor/GLTFLoader.js', 'vendor/SkeletonUtils.js',
 ];
 for (const file of cc0Files) {
-  if (!html.includes(file)) throw new Error('CC0-Modell fehlt im HTML: ' + file);
-  if (!fs.existsSync(path.join(path.dirname(htmlPath), file))) {
-    throw new Error('CC0-Modelldatei fehlt: ' + file);
+  if (html.includes(file)) throw new Error('CC0-Rest noch im HTML: ' + file);
+  if (fs.existsSync(path.join(path.dirname(htmlPath), file))) {
+    throw new Error('CC0-Datei noch im Assetordner: ' + file);
   }
 }
 vm.runInContext(`(() => {
@@ -1972,10 +1970,8 @@ vm.runInContext(`(() => {
   G.battle = oldBattle; G.phase = oldPhase;
   globalThis.__mechanicCheck = godOK && bossOK && kongOK && rumpel1 && rumpel2 && rumpel3 &&
     fee1 && fee2 && fee3 && fee4;
-  globalThis.__universalCheck = !!UNIVERSAL && typeof loadUniversalAnimation === 'function' &&
-    typeof makeUniversalRig === 'function' && typeof setUniversalClip === 'function' &&
-    typeof loadCc0ModelLibrary === 'function' && CC0_MODEL_FILES.length === 12 &&
-    Object.keys(CC0_CLIP_ALIASES).length >= 9;
+  globalThis.__universalCheck = typeof makeUniversalRig === 'function' &&
+    makeUniversalRig() === null && typeof setUniversalClip === 'function';
   globalThis.__statusIconCheck = !!statusIconTexture('burn', STATUS_META.burn) &&
     statusIconTexture('burn', STATUS_META.burn) === statusIconTexture('burn', STATUS_META.burn);
   globalThis.__abilityLogCheck = typeof logAbility === 'function' &&
@@ -1986,9 +1982,9 @@ vm.runInContext(`(() => {
     typeof updateVisuals === 'function';
 })();`, ctx);
 if (!vm.runInContext('globalThis.__mechanicCheck', ctx)) throw new Error('Neue Faehigkeiten wirken nicht (Atomladung/Sturm/Rumpel/Feen)');
-if (!vm.runInContext('globalThis.__universalCheck', ctx)) throw new Error('Universal-Animation ist nicht verdrahtet');
+if (!vm.runInContext('globalThis.__universalCheck', ctx)) throw new Error('CC0-Rig-Stubs fehlen oder laden doch Modelle');
 if (!vm.runInContext('globalThis.__statusIconCheck', ctx)) throw new Error('Status-Icon-Texturen fehlen oder werden nicht geteilt');
 if (!vm.runInContext('globalThis.__abilityLogCheck', ctx)) throw new Error('Faehigkeits-Log fehlt');
 if (!vm.runInContext('globalThis.__focusArrowCheck', ctx)) throw new Error('Fokus-Pfeil fehlt');
 
-console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten/${vm.runInContext('globalThis.__skylineCounts', ctx)} skyline, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+hellere-stadt+labels-gestaffelt+startbild-entfernt+schadenszahlen+cc0-2k-texturen+cc0-stadttexturen+cc0-atlas+21-kaiju+27-mythos-atlas+folklor-atlas+video-atlas+24-neue-atlanten+sonderwesen+atomladung+koenig-kong-sturm+feen-wald+rumpel-zauber+universal-animation+ladeleiste-3s+status-icons+faehigkeits-log+fokus-pfeil+cc0-modelle+boss-brecher+menue-einfacher+lampenlicht+teamgroesse-direkt+pfuetzen+panzer+prozedurale-stadt+stadt-requisiten+japan-city-details+schilder+ampeln+automaten+hochhaeuser+hafen+strommasten+skyline+neon+billboards+staub+fahrzeug-modelle+rotoren+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser+garnison+helden-im-haus+menschen-erhoeht (${vm.runInContext('globalThis.__garrisonSlots', ctx)} Plätze))`);
+console.log(`Runtime OK: ${path.relative(root, htmlPath)} (menu, sim ${simTicks} ticks/${simOutcomes.wins}W-${simOutcomes.losses}L, core trio, mobs 500/500, elite/boss+bossbar+ownBossBar, kampfstatus+mobs+elitenZaehler+besiegteGegner+heldenwarnung+teamHp+enemyHp+kein-mana+automatischer-kampf+gold+gold-gewinn+fokusHp+fokusName+fokusStatus+fokusCd+fokusAtk+fokusMeta+zielstatus+zielring+focus-quiet+status-formen, mob-treffer-impuls, draft3+reroll+filter+draft-luecken-markierung, items, krypto, stacks, bossbar-crit, sieg-toast, heal-btn, niederlage-toast, revive, timer ${timerText}, begegnung ${vm.runInContext('globalThis.__minMeetDist', ctx).toFixed(2)}, steinboden ${vm.runInContext('globalThis.__stoneTiles', ctx)}, vollbild ${vm.runInContext('globalThis.__fullGround', ctx)}, kamera-pan+modus, grosse-karte, startauswahl+reroll2/3/4+teamwachstum+portraits, ziel-cd, bigfoot-atlas, nachkampf-auswertung, hit-stop, wellen-vorschau, boss-relikte, menschen ${vm.runInContext('globalThis.__humanField40H', ctx)}:${vm.runInContext('globalThis.__humanField40M', ctx)} monster (Welle 40), ${vm.runInContext('globalThis.__signatureCount', ctx)} verschiedene faehigkeiten, ${vm.runInContext('globalThis.__habitatCount', ctx)} habitate, zufallskarte+stadt ${vm.runInContext('globalThis.__townStructures', ctx)} teile/${vm.runInContext('globalThis.__coverCells', ctx)} deckung, städte ${vm.runInContext('globalThis.__cityCounts', ctx)} deckungsfelder/${vm.runInContext('globalThis.__propsCount', ctx)} requisiten/${vm.runInContext('globalThis.__skylineCounts', ctx)} skyline, ${vm.runInContext('globalThis.__attackModes', ctx)} angriffsformationen, kampfansicht+echte-pause+pause-kamera+pause-tap+hellere-stadt+labels-gestaffelt+startbild-entfernt+schadenszahlen+cc0-entfernt+prozedurale-texturen+cc0-atlas+21-kaiju+27-mythos-atlas+folklor-atlas+video-atlas+24-neue-atlanten+sonderwesen+atomladung+koenig-kong-sturm+feen-wald+rumpel-zauber+ladeleiste-3s+status-icons+faehigkeits-log+fokus-pfeil+boss-brecher+menue-einfacher+lampenlicht+teamgroesse-direkt+pfuetzen+panzer+prozedurale-stadt+stadt-requisiten+japan-city-details+schilder+ampeln+automaten+hochhaeuser+hafen+strommasten+skyline+neon+billboards+staub+fahrzeug-modelle+rotoren+3d-krallen+wildnis+hoehen-reichweite+begehbare-haeuser+garnison+helden-im-haus+menschen-erhoeht (${vm.runInContext('globalThis.__garrisonSlots', ctx)} Plätze))`);
