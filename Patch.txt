@@ -455,3 +455,7 @@ Schritt 33: Version 1.23.5. Das Startbild ist entfernt. Die App öffnet
 Schritt 34: Version 1.23.6. Ein aufgeladener Atomstrahl schwächt Bosse und
            Eliten jetzt vier Sekunden lang um 25 %. Das Menü ist schlanker,
            und die Straßenlaternen werfen warme Lichtkegel auf den Boden.
+
+Schritt 35: Version 1.23.7. Die Teamgröße wählst du direkt im Menü (3 bis 6
+           gegen 3 bis 6); die Auswahl bleibt beim Start erhalten. Nasse
+           Straßen spiegeln das Laternenlicht. Der Boss-Brecher bleibt wie er ist.

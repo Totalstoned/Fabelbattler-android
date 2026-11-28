@@ -101,6 +101,8 @@
   .menu-actions{display:flex;flex-direction:column;gap:8px;align-items:center;}
   .menu-actions .icon-row{display:flex;justify-content:center;gap:8px;}
   .menu-actions .icon-btn{min-width:40px;padding:5px 10px;}
+  .menu-team{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim);}
+  .menu-team select{max-width:120px;}
   .battle-bar{display:none;position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:40;
        gap:4px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:94vw;
        background:rgba(17,22,30,.42);border:1px solid rgba(139,151,168,.35);border-radius:12px;padding:5px 7px;
@@ -262,6 +264,14 @@
     <div class="menu-title">FABELBATTLER</div>
     <div class="menu-actions">
       <button class="btn" id="menuStart">Start</button>
+      <label class="menu-team" title="Teamgröße für beide Seiten">Team
+        <select class="filter-select" id="menuTeamSize">
+          <option value="3">3 gegen 3</option>
+          <option value="4">4 gegen 4</option>
+          <option value="5">5 gegen 5</option>
+          <option value="6">6 gegen 6</option>
+        </select>
+      </label>
       <div class="icon-row">
         <button class="btn ghost icon-btn" id="menuSettings" title="Einstellungen">⚙</button>
         <button class="btn ghost icon-btn" id="menuCredits" title="Credits">?</button>
@@ -1521,11 +1531,6 @@ function openInfo(title,text,extraHtml){
   const atlasBtn = document.getElementById("btnAtlasFromInfo");
   if(atlasBtn && atlasInfoKey) atlasBtn.onclick = () => openCreatureAtlas(atlasInfoKey);
   atlasInfoKey = null;
-  const sel = document.getElementById("setTeamSize");
-  if(sel){
-    sel.value = String(G.teamSize);
-    sel.onchange = () => { G.teamSize = Number(sel.value); showToast("Teamgröße: "+G.teamSize+" gegen "+G.teamSize); };
-  }
   document.getElementById("infoOverlay").classList.add("show");
 }
 function closeInfo(){ document.getElementById("infoOverlay").classList.remove("show"); }
@@ -1648,11 +1653,18 @@ atlasFrameEl.addEventListener("pointermove",e=>{
 });
 atlasFrameEl.addEventListener("pointerup",()=>{ atlasDragX = null; });
 atlasFrameEl.addEventListener("pointercancel",()=>{ atlasDragX = null; });
+function setMenuTeamSize(value){
+  G.teamSize = clamp(Number(value),START_TEAM_MIN,TEAM_GROWTH_CAP);
+  const sel = document.getElementById("menuTeamSize");
+  if(sel) sel.value = String(G.teamSize);
+  showToast("Teamgröße: "+G.teamSize+" gegen "+G.teamSize);
+}
 function beginRun(){
   document.getElementById("menuOverlay").classList.remove("show");
   closeInfo();
   G.team = [];
-  G.teamSize = START_TEAM_MIN;
+  // Die Direct-Menü-Auswahl gilt: nicht mehr auf den alten Default zurücksetzen.
+  G.teamSize = clamp(G.teamSize,START_TEAM_MIN,TEAM_GROWTH_CAP);
   G.wave = 1;
   prepareMap(G.wave);
   G.gold = 20;
@@ -1669,7 +1681,7 @@ function beginRun(){
   updateSynergies();
   updateButtons();
   openDraft();
-  showToast("Wähle "+START_TEAM_MIN+" Wesen – danach kommt pro Runde 1 dazu");
+  showToast("Wähle "+G.teamSize+" Wesen – danach kommt pro Runde 1 dazu");
   updateTeamList();
   updateSynergies();
   updateButtons();
@@ -1989,6 +2001,8 @@ function buildCityProps(layout){
   const paintMat = new THREE.MeshStandardMaterial({color:0xd9d9c8,roughness:1});
   const lampGlowMat = new THREE.MeshBasicMaterial({color:0xffd98a,transparent:true,opacity:0.11,
     depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
+  const puddleGlowMat = new THREE.MeshBasicMaterial({color:0x9ad9ef,transparent:true,opacity:0.1,
+    depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
   const signalMat = new THREE.MeshStandardMaterial({color:0x30363c,roughness:0.6,metalness:0.4});
   const redLight = new THREE.MeshStandardMaterial({color:0xff5a4d,emissive:0xff2318,emissiveIntensity:0.7});
   const amberLight = new THREE.MeshStandardMaterial({color:0xffc85c,emissive:0xff9d21,emissiveIntensity:0.55});
@@ -2025,6 +2039,13 @@ function buildCityProps(layout){
     glow.position.set(p.x,0.52,p.z);
     glow.userData = {lampGlow:true};
     propsLayer.add(glow);
+    // Nasse Straßen spiegeln das Laternenlicht. Reine Kulisse: kein Hindernis,
+    // kein Deckungsfeld, keine Veränderung von Weg oder Reichweite.
+    const puddle = new THREE.Mesh(new THREE.CircleGeometry(0.34,12),puddleGlowMat);
+    puddle.rotation.x = -Math.PI/2;
+    puddle.position.set(p.x+0.12,0.016,p.z+0.16);
+    puddle.userData = {puddle:true};
+    propsLayer.add(puddle);
   });
   // Japanische Laden-/Warnschilder und Zebrastreifen vor den Häusern.
   const signs = ["東京","怪獣","避難","商店","夜市"];
@@ -5767,10 +5788,13 @@ window.addEventListener("load", () => {
   document.getElementById("btnDraft").onclick = openDraft;
   document.getElementById("btnReset").onclick = () => location.reload();
   document.getElementById("menuStart").onclick = beginRun;
+  const menuSizeSel = document.getElementById("menuTeamSize");
+  menuSizeSel.value = String(G.teamSize);
+  menuSizeSel.onchange = () => setMenuTeamSize(menuSizeSel.value);
   document.getElementById("menuSettings").onclick = () => openInfo(
     "Einstellungen",
-    "Teamgröße für beide Seiten festlegen. Das Gegnerteam erhält immer dieselbe Anzahl. Du wählst dein Team selbst; pro gewonnener Runde kommt 1 Wesen dazu (bis 10). Reroll kostet 2, dann 3, dann 4 Gold.",
-    '<label class="tiny">Teamgröße: <select id="setTeamSize"><option value="3">3 gegen 3</option><option value="4">4 gegen 4</option><option value="5">5 gegen 5</option><option value="6">6 gegen 6</option></select></label>'
+    "Teamgröße für beide Seiten direkt im Menü festlegen. Das Gegnerteam erhält immer dieselbe Anzahl. Du wählst dein Team selbst; pro gewonnener Runde kommt 1 Wesen dazu (bis 10). Reroll kostet 2, dann 3, dann 4 Gold.",
+    ""
   );
   document.getElementById("menuCredits").onclick = () => openInfo(
     "Credits",

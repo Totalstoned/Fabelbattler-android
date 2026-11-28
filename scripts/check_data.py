@@ -514,6 +514,16 @@ for token in ['Boss-Brecher ▼25 %', 'lampGlowMat', '{lampGlow:true}',
     if token not in src:
         problems.append('Boss-Brecher/Menue/Lampenlicht fehlt: ' + token)
 
+# Block 8: Teamgroesse direkt im Menue, nasse Straßen als Kulisse.
+for token in ['id="menuTeamSize"', 'function setMenuTeamSize',
+              'menuSizeSel.onchange = () => setMenuTeamSize(menuSizeSel.value)',
+              'puddleGlowMat', '{puddle:true}',
+              'G.teamSize = clamp(G.teamSize,START_TEAM_MIN,TEAM_GROWTH_CAP)']:
+    if token not in src:
+        problems.append('Direkte Teamgroesse/Pfuetzen fehlen: ' + token)
+if 'id="setTeamSize"' in src:
+    problems.append('Teamgroesse sollte nicht mehr im Info-Dialog liegen')
+
 # Nachkampf-Auswertung: Zaehlung und Panel muessen im WebView-Build zusammen liegen.
 for token in ['id="battleReport"', 'id="battleReportTitle"', 'id="battleReportDamage"',
               'id="battleReportHeal"', 'id="battleReportTop"', 'id="btnReportClose"',

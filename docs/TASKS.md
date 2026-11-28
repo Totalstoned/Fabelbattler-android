@@ -2,7 +2,7 @@
 
 Frühere Grafik-Ziele sind zurückgestellt. Neue Reihenfolge: Fähigkeiten, dann UI-Rückmeldung, dann optional Grafik.
 
-## Erledigt in 1.22.9 / 1.23.0 / 1.23.1 / 1.23.2 / 1.23.3 / 1.23.4 / 1.23.5 / 1.23.6
+## Erledigt in 1.22.9 / 1.23.0 / 1.23.1 / 1.23.2 / 1.23.3 / 1.23.4 / 1.23.5 / 1.23.6 / 1.23.7
 - [x] **82. Orientierung neu schreiben**: `/root/projects/FABELBATTLER/AGENTS.md`, `FRAGEN.md` und diese `TASKS.md` auf Mechanik zuerst umgestellt; Fragekatalog für 10-Minuten-Intervalle.
 - [x] **83. Godzilla-Atomstrahl**: `SPELLS.atomstrahl/multi_atom/schmelzstrahl` sind `charge=true`; `tickMechanics()` lädt, `castMechanic()` nutzt `sp.range + 2*charge` und `dmg*(1+0.6*charge)` plus Burn/Splash. Ladegrenze steigt mit Level/Boss/Elite (1–3 s). Check-Token `atomladung`.
 - [x] **84. King-Kong-Sturm**: `+50 %` Tempo für 4 s (`speedSurge`), Sturm auf das Ziel mit höchstem ATK, Spott 3 s und Kurz-Betäubung. Check-Token `koenig-kong-sturm`.
@@ -20,7 +20,8 @@ Frühere Grafik-Ziele sind zurückgestellt. Neue Reihenfolge: Fähigkeiten, dann
 - [x] **94. Feedback-Block 5 / CC0-Modelle**: Mechanik und UI bleiben; Design-Option 4 umgesetzt. `adventurer.glb` und elf GLBs aus `Ultimate Modular Men Pack` liegen unter `models/` bzw. `models/modular/`; `loadCc0ModelLibrary()` laedt sie lokal, `cc0ClipMap()` bildet ihre 24 Clips auf die generischen Kampf-Clips ab. Token `cc0-modelle`.
 - [x] **95. Direktanweisung: Startbild entfernt**: User-Wunsch „entferne das startbild“ umgesetzt. Overlay, CSS, 5-s-Timer und `splash/start.png` sind raus; Checks pruefen jetzt aktiv, dass keine Reste existieren. Token `startbild-entfernt`. Die aus Block 6 gewaehlte „Neue Mechanik-Idee“ ist damit zurueckgestellt.
 - [x] **96. Feedback-Block 7**: Boss-Brecher (aufgeladener Atomstrahl schwaecht Boss/Elite 4 s um 25 %; `weaken` wirkt jetzt auch auf Mob-Angriffe), Menue vereinfacht (Start + zwei Icon-Buttons, kein Beschreibungstext) und Laternen-Lichtkegel als Stadtkulisse. Tokens `boss-brecher+menue-einfacher+lampenlicht`.
-- [ ] **97. Nächster Frageblock**: Evolutionsstufen, Screenshot oder naechste Grafik? erneut abfragen.
+- [x] **97. Feedback-Block 8**: Boss-Brecher unveraendert. Teamgroesse direkt im Menue (`menuTeamSize`, `setMenuTeamSize()`), Auswahl gilt auch nach `beginRun()`; der Info-Dialog hat kein Select mehr. Grafik: nasse Strassen mit Laternen-Spiegelung (`puddleGlowMat`, `userData.puddle`). Tokens `teamgroesse-direkt+pfuetzen`.
+- [ ] **98. Nächster Frageblock**: Evolutionsstufen, Screenshot, Grafik oder Pause? erneut abfragen.
 
 ## Zurückgestellt (nicht verworfen)
 - Übrige 41 Wesen-Atlanten, weitere Stadt-Dekoration, echtes Sprite-/Engine-Upgrade.
