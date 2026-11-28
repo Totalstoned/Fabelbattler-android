@@ -508,6 +508,12 @@ for token in ['splashOverlay', 'splash/start.png', 'splashLeft', 'splashEl']:
 if (path.parent / 'splash' / 'start.png').is_file():
     problems.append('Startbild-Datei splash/start.png sollte entfernt sein')
 
+# Neuer Block: Boss-Brecher, vereinfachtes Menue und Laternen-Lichtkegel.
+for token in ['Boss-Brecher ▼25 %', 'lampGlowMat', '{lampGlow:true}',
+              'id="menuSettings" title="Einstellungen"', 'menu-actions .icon-btn']:
+    if token not in src:
+        problems.append('Boss-Brecher/Menue/Lampenlicht fehlt: ' + token)
+
 # Nachkampf-Auswertung: Zaehlung und Panel muessen im WebView-Build zusammen liegen.
 for token in ['id="battleReport"', 'id="battleReportTitle"', 'id="battleReportDamage"',
               'id="battleReportHeal"', 'id="battleReportTop"', 'id="btnReportClose"',

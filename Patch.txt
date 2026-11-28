@@ -451,3 +451,7 @@ Schritt 32: Version 1.23.4. Zwölf weitere CC0-Charaktere von Quaternius
 
 Schritt 33: Version 1.23.5. Das Startbild ist entfernt. Die App öffnet
            direkt das Menü; das Bild und der 5-Sekunden-Timer sind raus.
+
+Schritt 34: Version 1.23.6. Ein aufgeladener Atomstrahl schwächt Bosse und
+           Eliten jetzt vier Sekunden lang um 25 %. Das Menü ist schlanker,
+           und die Straßenlaternen werfen warme Lichtkegel auf den Boden.
