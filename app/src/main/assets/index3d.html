@@ -2534,6 +2534,18 @@ function makeStatusIcon(){
   icon.renderOrder = 21;
   return icon;
 }
+// Fokus-Pfeil: markiert das Ziel von King-Kong-Sturm oder Rumpel-Kindraub.
+// Gelb = Spott, Pink = zusaetzlich in die Ecke gelockt.
+function makeFocusArrow(){
+  const arrow = new THREE.Mesh(
+    new THREE.ConeGeometry(0.17,0.32,4),
+    new THREE.MeshBasicMaterial({color:0xfbbf24,depthTest:false,depthWrite:false})
+  );
+  arrow.rotation.x = Math.PI;
+  arrow.visible = false;
+  arrow.renderOrder = 22;
+  return arrow;
+}
 const MONSTER_STYLE = {
   godzilla:{type:"kaiju",variant:"classic",body:0x39434b,trim:0x82939d,plate:0xd9e6ee,glow:0x62d9ff,glowIntensity:0.18,scale:1.08,hpY:1.78,radius:0.56,plates:5,tail:1.35},
   mothra:{type:"moth",body:0xe8eef5,trim:0xf6c453,plate:0x7fc7ff,glow:0x63c7ff,glowIntensity:0.22,scale:1.12,hpY:1.55,radius:0.62},
@@ -3499,7 +3511,10 @@ function makeCharacter(u){
   const portrait = makePortraitSprite(u.key);
   portrait.position.y = hpY+0.94;
   group.add(portrait);
-  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,chargeBar:chargeBar,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,statusIcon:statusIcon,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,rotors:rotors,animPhase:Math.random()*Math.PI*2,walk:0};
+  const focusArrow = makeFocusArrow();
+  focusArrow.position.y = hpY+1.32;
+  group.add(focusArrow);
+  group.userData = {u:u,size:UNIT_SIZE[u.key] || (style ? style.scale||1 : 1),bodyMat:bodyMat,baseEmissive:bodyMat.emissive.clone(),baseEmissiveIntensity:bodyMat.emissiveIntensity,hp:hp,fill:hp.userData.fill,shieldFill:hp.userData.shieldFill,cdFill:hp.userData.cdFill,chargeBar:chargeBar,hpY:hpY,hpShown:clamp(u.hp/u.maxHp,0,1),label:label,glow:glow,teamRing:teamRing,shieldRing:shieldRing,selectRing:selectRing,selectGlow:selectGlow,statusRing:statusRing,statusIcon:statusIcon,focusArrow:focusArrow,model:modelRef,modelScale:modelScale,baseYaw:baseYaw,limbs:limbs,rotors:rotors,animPhase:Math.random()*Math.PI*2,walk:0};
   return group;
 }
 function syncUnits(){
@@ -4916,6 +4931,18 @@ function updateVisuals(time,dt,viewDt){
         statusIcon.material.needsUpdate = true;
         statusIcon.visible = true;
       } else statusIcon.visible = false;
+    }
+    const focusArrow = group.userData.focusArrow;
+    if(focusArrow){
+      const lured = !!(u.luredUntil && G.battle && G.battle.time < u.luredUntil);
+      const focused = u.side === "enemy" && !u.isDead &&
+        (lured || hasStatus(u,"taunt"));
+      focusArrow.visible = focused;
+      if(focused){
+        focusArrow.material.color.setHex(lured ? 0xf472b6 : 0xfbbf24);
+        focusArrow.position.y = (group.userData.hpY || 1.52)+1.32+Math.sin(time*4+u.id)*0.08;
+        focusArrow.scale.setScalar(0.94+Math.sin(time*5+u.id)*0.12);
+      }
     }
   });
   updateMobVisuals(time,dt);

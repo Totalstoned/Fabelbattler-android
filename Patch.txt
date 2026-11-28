@@ -439,3 +439,7 @@ Schritt 29: Version 1.23.1. Die Ladeleiste ist jetzt violett und leuchtet
 
 Schritt 30: Version 1.23.2. Über der Kampfleiste erscheinen jetzt für drei
            Sekunden die letzten Fähigkeiten deiner Helden.
+
+Schritt 31: Version 1.23.3. Über verspotteten Gegnern schwebt jetzt ein
+           gelber Pfeil. Rumpelstilzchens Kindraub markiert das Ziel pink,
+           damit du sofort siehst, wer in die Ecke gelockt wird.
