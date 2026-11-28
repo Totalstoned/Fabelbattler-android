@@ -2,7 +2,7 @@
 
 Frühere Grafik-Ziele sind zurückgestellt. Neue Reihenfolge: Fähigkeiten, dann UI-Rückmeldung, dann optional Grafik.
 
-## Erledigt in 1.22.9 / 1.23.0 / 1.23.1 / 1.23.2 / 1.23.3 / 1.23.4
+## Erledigt in 1.22.9 / 1.23.0 / 1.23.1 / 1.23.2 / 1.23.3 / 1.23.4 / 1.23.5
 - [x] **82. Orientierung neu schreiben**: `/root/projects/FABELBATTLER/AGENTS.md`, `FRAGEN.md` und diese `TASKS.md` auf Mechanik zuerst umgestellt; Fragekatalog für 10-Minuten-Intervalle.
 - [x] **83. Godzilla-Atomstrahl**: `SPELLS.atomstrahl/multi_atom/schmelzstrahl` sind `charge=true`; `tickMechanics()` lädt, `castMechanic()` nutzt `sp.range + 2*charge` und `dmg*(1+0.6*charge)` plus Burn/Splash. Ladegrenze steigt mit Level/Boss/Elite (1–3 s). Check-Token `atomladung`.
 - [x] **84. King-Kong-Sturm**: `+50 %` Tempo für 4 s (`speedSurge`), Sturm auf das Ziel mit höchstem ATK, Spott 3 s und Kurz-Betäubung. Check-Token `koenig-kong-sturm`.
@@ -18,11 +18,12 @@ Frühere Grafik-Ziele sind zurückgestellt. Neue Reihenfolge: Fähigkeiten, dann
 - [x] **92. Feedback-Block 3 / Fähigkeits-Log**: Antwort „5“ aus `FRAGEN.md` = Fähigkeits-Log. `logAbility()` schreibt maximal drei Zeilen (je 3 s) über die Kampfleiste, nur für Heldenzauber; Token `faehigkeits-log`. Mechanik und Icons bleiben unverändert.
 - [x] **93. Feedback-Block 4 / Fokus-Pfeil**: Mechanik und Log bleiben; Design-Option 1 umgesetzt. `makeFocusArrow()` markiert verspottete Gegner gelb und kindgeraubte/eckgelockte Gegner pink. Token `fokus-pfeil`.
 - [x] **94. Feedback-Block 5 / CC0-Modelle**: Mechanik und UI bleiben; Design-Option 4 umgesetzt. `adventurer.glb` und elf GLBs aus `Ultimate Modular Men Pack` liegen unter `models/` bzw. `models/modular/`; `loadCc0ModelLibrary()` laedt sie lokal, `cc0ClipMap()` bildet ihre 24 Clips auf die generischen Kampf-Clips ab. Token `cc0-modelle`.
-- [ ] **95. Nächster Frageblock**: Evolutionsstufen, frischer Screenshot oder Grafik? erneut abfragen.
+- [x] **95. Direktanweisung: Startbild entfernt**: User-Wunsch „entferne das startbild“ umgesetzt. Overlay, CSS, 5-s-Timer und `splash/start.png` sind raus; Checks pruefen jetzt aktiv, dass keine Reste existieren. Token `startbild-entfernt`. Die aus Block 6 gewaehlte „Neue Mechanik-Idee“ ist damit zurueckgestellt.
+- [ ] **96. Nächster Frageblock**: Neue Mechanik-Idee, Evolutionsstufen oder Screenshot? erneut abfragen.
 
 ## Zurückgestellt (nicht verworfen)
 - Übrige 41 Wesen-Atlanten, weitere Stadt-Dekoration, echtes Sprite-/Engine-Upgrade.
-- Visuelle Bestätigung auf dem Gerät: frischer Screenshot nach dem 5-s-Startbild fehlt weiterhin.
+- Visuelle Bestätigung auf dem Gerät: frischer Screenshot direkt aus `de.fabelbattler.app` fehlt weiterhin (Startbild gibt es jetzt nicht mehr).
 
 ## Erledigt (historisch, kurz)
 - 1.22.7: 5-s-Startbild, hellere Stadt, gestaffelte Labels.
