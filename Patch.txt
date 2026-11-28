@@ -464,3 +464,9 @@ Schritt 36: Version 1.23.8. Die APK ist deutlich kleiner: alle CC0-3D-Modelle
            und -Texturen sind entfernt. Die Wesen werden wieder prozedural
            gezeichnet, Boden und Stadt nutzen prozedurale Farben/Texturen.
            Mechanik, HUD und Menü bleiben unverändert.
+
+Schritt 37: Version 1.23.9. King Kongs Sturm trifft jetzt auf dem Weg
+           einmalig weitere Gegner („Kong-Kette“) und verlangsamt sie kurz.
+           Die Menü-Icons haben kleine Beschriftungen (Einstellungen,
+           Credits). Zwischen den Ruinen stehen prozedurale Straßenbäume
+           als Kulisse – ohne neue Dateien und ohne Kampfwirkung.

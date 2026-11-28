@@ -101,6 +101,8 @@
   .menu-actions{display:flex;flex-direction:column;gap:8px;align-items:center;}
   .menu-actions .icon-row{display:flex;justify-content:center;gap:8px;}
   .menu-actions .icon-btn{min-width:40px;padding:5px 10px;}
+  .menu-actions .icon-item{display:flex;flex-direction:column;align-items:center;gap:2px;}
+  .menu-actions .icon-item span{font-size:9px;color:var(--dim);}
   .menu-team{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim);}
   .menu-team select{max-width:120px;}
   .battle-bar{display:none;position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:40;
@@ -273,8 +275,14 @@
         </select>
       </label>
       <div class="icon-row">
-        <button class="btn ghost icon-btn" id="menuSettings" title="Einstellungen">⚙</button>
-        <button class="btn ghost icon-btn" id="menuCredits" title="Credits">?</button>
+        <div class="icon-item">
+          <button class="btn ghost icon-btn" id="menuSettings" title="Einstellungen">⚙</button>
+          <span>Einstellungen</span>
+        </div>
+        <div class="icon-item">
+          <button class="btn ghost icon-btn" id="menuCredits" title="Credits">?</button>
+          <span>Credits</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1229,6 +1237,7 @@ function collisionAt(u,gx,gy,b,ignore){
     Math.hypot(gx-o.grid.gx,gy-o.grid.gy) < unitRadius(u)+unitRadius(o)) || null;
 }
 function moveUnit(u,dx,dy,b){
+  const fromX = u.grid.gx, fromY = u.grid.gy;
   const tryPos = (gx,gy) => {
     gx = clamp(gx,0,GRID.cols-1);
     gy = clamp(gy,0,GRID.rows-1);
@@ -1240,6 +1249,7 @@ function moveUnit(u,dx,dy,b){
   if(!p) return false;
   u.grid.gx = p.gx;
   u.grid.gy = p.gy;
+  stormTrail(u,fromX,fromY,p.gx,p.gy,b);
   return true;
 }
 function shuffle(arr){
@@ -1863,6 +1873,8 @@ function buildCityProps(layout){
     depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
   const puddleGlowMat = new THREE.MeshBasicMaterial({color:0x9ad9ef,transparent:true,opacity:0.1,
     depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
+  const treeTrunkMat = new THREE.MeshStandardMaterial({color:0x5a4632,roughness:1});
+  const treeCrownMat = new THREE.MeshStandardMaterial({color:0x3f6b4a,roughness:0.95});
   const signalMat = new THREE.MeshStandardMaterial({color:0x30363c,roughness:0.6,metalness:0.4});
   const redLight = new THREE.MeshStandardMaterial({color:0xff5a4d,emissive:0xff2318,emissiveIntensity:0.7});
   const amberLight = new THREE.MeshStandardMaterial({color:0xffc85c,emissive:0xff9d21,emissiveIntensity:0.55});
@@ -1955,6 +1967,18 @@ function buildCityProps(layout){
     front.position.set(p.x,0.23,p.z+0.085);
     front.userData = {vending:true};
     propsLayer.add(body,front);
+  }
+  // Straßenbäume zwischen den Ruinen: reine Kulisse aus zwei Grundkörpern,
+  // ohne Texturdatei, Deckungsfeld oder Reichweitenwirkung.
+  for(let i=0;i<5;i++){
+    const p = freeCell();
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.05,0.34,6),treeTrunkMat);
+    trunk.position.set(p.x,0.17,p.z);
+    trunk.userData = {cityTree:true};
+    const crown = new THREE.Mesh(new THREE.ConeGeometry(0.22,0.5,7),treeCrownMat);
+    crown.position.set(p.x,0.57,p.z);
+    crown.userData = {cityTree:true};
+    propsLayer.add(trunk,crown);
   }
   // Torii-Tore am Straßenrand: die erste Silhouette, die Japan sofort lesbar
   // macht. Reine Kulisse – kein Deckungsfeld, keine Bewegungs- oder Reichweitenwirkung.
@@ -4175,6 +4199,26 @@ function chooseTarget(u,b){
 function speedSurge(u,b){
   return (u.stormUntil && b && b.time < u.stormUntil) ? 1.5 : 1;
 }
+// Kong-Kette: waehrend des Sturms trifft jeder zurueckgelegte Wegabschnitt
+// gegnerische Wesen einmalig mit kleinem Splash und kurzer Verlangsamung.
+function stormTrail(u,fromX,fromY,toX,toY,b){
+  if(u.key !== "kingkong" || !b || !(u.stormUntil > b.time)) return;
+  const mx = (fromX+toX)/2, my = (fromY+toY)/2;
+  const reach = 0.72+Math.hypot(toX-fromX,toY-fromY)*0.45;
+  u.stormHits = u.stormHits || {};
+  const dmg = u.atk*mechanicEvolution(u)*0.22;
+  for(const foe of livingEnemiesOf(u,b)){
+    if(u.stormHits[foe.id]) continue;
+    if(Math.hypot(foe.grid.gx-mx,foe.grid.gy-my) > reach) continue;
+    u.stormHits[foe.id] = true;
+    applyDamage(foe,dmg,u,{number:false});
+    addStatus(foe,"slow",1.2,0.2);
+    if(!SIM.headless){
+      pushEffect(foe,"Kong-Kette","#fbbf24");
+      spawnBurst(foe,"#fbbf24",6,0.6);
+    }
+  }
+}
 function moveToward(u,target,dt,b){
   if(hasStatus(u,"root") || hasStatus(u,"stun")) return;
   const dx = target.grid.gx-u.grid.gx, dy = target.grid.gy-u.grid.gy;
@@ -4285,6 +4329,9 @@ function castMechanic(u,target,b,sp){
     u.spellCd = sp.cd/Math.max(0.7,u.spd);
     u.animAttack = 0.3;
     u.stormUntil = b.time+4;
+    u.stormHits = {};
+    // Das Sturmziel bekommt seinen direkten Treffer, kein zusaetzliches Kettenglied.
+    u.stormHits[boss.id] = true;
     addStatus(u,"atkBuff",4,0.15);
     const d = dist(u,boss);
     if(d > 1.05){

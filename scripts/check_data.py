@@ -456,6 +456,10 @@ for key, body in re.findall(r'([A-Za-z0-9_]+)\s*:\s*\{([^}]*)\}', extract_block(
 for token in ['addGroundRect(0,0,0.22', 'addGroundRect(-2.9', 'addGroundRect(2.9', 'arenaPulse']:
     if token in src:
         problems.append('Trennlinie/seitliche Einfärbung in der Kampffläche vorhanden: ' + token)
+for token in ['icon-item', 'Einstellungen</span>', 'Credits</span>',
+              'treeTrunkMat', 'treeCrownMat', '{cityTree:true}']:
+    if token not in src:
+        problems.append('Menue-Labels oder Stadtbaeume fehlen: ' + token)
 for token in ['function stoneTexture', 'cc0Texture("stone_dirt"', 'new THREE.BoxGeometry(part[2],0.18,part[3])', 'new THREE.PlaneGeometry(220,220)', 'cc0Texture("stone_grass",()=>stoneTexture(ARENA_BIOMES[0].base,true),48)']:
     if token not in src:
         problems.append('Steinboden (inkl. Vollbild-Flaeche) fehlt: ' + token)
@@ -591,7 +595,9 @@ for token in ['models/universal_animation.glb', 'vendor/GLTFLoader.js',
 for token in ['function makeUniversalRig(){ return null; }',
               'function setUniversalClip(){ return; }', 'd.rig.mixer.update(dt)',
               'function castMechanic', 'function tickMechanics',
-              'function speedSurge', 'function makeChargeBar', 'chargeBar.visible',
+              'function speedSurge', 'function stormTrail',
+              'stormHits[boss.id] = true', 'stormTrail(u,fromX,fromY,p.gx,p.gy,b)',
+              'function makeChargeBar', 'chargeBar.visible',
               'function mechanicEvolution', 'function statusIconTexture',
               'statusIcon.visible', '0xf472b6 : 0xc084fc',
               'id="abilityLog"', 'function logAbility', 'function renderAbilityLog',
